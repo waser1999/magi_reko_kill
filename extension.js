@@ -19,15 +19,15 @@ export default function(){
 },help:{},config:{},package:{
     character: {
         character: {
-            "1001": ["female","huan",3,["haoshi","dimeng","护援"],["zhu","des:未来之路"]],
+            "1001": ["female","huan",3,["haoshi","dimeng","护援"],["zhu","des:未来之路","ext:魔法纪录/1001.jpg","die:ext:魔法纪录/audio/die/1001.mp3"]],
             "1002": ["female","huan",4,["xingshang","fangzhu","songwei"],["des:绝对之雨","ext:魔法纪录/1002.jpg","die:ext:魔法纪录/audio/die/1002.mp3"]],
-            "1003": ["female","huan",4,["qianxun","jiang","lianying"],["des:炎扇斩舞","ext:魔法纪录/1003.jpg","die:ext:魔法纪录/audio/die/1003.mp3"]],
+            "1003": ["female","huan",4,["qianxun","jiang","lianying","hunzi"],["des:炎扇斩舞"]],
             "1004": ["female","huan",3,["jushou","rezhenjun"],["des:酷刑牢笼","ext:魔法纪录/1004.jpg","die:ext:魔法纪录/audio/die/1004.mp3"]],
-            "1005": ["female","huan",4,["decadepojun"],["des:超级大大锤","ext:魔法纪录/1005.jpg","die:ext:魔法纪录/audio/die/1005.mp3"]],
+            "1005": ["female","huan",4,["repojun"],["des:超级大大锤","ext:魔法纪录/1005.jpg","die:ext:魔法纪录/audio/die/1005.mp3"]],
             "1009": ["female","huan",3,["huashen","xinsheng"],["des:无尽海神","ext:魔法纪录/1009.jpg","die:ext:魔法纪录/audio/die/1009.mp3"]],
             "1010": ["female","huan",4,["qiangxix","gzbuqu"],["des:宇宙之刃","ext:魔法纪录/1010.jpg","die:ext:魔法纪录/audio/die/1010.mp3"]],
             "1011": ["female","huan",3,["qingnang","jijiu","hongyan"],["des:大地审判","ext:魔法纪录/1011.jpg","die:ext:魔法纪录/audio/die/1011.mp3"]],
-            "1012": ["female","ma",3,["daoshu","weicheng"],["des:幽紫灵火","ext:魔法纪录/1012.jpg","die:ext:魔法纪录/audio/die/1012.mp3","doublegroup:huan:ma"]],
+            "1012": ["female","ma",3,["daoshu","weicheng"],["des:幽紫灵火","ext:魔法纪录/1012.jpg","doublegroup:huan:ma","die:ext:魔法纪录/audio/die/1012.mp3"]],
             "1013": ["female","huan",4,["wushuang","paoxiao"],["des:龙真螺旋咆击","ext:魔法纪录/1013.jpg","die:ext:魔法纪录/audio/die/1013.mp3"]],
             "1018": ["female","ma",5,["shuangxiong"],["des:樱隐","ext:魔法纪录/1018.jpg","die:ext:魔法纪录/audio/die/1018.mp3"]],
             "1019": ["female","ma",5,["fuhun"],["des:樱语","ext:魔法纪录/1019.jpg","die:ext:魔法纪录/audio/die/1019.mp3"]],
@@ -137,5 +137,5 @@ export default function(){
     diskURL: "",
     forumURL: "",
     version: "1.0",
-},files:{"character":["1010.jpg","1013.jpg","2001.jpg","2002.jpg","3005.jpg","2006.jpg","4001.jpg","1003.jpg","1004.jpg","1005.jpg","1011.jpg","1012.jpg","1018.jpg","2003.jpg","1019.jpg","2004.jpg","2005.jpg","2009.jpg","2201.jpg","3025.jpg","3031.jpg","1002.jpg","1009.jpg","3035.jpg","3052.jpg","4002.jpg","4003.jpg","3027.jpg","1001.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+},files:{"character":["1001.jpg","1003.jpg","1004.jpg","1005.jpg","1010.jpg","1011.jpg","1012.jpg","1013.jpg","1019.jpg","2001.jpg","2003.jpg","2004.jpg","2006.jpg","2201.jpg","3005.jpg","3031.jpg","3035.jpg","3052.jpg","1002.jpg","1009.jpg","4001.jpg","1018.jpg","2002.jpg","2005.jpg","2009.jpg","3025.jpg","4002.jpg","4003.jpg","3027.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
 };
