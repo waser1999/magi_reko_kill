@@ -1,0 +1,9 @@
+extension["魔法纪录"]={
+	intro:"",
+	author:"Waser",
+	netdisk:"",
+	forum:"",
+	version:"1.0",
+	files:["info.json","README.md","4003.jpg","4001.jpg","1001.jpg","1005.jpg","1012.jpg","2003.jpg","3025.jpg","3052.jpg","1009.jpg","1004.jpg","2006.jpg","2201.jpg","3005.jpg","1003.jpg","1011.jpg","1018.jpg","2002.jpg","3031.jpg","1002.jpg","2004.jpg","1019.jpg","2005.jpg","4002.jpg","1013.jpg","3035.jpg","2009.jpg","1010.jpg","2001.jpg","3027.jpg","LICENSE","1001.jpg","1002.jpg","1003.jpg","1004.jpg","1005.jpg","1009.jpg","1010.jpg","1011.jpg","1012.jpg","1012.png","1013.jpg","1018.jpg","1019.jpg","2001.jpg","2002.jpg","2003.jpg","2004.jpg","2005.jpg","2006.jpg","2009.jpg","2201.jpg","3005.jpg","3025.jpg","3027.jpg","3031.jpg","3035.jpg","3052.jpg","4001.jpg","4002.jpg","4003.jpg","info.json","LICENSE","package.js","README.md"],
+	size:"52.1MB"
+};
