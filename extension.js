@@ -10,9 +10,12 @@ export default function(){
 },precontent:function(){
     // 这里写势力
     game.addGroup("yuan","圆","见泷原小队","#FFC0CB");
-    game.addGroup("huan","环","神滨魔法联盟","#000000");
+    game.addGroup("huan","环","神滨魔法联盟","#FFC0CB");
     game.addGroup("zhi","织","美国织莉子","#FFFFFF");
     game.addGroup("ma","玛","玛吉斯之翼","#000000");
+    game.addGroup("faguo","法","法兰西","#FFFF00");
+    game.addGroup("ling","铃","天乃铃音","#2F4F4F");
+    game.addGroup("mao","昴","昴宿星团","#000000");
 },help:{},config:{},package:{
     character: {
         character: {
