@@ -9,12 +9,11 @@ export default function(){
 
         },precontent:function () {
             // 这里写势力
-            game.addGroup("yuan", "见泷原", "见泷原小队", { color: "#C71585" });
+            game.addGroup("yuan", "见泷原", "圆环之理", { color: "#C71585" });
             game.addGroup("huan", "神盟", "神滨魔法联盟", { color: "#FF1493" });
-            game.addGroup("zhi", "织莉子", "美国织莉子", { color: "#C0C0C0" });
             game.addGroup("ma", "玛吉斯", "玛吉斯之翼", { color: "#000000" });
             game.addGroup("faguo", "法国", "法兰西", { color: "#FFD700" });
-            game.addGroup("ling", "铃音", "天乃铃音", { color: "#808080" });
+            game.addGroup("ling", "鬼灯", "鬼灯势力", { color: "#808080" });
             game.addGroup("mao", "昴宿星团", "昴宿星团", { color: "#000000" });
         },help:{},config:{},package:{
     character: {
@@ -45,9 +44,9 @@ export default function(){
             "3031": ["female","huan",3,["ganlu","buyi","old_anxu","zhuiyi"],["des:闪耀光束","ext:魔法纪录/3031.jpg","die:ext:魔法纪录/audio/die/3031.mp3"]],
             "3035": ["female","huan",3,["dcduliang","retianxiang"],["des:美味猎手","ext:魔法纪录/3035.jpg","die:ext:魔法纪录/audio/die/3035.mp3"]],
             "3052": ["female","huan",4,["zongkui","guju","baijia","bmcanshi"],["des:Ocean Tick Hurricane","ext:魔法纪录/3052.jpg","die:ext:魔法纪录/audio/die/3052.mp3"]],
-            "4001": ["female","zhi",3,["weimu","wansha","guicai","fankui","oriko_xianzhong"],["zhu","des:神谕光线","ext:魔法纪录/4001.jpg","die:ext:魔法纪录/audio/die/4001.mp3"]],
-            "4002": ["female","zhi",4,["xinshensu","ganglie"],["des:吸血鬼之牙","ext:魔法纪录/4002.jpg","die:ext:魔法纪录/audio/die/4002.mp3"]],
-            "4003": ["female","yuan",3,["zhijian","guzheng","wangxi"],["des:山猫冲击","ext:魔法纪录/4003.jpg","doublegroup:yuan:zhi","die:ext:魔法纪录/audio/die/4003.mp3"]],
+            "4001": ["female","yuan",3,["weimu","wansha","guicai","fankui","oriko_xianzhong"],["zhu","des:神谕光线","ext:魔法纪录/4001.jpg","die:ext:魔法纪录/audio/die/4001.mp3"]],
+            "4002": ["female","yuan",4,["xinshensu","ganglie"],["des:吸血鬼之牙","ext:魔法纪录/4002.jpg","die:ext:魔法纪录/audio/die/4002.mp3"]],
+            "4003": ["female","yuan",3,["zhijian","guzheng","wangxi"],["des:山猫冲击","ext:魔法纪录/4003.jpg","die:ext:魔法纪录/audio/die/4003.mp3"]],
         },
         translate: {
             "1001": "环彩羽",
@@ -485,7 +484,7 @@ export default function(){
                 },
                 async cost(event, trigger, player) {
                     // 防止其他势力触发
-                    if (!trigger.source || trigger.source.group != "zhi") return false;
+                    if (!trigger.source || trigger.source.group != "yuan") return false;
                     event.result = await trigger.source
                         .chooseBool("是否发动【献种】，令" + get.translation(player) + "摸一张牌？")
                         .set("choice", get.attitude(trigger.source, player) > 0)
@@ -502,11 +501,11 @@ export default function(){
             "sayaka_yizhu": "义助",
             "sayaka_yizhu_info": "出牌阶段限一次，你可以弃置两张手牌并选择一名已经受伤的角色。你与其各回复1点体力。",
             xieli: "协力",
-            "xieli_info": "主角技，当你需要使用或打出【杀】时，你可以令其他见泷原小队角色依次选择是否打出一张【杀】。若有角色响应，则你视为使用或打出了此【杀】。",
+            "xieli_info": "主角技，当你需要使用或打出【杀】时，你可以令其他见泷原角色依次选择是否打出一张【杀】。若有角色响应，则你视为使用或打出了此【杀】。",
             yuanjiu: "援救",
-            "yuanjiu_info": "主角技，当你需要使用或打出一张【闪】时，你可以令其他神滨魔法联盟势力角色选择是否打出一张【闪】。若有角色响应，则你视为使用或打出了一张【闪】。",
+            "yuanjiu_info": "主角技，当你需要使用或打出一张【闪】时，你可以令其他神盟角色选择是否打出一张【闪】。若有角色响应，则你视为使用或打出了一张【闪】。",
             "oriko_xianzhong": "献种",
-            "oriko_xianzhong_info": "主角技，织莉子势力的角色造成伤害后，其可以令你摸一张牌。",
+            "oriko_xianzhong_info": "主角技，见泷原角色造成伤害后，其可以令你摸一张牌。",
         },
     },
     intro: "",
