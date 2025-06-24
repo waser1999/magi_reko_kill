@@ -10,13 +10,13 @@ export default function () {
 
         }, precontent: function () {
             // 这里写势力
-            game.addGroup("yuan", "圆", "见泷原小队", "#FFC0CB");
-            game.addGroup("huan", "环", "神滨魔法联盟", "#FFC0CB");
-            game.addGroup("zhi", "织", "美国织莉子", "#FFFFFF");
-            game.addGroup("ma", "玛", "玛吉斯之翼", "#000000");
-            game.addGroup("faguo", "法", "法兰西", "#FFFF00");
-            game.addGroup("ling", "铃", "天乃铃音", "#2F4F4F");
-            game.addGroup("mao", "昴", "昴宿星团", "#000000");
+            game.addGroup("yuan", "圆", "见泷原小队", { color: "#C71585" });
+            game.addGroup("huan", "环", "神滨魔法联盟", { color: "#FF1493" });
+            game.addGroup("zhi", "织", "美国织莉子", { color: "#C0C0C0" });
+            game.addGroup("ma", "玛", "玛吉斯之翼", { color: "#000000" });
+            game.addGroup("faguo", "法", "法兰西", { color: "#FFD700" });
+            game.addGroup("ling", "铃", "天乃铃音", { color: "#808080" });
+            game.addGroup("mao", "昴", "昴宿星团", { color: "#000000" });
         }, help: {}, config: {}, package: {
             character: {
                 character: {
@@ -39,7 +39,7 @@ export default function () {
                     "2005": ["female", "yuan", 4, ["guose", "luanji", "qiaobian", "yingzi"], ["des:终幕射击", "ext:魔法纪录/2005.jpg", "die:ext:魔法纪录/audio/die/2005.mp3"]],
                     "2006": ["female", "yuan", 4, ["tuntian", "zaoxian", "jixi", "xinxuanhuo"], ["des:盟神决枪", "ext:魔法纪录/2006.jpg", "die:ext:魔法纪录/audio/die/2006.mp3"]],
                     "2009": ["female", "yuan", 3, ["nzry_chenglve", "nzry_cunmu"], ["des:空洞人偶", "ext:魔法纪录/2009.jpg", "die:ext:魔法纪录/audio/die/2009.mp3"]],
-                    "2201": ["female", "yuan", 4, ["shelie", "gongxin"], ["des:再也没有必要绝望了！", "ext:魔法纪录/2201.jpg", "die:ext:魔法纪录/audio/die/2201.mp3"]],
+                    "2201": ["female", "yuan", 4, ["shelie", "gongxin", "xieli"], ["zhu", "des:再也没有必要绝望了！", "ext:魔法纪录/2201.jpg", "die:ext:魔法纪录/audio/die/2201.mp3"]],
                     "3005": ["female", "huan", 3, ["xiaoji", "jizhi"], ["des:白椿", "ext:魔法纪录/3005.jpg", "die:ext:魔法纪录/audio/die/3005.mp3"]],
                     "3025": ["female", "huan", 3, ["xinwuyan", "duanchang", "zhichi"], ["des:灵魂救赎", "ext:魔法纪录/3025.jpg", "die:ext:魔法纪录/audio/die/3025.mp3"]],
                     "3027": ["female", "huan", 3, ["huituo", "mingjian", "fangquan"], ["des:雷霆激流", "ext:魔法纪录/3027.jpg", "die:ext:魔法纪录/audio/die/3027.mp3"]],
@@ -48,7 +48,7 @@ export default function () {
                     "3052": ["female", "huan", 4, ["zongkui", "guju", "baijia", "bmcanshi"], ["des:Ocean Tick Hurricane", "ext:魔法纪录/3052.jpg", "die:ext:魔法纪录/audio/die/3052.mp3"]],
                     "4001": ["female", "zhi", 3, ["weimu", "wansha", "guicai", "fankui", "oriko_xianzhong"], ["zhu", "des:神谕光线"]],
                     "4002": ["female", "zhi", 4, ["xinshensu", "ganglie"], ["des:吸血鬼之牙", "ext:魔法纪录/4002.jpg", "die:ext:魔法纪录/audio/die/4002.mp3"]],
-                    "4003": ["female", "yuan", 3, ["zhijian", "guzheng", "wangxi"], ["des:山猫冲击", "ext:魔法纪录/4003.jpg", "die:ext:魔法纪录/audio/die/4003.mp3","doublegroup:yuan:zhi"]],
+                    "4003": ["female", "yuan", 3, ["zhijian", "guzheng", "wangxi"], ["des:山猫冲击", "ext:魔法纪录/4003.jpg", "die:ext:魔法纪录/audio/die/4003.mp3", "doublegroup:yuan:zhi"]],
                 },
                 translate: {
                     "1001": "环彩羽",
@@ -71,6 +71,7 @@ export default function () {
                     "2006": "佐仓杏子",
                     "2009": "爱生眩",
                     "2201": "神鹿目圆",
+                    "2201_prefix": "神",
                     "3005": "常盘七香",
                     "3025": "五十铃怜",
                     "3027": "游佐夜月",
@@ -478,7 +479,8 @@ export default function () {
                         sourceSkill: "oriko_xianzhong",
                         filter(event, player) {
                             // 伤害为0时不触发
-                            if (event.num <= 0) return false;                        
+                            if (event.num <= 0) return false;
+                            if (!player.hasZhuSkill("oriko_xianzhong")) return false;
                             return player.hasZhuSkill("oriko_xianzhong", event.player);
                         },
                         async cost(event, trigger, player) {
