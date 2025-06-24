@@ -27,7 +27,7 @@ export default function () {
                     "1005": ["female", "huan", 4, ["repojun"], ["des:超级大大锤", "ext:魔法纪录/1005.jpg", "die:ext:魔法纪录/audio/die/1005.mp3"]],
                     "1009": ["female", "huan", 3, ["huashen", "xinsheng"], ["des:无尽海神", "ext:魔法纪录/1009.jpg", "die:ext:魔法纪录/audio/die/1009.mp3"]],
                     "1010": ["female", "huan", 4, ["qiangxix", "gzbuqu"], ["des:宇宙之刃", "ext:魔法纪录/1010.jpg", "die:ext:魔法纪录/audio/die/1010.mp3"]],
-                    "1011": ["female", "huan", 3, ["qingnang", "jijiu", "hongyan"], ["des:大地审判", "ext:魔法纪录/1011.jpg", "die:ext:魔法纪录/audio/die/1011.mp3"]],
+                    "1011": ["female", "huan", 3, ["qingnang", "jijiu", "hongyan"], ["des:大地审判", "ext:魔法纪录/1011.jpg", "die:ext:魔法纪录/audio/die/1011.mp3","doublegroup:huan:ma"]],
                     "1012": ["female", "ma", 3, ["daoshu", "weicheng"], ["des:幽紫灵火", "ext:魔法纪录/1012.jpg", "doublegroup:huan:ma", "die:ext:魔法纪录/audio/die/1012.mp3"]],
                     "1013": ["female", "huan", 4, ["wushuang", "paoxiao"], ["des:龙真螺旋咆击", "ext:魔法纪录/1013.jpg", "die:ext:魔法纪录/audio/die/1013.mp3"]],
                     "1018": ["female", "ma", 5, ["shuangxiong"], ["des:樱隐", "ext:魔法纪录/1018.jpg", "die:ext:魔法纪录/audio/die/1018.mp3"]],
@@ -484,7 +484,8 @@ export default function () {
                             return player.hasZhuSkill("oriko_xianzhong", event.player);
                         },
                         async cost(event, trigger, player) {
-                            if (trigger.source.group != "zhi") return false;
+                            // 防止其他势力触发
+                            if (!trigger.source || trigger.source.group != "zhi") return false;
                             event.result = await trigger.source
                                 .chooseBool("是否发动【献种】，令" + get.translation(player) + "摸一张牌？")
                                 .set("choice", get.attitude(trigger.source, player) > 0)
