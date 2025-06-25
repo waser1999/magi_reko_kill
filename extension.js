@@ -1,3 +1,4 @@
+import { h } from "../../game/vue.esm-browser.js";
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 export const type = "extension";
 export default function(){
@@ -86,6 +87,39 @@ export default function(){
             ren: "五十铃怜",
             "ulti_madoka": "神鹿目圆",
             sayaka: "美树沙耶香",
+        },
+        perfectPair: {
+            // 珠联璧合
+            oriko: ["kirika"],
+            kirika: ["oriko"],
+            madoka: ["homura", "mami", "sayaka", "homura2", "ulti_madoka"],
+            "ulti_madoka": ["sayaka", "homura", "madoka"],
+            homura: ["madoka", "homura2", "ulti_madoka", "kyoko", "mabayu"],
+            homura2: ["madoka", "mami", "sayaka", "homura"],
+            mami: ["kyoko", "mabayu", "homura", "madoka", "sayaka"],
+            kyoko: ["mami", "homura", "homura2", "sayaka", "yuma"],
+            yuma: ["kyoko"],
+            mabayu: ["mami", "homura", "homura2"],
+            iroha: ["yachiyo", "felicia", "sana"],
+            yachiyo: ["iroha","tsuruno","momoko"],
+            felicia: ["iroha","tsuruno"],
+            tsuruno: ["felicia", "yachiyo"],
+            sana: ["iroha"],
+            momoko: ["yachiyo", "kaede", "lena"],
+            lena: ["momoko","kaede"],
+            kaede: ["momoko", "lena"],
+            toka: ["alina", "nemu"],
+            alina: ["toka", "nemu","karin"],
+            nemu: ["alina", "toka"],
+            karin: ["alina"],
+            nanaka: ["hazuki"],
+            hazuki: ["nanaka"],
+            yueye: ["yuexiao"],
+            yuexiao: ["yueye"],
+            ashley: ["riko"],
+            riko: ["ashley"],
+            rika: ["ren"],
+            ren: ["rika"],
         },
     },
     card: {
