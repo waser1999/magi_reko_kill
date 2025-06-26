@@ -29,10 +29,10 @@ export default function(){
             iroha: ["female","huan",3,["haoshi","dimeng","lirang","dckrmingshi","yuanjiu"],["zhu","des:未来之路","ext:魔法纪录/iroha.jpg","die:ext:魔法纪录/audio/die/iroha.mp3"]],
             yachiyo: ["female","huan",4,["xingshang","fangzhu","songwei"],["des:绝对之雨","ext:魔法纪录/yachiyo.jpg","die:ext:魔法纪录/audio/die/yachiyo.mp3"]],
             felicia: ["female","huan",4,["repojun"],["des:超级大大锤","ext:魔法纪录/felicia.jpg","die:ext:魔法纪录/audio/die/felicia.mp3"]],
-            toka: ["female","ma",3,["xinleiji","xinguidao","xinhuangtian","tianjie"],["zhu","ext:魔法纪录/toka.jpg","die:ext:魔法纪录/audio/die/toka.mp3"]],
+            toka: ["female","ma",3,["xinleiji","xinguidao","magius_jiefang","tianjie"],["zhu","ext:魔法纪录/toka.jpg","die:ext:魔法纪录/audio/die/toka.mp3"]],
             alina: ["female","ma",3,["moying","juanhui","rekuangcai","reshejian"],["ext:魔法纪录/alina.jpg","die:ext:魔法纪录/audio/die/alina.mp3"]],
             lena: ["female","huan",3,["huashen","xinsheng"],["des:无尽海神","ext:魔法纪录/lena.jpg","die:ext:魔法纪录/audio/die/lena.mp3"]],
-            kaede: ["female","huan",3,["qingnang","jijiu","hongyan"],["des:大地审判","ext:魔法纪录/kaede.jpg","die:ext:魔法纪录/audio/die/kaede.mp3","doublegroup:huan:ma",]],
+            kaede: ["female","huan",3,["qingnang","jijiu","hongyan"],["des:大地审判","ext:魔法纪录/kaede.jpg","doublegroup:huan:ma","die:ext:魔法纪录/audio/die/kaede.mp3"]],
             momoko: ["female","huan",4,["qiangxix","gzbuqu"],["des:宇宙之刃","ext:魔法纪录/momoko.jpg","die:ext:魔法纪录/audio/die/momoko.mp3"]],
             asuka: ["female","huan",4,["wushuang","paoxiao"],["des:龙真螺旋咆击","ext:魔法纪录/asuka.jpg","die:ext:魔法纪录/audio/die/asuka.mp3"]],
             yueye: ["female","ma",5,["shuangxiong"],["des:樱隐","ext:魔法纪录/yueye.jpg","die:ext:魔法纪录/audio/die/yueye.mp3"]],
@@ -42,8 +42,8 @@ export default function(){
             "homura2": ["female","yuan",3,["luoying","yiji","huoji"],["des:时间停止攻击","ext:魔法纪录/homura2.jpg","die:ext:魔法纪录/audio/die/homura2.mp3"]],
             nanaka: ["female","huan",3,["xiaoji","jizhi"],["des:白椿","ext:魔法纪录/nanaka.jpg","die:ext:魔法纪录/audio/die/nanaka.mp3"]],
             hazuki: ["female","huan",3,["huituo","mingjian","fangquan"],["des:雷霆激流","ext:魔法纪录/hazuki.jpg","die:ext:魔法纪录/audio/die/hazuki.mp3"]],
-            karin: ["female","ma",3,["daoshu","weicheng"],["des:幽紫灵火","ext:魔法纪录/karin.jpg","die:ext:魔法纪录/audio/die/karin.mp3","doublegroup:huan:ma"]],
-            nemu: ["female","ma",5,["resanyao","rezhiman","zhendu","qiluan","benghuai"],[]],
+            karin: ["female","ma",3,["daoshu","weicheng"],["des:幽紫灵火","ext:魔法纪录/karin.jpg","doublegroup:huan:ma","die:ext:魔法纪录/audio/die/karin.mp3"]],
+            nemu: ["female","ma",5,["resanyao","rezhiman","zhendu","qiluan","benghuai"],["ext:魔法纪录/nemu.jpg","die:ext:魔法纪录/audio/die/nemu.mp3"]],
             mami: ["female","yuan",4,["guose","luanji","qiaobian","yingzi"],["des:终幕射击","ext:魔法纪录/mami.jpg","die:ext:魔法纪录/audio/die/mami.mp3"]],
             kyoko: ["female","yuan",4,["tuntian","reguhuo","jixi"],["des:盟神决枪","ext:魔法纪录/kyoko.jpg","die:ext:魔法纪录/audio/die/kyoko.mp3"]],
             mabayu: ["female","yuan",3,["nzry_chenglve","nzry_cunmu","weidi","nzry_shicai"],["des:空洞人偶","ext:魔法纪录/mabayu.jpg","die:ext:魔法纪录/audio/die/mabayu.mp3"]],
@@ -51,6 +51,8 @@ export default function(){
             "ulti_madoka": ["female","yuan",4,["shelie","gongxin","xieli"],["zhu","des:再也没有必要绝望了！","ext:魔法纪录/ulti_madoka.jpg","die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
             sayaka: ["female","yuan",4,["xinkuanggu","gzyinghun","sayaka_yizhu"],["des:无畏极强音","ext:魔法纪录/sayaka.jpg","die:ext:魔法纪录/audio/die/sayaka.mp3"]],
             Kagome: ["female","huan",3,["nschenzhi","nsdianmo","nszaibi"],["ext:魔法纪录/Kagome.jpg","die:ext:魔法纪录/audio/die/Kagome.mp3"]],
+            mifuyu: ["female","ma",3,["dcwumei","dczhanmeng"],["doublegroup:huan:ma"]],
+            meru: ["female","huan",3,["shiming","jiangxi"],[]],
         },
         translate: {
             "2201_prefix": "神",
@@ -88,6 +90,8 @@ export default function(){
             "ulti_madoka": "神鹿目圆",
             sayaka: "美树沙耶香",
             Kagome: "佐鸟笼目",
+            mifuyu: "梓美冬",
+            meru: "安名梅露",
         },
         perfectPair: {
             oriko: ["kirika"],
@@ -101,7 +105,7 @@ export default function(){
             yuma: ["kyoko"],
             mabayu: ["mami","homura","homura2"],
             iroha: ["yachiyo","felicia","sana"],
-            yachiyo: ["iroha","tsuruno","momoko"],
+            yachiyo: ["iroha","tsuruno","momoko","mifuyu","meru"],
             felicia: ["iroha","tsuruno"],
             tsuruno: ["felicia","yachiyo"],
             sana: ["iroha"],
@@ -114,12 +118,14 @@ export default function(){
             karin: ["alina"],
             nanaka: ["hazuki"],
             hazuki: ["nanaka"],
-            yueye: ["yuexiao"],
+            yueye: ["yuexiao","mifuyu"],
             yuexiao: ["yueye"],
             ashley: ["riko"],
             riko: ["ashley"],
             rika: ["ren"],
             ren: ["rika"],
+            mifuyu: ["yachiyo","toka","yueye"],
+            meru: ["yachiyo"],
         },
     },
     card: {
@@ -536,6 +542,65 @@ export default function(){
                 },
                 "_priority": 0,
             },
+            "magius_jiefang": {
+                zhuSkill: true,
+                global: "magius_jiefang2",
+                "_priority": 0,
+            },
+            "magius_jiefang2": {
+                enable: "phaseUse",
+                discard: false,
+                lose: false,
+                delay: false,
+                line: true,
+                prepare(cards, player, targets) {
+                    targets[0].logSkill("magius_jiefang");
+                },
+                prompt() {
+                    var player = _status.event.player;
+                    var list = game.filterPlayer(function (target) {
+                        return target != player && target.hasZhuSkill("magius_jiefang", player);
+                    });
+                    var str = "将一张【闪】或黑桃手牌交给" + get.translation(list);
+                    if (list.length > 1) str += "中的一人";
+                    return str;
+                },
+                filter(event, player) {
+                    if (player.group != "ma") return false;
+                    if (
+                        !game.hasPlayer(function (target) {
+                            return target != player && target.hasZhuSkill("magius_jiefang", player) && !target.hasSkill("magius_jiefang3");
+                        })
+                    )
+                        return false;
+                    return player.hasCard(function (card) {
+                        return lib.skill.magius_jiefang2.filterCard(card, player);
+                    }, "h");
+                },
+                filterCard(card, player) {
+                    return get.name(card, player) == "shan" || get.suit(card, player) == "spade";
+                },
+                log: false,
+                visible: true,
+                filterTarget(card, player, target) {
+                    return target != player && target.hasZhuSkill("magius_jiefang", player) && !target.hasSkill("magius_jiefang3");
+                },
+                content() {
+                    player.give(cards, target);
+                    target.addTempSkill("magius_jiefang3", "phaseUseEnd");
+                },
+                ai: {
+                    expose: 0.3,
+                    order: 10,
+                    result: {
+                        target: 5,
+                    },
+                },
+                "_priority": 0,
+            },
+            "magius_jiefang3": {
+                "_priority": 0,
+            },
         },
         translate: {
             "sayaka_yizhu": "义助",
@@ -546,6 +611,8 @@ export default function(){
             "yuanjiu_info": "主角技，当你需要使用或打出一张【闪】时，你可以令其他神盟角色选择是否打出一张【闪】。若有角色响应，则你视为使用或打出了一张【闪】。",
             "oriko_xianzhong": "献种",
             "oriko_xianzhong_info": "主角技，见泷原角色造成伤害后，其可以令你摸一张牌。",
+            "magius_jiefang": "解放",
+            "magius_jiefang_info": "主角技，其他玛吉斯之翼的角色出牌阶段限一次，该角色可以交给你一张【闪】或黑桃手牌。",
         },
     },
     intro: "",
@@ -553,5 +620,5 @@ export default function(){
     diskURL: "",
     forumURL: "",
     version: "1.0",
-},files:{"character":["kirika.jpg","felicia.jpg","alina.jpg","mami.jpg","yuma.jpg","oriko.jpg","toka.jpg","nemu.jpg","Kagome.jpg","kaede.jpg","asuka.jpg","madoka.jpg","homura2.jpg","karin.jpg","mabayu.jpg","ulti_madoka.jpg","sayaka.jpg","sana.jpg","hazuki.jpg","ashley.jpg","tsuruno.jpg","momoko.jpg","yuexiao.jpg","nanaka.jpg","kyoko.jpg","yachiyo.jpg","riko.jpg","rika.jpg","iroha.jpg","homura.jpg","lena.jpg","ren.jpg","yueye.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+},files:{"character":["ashley.jpg","yuma.jpg","kirika.jpg","riko.jpg","rika.jpg","oriko.jpg","toka.jpg","alina.jpg","nemu.jpg","tsuruno.jpg","Kagome.jpg","sana.jpg","iroha.jpg","felicia.jpg","kaede.jpg","momoko.jpg","asuka.jpg","yueye.jpg","yuexiao.jpg","madoka.jpg","homura.jpg","homura2.jpg","nanaka.jpg","karin.jpg","kyoko.jpg","mami.jpg","ren.jpg","mabayu.jpg","ulti_madoka.jpg","sayaka.jpg","yachiyo.jpg","lena.jpg","hazuki.jpg","mifuyu.jpg","meru.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
 };
