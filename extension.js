@@ -51,8 +51,9 @@ export default function(){
             "ulti_madoka": ["female","yuan",4,["shelie","gongxin","xieli"],["zhu","des:再也没有必要绝望了！","ext:魔法纪录/ulti_madoka.jpg","die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
             sayaka: ["female","yuan",4,["xinkuanggu","gzyinghun","sayaka_yizhu"],["des:无畏极强音","ext:魔法纪录/sayaka.jpg","die:ext:魔法纪录/audio/die/sayaka.mp3"]],
             Kagome: ["female","huan",3,["nschenzhi","nsdianmo","nszaibi"],["ext:魔法纪录/Kagome.jpg","die:ext:魔法纪录/audio/die/Kagome.mp3"]],
-            mifuyu: ["female","ma",3,["dcwumei","dczhanmeng"],["doublegroup:huan:ma"]],
-            meru: ["female","huan",3,["shiming","jiangxi"],[]],
+            mifuyu: ["female","ma",3,["dcwumei","dczhanmeng"],["doublegroup:huan:ma","ext:魔法纪录/mifuyu.jpg","die:ext:魔法纪录/audio/die/mifuyu.mp3"]],
+            meru: ["female","huan",3,["zhiming","xingbu"],["ext:魔法纪录/meru.jpg","die:ext:魔法纪录/audio/die/meru.mp3"]],
+            kazumi: ["female","mao",3,["qixing","kuangfeng","dawu"],[]],
         },
         translate: {
             "2201_prefix": "神",
@@ -92,6 +93,7 @@ export default function(){
             Kagome: "佐鸟笼目",
             mifuyu: "梓美冬",
             meru: "安名梅露",
+            kazumi: "和美",
         },
         perfectPair: {
             oriko: ["kirika"],
@@ -619,6 +621,6 @@ export default function(){
     author: "Waser",
     diskURL: "",
     forumURL: "",
-    version: "1.0",
-},files:{"character":["ashley.jpg","yuma.jpg","kirika.jpg","riko.jpg","rika.jpg","oriko.jpg","toka.jpg","alina.jpg","nemu.jpg","tsuruno.jpg","Kagome.jpg","sana.jpg","iroha.jpg","felicia.jpg","kaede.jpg","momoko.jpg","asuka.jpg","yueye.jpg","yuexiao.jpg","madoka.jpg","homura.jpg","homura2.jpg","nanaka.jpg","karin.jpg","kyoko.jpg","mami.jpg","ren.jpg","mabayu.jpg","ulti_madoka.jpg","sayaka.jpg","yachiyo.jpg","lena.jpg","hazuki.jpg","mifuyu.jpg","meru.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+    version: "1.1",
+},files:{"character":["alina.jpg","ashley.jpg","iroha.jpg","homura.jpg","ulti_madoka.jpg","ren.jpg","sayaka.jpg","yuma.jpg","kirika.jpg","oriko.jpg","riko.jpg","toka.jpg","nemu.jpg","Kagome.jpg","mifuyu.jpg","meru.jpg","rika.jpg","tsuruno.jpg","sana.jpg","felicia.jpg","kaede.jpg","momoko.jpg","asuka.jpg","yueye.jpg","yuexiao.jpg","homura2.jpg","madoka.jpg","nanaka.jpg","karin.jpg","mami.jpg","kyoko.jpg","mabayu.jpg","kazumi.jpg","yachiyo.jpg","lena.jpg","hazuki.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
 };
