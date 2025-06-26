@@ -15,6 +15,7 @@ export default function(){
             game.addGroup("faguo", "法国", "法兰西", { color: "#FFD700" });
             game.addGroup("ling", "鬼灯", "鬼灯势力", { color: "#808080" });
             game.addGroup("mao", "昴宿星团", "昴宿星团", { color: "#000000" });
+            lib.namePrefix.set("动画",{color: "#FFD700"})
         },help:{},config:{},package:{
     character: {
         character: {
@@ -58,10 +59,11 @@ export default function(){
             kokoro: ["female","huan",5,["yizhong"],["des:离散镭射","ext:魔法纪录/kokoro.jpg","die:ext:魔法纪录/audio/die/kokoro.mp3"]],
             ayame: ["female","huan",4,["tianyi","hanzhan"],["des:未确认飞行火焰","ext:魔法纪录/ayame.jpg","die:ext:魔法纪录/audio/die/ayame.mp3"]],
             hanna: ["female","ma",3,["reluanwu","xinjuece","dcmieji","dcfencheng"],["des:噩梦毒针","ext:魔法纪录/hanna.jpg","die:ext:魔法纪录/audio/die/hanna.mp3"]],
-            kuroe: ["female","ma",4,["qingbei","dcsuishi"],["doublegroup:huan:ma","des:灾难盛宴",]],
+            kuroe: ["female","ma",4,["qingbei","dcsuishi"],["doublegroup:huan:ma","des:灾难盛宴","ext:魔法纪录/kuroe.jpg","die:ext:魔法纪录/audio/die/kuroe.mp3"]],
+            "anime_iroha": ["female","huan",3,["ani_lieying","yuanjiu"],["forbidai","zhu"]],
         },
         translate: {
-            "2201_prefix": "神",
+            "ulti_madoka_prefix": "神",
             "魔法纪录": "魔法纪录",
             yuma: "千岁由麻",
             kirika: "吴纪里香",
@@ -104,6 +106,9 @@ export default function(){
             ayame: "三栗菖蒲",
             hanna: "更纱帆奈",
             kuroe: "黑江",
+            "anime_iroha": "动画环彩羽",
+            "anime_iroha_prefix": "动画",
+            
         },
         perfectPair: {
             oriko: ["kirika"],
@@ -614,6 +619,18 @@ export default function(){
             "magius_jiefang3": {
                 "_priority": 0,
             },
+            "ani_lieying": {
+                // 锁定技
+                forced: true,
+                trigger: {
+                    source: "damageBegin",
+                },
+                async content(event, trigger, player) {
+                    if(trigger.player.name == "kuroe"){
+                        trigger.player.die();
+                    }              
+                }
+            },
         },
         translate: {
             "sayaka_yizhu": "义助",
@@ -627,6 +644,8 @@ export default function(){
             "magius_jiefang": "解放",
             "magius_jiefang_info": "主角技，其他玛吉斯之翼的角色出牌阶段限一次，该角色可以交给你一张【闪】或黑桃手牌。",
             "magius_jiefang2": "解放",
+            "ani_lieying": "猎鹰",
+            "ani_lieying_info": "锁定技，当你造成伤害后，若此伤害对象是黑江，其立刻死亡。",
         },
     },
     intro: "",
@@ -634,5 +653,5 @@ export default function(){
     diskURL: "",
     forumURL: "",
     version: "1.1",
-},files:{"character":["alina.jpg","mifuyu.jpg","yuma.jpg","rika.jpg","iroha.jpg","toka.jpg","kaede.jpg","yueye.jpg","yuexiao.jpg","madoka.jpg","karin.jpg","nemu.jpg","sayaka.jpg","kazumi.jpg","kushu.jpg","kokoro.jpg","hanna.jpg","Kagome.jpg","meru.jpg","kirika.jpg","oriko.jpg","ashley.jpg","riko.jpg","tsuruno.jpg","sana.jpg","felicia.jpg","momoko.jpg","asuka.jpg","homura.jpg","homura2.jpg","nanaka.jpg","mami.jpg","kyoko.jpg","mabayu.jpg","ren.jpg","ulti_madoka.jpg","ayame.jpg","kuroe.jpg","yachiyo.jpg","lena.jpg","hazuki.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+},files:{"character":["mifuyu.jpg","meru.jpg","kaede.jpg","ulti_madoka.jpg","yuma.jpg","kirika.jpg","oriko.jpg","ashley.jpg","riko.jpg","rika.jpg","tsuruno.jpg","sana.jpg","iroha.jpg","alina.jpg","Kagome.jpg","felicia.jpg","toka.jpg","momoko.jpg","yachiyo.jpg","asuka.jpg","yueye.jpg","yuexiao.jpg","madoka.jpg","homura.jpg","homura2.jpg","nanaka.jpg","karin.jpg","nemu.jpg","mami.jpg","kyoko.jpg","mabayu.jpg","ren.jpg","sayaka.jpg","kazumi.jpg","kushu.jpg","kokoro.jpg","ayame.jpg","hanna.jpg","lena.jpg","hazuki.jpg","kuroe.jpg","anime_iroha.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
 };
