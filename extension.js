@@ -23,7 +23,7 @@ export default function () {
                 character: {
                     yuma: ["female", "yuan", 3, ["zhijian", "guzheng", "wangxi"], ["des:山猫冲击", "ext:魔法纪录/yuma.jpg", "die:ext:魔法纪录/audio/die/yuma.mp3"]],
                     kirika: ["female", "yuan", 4, ["xinshensu", "ganglie"], ["des:吸血鬼之牙", "ext:魔法纪录/kirika.jpg", "die:ext:魔法纪录/audio/die/kirika.mp3"]],
-                    oriko: ["female", "yuan", 3, ["weimu", "wansha", "guicai", "oriko_xianzhong"], ["zhu", "des:神谕光线", "ext:魔法纪录/oriko.jpg", "die:ext:魔法纪录/audio/die/oriko.mp3"]],
+                    oriko: ["female", "yuan", 3, ["oriko_yuzhi", "oriko_jiangsha", "weimu", "wansha", "oriko_xianzhong"], ["zhu", "des:神谕光线", "ext:魔法纪录/oriko.jpg", "die:ext:魔法纪录/audio/die/oriko.mp3"]],
                     ashley: ["female", "huan", 4, ["ashley_yuanyu", "ashley_mengshu"], ["des:Ocean Tick Hurricane", "ext:魔法纪录/ashley.jpg", "die:ext:魔法纪录/audio/die/ashley.mp3"]],
                     riko: ["female", "huan", 3, ["dcduliang", "dctunchu", "dcshuliang"], ["des:美味猎手", "ext:魔法纪录/riko.jpg", "die:ext:魔法纪录/audio/die/riko.mp3"]],
                     rika: ["female", "huan", 3, ["wanwei", "reguose", "oltianxiang", "spyuejian"], ["des:闪耀光束", "ext:魔法纪录/rika.jpg", "die:ext:魔法纪录/audio/die/rika.mp3"]],
@@ -537,6 +537,110 @@ export default function () {
                         },
                         "_priority": 0,
                     },
+                    "oriko_yuzhi": {
+                        group: ["oriko_yuzhi_1", "oriko_yuzhi_2"],
+                        mark: true,
+                        marktext: "视",
+                        intro: {
+                            name: "未来视",
+                            // 有卡牌的标记
+                            content: "expansion",
+                            markcount: "expansion",
+                        },
+                        subSkill: {
+                            "1": {
+                                trigger: {
+                                    global: "phaseBegin",
+                                },
+                                forced: true,
+
+                                filter: function (event, player) {
+                                    return player.countExpansions("oriko_yuzhi") < game.players.length;
+                                },
+                                content: function () {
+                                    player.addToExpansion(get.cards(1)).gaintag.add("oriko_yuzhi");
+                                },
+
+                            },
+                            "2": {
+                                trigger: {
+                                    global: "dieAfter",
+                                },
+                                forced: true,
+                                filter: function (event, player) {
+                                    return player.hasExpansions("oriko_yuzhi");
+                                },
+                                content: function () {
+                                    player.discard(player.getExpansions("oriko_yuzhi")[0]);
+                                },
+                            }
+                        }
+                    },
+                    "oriko_jiangsha": {
+                        trigger: { global: "judge" },
+                        direct: true,
+                        filter(event, player) {
+                            return player.getExpansions("oriko_yuzhi").length && event.player.isIn();
+                        },
+                        content() {
+                            "step 0";
+                            var list = player.getExpansions("oriko_yuzhi");
+                            player
+                                .chooseButton([get.translation(trigger.player) + "的" + (trigger.judgestr || "") + "判定为" + get.translation(trigger.player.judging[0]) + "，" + get.prompt("oriko_jiangsha"), list, "hidden"], function (button) {
+                                    var card = button.link;
+                                    var trigger = _status.event.getTrigger();
+                                    var player = _status.event.player;
+                                    var judging = _status.event.judging;
+                                    var result = trigger.judge(card) - trigger.judge(judging);
+                                    var attitude = get.attitude(player, trigger.player);
+                                    return result * attitude;
+                                })
+                                .set("judging", trigger.player.judging[0])
+                                .set("filterButton", function (button) {
+                                    var player = _status.event.player;
+                                    var card = button.link;
+                                    var mod2 = game.checkMod(card, player, "unchanged", "cardEnabled2", player);
+                                    if (mod2 != "unchanged") return mod2;
+                                    var mod = game.checkMod(card, player, "unchanged", "cardRespondable", player);
+                                    if (mod != "unchanged") return mod;
+                                    return true;
+                                });
+                            "step 1";
+                            if (result.bool) {
+                                event.forceDie = true;
+                                player.respond(result.links, "oriko_jiangsha", "highlight", "noOrdering");
+                                result.cards = result.links;
+                                var card = result.cards[0];
+                                event.card = card;
+                            } else {
+                                event.finish();
+                            }
+                            "step 2";
+                            if (result.bool) {
+                                if (trigger.player.judging[0].clone) {
+                                    trigger.player.judging[0].clone.classList.remove("thrownhighlight");
+                                    game.broadcast(function (card) {
+                                        if (card.clone) {
+                                            card.clone.classList.remove("thrownhighlight");
+                                        }
+                                    }, trigger.player.judging[0]);
+                                    game.addVideo("deletenode", player, get.cardsInfo([trigger.player.judging[0].clone]));
+                                }
+                                game.cardsDiscard(trigger.player.judging[0]);
+                                trigger.player.judging[0] = result.cards[0];
+                                trigger.orderingCards.addArray(result.cards);
+                                game.log(trigger.player, "的判定牌改为", card);
+                                game.delay(2);
+                            }
+                        },
+                        ai: {
+                            combo: "oriko_yuzhi",
+                            rejudge: true,
+                            tag: {
+                                rejudge: 0.6,
+                            },
+                        },
+                    },
                     "oriko_xianzhong": {
                         zhuSkill: true,
                         trigger: {
@@ -701,7 +805,7 @@ export default function () {
                                     let attitude = get.attitude(player, target);
                                     let markNum = player.countMark("nemu_zhiyao");
 
-                                    if (markNum == 1 && attitude < 0 && target.hp - player.hp >= 2) return "一个标记";
+                                    if (markNum == 1 && attitude < 0 && target.hp - player.hp >= 2 || target.hp == 1) return "一个标记";
                                     if (markNum >= 3 && attitude < 0 && target.hasSkillTag('threaten')) return "三个标记";
                                     if (markNum >= 2 && attitude > 0 && target.countCards("j") > 0 || target.countCards("s") - target.maxHp >= 2) return "两个标记";
                                     if (markNum >= 2 && attitude < 0 && target.countCards("s") - target.maxHp >= 2) return "两个标记";
@@ -873,6 +977,10 @@ export default function () {
                     "xieli_info": "主角技，当你需要使用或打出【杀】时，你可以令其他见泷原角色依次选择是否打出一张【杀】。若有角色响应，则你视为使用或打出了此【杀】。",
                     yuanjiu: "援救",
                     "yuanjiu_info": "主角技，当你需要使用或打出一张【闪】时，你可以令其他神盟角色选择是否打出一张【闪】。若有角色响应，则你视为使用或打出了一张【闪】。",
+                    "oriko_yuzhi": "预知",
+                    "oriko_yuzhi_info": "锁定技，一名角色的准备阶段开始时，你从牌堆顶抽取一张牌并放置在武将牌上，称为『视』。『视』的上限与场上玩家数相等。当一名角色死亡时，随机弃置一张『视』。",
+                    "oriko_jiangsha": "将杀",
+                    "oriko_jiangsha_info": "当一名角色的判定牌生效前，你可以打出一张『视』代替之。",
                     "oriko_xianzhong": "献种",
                     "oriko_xianzhong_info": "主角技，见泷原角色造成伤害后，其可以令你摸一张牌。",
                     "magius_jiefang": "解放",
