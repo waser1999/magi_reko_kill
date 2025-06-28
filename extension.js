@@ -36,11 +36,11 @@ export default function(){
             lena: ["female","huan",3,["huashen","xinsheng"],["des:无尽海神","ext:魔法纪录/lena.jpg","die:ext:魔法纪录/audio/die/lena.mp3"]],
             kaede: ["female","huan",3,["qingnang","jijiu","hongyan","buyi","dczhuiyi"],["doublegroup:huan:ma","des:大地审判","ext:魔法纪录/kaede.jpg","die:ext:魔法纪录/audio/die/kaede.mp3"]],
             momoko: ["female","huan",4,["qiangxix","buqu"],["des:宇宙之刃","ext:魔法纪录/momoko.jpg","die:ext:魔法纪录/audio/die/momoko.mp3"]],
-            asuka: ["female","huan",4,["wushuang","paoxiao"],["des:龙真螺旋咆击","ext:魔法纪录/asuka.jpg","die:ext:魔法纪录/audio/die/asuka.mp3"]],
+            asuka: ["female","huan",4,["kurou","paoxiao", "wushuang"],["des:龙真螺旋咆击","ext:魔法纪录/asuka.jpg","die:ext:魔法纪录/audio/die/asuka.mp3"]],
             yueye: ["female","ma",5,["shuangxiong"],["des:樱隐","ext:魔法纪录/yueye.jpg","die:ext:魔法纪录/audio/die/yueye.mp3"]],
             yuexiao: ["female","ma",5,["fuhun"],["des:樱语","ext:魔法纪录/yuexiao.jpg","die:ext:魔法纪录/audio/die/yuexiao.mp3"]],
             madoka: ["female","yuan",3,["sbliegong","xieli"],["zhu","des:魔法之雨","ext:魔法纪录/madoka.jpg","die:ext:魔法纪录/audio/die/madoka.mp3"]],
-            homura: ["female","yuan",3,["reguanxing","luoshen","longdan"],["des:导弹集中轰炸","ext:魔法纪录/homura.jpg","die:ext:魔法纪录/audio/die/homura.mp3"]],
+            homura: ["female","yuan",3,["reguanxing","luoshen","homura_shiting"],["des:导弹集中轰炸","ext:魔法纪录/homura.jpg","die:ext:魔法纪录/audio/die/homura.mp3"]],
             "homura2": ["female","yuan",3,["luoying","yiji","huoji"],["des:时间停止攻击","ext:魔法纪录/homura2.jpg","die:ext:魔法纪录/audio/die/homura2.mp3"]],
             nanaka: ["female","huan",3,["xiaoji","jizhi"],["des:白椿","ext:魔法纪录/nanaka.jpg","die:ext:魔法纪录/audio/die/nanaka.mp3"]],
             hazuki: ["female","huan",3,["huituo","mingjian","fangquan"],["des:雷霆激流","ext:魔法纪录/hazuki.jpg","die:ext:魔法纪录/audio/die/hazuki.mp3"]],
@@ -164,6 +164,7 @@ export default function(){
                 usable: 1,
                 selectCard: 2,
                 check(card) {
+                    // 技能发动优先级判断
                     const player = get.owner(card);
                     if (player.countCards("h") > player.hp) return 8 - get.value(card);
                     if (player.hp < player.maxHp) return 6 - get.value(card);
@@ -466,7 +467,7 @@ export default function(){
                 charlotte: true,
                 sourceSkill: "xieli",
                 filter(event) {
-                    return event.skill != "xieli" && event.skill != "qinwang";
+                    return event.skill != "xieli";
                 },
                 async content(event, trigger, player) {
                     player.removeSkill("xieli3");
@@ -529,14 +530,11 @@ export default function(){
                     respondShan: true,
                     skillTagFilter(player) {
                         if (player.storage.yuanjiuing) return false;
-                        if (!player.hasZhuSkill("hujia")) return false;
-                        return game.hasPlayer(current => current != player && current.group == "wei");
+                        if (!player.hasZhuSkill("yuanjiu")) return false;
+                        return game.hasPlayer(current => current != player && current.group == "huan");
                     },
                 },
                 "_priority": 0,
-                "audioname2": {
-                    yuanshu: "weidi",
-                },
             },
             "oriko_xianzhong": {
                 zhuSkill: true,
@@ -634,6 +632,35 @@ export default function(){
                 },
                 "_priority": 0,
             },
+            "homura_shiting":{
+                forced : true,
+                charlotte:true,
+                trigger: {
+                    player:"phaseJieshu"
+                },
+                filter(event, player){
+                    return player.countCards("h") == 0 && !player.hasSkill("homura_shiting2");
+                },
+                async content(event, trigger, player){
+                    // 执行额外回合
+                    player.insertPhase();
+                    player.addSkill("homura_shiting2");
+                },
+                "_priority": 0,
+            },
+            "homura_shiting2":{
+                forced : true,
+                trigger: {
+                    global:"roundStart"
+                },
+                filter(event, player){
+                    return player.hasSkill("homura_shiting2");
+                },
+                content: function(){
+                    player.removeSkill("homura_shiting2");
+                },
+                "_priority": 0,
+            }
         },
         translate: {
             "sayaka_yizhu": "义助",
@@ -646,9 +673,11 @@ export default function(){
             "oriko_xianzhong_info": "主角技，见泷原角色造成伤害后，其可以令你摸一张牌。",
             "magius_jiefang": "解放",
             "magius_jiefang_info": "主角技，其他玛吉斯之翼的角色出牌阶段限一次，该角色可以交给你一张【闪】或黑桃手牌。",
-            "magius_jiefang2": "解放",
+            "magius_jiefang2": "解放2",
             "ani_lieying": "猎鹰",
             "ani_lieying_info": "锁定技，当你造成伤害后，若此伤害对象是黑江，其立刻死亡。",
+            "homura_shiting": "时停",
+            "homura_shiting_info": "锁定技，结束阶段时，若你本轮未发动过此技能且手牌数为0，你执行额外的一个回合。",
         },
     },
     intro: "",
