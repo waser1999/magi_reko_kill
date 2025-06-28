@@ -24,7 +24,7 @@ export default function () {
                     yuma: ["female", "yuan", 3, ["zhijian", "guzheng", "wangxi"], ["des:山猫冲击", "ext:魔法纪录/yuma.jpg", "die:ext:魔法纪录/audio/die/yuma.mp3"]],
                     kirika: ["female", "yuan", 4, ["xinshensu", "ganglie"], ["des:吸血鬼之牙", "ext:魔法纪录/kirika.jpg", "die:ext:魔法纪录/audio/die/kirika.mp3"]],
                     oriko: ["female", "yuan", 3, ["weimu", "wansha", "guicai", "oriko_xianzhong"], ["zhu", "des:神谕光线", "ext:魔法纪录/oriko.jpg", "die:ext:魔法纪录/audio/die/oriko.mp3"]],
-                    ashley: ["female", "huan", 4, ["zongkui", "guju", "baijia", "bmcanshi"], ["des:Ocean Tick Hurricane", "ext:魔法纪录/ashley.jpg", "die:ext:魔法纪录/audio/die/ashley.mp3"]],
+                    ashley: ["female", "huan", 4, ["ashley_yuanyu", "ashley_mengshu"], ["des:Ocean Tick Hurricane", "ext:魔法纪录/ashley.jpg", "die:ext:魔法纪录/audio/die/ashley.mp3"]],
                     riko: ["female", "huan", 3, ["dcduliang", "dctunchu", "dcshuliang"], ["des:美味猎手", "ext:魔法纪录/riko.jpg", "die:ext:魔法纪录/audio/die/riko.mp3"]],
                     rika: ["female", "huan", 3, ["wanwei", "reguose", "oltianxiang", "spyuejian"], ["des:闪耀光束", "ext:魔法纪录/rika.jpg", "die:ext:魔法纪录/audio/die/rika.mp3"]],
                     tsuruno: ["female", "huan", 4, ["jiang", "lianying", "hunzi", "drlt_qianjie"], ["des:炎扇斩舞", "ext:魔法纪录/tsuruno.jpg", "die:ext:魔法纪录/audio/die/tsuruno.mp3"]],
@@ -683,6 +683,7 @@ export default function () {
                     },
                     "nemu_sanyao": {
                         trigger: {
+                            // 只有在phaseBegin时，_status.currentPhase才会指示当前回合玩家
                             global: "phaseBegin",
                         },
                         filter(event, player) {
@@ -722,14 +723,14 @@ export default function () {
                                             let attitude = get.attitude(player, target);
                                             let markNum = player.countMark("nemu_zhiyao");
 
-                                            if (attitude > 0){
-                                                if(target.countCards("j") > 0) return "判定阶段";
-                                                if(target.countCards("s") - target.maxHp >= 2) return "弃牌阶段";
+                                            if (attitude > 0) {
+                                                if (target.countCards("j") > 0) return "判定阶段";
+                                                if (target.countCards("s") - target.maxHp >= 2) return "弃牌阶段";
                                             }
-                                            if (attitude < 0){
-                                                if(target.countCards("s") - target.maxHp >= 2) return "出牌阶段";
-                                                if(target.countCards("h") <= 1) return "摸牌阶段";
-                                            } 
+                                            if (attitude < 0) {
+                                                if (target.countCards("s") - target.maxHp >= 2) return "出牌阶段";
+                                                if (target.countCards("h") <= 1) return "摸牌阶段";
+                                            }
                                             return false;
                                         })
                                         .set("prompt", "请选择跳过阶段")
@@ -772,6 +773,97 @@ export default function () {
                         async content(event, trigger, player) {
                             player.loseHp();
                         },
+                    },
+                    "ashley_yuanyu": {
+                        audio: "zongkui",
+                        trigger: {
+                            player: "damageBegin4",
+                        },
+                        forced: true,
+                        preHidden: true,
+                        check(event, player) {
+                            return true;
+                        },
+                        filter(event, player) {
+                            if (event.num <= 0 || !event.source) return false;
+                            var n1 = player.getNext();
+                            var p1 = player.getPrevious();
+                            if (event.source != n1 && event.source != p1) return true;
+                        },
+                        content() {
+                            trigger.cancel();
+                        },
+                        ai: {
+                            effect: {
+                                target(card, player, target) {
+                                    if (player.hasSkillTag("jueqing", false, target)) return;
+                                    if (player == target.getNext() || player == target.getPrevious()) return;
+                                    if (get.tag(card, "damage")) return "zeroplayertarget";
+                                },
+                            },
+                        },
+                    },
+                    "ashley_mengshu": {
+                        enable: "phaseUse",
+                        filter(event, player) {
+                            return player.countCards("hs", { suit: "spade" }) > 0;
+                        },
+                        chooseButton: {
+                            dialog(event, player) {
+                                var list = ["yuanjiao", "zhibi"];
+                                for (var i = 0; i < list.length; i++) {
+                                    list[i] = ["锦囊", "", list[i]];
+                                }
+                                return ui.create.dialog("萌术", [list, "vcard"]);
+                            },
+                            filter(button, player) {
+                                var name = button.link[2];
+                                if (player.storage.gzguishu_used == 1 && name == "yuanjiao") return false;
+                                if (player.storage.gzguishu_used == 2 && name == "zhibi") return false;
+                                return lib.filter.filterCard({ name: name }, player, _status.event.getParent());
+                            },
+                            check(button) {
+                                var player = _status.event.player;
+                                if (button.link == "yuanjiao") {
+                                    return 3;
+                                }
+                                if (button.link == "zhibi") {
+                                    if (player.countCards("hs", { suit: "spade" }) > 2) return 1;
+                                    return 0;
+                                }
+                            },
+                            backup(links, player) {
+                                return {
+                                    audio: "bmcanshi",
+                                    filterCard: { suit: "spade" },
+                                    position: "hs",
+                                    popname: true,
+                                    ai(card) {
+                                        return 6 - ai.get.value(card);
+                                    },
+                                    viewAs: { name: links[0][2] },
+                                    precontent() {
+                                        player.addTempSkill("gzguishu_used");
+                                        player.storage.gzguishu_used = ["yuanjiao", "zhibi"].indexOf(event.result.card.name) + 1;
+                                    },
+                                };
+                            },
+                            prompt(links, player) {
+                                return "###萌术###将一张黑桃手牌当作【" + get.translation(links[0][2]) + "】使用";
+                            },
+                        },
+                        ai: {
+                            order: 4,
+                            result: { player: 1 },
+                            threaten: 2,
+                        },
+                        subSkill: {
+                            backup: {},
+                            used: {
+                                charlotte: true,
+                                onremove: true,
+                            },
+                        },
                     }
                 },
                 translate: {
@@ -796,6 +888,10 @@ export default function () {
                     "nemu_sanyao_info": "一名角色的准备阶段开始时，你可：1. 弃置一个『谣』标记，令其受到一点伤害；2. 弃置两个『谣』标记，跳过该角色的判定、摸牌、出牌、弃牌阶段其中之一；3. 弃置三个『谣』标记，令其翻面。",
                     "nemu_tiruo": "体弱",
                     "nemu_tiruo_info": "锁定技，结束阶段开始时，若你的体力值不为全场最少，你失去一点体力。",
+                    "ashley_yuanyu": "远域",
+                    "ashley_yuanyu_info": "锁定技，当你受到伤害时，若伤害来源与你的座次不相邻，防止此伤害。",
+                    "ashley_mengshu": "萌术",
+                    "ashley_mengshu_info": "出牌阶段，你可以将一张黑桃手牌当作【知己知彼】或【远交近攻】使用。若你本局游戏内已经发动过了〖萌术〗，则你必须选择与上次不同的选项。",
                 },
             },
             intro: "",
