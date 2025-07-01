@@ -12,29 +12,32 @@ export default function(){
             game.addGroup("yuan", "见泷原", "圆环之理", { color: "#C71585" });
             game.addGroup("huan", "神盟", "神滨魔法联盟", { color: "#FF1493" });
             game.addGroup("ma", "玛吉斯", "玛吉斯之翼", { color: "#000000" });
-            game.addGroup("faguo", "法国", "法兰西", { color: "#FFD700" });
-            game.addGroup("ling", "鬼灯", "鬼灯势力", { color: "#808080" });
+            game.addGroup("faguo", "法兰西", "法兰西", { color: "#FF8C00" });
+            game.addGroup("ling", "鬼灯", "鬼灯市", { color: "#808080" });
             game.addGroup("mao", "昴宿星团", "昴宿星团", { color: "#000000" });
             // 特殊标记高亮
-            lib.namePrefix.set("DP", { color: "#FFD700" })
+            lib.namePrefix.set("DP", { color: "#FFD700" });
+            lib.namePrefix.set("圣", { color: "#FFD700" });
+            lib.namePrefix.set("谣", { color: "#FFD700" });
+            lib.namePrefix.set("神使", { color: "#FFD700" });
         },help:{},config:{},package:{
     character: {
         character: {
             yuma: ["female","yuan",3,["zhijian","guzheng","wangxi"],["des:山猫冲击","ext:魔法纪录/yuma.jpg","die:ext:魔法纪录/audio/die/yuma.mp3"]],
             kirika: ["female","yuan",4,["xinshensu","ganglie"],["des:吸血鬼之牙","ext:魔法纪录/kirika.jpg","die:ext:魔法纪录/audio/die/kirika.mp3"]],
-            oriko: ["female","yuan",3,["oriko_yuzhi","oriko_jiangsha","weimu","wansha","oriko_xianzhong"],["zhu","des:神谕光线","ext:魔法纪录/oriko.jpg","die:ext:魔法纪录/audio/die/oriko.mp3"]],
+            oriko: ["female","yuan",3,["oriko_yuzhi","oriko_jiangsha","weimu","oriko_xianzhong"],["zhu","des:神谕光线","ext:魔法纪录/oriko.jpg","die:ext:魔法纪录/audio/die/oriko.mp3"]],
             ashley: ["female","huan",4,["ashley_yuanyu","ashley_mengshu"],["des:Ocean Tick Hurricane","ext:魔法纪录/ashley.jpg","die:ext:魔法纪录/audio/die/ashley.mp3"]],
             riko: ["female","huan",3,["dcduliang","dctunchu","dcshuliang"],["des:美味猎手","ext:魔法纪录/riko.jpg","die:ext:魔法纪录/audio/die/riko.mp3"]],
-            rika: ["female","huan",3,["wanwei","reguose","oltianxiang","spyuejian"],["des:闪耀光束","ext:魔法纪录/rika.jpg","die:ext:魔法纪录/audio/die/rika.mp3"]],
+            rika: ["female","huan",3,["wanwei","spyuejian","reguose","oltianxiang"],["des:闪耀光束","ext:魔法纪录/rika.jpg","die:ext:魔法纪录/audio/die/rika.mp3"]],
             tsuruno: ["female","huan",4,["jiang","lianying","hunzi","drlt_qianjie"],["des:炎扇斩舞","ext:魔法纪录/tsuruno.jpg","die:ext:魔法纪录/audio/die/tsuruno.mp3"]],
-            sana: ["female","huan",3,["jushou","rezhenjun"],["des:酷刑牢笼","ext:魔法纪录/sana.jpg","die:ext:魔法纪录/audio/die/sana.mp3"]],
-            iroha: ["female","huan",3,["haoshi","dimeng","lirang","dckrmingshi","yuanjiu","ani_lieying"],["zhu","des:未来之路","ext:魔法纪录/iroha.jpg","die:ext:魔法纪录/audio/die/iroha.mp3"]],
+            sana: ["female","huan",4,["xinjushou","rezhenjun","xinjiewei"],["des:酷刑牢笼","ext:魔法纪录/sana.jpg","die:ext:魔法纪录/audio/die/sana.mp3"]],
+            iroha: ["female","huan",3,["olhaoshi","oldimeng","dckrmingshi","yuanjiu"],["zhu","des:未来之路","ext:魔法纪录/iroha.jpg","die:ext:魔法纪录/audio/die/iroha.mp3"]],
             yachiyo: ["female","huan",4,["xingshang","fangzhu"],["des:绝对之雨","ext:魔法纪录/yachiyo.jpg","die:ext:魔法纪录/audio/die/yachiyo.mp3"]],
             felicia: ["female","huan",4,["repojun"],["des:超级大大锤","ext:魔法纪录/felicia.jpg","die:ext:魔法纪录/audio/die/felicia.mp3"]],
-            toka: ["female","ma",3,["xinleiji","xinguidao","magius_jiefang","tianjie"],["zhu","des:新创世纪","ext:魔法纪录/toka.jpg","die:ext:魔法纪录/audio/die/toka.mp3"]],
+            toka: ["female","ma",3,["xinleiji","xinguidao","tianjie","magius_jiefang"],["zhu","des:新创世纪","ext:魔法纪录/toka.jpg","die:ext:魔法纪录/audio/die/toka.mp3"]],
             alina: ["female","ma",3,["moying","juanhui","rekuangcai","reshejian"],["ext:魔法纪录/alina.jpg","die:ext:魔法纪录/audio/die/alina.mp3"]],
             lena: ["female","huan",3,["huashen","xinsheng"],["des:无尽海神","ext:魔法纪录/lena.jpg","die:ext:魔法纪录/audio/die/lena.mp3"]],
-            kaede: ["female","huan",3,["qingnang","jijiu","hongyan","xinbuyi","dczhuiyi"],["doublegroup:huan:ma","des:大地审判","ext:魔法纪录/kaede.jpg","die:ext:魔法纪录/audio/die/kaede.mp3"]],
+            kaede: ["female","huan",3,["jijiu","hongyan","xinbuyi","dczhuiyi"],["doublegroup:huan:ma","des:大地审判","ext:魔法纪录/kaede.jpg","die:ext:魔法纪录/audio/die/kaede.mp3"]],
             momoko: ["female","huan",4,["qiangxix","buqu"],["des:宇宙之刃","ext:魔法纪录/momoko.jpg","die:ext:魔法纪录/audio/die/momoko.mp3"]],
             asuka: ["female","huan",4,["kurou","paoxiao","wushuang"],["des:龙真螺旋咆击","ext:魔法纪录/asuka.jpg","die:ext:魔法纪录/audio/die/asuka.mp3"]],
             yueye: ["female","ma",5,["shuangxiong"],["des:樱隐","ext:魔法纪录/yueye.jpg","die:ext:魔法纪录/audio/die/yueye.mp3"]],
@@ -46,9 +49,9 @@ export default function(){
             hazuki: ["female","huan",3,["huituo","mingjian","fangquan"],["des:雷霆激流","ext:魔法纪录/hazuki.jpg","die:ext:魔法纪录/audio/die/hazuki.mp3"]],
             karin: ["female","ma",3,["daoshu","weicheng"],["des:幽紫灵火","ext:魔法纪录/karin.jpg","doublegroup:huan:ma","die:ext:魔法纪录/audio/die/karin.mp3"]],
             nemu: ["female","ma",5,["nemu_zhiyao","nemu_sanyao","nemu_tiruo"],["des:创造的孩子们","ext:魔法纪录/nemu.jpg","die:ext:魔法纪录/audio/die/nemu.mp3"]],
-            mami: ["female","yuan",4,["guose","sbluanji","qiaobian","yingzi"],["des:终幕射击","ext:魔法纪录/mami.jpg","die:ext:魔法纪录/audio/die/mami.mp3"]],
-            kyoko: ["female","yuan",4,["tuntian","reguhuo","jixi"],["des:盟神决枪","ext:魔法纪录/kyoko.jpg","die:ext:魔法纪录/audio/die/kyoko.mp3"]],
-            mabayu: ["female","yuan",3,["nzry_chenglve","nzry_cunmu","weidi","nzry_shicai"],["des:空洞人偶","ext:魔法纪录/mabayu.jpg","die:ext:魔法纪录/audio/die/mabayu.mp3"]],
+            mami: ["female","yuan",4,["guose","reyingzi","sbluanji","qiaobian"],["des:终幕射击","ext:魔法纪录/mami.jpg","die:ext:魔法纪录/audio/die/mami.mp3"]],
+            kyoko: ["female","yuan",4,["oltuntian","reguhuo","jixi"],["des:盟神决枪","ext:魔法纪录/kyoko.jpg","die:ext:魔法纪录/audio/die/kyoko.mp3"]],
+            mabayu: ["female","yuan",3,["nzry_chenglve","nzry_cunmu","nzry_shicai","weidi"],["des:空洞人偶","ext:魔法纪录/mabayu.jpg","die:ext:魔法纪录/audio/die/mabayu.mp3"]],
             ren: ["female","huan",3,["xinwuyan","duanchang","zhichi"],["des:灵魂救赎","ext:魔法纪录/ren.jpg","die:ext:魔法纪录/audio/die/ren.mp3"]],
             "ulti_madoka": ["female","yuan",4,["twshelie","twgongxin","xieli"],["zhu","des:再也没有必要绝望了！","ext:魔法纪录/ulti_madoka.jpg","die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
             sayaka: ["female","yuan",4,["xinkuanggu","gzyinghun","sayaka_yizhu"],["des:无畏极强音","ext:魔法纪录/sayaka.jpg","die:ext:魔法纪录/audio/die/sayaka.mp3"]],
@@ -65,10 +68,11 @@ export default function(){
             kanae: ["female","huan",4,["kaikang"],["ext:魔法纪录/kanae.jpg","die:ext:魔法纪录/audio/die/kanae.mp3"]],
             name: ["female","yuan",3,["dcchushan"],["ext:魔法纪录/name.jpg","die:ext:魔法纪录/audio/die/name.mp3"]],
             mitama: ["female","huan",3,["gongxiu","jinghe"],["doublegroup:huan:ma","ext:魔法纪录/mitama.jpg","die:ext:魔法纪录/audio/die/mitama.mp3"]],
-            ui: ["female","ma",3,["ui_jinghua","ui_leshan","dckrmingshi","oljieming"],["doublegroup:huan:ma","ext:魔法纪录/ui.jpg","die:ext:魔法纪录/audio/die/ui.mp3"]],
+            ui: ["female","ma",3,["ui_jinghua","ui_leshan","dckrmingshi","sptaoluan"],["doublegroup:huan:ma","ext:魔法纪录/ui.jpg","die:ext:魔法纪录/audio/die/ui.mp3"]],
             nagisa: ["female","yuan",3,["tiandu","ollianhuan","olniepan","olsbqiwu"],["ext:魔法纪录/nagisa.jpg","die:ext:魔法纪录/audio/die/nagisa.mp3"]],
             kanagi: ["female","huan",4,["reshuishi"],["ext:魔法纪录/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
-            suzune: ["female","ling",4,["retuogu","shanzhuan"],[]],
+            suzune: ["female","ling",4,["retuogu","shanzhuan"],["ext:魔法纪录/suzune.jpg","die:ext:魔法纪录/audio/die/suzune.mp3"]],
+            dArc: ["female","faguo",4,["nscongjun","xiaoji","gongji"],[]],
         },
         translate: {
             "ulti_madoka_prefix": "神",
@@ -123,6 +127,7 @@ export default function(){
             nagisa: "百江渚",
             kanagi: "和泉十七夜",
             suzune: "天乃铃音",
+            dArc: "贞德",
         },
         perfectPair: {
             oriko: ["kirika"],
@@ -795,6 +800,7 @@ export default function(){
                 "_priority": 0,
             },
             "nemu_sanyao": {
+                audio: ["resanyao",2],
                 trigger: {
                     global: "phaseBegin",
                 },
@@ -1117,5 +1123,5 @@ export default function(){
     diskURL: "",
     forumURL: "",
     version: "1.1",
-},files:{"character":["nagisa.jpg","kanagi.jpg","momoko.jpg","homura.jpg","iroha.jpg","riko.jpg","kaede.jpg","mabayu.jpg","kokoro.jpg","yuma.jpg","kirika.jpg","oriko.jpg","ashley.jpg","rika.jpg","tsuruno.jpg","alina.jpg","Kagome.jpg","mifuyu.jpg","meru.jpg","kanae.jpg","name.jpg","mitama.jpg","ui.jpg","sana.jpg","felicia.jpg","asuka.jpg","yueye.jpg","hazuki.jpg","toka.jpg","nemu.jpg","yuexiao.jpg","kazumi.jpg","karin.jpg","kyoko.jpg","sayaka.jpg","ren.jpg","nanaka.jpg","hanna.jpg","mami.jpg","madoka.jpg","ulti_madoka.jpg","kushu.jpg","ayame.jpg","homura2.jpg","anime_iroha.jpg","yachiyo.jpg","lena.jpg","kuroe.jpg","suzune.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+},files:{"character":["mifuyu.jpg","mitama.jpg","riko.jpg","rika.jpg","sana.jpg","homura.jpg","kaede.jpg","homura2.jpg","karin.jpg","mami.jpg","mabayu.jpg","anime_iroha.jpg","ui.jpg","nagisa.jpg","kanagi.jpg","suzune.jpg","alina.jpg","Kagome.jpg","meru.jpg","kanae.jpg","name.jpg","kirika.jpg","yuma.jpg","ashley.jpg","hazuki.jpg","nemu.jpg","toka.jpg","asuka.jpg","kazumi.jpg","kyoko.jpg","yueye.jpg","oriko.jpg","hanna.jpg","nanaka.jpg","sayaka.jpg","yuexiao.jpg","ren.jpg","madoka.jpg","tsuruno.jpg","iroha.jpg","felicia.jpg","momoko.jpg","kushu.jpg","ayame.jpg","ulti_madoka.jpg","kokoro.jpg","yachiyo.jpg","lena.jpg","kuroe.jpg","dArc.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
 };
