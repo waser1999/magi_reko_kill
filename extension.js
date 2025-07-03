@@ -72,7 +72,12 @@ export default function(){
             nagisa: ["female","yuan",3,["tiandu","ollianhuan","olniepan","olsbqiwu"],["ext:魔法纪录/nagisa.jpg","die:ext:魔法纪录/audio/die/nagisa.mp3"]],
             kanagi: ["female","huan",4,["reshuishi"],["ext:魔法纪录/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
             suzune: ["female","ling",4,["retuogu","shanzhuan"],["ext:魔法纪录/suzune.jpg","die:ext:魔法纪录/audio/die/suzune.mp3"]],
-            dArc: ["female","faguo",4,["nscongjun","xiaoji","gongji"],[]],
+            dArc: ["female","faguo",4,["nscongjun","xiaoji","gongji"],["ext:魔法纪录/dArc.jpg","die:ext:魔法纪录/audio/die/dArc.mp3"]],
+            himika: ["female","huan",4,["dclihuo","olchunlao"],["des:陨石拳","ext:魔法纪录/himika.jpg","die:ext:魔法纪录/audio/die/himika.mp3"]],
+            masara: ["female","huan",4,["rebiyue","zhendu","qiluan"],["des:隐形刺杀"]],
+            seika: ["female","huan",4,["dcxiongyi"],["des:钻石飞溅","ext:魔法纪录/seika.jpg","die:ext:魔法纪录/audio/die/seika.mp3"]],
+            rera: ["female","huan",4,["xinfu_jijie","xinfu_jiyuan"],["des:火焰之环","ext:魔法纪录/rera.jpg","die:ext:魔法纪录/audio/die/rera.mp3"]],
+            mito: ["female","huan",5,["dcshuangren"],["des:绿叶如注","ext:魔法纪录/mito.jpg","die:ext:魔法纪录/audio/die/mito.mp3"]],
         },
         translate: {
             "ulti_madoka_prefix": "神",
@@ -128,6 +133,11 @@ export default function(){
             kanagi: "和泉十七夜",
             suzune: "天乃铃音",
             dArc: "贞德",
+            himika: "真尾日美香",
+            masara: "加贺见真良",
+            seika: "桑水清佳",
+            rera: "伊吹丽良",
+            mito: "相野未都",
         },
         perfectPair: {
             oriko: ["kirika"],
@@ -168,6 +178,11 @@ export default function(){
             mitama: ["momoko"],
             nagisa: ["mami"],
             ui: ["toka","nemu","iroha"],
+            kokoro: ["masara"],
+            masara: ["kokoro"],
+            mito: ["seika", "rera"],
+            seika: ["mito", "rera"],
+            rera: ["seika", "mito"],
         },
     },
     card: {
@@ -1123,5 +1138,5 @@ export default function(){
     diskURL: "",
     forumURL: "",
     version: "1.1",
-},files:{"character":["mifuyu.jpg","mitama.jpg","riko.jpg","rika.jpg","sana.jpg","homura.jpg","kaede.jpg","homura2.jpg","karin.jpg","mami.jpg","mabayu.jpg","anime_iroha.jpg","ui.jpg","nagisa.jpg","kanagi.jpg","suzune.jpg","alina.jpg","Kagome.jpg","meru.jpg","kanae.jpg","name.jpg","kirika.jpg","yuma.jpg","ashley.jpg","hazuki.jpg","nemu.jpg","toka.jpg","asuka.jpg","kazumi.jpg","kyoko.jpg","yueye.jpg","oriko.jpg","hanna.jpg","nanaka.jpg","sayaka.jpg","yuexiao.jpg","ren.jpg","madoka.jpg","tsuruno.jpg","iroha.jpg","felicia.jpg","momoko.jpg","kushu.jpg","ayame.jpg","ulti_madoka.jpg","kokoro.jpg","yachiyo.jpg","lena.jpg","kuroe.jpg","dArc.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+},files:{"character":["alina.jpg","tsuruno.jpg","yuexiao.jpg","homura2.jpg","yuma.jpg","riko.jpg","rika.jpg","ashley.jpg","oriko.jpg","kirika.jpg","sana.jpg","iroha.jpg","felicia.jpg","Kagome.jpg","mifuyu.jpg","meru.jpg","kanae.jpg","name.jpg","mitama.jpg","ui.jpg","nagisa.jpg","kanagi.jpg","suzune.jpg","dArc.jpg","toka.jpg","asuka.jpg","yueye.jpg","homura.jpg","nanaka.jpg","nemu.jpg","madoka.jpg","momoko.jpg","kaede.jpg","karin.jpg","mami.jpg","kyoko.jpg","mabayu.jpg","ren.jpg","ulti_madoka.jpg","sayaka.jpg","kazumi.jpg","kushu.jpg","kokoro.jpg","ayame.jpg","hanna.jpg","anime_iroha.jpg","himika.jpg","masara.jpg","seika.jpg","rera.jpg","mito.jpg","yachiyo.jpg","lena.jpg","hazuki.jpg","kuroe.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
 };
