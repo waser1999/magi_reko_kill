@@ -12,9 +12,7 @@ export default function(){
             game.addGroup("yuan", "见泷原", "圆环之理", { color: "#C71585" });
             game.addGroup("huan", "神盟", "神滨魔法联盟", { color: "#FF1493" });
             game.addGroup("ma", "玛吉斯", "玛吉斯之翼", { color: "#000000" });
-            game.addGroup("faguo", "法兰西", "法兰西", { color: "#FF8C00" });
-            game.addGroup("ling", "鬼灯", "鬼灯市", { color: "#808080" });
-            game.addGroup("mao", "昴宿星团", "昴宿星团", { color: "#000000" });
+            game.addGroup("wan", "万方", "万方之人", { color: "#FF8C00" });
             // 特殊标记高亮
             lib.namePrefix.set("DP", { color: "#FFD700" });
             lib.namePrefix.set("圣", { color: "#FFD700" });
@@ -58,7 +56,7 @@ export default function(){
             Kagome: ["female","huan",3,["nschenzhi","nsdianmo","nszaibi","reqingguo"],["ext:魔法纪录/Kagome.jpg","die:ext:魔法纪录/audio/die/Kagome.mp3"]],
             mifuyu: ["female","ma",3,["dcwumei","dczhanmeng"],["doublegroup:huan:ma","ext:魔法纪录/mifuyu.jpg","die:ext:魔法纪录/audio/die/mifuyu.mp3"]],
             meru: ["female","huan",3,["zhiming","xingbu"],["des:","ext:魔法纪录/meru.jpg","die:ext:魔法纪录/audio/die/meru.mp3"]],
-            kazumi: ["female","mao",3,["qixing","kuangfeng","dawu"],["ext:魔法纪录/kazumi.jpg","die:ext:魔法纪录/audio/die/kazumi.mp3"]],
+            kazumi: ["female","wan",3,["qixing","kuangfeng","dawu"],["ext:魔法纪录/kazumi.jpg","die:ext:魔法纪录/audio/die/kazumi.mp3"]],
             kushu: ["female","huan",4,["jiushi","keji","refankui"],["des:肃清天使","ext:魔法纪录/kushu.jpg","die:ext:魔法纪录/audio/die/kushu.mp3"]],
             kokoro: ["female","huan",5,["yizhong"],["des:离散镭射","ext:魔法纪录/kokoro.jpg","die:ext:魔法纪录/audio/die/kokoro.mp3"]],
             ayame: ["female","huan",4,["tianyi","hanzhan"],["des:未确认飞行火焰","ext:魔法纪录/ayame.jpg","die:ext:魔法纪录/audio/die/ayame.mp3"]],
@@ -68,11 +66,11 @@ export default function(){
             kanae: ["female","huan",4,["kaikang"],["ext:魔法纪录/kanae.jpg","die:ext:魔法纪录/audio/die/kanae.mp3"]],
             name: ["female","yuan",3,["dcchushan"],["ext:魔法纪录/name.jpg","die:ext:魔法纪录/audio/die/name.mp3"]],
             mitama: ["female","huan",3,["gongxiu","jinghe"],["doublegroup:huan:ma","ext:魔法纪录/mitama.jpg","die:ext:魔法纪录/audio/die/mitama.mp3"]],
-            ui: ["female","ma",3,["ui_jinghua","ui_leshan","dckrmingshi","sptaoluan"],["doublegroup:huan:ma","ext:魔法纪录/ui.jpg","die:ext:魔法纪录/audio/die/ui.mp3"]],
+            ui: ["female","ma",3,["ui_jinghua","ui_wangyou","ui_leshan","dckrmingshi"],["doublegroup:huan:ma","ext:魔法纪录/ui.jpg","die:ext:魔法纪录/audio/die/ui.mp3"]],
             nagisa: ["female","yuan",3,["tiandu","ollianhuan","olniepan","olsbqiwu"],["ext:魔法纪录/nagisa.jpg","die:ext:魔法纪录/audio/die/nagisa.mp3"]],
             kanagi: ["female","huan",4,["reshuishi"],["ext:魔法纪录/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
-            suzune: ["female","ling",4,["retuogu","shanzhuan"],["ext:魔法纪录/suzune.jpg","die:ext:魔法纪录/audio/die/suzune.mp3"]],
-            dArc: ["female","faguo",4,["nscongjun","xiaoji","gongji"],["ext:魔法纪录/dArc.jpg","die:ext:魔法纪录/audio/die/dArc.mp3"]],
+            suzune: ["female","wan",4,["retuogu","shanzhuan"],["ext:魔法纪录/suzune.jpg","die:ext:魔法纪录/audio/die/suzune.mp3"]],
+            dArc: ["female","wan",4,["nscongjun","xiaoji","gongji"],["ext:魔法纪录/dArc.jpg","die:ext:魔法纪录/audio/die/dArc.mp3"]],
             himika: ["female","huan",4,["dclihuo","olchunlao"],["des:陨石拳","ext:魔法纪录/himika.jpg","die:ext:魔法纪录/audio/die/himika.mp3"]],
             masara: ["female","huan",4,["rebiyue","zhendu","qiluan"],["des:隐形刺杀","ext:魔法纪录/masara.jpg","die:ext:魔法纪录/audio/die/masara.mp3"]],
             seika: ["female","huan",4,["dcxiongyi"],["des:钻石飞溅","ext:魔法纪录/seika.jpg","die:ext:魔法纪录/audio/die/seika.mp3"]],
@@ -80,7 +78,7 @@ export default function(){
             mito: ["female","huan",5,["dcshuangren","hanzhan"],["des:绿叶如注","ext:魔法纪录/mito.jpg","die:ext:魔法纪录/audio/die/mito.mp3"]],
             ryo: ["female","ma",4,["dcsbyaozuo","dcsbzhuanwen"],["ext:魔法纪录/ryo.jpg","die:ext:魔法纪录/audio/die/ryo.mp3"]],
             ai: ["female","ma",3,["xingtu","juezhi"],["ext:魔法纪录/ai.jpg","die:ext:魔法纪录/audio/die/ai.mp3"]],
-            asumi: ["female","yuan",4,["spzhuilie", "zhaxiang"],[]],
+            asumi: ["female","yuan",4,["spzhuilie","zhaxiang"],["ext:魔法纪录/asumi.jpg","die:ext:魔法纪录/audio/die/asumi.mp3"]],
         },
         translate: {
             "ulti_madoka_prefix": "神",
@@ -626,6 +624,7 @@ export default function(){
                     global: "judge",
                 },
                 direct: true,
+                audio: ["guicai",2],
                 filter(event, player) {
                     return player.getExpansions("oriko_yuzhi").length && event.player.isIn();
                 },
@@ -1102,6 +1101,62 @@ export default function(){
                 },
                 "_priority": 0,
             },
+            "ui_wangyou": {
+                audio: 2,
+                trigger: {
+                    global: "judgeFixing",
+                },
+                usable: 1,
+                filter(event, player) {
+                    return event.result && event.result.suit == "spade";
+                },
+                check(event, player) {
+                    return event.result.judge * get.attitude(player, event.player) <= 0;
+                },
+                content() {
+                    "step 0";
+                    var evt = trigger.getParent();
+                    if (evt.name == "phaseJudge") evt.excluded = true;
+                    else {
+                        evt.finish();
+                        evt._triggered = null;
+                        if (evt.name.startsWith("pre_")) {
+                            var evtx = evt.getParent();
+                            evtx.finish();
+                            evtx._triggered = null;
+                        }
+                        var nexts = trigger.next.slice();
+                        for (var next of nexts) {
+                            if (next.name == "judgeCallback") trigger.next.remove(next);
+                        }
+                        var evts = game.getGlobalHistory("cardMove", function (evt) {
+                            return evt.getParent(2) == trigger.getParent();
+                        });
+                        var cards = [];
+                        for (var i = evts.length - 1; i >= 0; i--) {
+                            var evt = evts[i];
+                            for (var card of evt.cards) {
+                                if (get.position(card, true) == "o") cards.push(card);
+                            }
+                        }
+                        trigger.orderingCards.addArray(cards);
+                    }
+                    var list = [];
+                    if (get.position(trigger.result.card) == "d") list.push(0);
+                    if (trigger.player.isIn() && player.canUse({ name: "sha", nature: "fire", isCard: true }, trigger.player, false)) list.push(1);
+                    if (list.length == 2)
+                        player
+                            .chooseControl()
+                            .set("choiceList", ["获得" + get.translation(trigger.result.card), "视为对" + get.translation(trigger.player) + "使用一张火【杀】"])
+                            .set("choice", get.effect(trigger.player, { name: "sha" }, player, player) > 0 ? 1 : 0);
+                    else if (list.length == 1) event._result = { index: list[0] };
+                    else event.finish();
+                    "step 1";
+                    if (result.index == 0) player.gain(trigger.result.card, "gain2");
+                    else player.useCard({ name: "sha", nature: "fire", isCard: true }, trigger.player, false);
+                    trigger.cancel();
+                },
+            },
         },
         translate: {
             "sayaka_yizhu": "义助",
@@ -1137,6 +1192,8 @@ export default function(){
             "ui_jinghua_info": "你的准备阶段开始时，你可依次弃置一名武将判定区里存在的所有延时类锦囊，并额外摸等量的牌。",
             "ui_leshan": "乐善",
             "ui_leshan_info": "出牌阶段限一次，若你的手牌数大于5，你可将一半的手牌（向下取整）交给体力值最少的一名角色。你与该角色各额外回复一点体力。",
+            "ui_wangyou": "忘忧",
+            "ui_wangyou_info": "每回合限一次。一名角色的判定结果确定时，若结果的花色为♠，则你可以终止此判定。然后选择一项：①获得判定牌对应的实体牌。②视为对判定角色使用一张火【杀】（无距离和次数限制）。",
         },
     },
     intro: "",
@@ -1144,5 +1201,5 @@ export default function(){
     diskURL: "",
     forumURL: "",
     version: "1.1",
-},files:{"character":["kanae.jpg","ryo.jpg","kirika.jpg","oriko.jpg","alina.jpg","kaede.jpg","momoko.jpg","madoka.jpg","homura.jpg","kyoko.jpg","kokoro.jpg","masara.jpg","ui.jpg","yuma.jpg","ashley.jpg","riko.jpg","Kagome.jpg","mifuyu.jpg","meru.jpg","rika.jpg","tsuruno.jpg","sana.jpg","iroha.jpg","name.jpg","mitama.jpg","nagisa.jpg","kanagi.jpg","dArc.jpg","asumi.jpg","felicia.jpg","asuka.jpg","yueye.jpg","yuexiao.jpg","homura2.jpg","nanaka.jpg","karin.jpg","mami.jpg","mabayu.jpg","ren.jpg","ulti_madoka.jpg","sayaka.jpg","kazumi.jpg","kushu.jpg","ayame.jpg","hanna.jpg","anime_iroha.jpg","suzune.jpg","himika.jpg","seika.jpg","rera.jpg","mito.jpg","ai.jpg","yachiyo.jpg","toka.jpg","lena.jpg","hazuki.jpg","nemu.jpg","kuroe.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+},files:{"character":["mito.jpg","iroha.jpg","kaede.jpg","himika.jpg","kirika.jpg","yuma.jpg","ashley.jpg","oriko.jpg","riko.jpg","toka.jpg","Kagome.jpg","mifuyu.jpg","rika.jpg","meru.jpg","tsuruno.jpg","kanae.jpg","name.jpg","sana.jpg","mitama.jpg","ui.jpg","nagisa.jpg","kanagi.jpg","suzune.jpg","dArc.jpg","ryo.jpg","felicia.jpg","alina.jpg","momoko.jpg","asuka.jpg","yueye.jpg","yuexiao.jpg","madoka.jpg","homura.jpg","homura2.jpg","nanaka.jpg","karin.jpg","mami.jpg","kyoko.jpg","mabayu.jpg","ren.jpg","ulti_madoka.jpg","sayaka.jpg","kazumi.jpg","kushu.jpg","nemu.jpg","kokoro.jpg","ayame.jpg","hanna.jpg","anime_iroha.jpg","masara.jpg","seika.jpg","rera.jpg","asumi.jpg","yachiyo.jpg","lena.jpg","hazuki.jpg","ai.jpg","kuroe.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
 };
