@@ -1,3 +1,4 @@
+import { effect } from "../../game/vue.esm-browser.js";
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 export const type = "extension";
 export default function(){
@@ -28,9 +29,9 @@ export default function(){
             riko: ["female","huan",3,["dcduliang","dctunchu","dcshuliang"],["des:美味猎手","ext:魔法纪录/riko.jpg","die:ext:魔法纪录/audio/die/riko.mp3"]],
             rika: ["female","huan",3,["wanwei","spyuejian","reguose","tianxiang"],["des:闪耀光束","ext:魔法纪录/rika.jpg","die:ext:魔法纪录/audio/die/rika.mp3"]],
             tsuruno: ["female","huan",4,["jiang","lianying","hunzi","drlt_qianjie"],["des:炎扇斩舞","ext:魔法纪录/tsuruno.jpg","die:ext:魔法纪录/audio/die/tsuruno.mp3"]],
-            sana: ["female","huan",4,["xinjushou","rezhenjun","xinjiewei"],["des:酷刑牢笼","ext:魔法纪录/sana.jpg","die:ext:魔法纪录/audio/die/sana.mp3"]],
+            sana: ["female","huan",4,["sana_touming","xinjushou","xinjiewei"],["des:酷刑牢笼","ext:魔法纪录/sana.jpg","die:ext:魔法纪录/audio/die/sana.mp3"]],
             iroha: ["female","huan",3,["olhaoshi","oldimeng","dckrmingshi","yuanjiu"],["zhu","des:未来之路","ext:魔法纪录/iroha.jpg","die:ext:魔法纪录/audio/die/iroha.mp3"]],
-            yachiyo: ["female","huan",4,["xingshang","fangzhu"],["des:绝对之雨","ext:魔法纪录/yachiyo.jpg","die:ext:魔法纪录/audio/die/yachiyo.mp3"]],
+            yachiyo: ["female","huan",4,["xingshang","fangzhu","yachiyo_gujun"],["zhu","des:绝对之雨","ext:魔法纪录/yachiyo.jpg","die:ext:魔法纪录/audio/die/yachiyo.mp3"]],
             felicia: ["female","huan",4,["repojun"],["des:超级大大锤","ext:魔法纪录/felicia.jpg","die:ext:魔法纪录/audio/die/felicia.mp3"]],
             toka: ["female","ma",3,["xinleiji","xinguidao","tianjie","magius_jiefang"],["zhu","des:新创世纪","ext:魔法纪录/toka.jpg","die:ext:魔法纪录/audio/die/toka.mp3"]],
             alina: ["female","ma",3,["moying","juanhui","reshejian"],["ext:魔法纪录/alina.jpg","die:ext:魔法纪录/audio/die/alina.mp3"]],
@@ -52,11 +53,11 @@ export default function(){
             mabayu: ["female","yuan",3,["nzry_chenglve","nzry_cunmu","nzry_shicai","weidi"],["des:空洞人偶","ext:魔法纪录/mabayu.jpg","die:ext:魔法纪录/audio/die/mabayu.mp3"]],
             ren: ["female","huan",3,["xinwuyan","duanchang","zhichi"],["des:灵魂救赎","ext:魔法纪录/ren.jpg","die:ext:魔法纪录/audio/die/ren.mp3"]],
             "ulti_madoka": ["female","yuan",4,["twshelie","twgongxin","xieli"],["zhu","des:再也没有必要绝望了！","ext:魔法纪录/ulti_madoka.jpg","die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
-            sayaka: ["female","yuan",4,["xinkuanggu","gzyinghun","sayaka_yizhu"],["des:无畏极强音","ext:魔法纪录/sayaka.jpg","die:ext:魔法纪录/audio/die/sayaka.mp3"]],
+            sayaka: ["female","yuan",4,["xinkuanggu","gzyinghun","sayaka_qiangyin"],["des:无畏极强音","ext:魔法纪录/sayaka.jpg","die:ext:魔法纪录/audio/die/sayaka.mp3"]],
             Kagome: ["female","huan",3,["nschenzhi","nsdianmo","nszaibi","reqingguo"],["ext:魔法纪录/Kagome.jpg","die:ext:魔法纪录/audio/die/Kagome.mp3"]],
             mifuyu: ["female","ma",3,["dcwumei","dczhanmeng"],["doublegroup:huan:ma","ext:魔法纪录/mifuyu.jpg","die:ext:魔法纪录/audio/die/mifuyu.mp3"]],
             meru: ["female","huan",3,["zhiming","xingbu"],["des:","ext:魔法纪录/meru.jpg","die:ext:魔法纪录/audio/die/meru.mp3"]],
-            kazumi: ["female","wan",3,["qixing","kuangfeng","dawu"],["ext:魔法纪录/kazumi.jpg","die:ext:魔法纪录/audio/die/kazumi.mp3"]],
+            kazumi: ["female","wan",3,["qixing","kuangfeng","dawu","kazumi_xingyun"],["zhu","ext:魔法纪录/kazumi.jpg","die:ext:魔法纪录/audio/die/kazumi.mp3"]],
             kushu: ["female","huan",4,["jiushi","keji","refankui"],["des:肃清天使","ext:魔法纪录/kushu.jpg","die:ext:魔法纪录/audio/die/kushu.mp3"]],
             kokoro: ["female","huan",5,["yizhong"],["des:离散镭射","ext:魔法纪录/kokoro.jpg","die:ext:魔法纪录/audio/die/kokoro.mp3"]],
             ayame: ["female","huan",4,["tianyi","hanzhan"],["des:未确认飞行火焰","ext:魔法纪录/ayame.jpg","die:ext:魔法纪录/audio/die/ayame.mp3"]],
@@ -68,7 +69,7 @@ export default function(){
             mitama: ["female","huan",3,["gongxiu","jinghe"],["doublegroup:huan:ma","ext:魔法纪录/mitama.jpg","die:ext:魔法纪录/audio/die/mitama.mp3"]],
             ui: ["female","ma",3,["ui_jinghua","ui_wangyou","ui_leshan","dckrmingshi"],["doublegroup:huan:ma","ext:魔法纪录/ui.jpg","die:ext:魔法纪录/audio/die/ui.mp3"]],
             nagisa: ["female","yuan",3,["tiandu","ollianhuan","olniepan","olsbqiwu"],["ext:魔法纪录/nagisa.jpg","die:ext:魔法纪录/audio/die/nagisa.mp3"]],
-            kanagi: ["female","huan",4,["reshuishi"],["ext:魔法纪录/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
+            kanagi: ["female","huan",4,["reshuishi","kanagi_dongyou"],["zhu","ext:魔法纪录/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
             suzune: ["female","wan",4,["retuogu","shanzhuan"],["ext:魔法纪录/suzune.jpg","die:ext:魔法纪录/audio/die/suzune.mp3"]],
             dArc: ["female","wan",4,["nscongjun","xiaoji","gongji"],["ext:魔法纪录/dArc.jpg","die:ext:魔法纪录/audio/die/dArc.mp3"]],
             himika: ["female","huan",4,["dclihuo","olchunlao"],["des:陨石拳","ext:魔法纪录/himika.jpg","die:ext:魔法纪录/audio/die/himika.mp3"]],
@@ -198,7 +199,7 @@ export default function(){
     },
     skill: {
         skill: {
-            "sayaka_yizhu": {
+            "sayaka_qiangyin": {
                 enable: "phaseUse",
                 filterCard: true,
                 usable: 1,
@@ -218,6 +219,8 @@ export default function(){
                 async content(event, trigger, player) {
                     player.recover();
                     event.target.recover();
+                    player.addTempSkill("buqu", { player: "phaseBegin" });
+                    event.target.addTempSkill("buqu", { player: "phaseBegin" });
                 },
                 ai: {
                     order: 5.5,
@@ -696,7 +699,6 @@ export default function(){
                 filter(event, player) {
                     // 伤害为0时不触发
                     if (event.num <= 0) return false;
-                    if (!player.hasZhuSkill("oriko_xianzhong")) return false;
                     return player.hasZhuSkill("oriko_xianzhong", event.player);
                 },
                 async cost(event, trigger, player) {
@@ -710,6 +712,29 @@ export default function(){
                 async content(event, trigger, player) {
                     trigger.source.line(player, "green");
                     player.draw();
+                },
+                "_priority": 0,
+            },
+            "yachiyo_gujun": {
+                zhuSkill: true,
+                trigger: {
+                    global: "dying",
+                },
+                filter(event, player) {
+                    if (player.hp == player.maxHp) return false;
+                    return player.hasZhuSkill("yachiyo_gujun", event.player);
+                },
+                async cost(event, trigger, player) {
+                    // 防止其他势力触发
+                    if (trigger.player.group != "huan") return false;
+                    alert(trigger.player.name);
+                    event.result = await trigger.player
+                        .chooseBool("是否发动【孤军】，令" + get.translation(player) + "回复一点体力？")
+                        .set("choice", get.attitude(trigger.player, player) > 0)
+                        .forResult();
+                },
+                async content(event, trigger, player) {
+                    player.recover();
                 },
                 "_priority": 0,
             },
@@ -1157,10 +1182,50 @@ export default function(){
                     trigger.cancel();
                 },
             },
+            "kanagi_dongyou": {
+                audio: 2,
+                trigger: { target: "taoBegin" },
+                zhuSkill: true,
+                forced: true,
+                filter(event, player) {
+                    if(player == event.player) return false;
+                    if (!player.hasZhuSkill("kanagi_dongyou")) return false;
+                    if (event.player.group != "huan") return false;
+                    return true;
+                },
+                async content(event, trigger, player) {
+                    trigger.baseDamage++;
+                },
+            },
+            "kazumi_xingyun":{
+                trigger: { global: "die" },
+                forced: true,
+                zhuSkill: true,
+                async content(event, trigger, player) {
+                    player.addToExpansion(get.cards(), "draw").gaintag.add("qixing");
+                }
+            },
+            "sana_touming":{
+                trigger: { target: "shaBefore" },
+                forced: true,
+                filter(event, player) {
+                    return player.isTurnedOver();
+                },
+                async content(event, trigger, player) {
+                    trigger.cancel();
+                },
+                ai: {
+                    effect: {
+                        target: function (card, player, target) {
+                            if(card.name == "sha" && target.isTurnedOver()) return "zeroplayertarget";
+                        },
+                    },
+                },
+            }
         },
         translate: {
-            "sayaka_yizhu": "义助",
-            "sayaka_yizhu_info": "出牌阶段限一次，你可以弃置两张手牌并选择一名已经受伤的角色。你与其各回复1点体力。",
+            "sayaka_qiangyin": "强音",
+            "sayaka_qiangyin_info": "出牌阶段限一次，你可以弃置两张手牌并选择一名已经受伤的角色。你与其各回复1点体力并各获得【不屈】直到各自角色的下个回合开始阶段。",
             xieli: "协力",
             "xieli_info": "主角技，当你需要使用或打出【杀】时，你可以令其他见泷原角色依次选择是否打出一张【杀】。若有角色响应，则你视为使用或打出了此【杀】。",
             yuanjiu: "援救",
@@ -1194,6 +1259,14 @@ export default function(){
             "ui_leshan_info": "出牌阶段限一次，若你的手牌数大于5，你可将一半的手牌（向下取整）交给体力值最少的一名角色。你与该角色各额外回复一点体力。",
             "ui_wangyou": "忘忧",
             "ui_wangyou_info": "每回合限一次。一名角色的判定结果确定时，若结果的花色为♠，则你可以终止此判定。然后选择一项：①获得判定牌对应的实体牌。②视为对判定角色使用一张火【杀】（无距离和次数限制）。",
+            "yachiyo_gujun":"孤军",
+            "yachiyo_gujun_info": "主角技，当神盟角色濒死状态结束后，其可以令你回复一点体力。",
+            "kanagi_dongyou": "东佑",
+            "kanagi_dongyou_info": "主角技，锁定技，其余神盟角色对你使用的【桃】回复量+1。",
+            "kazumi_xingyun": "星陨",
+            "kazumi_xingyun_info": "主角技，锁定技，当场上有角色死亡时，『星』的数量+1。",
+            "sana_touming": "透明",
+            "sana_touming_info": "锁定技，你翻面时，【杀】对你无效。",
         },
     },
     intro: "",
