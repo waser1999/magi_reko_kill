@@ -33,7 +33,7 @@ export default function(){
             yachiyo: ["female","huan",4,["xingshang","fangzhu","yachiyo_gujun"],["zhu","des:绝对之雨","ext:魔法纪录/image/yachiyo.jpg","die:ext:魔法纪录/audio/die/yachiyo.mp3"]],
             felicia: ["female","huan",4,["repojun"],["des:超级大大锤","ext:魔法纪录/image/felicia.jpg","die:ext:魔法纪录/audio/die/felicia.mp3"]],
             toka: ["female","ma",3,["xinleiji","xinguidao","tianjie","magius_jiefang"],["zhu","des:新创世纪","ext:魔法纪录/image/toka.jpg","die:ext:魔法纪录/audio/die/toka.mp3"]],
-            alina: ["female","ma",3,["moying","juanhui","reshejian"],["ext:魔法纪录/image/alina.jpg","die:ext:魔法纪录/audio/die/alina.mp3"]],
+            alina: ["female","ma",3,["moying","juanhui","reshejian"],["des:九相","ext:魔法纪录/image/alina.jpg","die:ext:魔法纪录/audio/die/alina.mp3"]],
             lena: ["female","huan",3,["huashen","xinsheng"],["des:无尽海神","ext:魔法纪录/image/lena.jpg","die:ext:魔法纪录/audio/die/lena.mp3"]],
             kaede: ["female","huan",3,["jijiu","hongyan","xinbuyi","dczhuiyi"],["doublegroup:huan:ma","des:大地审判","ext:魔法纪录/image/kaede.jpg","die:ext:魔法纪录/audio/die/kaede.mp3"]],
             momoko: ["female","huan",4,["qiangxix","buqu"],["des:宇宙之刃","ext:魔法纪录/image/momoko.jpg","die:ext:魔法纪录/audio/die/momoko.mp3"]],
@@ -42,7 +42,7 @@ export default function(){
             yuexiao: ["female","ma",5,["fuhun"],["des:樱语","ext:魔法纪录/image/yuexiao.jpg","die:ext:魔法纪录/audio/die/yuexiao.mp3"]],
             madoka: ["female","yuan",3,["sbliegong","xieli"],["zhu","des:魔法之雨","ext:魔法纪录/image/madoka.jpg","die:ext:魔法纪录/audio/die/madoka.mp3"]],
             homura: ["female","yuan",3,["reguanxing","luoshen","homura_shiting"],["des:导弹集中轰炸","ext:魔法纪录/image/homura.jpg","die:ext:魔法纪录/audio/die/homura.mp3"]],
-            "homura2": ["female","yuan",3,["luoying","yiji","huoji"],["des:时间停止攻击","ext:魔法纪录/image/homura2.jpg","die:ext:魔法纪录/audio/die/homura2.mp3"]],
+            "homura2": ["female","yuan",3,["homura2_jihuo","yiji","huoji"],["des:时间停止攻击","ext:魔法纪录/image/homura2.jpg","die:ext:魔法纪录/audio/die/homura2.mp3"]],
             nanaka: ["female","huan",3,["xiaoji","jizhi"],["des:白椿","ext:魔法纪录/image/nanaka.jpg","die:ext:魔法纪录/audio/die/nanaka.mp3"]],
             hazuki: ["female","huan",3,["huituo","mingjian","fangquan"],["des:雷霆激流","ext:魔法纪录/image/hazuki.jpg","die:ext:魔法纪录/audio/die/hazuki.mp3"]],
             karin: ["female","ma",3,["daoshu","weicheng"],["des:幽紫灵火","ext:魔法纪录/image/karin.jpg","doublegroup:huan:ma","die:ext:魔法纪录/audio/die/karin.mp3"]],
@@ -79,6 +79,26 @@ export default function(){
             ryo: ["female","ma",4,["dcsbyaozuo","dcsbzhuanwen"],["ext:魔法纪录/image/ryo.jpg","die:ext:魔法纪录/audio/die/ryo.mp3"]],
             ai: ["female","ma",3,["xingtu","juezhi"],["ext:魔法纪录/image/ai.jpg","die:ext:魔法纪录/audio/die/ai.mp3"]],
             asumi: ["female","yuan",4,["spzhuilie","zhaxiang"],["ext:魔法纪录/image/asumi.jpg","die:ext:魔法纪录/audio/die/asumi.mp3"]],
+            "saint_mami": {
+                sex: "female",
+                group: "ma",
+                hp: 5,
+                maxHp: 5,
+                hujia: 0,
+                skills: ["reyingzi","reluanji","starxiaoyan","starjiaowang"],
+                img: "extension/魔法纪录/image/saint_mami.jpg",
+                dieAudios: ["ext:魔法纪录/audio/die/saint_mami.mp3"],
+            },
+            "uwasa_tsuruno": {
+                sex: "female",
+                group: "ma",
+                hp: 5,
+                maxHp: 5,
+                hujia: 0,
+                skills: ["drlt_qianjie","drlt_jueyan","drlt_huairou","relianying"],
+                img: "extension/魔法纪录/image/uwasa_tsuruno.jpg",
+                dieAudios: ["ext:魔法纪录/audio/die/uwasa_tsuruno.mp3"],
+            },
         },
         translate: {
             "ulti_madoka_prefix": "神",
@@ -142,6 +162,10 @@ export default function(){
             ryo: "观鸟令",
             ai: "爱酱",
             asumi: "神名浅海",
+            "saint_mami": "圣麻美",
+            "saint_mami_prefix": "圣",
+            "uwasa_tsuruno": "谣鹤乃",
+            "uwasa_tsuruno_prefix": "谣",
         },
         perfectPair: {
             oriko: ["kirika"],
@@ -191,7 +215,7 @@ export default function(){
     },
     card: {
         card: {
-            jk_unform: {
+            "jk_unform": {
                 type: "equip",
                 subtype: "equip2",
                 fullskin: true,
@@ -281,76 +305,109 @@ export default function(){
                 toself: true,
                 image: "ext:魔法纪录/card_image/jk_uniform.png",
             },
-            maid_uniform:{
+            "maid_uniform": {
                 fullskin: true,
-				type: "equip",
-				subtype: "equip2",
-				filterTarget(card, player, target) {
-					if (player == target) {
-						return false;
-					}
-					return target.canEquip(card, true);
-				},
-				selectTarget: 1,
-				toself: false,
-				loseDelay: false,
-				onEquip() {
-					if (
-						player.countCards("he", function (cardx) {
-							return card.cards && !card.cards.includes(cardx);
-						})
-					) {
-						player
-							.chooseToDiscard(
-								true,
-								function (card) {
-									return !_status.event.card?.cards.includes(card);
-								},
-								"he"
-							)
-							.set("card", card);
-					}
-				},
-				onLose() {
-					var next = game.createEvent("maid_uniform_lose");
-					event.next.remove(next);
-					var evt = event.getParent();
-					if (evt.getlx === false) {
-						evt = evt.getParent();
-					}
-					evt.after.push(next);
-					next.player = player;
-					next.setContent(function () {
-						if (player.countCards("he")) {
-							player.popup("maid_uniform");
-							player.chooseToDiscard(true, "he");
-						}
-					});
-				},
-				ai: {
-					order: 9.5,
-					equipValue(card, player) {
-						if (player.getEquips(2).includes(card)) {
-							var num = player.countCards("he", function (cardx) {
-								return cardx != card;
-							});
-							if (num == 0) {
-								return 0;
-							}
-							return 4 / num;
-						}
-						return 1;
-					},
-					value() {
-						return lib.card.maid_uniform.ai.equipValue.apply(this, arguments);
-					},
-					basic: {
-						equipValue: 5,
-					},
-					result: {
-						keepAI: true,
-						target(player, target) {
-							var card = target.getEquip(2);
+                type: "equip",
+                subtype: "equip2",
+                filterTarget(card, player, target) {
+                    if (player == target) {
+                        return false;
+                    }
+                    return target.canEquip(card, true);
+                },
+                selectTarget: 1,
+                toself: false,
+                loseDelay: false,
+                onEquip() {
+                    if (
+                        player.countCards("he", function (cardx) {
+                            return card.cards && !card.cards.includes(cardx);
+                        })
+                    ) {
+                        player
+                            .chooseToDiscard(
+                                true,
+                                function (card) {
+                                    return !_status.event.card?.cards.includes(card);
+                                },
+                                "he"
+                            )
+                            .set("card", card);
+                    }
+                },
+                onLose() {
+                    var next = game.createEvent("maid_uniform_lose");
+                    event.next.remove(next);
+                    var evt = event.getParent();
+                    if (evt.getlx === false) {
+                        evt = evt.getParent();
+                    }
+                    evt.after.push(next);
+                    next.player = player;
+                    next.setContent(function () {
+                        if (player.countCards("he")) {
+                            player.popup("maid_uniform");
+                            player.chooseToDiscard(true, "he");
+                        }
+                    });
+                },
+                ai: {
+                    order: 9.5,
+                    equipValue(card, player) {
+                        if (player.getEquips(2).includes(card)) {
+                            var num = player.countCards("he", function (cardx) {
+                                return cardx != card;
+                            });
+                            if (num == 0) {
+                                return 0;
+                            }
+                            return 4 / num;
+                        }
+                        return 1;
+                    },
+                    value() {
+                        return lib.card.maid_uniform.ai.equipValue.apply(this, arguments);
+                    },
+                    basic: {
+                        equipValue: 5,
+                        order: (card, player) => {
+                            const equipValue = get.equipValue(card, player) / 20;
+                            return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+                        },
+                        useful: 2,
+                        value: (card, player, index, method) => {
+                            if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+                                return 0.01;
+                            }
+                            const info = get.info(card),
+                                current = player.getEquip(info.subtype),
+                                value = current && card != current && get.value(current, player);
+                            let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+                            if (typeof equipValue == "function") {
+                                if (method == "raw") {
+                                    return equipValue(card, player);
+                                }
+                                if (method == "raw2") {
+                                    return equipValue(card, player) - value;
+                                }
+                                return Math.max(0.1, equipValue(card, player) - value);
+                            }
+                            if (typeof equipValue != "number") {
+                                equipValue = 0;
+                            }
+                            if (method == "raw") {
+                                return equipValue;
+                            }
+                            if (method == "raw2") {
+                                return equipValue - value;
+                            }
+                            return Math.max(0.1, equipValue - value);
+                        },
+                    },
+                    result: {
+                        keepAI: true,
+                        target(player, target) {
+                            var card = target.getEquip(2);
                             var val = 0;
                             var val2 = 0;
                             if (card) {
@@ -366,72 +423,142 @@ export default function(){
                                 val += 4 / num;
                             }
                             return -val;
-						},
-					},
-				},
+                        },
+                    },
+                },
                 image: "ext:魔法纪录/card_image/maid_uniform.png",
+                enable: true,
+                modTarget: true,
+                allowMultiple: false,
+                content: function () {
+                    if (
+                        !card?.cards.some(card => {
+                            return get.position(card, true) !== "o";
+                        })
+                    ) {
+                        target.equip(card);
+                    }
+                    //if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+                },
             },
-            kuroe_kill:{
+            "kuroe_kill": {
                 fullskin: true,
-				type: "equip",
-				subtype: "equip1",
-				distance: { attackFrom: -1 },
-				ai: {
-					basic: {
-						equipValue: 2,
-					},
-				},
-				skills: ["kuroe_kill_skill"],
+                type: "equip",
+                subtype: "equip1",
+                distance: {
+                    attackFrom: -1,
+                },
+                ai: {
+                    basic: {
+                        equipValue: 2,
+                        order: (card, player) => {
+                            const equipValue = get.equipValue(card, player) / 20;
+                            return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+                        },
+                        useful: 2,
+                        value: (card, player, index, method) => {
+                            if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+                                return 0.01;
+                            }
+                            const info = get.info(card),
+                                current = player.getEquip(info.subtype),
+                                value = current && card != current && get.value(current, player);
+                            let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+                            if (typeof equipValue == "function") {
+                                if (method == "raw") {
+                                    return equipValue(card, player);
+                                }
+                                if (method == "raw2") {
+                                    return equipValue(card, player) - value;
+                                }
+                                return Math.max(0.1, equipValue(card, player) - value);
+                            }
+                            if (typeof equipValue != "number") {
+                                equipValue = 0;
+                            }
+                            if (method == "raw") {
+                                return equipValue;
+                            }
+                            if (method == "raw2") {
+                                return equipValue - value;
+                            }
+                            return Math.max(0.1, equipValue - value);
+                        },
+                    },
+                    result: {
+                        target: (player, target, card) => get.equipResult(player, target, card),
+                    },
+                },
+                skills: ["kuroe_kill_skill"],
                 image: "ext:魔法纪录/card_image/kuroe_kill.png",
-            }
+                enable: true,
+                selectTarget: -1,
+                filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+                modTarget: true,
+                allowMultiple: false,
+                content: function () {
+                    if (
+                        !card?.cards.some(card => {
+                            return get.position(card, true) !== "o";
+                        })
+                    ) {
+                        target.equip(card);
+                    }
+                    //if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+                },
+                toself: true,
+            },
         },
-        skill: { 
+        skill: {
             "jk_unform_skill": {
-				audio: true,
-				trigger: { target: "useCardToTargeted" },
-				forced: true,
-				equipSkill: true,
-				filter(event, player) {
-					if (player.hasSkillTag("unequip2")) {
-						return false;
-					}
-					if (
-						event.player.hasSkillTag("unequip", false, {
-							name: event.card ? event.card.name : null,
-							target: player,
-							card: event.card,
-						})
-					) {
-						return false;
-					}
-					return event.card.name == "sha";
-				},
-				content() {
-					"step 0";
-					player.judge(function (card) {
-						return get.color(card) == "black" ? -2 : 0;
-					}).judge2 = function (result) {
-						return result.bool == false ? true : false;
-					};
-					"step 1";
-					if (result.bool === false) {
-						var map = trigger.customArgs,
-							id = player.playerid;
-						if (!map[id]) {
-							map[id] = {};
-						}
-						if (!map[id].extraDamage) {
-							map[id].extraDamage = 0;
-						}
-						map[id].extraDamage++;
-						game.log(trigger.card, "对", player, "的伤害+1");
-					}
-				},
-			},
+                audio: "ext:魔法纪录:1",
+                trigger: {
+                    target: "useCardToTargeted",
+                },
+                forced: true,
+                equipSkill: true,
+                filter(event, player) {
+                    if (player.hasSkillTag("unequip2")) {
+                        return false;
+                    }
+                    if (
+                        event.player.hasSkillTag("unequip", false, {
+                            name: event.card ? event.card.name : null,
+                            target: player,
+                            card: event.card,
+                        })
+                    ) {
+                        return false;
+                    }
+                    return event.card.name == "sha";
+                },
+                content() {
+                    "step 0";
+                    player.judge(function (card) {
+                        return get.color(card) == "black" ? -2 : 0;
+                    }).judge2 = function (result) {
+                        return result.bool == false ? true : false;
+                    };
+                    "step 1";
+                    if (result.bool === false) {
+                        var map = trigger.customArgs,
+                            id = player.playerid;
+                        if (!map[id]) {
+                            map[id] = {};
+                        }
+                        if (!map[id].extraDamage) {
+                            map[id].extraDamage = 0;
+                        }
+                        map[id].extraDamage++;
+                        game.log(trigger.card, "对", player, "的伤害+1");
+                    }
+                },
+                "_priority": -25,
+            },
             "kuroe_kill_skill": {
                 forced: true,
                 equipSkill: true,
-                audio: true,
+                audio: "ext:魔法纪录:1",
                 trigger: {
                     source: "damageBegin",
                 },
@@ -445,18 +572,16 @@ export default function(){
             },
         },
         translate: {
-            jk_unform: "JK制服",
+            "jk_unform": "JK制服",
             "jk_unform_info": "锁定技。当你成为【杀】的目标后，你进行判定：若结果为黑色，则此牌对你的伤害值基数+1。",
-            maid_uniform: "女仆装",
+            "jk_uniform_skill": "JK制服",
+            "maid_uniform": "女仆装",
             "maid_uniform_info": "此牌的使用目标为其他角色。锁定技，当此牌进入或离开你的装备区时，你弃置一张不为此牌的牌。",
-            kuroe_kill: "名刀·黑江切彩羽",
+            "kuroe_kill": "名刀·黑江切彩羽",
             "kuroe_kill_info": "锁定技，当你造成伤害后，若此伤害对象是黑江，其立刻死亡。",
+            "魔法纪录": "魔法纪录",
         },
-        list: [
-            ["heart", 9, "jk_unform", null, ["gifts"]],
-            ["heart", 10, "maid_uniform"],
-            ["spade", 2, "kuroe_kill"],
-        ],
+        list: [["heart",9,"jk_unform",null,["gifts"]],["heart",10,"maid_uniform"],["spade",2,"kuroe_kill"]],
     },
     skill: {
         skill: {
@@ -747,7 +872,7 @@ export default function(){
                             chooseToRespondEvent.set("skillwarn", "替" + get.translation(player) + "打出一张杀");
                             chooseToRespondEvent.noOrdering = true;
                             chooseToRespondEvent.autochoose = lib.filter.autoRespondSha;
-                            const { bool, card, cards } = await chooseToRespondEvent.forResult();
+                            const { bool = false, card = null, cards } = await chooseToRespondEvent.forResult();
                             if (bool) {
                                 trigger.card = card;
                                 trigger.cards = cards;
@@ -1062,6 +1187,16 @@ export default function(){
                 equipSkill: true,
                 inherit: ["kuroe_kill_skill"],
                 "_priority": 0,
+                audio: "ext:魔法纪录:1",
+                trigger: {
+                    source: "damageBegin",
+                },
+                async content(event, trigger, player) {
+                    if (trigger.player.name == "kuroe") {
+                        player.line(trigger.player);
+                        trigger.player.die();
+                    }
+                },
             },
             "homura_shiting": {
                 forced: true,
@@ -1310,6 +1445,7 @@ export default function(){
                             return target.countCards("j");
                         })
                         .set("ai", function (target) {
+                            if(target.name == "toka") return true;
                             return get.attitude(_status.event.player, target) > 0;
                         })
                         .forResult();
@@ -1486,6 +1622,101 @@ export default function(){
                 },
                 "_priority": 0,
             },
+            "homura2_jihuo": {
+                audio: 2,
+                group: ["homura2_jihuo_discard","homura2_jihuo_judge"],
+                subfrequent: ["judge"],
+                subSkill: {
+                    discard: {
+                        audio: "luoying",
+                        trigger: {
+                            global: "loseAfter",
+                        },
+                        filter(event, player) {
+                            if (event.type != "discard" || event.getlx === false) {
+                                return false;
+                            }
+                            var cards = event.cards.slice(0);
+                            var evt = event.getl(player);
+                            if (evt && evt.cards) {
+                                cards.removeArray(evt.cards);
+                            }
+                            for (var i = 0; i < cards.length; i++) {
+                                if (cards[i].original != "j" && get.suit(cards[i], event.player) == "heart" && get.position(cards[i], true) == "d") {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        },
+                        direct: true,
+                        content() {
+                            "step 0";
+                            if (trigger.delay == false) {
+                                game.delay();
+                            }
+                            "step 1";
+                            var cards = [],
+                                cards2 = trigger.cards.slice(0),
+                                evt = trigger.getl(player);
+                            if (evt && evt.cards) {
+                                cards2.removeArray(evt.cards);
+                            }
+                            for (var i = 0; i < cards2.length; i++) {
+                                if (cards2[i].original != "j" && get.suit(cards2[i], trigger.player) == "heart" && get.position(cards2[i], true) == "d") {
+                                    cards.push(cards2[i]);
+                                }
+                            }
+                            if (cards.length) {
+                                player.chooseButton(["集火：选择要获得的牌", cards], [1, cards.length]).set("ai", function (button) {
+                                    return get.value(button.link, _status.event.player, "raw");
+                                });
+                            }
+                            "step 2";
+                            if (result.bool) {
+                                player.logSkill(event.name);
+                                player.gain(result.links, "gain2", "log");
+                            }
+                        },
+                        sub: true,
+                        sourceSkill: "luoying",
+                        "_priority": 0,
+                    },
+                    judge: {
+                        audio: "luoying",
+                        trigger: {
+                            global: "cardsDiscardAfter",
+                        },
+                        direct: true,
+                        filter(event, player) {
+                            var evt = event.getParent().relatedEvent;
+                            if (!evt || evt.name != "judge") {
+                                return;
+                            }
+                            if (evt.player == player) {
+                                return false;
+                            }
+                            if (get.position(event.cards[0], true) != "d") {
+                                return false;
+                            }
+                            return get.suit(event.cards[0]) == "heart";
+                        },
+                        content() {
+                            "step 0";
+                            player.chooseButton(["集火：选择要获得的牌", trigger.cards], [1, trigger.cards.length]).set("ai", function (button) {
+                                return get.value(button.link, _status.event.player, "raw");
+                            });
+                            "step 1";
+                            if (result.bool) {
+                                player.logSkill(event.name);
+                                player.gain(result.links, "gain2", "log");
+                            }
+                        },
+                        sub: true,
+                        sourceSkill: "homura2_jihuo",
+                        "_priority": 0,
+                    },
+                },
+            },
         },
         translate: {
             "sayaka_qiangyin": "强音",
@@ -1531,6 +1762,8 @@ export default function(){
             "kazumi_xingyun_info": "主角技，锁定技，当场上有角色死亡时，『星』的数量+1。",
             "sana_touming": "透明",
             "sana_touming_info": "锁定技，你翻面时，【杀】对你无效。",
+            "homura2_jihuo": "集火",
+            "homura2_jihuo_info": "当其他角色的红桃牌因弃置或判定而进入弃牌堆后，你可以获得之。",
         },
     },
     intro: "魔法纪录所有角色的三国杀，玩的开心（",
@@ -1538,5 +1771,5 @@ export default function(){
     diskURL: "https://pan.baidu.com/s/5Yqdpb-Dh-BTnGepipfd3AA",
     forumURL: "",
     version: "1.1",
-},files:{"character":[],"card":["jk_unform.png"],"skill":[],"audio":[]},connect:false} 
+},files:{"character":[],"card":[],"skill":[],"audio":[]},connect:false} 
 };
