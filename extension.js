@@ -1,4 +1,3 @@
-import { effect } from "../../game/vue.esm-browser.js";
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 export const type = "extension";
 export default function(){
@@ -54,7 +53,7 @@ export default function(){
             ren: ["female","huan",3,["xinwuyan","duanchang","zhichi"],["des:灵魂救赎","ext:魔法纪录/image/ren.jpg","die:ext:魔法纪录/audio/die/ren.mp3"]],
             "ulti_madoka": ["female","yuan",4,["twshelie","twgongxin","xieli"],["zhu","des:再也没有必要绝望了！","ext:魔法纪录/image/ulti_madoka.jpg","die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
             sayaka: ["female","yuan",4,["xinkuanggu","gzyinghun","sayaka_qiangyin"],["des:无畏极强音","ext:魔法纪录/image/sayaka.jpg","die:ext:魔法纪录/audio/die/sayaka.mp3"]],
-            Kagome: ["female","huan",3,["nschenzhi","nsdianmo","nszaibi","reqingguo"],["ext:魔法纪录/image/Kagome.jpg","die:ext:魔法纪录/audio/die/Kagome.mp3"]],
+            Kagome: ["female","huan",3,["hschenzhi","hsdianmo","hszaibi","reqingguo"],["ext:魔法纪录/image/Kagome.jpg","die:ext:魔法纪录/audio/die/Kagome.mp3"]],
             mifuyu: ["female","ma",3,["dcwumei","dczhanmeng"],["doublegroup:huan:ma","ext:魔法纪录/image/mifuyu.jpg","die:ext:魔法纪录/audio/die/mifuyu.mp3"]],
             meru: ["female","huan",3,["zhiming","xingbu"],["des:","ext:魔法纪录/image/meru.jpg","die:ext:魔法纪录/audio/die/meru.mp3"]],
             kazumi: ["female","wan",3,["qixing","kuangfeng","dawu","kazumi_xingyun"],["zhu","ext:魔法纪录/image/kazumi.jpg","die:ext:魔法纪录/audio/die/kazumi.mp3"]],
@@ -192,10 +191,272 @@ export default function(){
     },
     card: {
         card: {
+            jk_unform: {
+                type: "equip",
+                subtype: "equip2",
+                fullskin: true,
+                skills: ["jk_unform_skill"],
+                selectTarget: -1,
+                manualConfirm: true,
+                ai: {
+                    order: 9,
+                    equipValue(card, player) {
+                        if (get.position(card) == "e") {
+                            return -7;
+                        }
+                        return 2;
+                    },
+                    value(card, player) {
+                        if (player.getEquips(2).includes(card)) {
+                            return -8;
+                        }
+                        return 3;
+                    },
+                    basic: {
+                        equipValue: 5,
+                        order: (card, player) => {
+                            const equipValue = get.equipValue(card, player) / 20;
+                            return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+                        },
+                        useful: 2,
+                        value: (card, player, index, method) => {
+                            if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+                                return 0.01;
+                            }
+                            const info = get.info(card),
+                                current = player.getEquip(info.subtype),
+                                value = current && card != current && get.value(current, player);
+                            let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+                            if (typeof equipValue == "function") {
+                                if (method == "raw") {
+                                    return equipValue(card, player);
+                                }
+                                if (method == "raw2") {
+                                    return equipValue(card, player) - value;
+                                }
+                                return Math.max(0.1, equipValue(card, player) - value);
+                            }
+                            if (typeof equipValue != "number") {
+                                equipValue = 0;
+                            }
+                            if (method == "raw") {
+                                return equipValue;
+                            }
+                            if (method == "raw2") {
+                                return equipValue - value;
+                            }
+                            return Math.max(0.1, equipValue - value);
+                        },
+                    },
+                    result: {
+                        keepAI: true,
+                        target(player, target) {
+                            var val = 2.5;
+                            var val2 = 0;
+                            var card = target.getEquip(1);
+                            if (card) {
+                                val2 = get.value(card, target);
+                                if (val2 < 0) {
+                                    return 0;
+                                }
+                            }
+                            return -val - val2;
+                        },
+                    },
+                },
+                enable: true,
+                filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+                modTarget: true,
+                allowMultiple: false,
+                content: function () {
+                    if (
+                        !card?.cards.some(card => {
+                            return get.position(card, true) !== "o";
+                        })
+                    ) {
+                        target.equip(card);
+                    }
+                    //if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+                },
+                toself: true,
+                image: "ext:魔法纪录/card_image/jk_uniform.png",
+            },
+            maid_uniform:{
+                fullskin: true,
+				type: "equip",
+				subtype: "equip2",
+				filterTarget(card, player, target) {
+					if (player == target) {
+						return false;
+					}
+					return target.canEquip(card, true);
+				},
+				selectTarget: 1,
+				toself: false,
+				loseDelay: false,
+				onEquip() {
+					if (
+						player.countCards("he", function (cardx) {
+							return card.cards && !card.cards.includes(cardx);
+						})
+					) {
+						player
+							.chooseToDiscard(
+								true,
+								function (card) {
+									return !_status.event.card?.cards.includes(card);
+								},
+								"he"
+							)
+							.set("card", card);
+					}
+				},
+				onLose() {
+					var next = game.createEvent("maid_uniform_lose");
+					event.next.remove(next);
+					var evt = event.getParent();
+					if (evt.getlx === false) {
+						evt = evt.getParent();
+					}
+					evt.after.push(next);
+					next.player = player;
+					next.setContent(function () {
+						if (player.countCards("he")) {
+							player.popup("maid_uniform");
+							player.chooseToDiscard(true, "he");
+						}
+					});
+				},
+				ai: {
+					order: 9.5,
+					equipValue(card, player) {
+						if (player.getEquips(2).includes(card)) {
+							var num = player.countCards("he", function (cardx) {
+								return cardx != card;
+							});
+							if (num == 0) {
+								return 0;
+							}
+							return 4 / num;
+						}
+						return 1;
+					},
+					value() {
+						return lib.card.maid_uniform.ai.equipValue.apply(this, arguments);
+					},
+					basic: {
+						equipValue: 5,
+					},
+					result: {
+						keepAI: true,
+						target(player, target) {
+							var card = target.getEquip(2);
+                            var val = 0;
+                            var val2 = 0;
+                            if (card) {
+                                val2 = get.value(card, target);
+                                if (val2 < 0) {
+                                    return 0;
+                                }
+                            }
+                            var num = target.countCards("he", function (cardx) {
+                                return cardx != card;
+                            });
+                            if (num > 0) {
+                                val += 4 / num;
+                            }
+                            return -val;
+						},
+					},
+				},
+                image: "ext:魔法纪录/card_image/maid_uniform.png",
+            },
+            kuroe_kill:{
+                fullskin: true,
+				type: "equip",
+				subtype: "equip1",
+				distance: { attackFrom: -1 },
+				ai: {
+					basic: {
+						equipValue: 2,
+					},
+				},
+				skills: ["kuroe_kill_skill"],
+                image: "ext:魔法纪录/card_image/kuroe_kill.png",
+            }
+        },
+        skill: { 
+            "jk_unform_skill": {
+				audio: true,
+				trigger: { target: "useCardToTargeted" },
+				forced: true,
+				equipSkill: true,
+				filter(event, player) {
+					if (player.hasSkillTag("unequip2")) {
+						return false;
+					}
+					if (
+						event.player.hasSkillTag("unequip", false, {
+							name: event.card ? event.card.name : null,
+							target: player,
+							card: event.card,
+						})
+					) {
+						return false;
+					}
+					return event.card.name == "sha";
+				},
+				content() {
+					"step 0";
+					player.judge(function (card) {
+						return get.color(card) == "black" ? -2 : 0;
+					}).judge2 = function (result) {
+						return result.bool == false ? true : false;
+					};
+					"step 1";
+					if (result.bool === false) {
+						var map = trigger.customArgs,
+							id = player.playerid;
+						if (!map[id]) {
+							map[id] = {};
+						}
+						if (!map[id].extraDamage) {
+							map[id].extraDamage = 0;
+						}
+						map[id].extraDamage++;
+						game.log(trigger.card, "对", player, "的伤害+1");
+					}
+				},
+			},
+            "kuroe_kill_skill": {
+                forced: true,
+                equipSkill: true,
+                audio: true,
+                trigger: {
+                    source: "damageBegin",
+                },
+                async content(event, trigger, player) {
+                    if (trigger.player.name == "kuroe") {
+                        player.line(trigger.player);
+                        trigger.player.die();
+                    }
+                },
+                "_priority": 0,
+            },
         },
         translate: {
+            jk_unform: "JK制服",
+            "jk_unform_info": "锁定技。当你成为【杀】的目标后，你进行判定：若结果为黑色，则此牌对你的伤害值基数+1。",
+            maid_uniform: "女仆装",
+            "maid_uniform_info": "此牌的使用目标为其他角色。锁定技，当此牌进入或离开你的装备区时，你弃置一张不为此牌的牌。",
+            kuroe_kill: "名刀·黑江切彩羽",
+            "kuroe_kill_info": "锁定技，当你造成伤害后，若此伤害对象是黑江，其立刻死亡。",
         },
-        list: [],
+        list: [
+            ["heart", 9, "jk_unform", null, ["gifts"]],
+            ["heart", 10, "maid_uniform"],
+            ["spade", 2, "kuroe_kill"],
+        ],
     },
     skill: {
         skill: {
@@ -727,7 +988,6 @@ export default function(){
                 async cost(event, trigger, player) {
                     // 防止其他势力触发
                     if (trigger.player.group != "huan") return false;
-                    alert(trigger.player.name);
                     event.result = await trigger.player
                         .chooseBool("是否发动【孤军】，令" + get.translation(player) + "回复一点体力？")
                         .set("choice", get.attitude(trigger.player, player) > 0)
@@ -799,14 +1059,8 @@ export default function(){
             },
             "ani_lieying": {
                 forced: true,
-                trigger: {
-                    source: "damageBegin",
-                },
-                async content(event, trigger, player) {
-                    if (trigger.player.name == "kuroe") {
-                        trigger.player.die();
-                    }
-                },
+                equipSkill: true,
+                inherit: ["kuroe_kill_skill"],
                 "_priority": 0,
             },
             "homura_shiting": {
@@ -1127,7 +1381,7 @@ export default function(){
                 "_priority": 0,
             },
             "ui_wangyou": {
-                audio: 2,
+                audio: "ext:魔法纪录:2",
                 trigger: {
                     global: "judgeFixing",
                 },
@@ -1181,10 +1435,13 @@ export default function(){
                     else player.useCard({ name: "sha", nature: "fire", isCard: true }, trigger.player, false);
                     trigger.cancel();
                 },
+                "_priority": 0,
             },
             "kanagi_dongyou": {
-                audio: 2,
-                trigger: { target: "taoBegin" },
+                audio: "ext:魔法纪录:2",
+                trigger: {
+                    target: "taoBegin",
+                },
                 zhuSkill: true,
                 forced: true,
                 filter(event, player) {
@@ -1196,17 +1453,23 @@ export default function(){
                 async content(event, trigger, player) {
                     trigger.baseDamage++;
                 },
+                "_priority": 0,
             },
-            "kazumi_xingyun":{
-                trigger: { global: "die" },
+            "kazumi_xingyun": {
+                trigger: {
+                    global: "die",
+                },
                 forced: true,
                 zhuSkill: true,
                 async content(event, trigger, player) {
                     player.addToExpansion(get.cards(), "draw").gaintag.add("qixing");
-                }
+                },
+                "_priority": 0,
             },
-            "sana_touming":{
-                trigger: { target: "shaBefore" },
+            "sana_touming": {
+                trigger: {
+                    target: "shaBefore",
+                },
                 forced: true,
                 filter(event, player) {
                     return player.isTurnedOver();
@@ -1221,7 +1484,8 @@ export default function(){
                         },
                     },
                 },
-            }
+                "_priority": 0,
+            },
         },
         translate: {
             "sayaka_qiangyin": "强音",
@@ -1240,7 +1504,7 @@ export default function(){
             "magius_jiefang_info": "主角技，其他玛吉斯之翼的角色出牌阶段限一次，该角色可以交给你一张【闪】或黑桃手牌。",
             "magius_jiefang2": "解放2",
             "ani_lieying": "猎鹰",
-            "ani_lieying_info": "锁定技，当你造成伤害后，若此伤害对象是黑江，其立刻死亡。",
+            "ani_lieying_info": "锁定技，你视为装备【名刀·黑江切彩羽】。",
             "homura_shiting": "时停",
             "homura_shiting_info": "锁定技，每名角色的结束阶段时，若你的手牌数为0，你执行额外的一个回合。",
             "nemu_zhiyao": "制谣",
@@ -1259,7 +1523,7 @@ export default function(){
             "ui_leshan_info": "出牌阶段限一次，若你的手牌数大于5，你可将一半的手牌（向下取整）交给体力值最少的一名角色。你与该角色各额外回复一点体力。",
             "ui_wangyou": "忘忧",
             "ui_wangyou_info": "每回合限一次。一名角色的判定结果确定时，若结果的花色为♠，则你可以终止此判定。然后选择一项：①获得判定牌对应的实体牌。②视为对判定角色使用一张火【杀】（无距离和次数限制）。",
-            "yachiyo_gujun":"孤军",
+            "yachiyo_gujun": "孤军",
             "yachiyo_gujun_info": "主角技，当神盟角色濒死状态结束后，其可以令你回复一点体力。",
             "kanagi_dongyou": "东佑",
             "kanagi_dongyou_info": "主角技，锁定技，其余神盟角色对你使用的【桃】回复量+1。",
@@ -1269,10 +1533,10 @@ export default function(){
             "sana_touming_info": "锁定技，你翻面时，【杀】对你无效。",
         },
     },
-    intro: "",
+    intro: "魔法纪录所有角色的三国杀，玩的开心（",
     author: "Waser",
-    diskURL: "",
+    diskURL: "https://pan.baidu.com/s/5Yqdpb-Dh-BTnGepipfd3AA",
     forumURL: "",
     version: "1.1",
-},files:{"character":["mito.jpg","iroha.jpg","kaede.jpg","himika.jpg","kirika.jpg","yuma.jpg","ashley.jpg","oriko.jpg","riko.jpg","toka.jpg","Kagome.jpg","mifuyu.jpg","rika.jpg","meru.jpg","tsuruno.jpg","kanae.jpg","name.jpg","sana.jpg","mitama.jpg","ui.jpg","nagisa.jpg","kanagi.jpg","suzune.jpg","dArc.jpg","ryo.jpg","felicia.jpg","alina.jpg","momoko.jpg","asuka.jpg","yueye.jpg","yuexiao.jpg","madoka.jpg","homura.jpg","homura2.jpg","nanaka.jpg","karin.jpg","mami.jpg","kyoko.jpg","mabayu.jpg","ren.jpg","ulti_madoka.jpg","sayaka.jpg","kazumi.jpg","kushu.jpg","nemu.jpg","kokoro.jpg","ayame.jpg","hanna.jpg","anime_iroha.jpg","masara.jpg","seika.jpg","rera.jpg","asumi.jpg","yachiyo.jpg","lena.jpg","hazuki.jpg","ai.jpg","kuroe.jpg"],"card":[],"skill":[],"audio":[]},connect:false} 
+},files:{"character":[],"card":["jk_unform.png"],"skill":[],"audio":[]},connect:false} 
 };
