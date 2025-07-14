@@ -50,7 +50,7 @@ export default function () {
                     nemu: ["female", "ma", 5, ["nemu_zhiyao", "nemu_sanyao", "nemu_tiruo"], ["des:创造的孩子们", "ext:魔法纪录/image/nemu.jpg", "die:ext:魔法纪录/audio/die/nemu.mp3"]],
                     mami: ["female", "yuan", 4, ["guose", "reyingzi", "sbluanji", "qiaobian"], ["des:终幕射击", "ext:魔法纪录/image/mami.jpg", "die:ext:魔法纪录/audio/die/mami.mp3"]],
                     kyoko: ["female", "yuan", 4, ["oltuntian", "reguhuo", "jixi"], ["des:盟神决枪", "ext:魔法纪录/image/kyoko.jpg", "die:ext:魔法纪录/audio/die/kyoko.mp3"]],
-                    mabayu: ["female", "yuan", 3, ["nzry_chenglve", "nzry_cunmu", "nzry_shicai", "weidi"], ["des:空洞人偶", "ext:魔法纪录/image/mabayu.jpg", "die:ext:魔法纪录/audio/die/mabayu.mp3"]],
+                    mabayu: ["female", "yuan", 3, ["nzry_chenglve", "nzry_cunmu", "nzry_shicai", "mabayu_jingxiang"], ["zhu", "des:空洞人偶", "ext:魔法纪录/image/mabayu.jpg", "die:ext:魔法纪录/audio/die/mabayu.mp3"]],
                     ren: ["female", "huan", 3, ["xinwuyan", "duanchang", "zhichi"], ["des:灵魂救赎", "ext:魔法纪录/image/ren.jpg", "die:ext:魔法纪录/audio/die/ren.mp3"]],
                     "ulti_madoka": ["female", "yuan", 4, ["twshelie", "twgongxin", "xieli"], ["zhu", "des:再也没有必要绝望了！", "ext:魔法纪录/image/ulti_madoka.jpg", "die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
                     sayaka: ["female", "yuan", 4, ["xinkuanggu", "gzyinghun", "sayaka_qiangyin"], ["des:无畏极强音", "ext:魔法纪录/image/sayaka.jpg", "die:ext:魔法纪录/audio/die/sayaka.mp3"]],
@@ -63,7 +63,7 @@ export default function () {
                     ayame: ["female", "huan", 4, ["tianyi", "hanzhan"], ["des:未确认飞行火焰", "ext:魔法纪录/image/ayame.jpg", "die:ext:魔法纪录/audio/die/ayame.mp3"]],
                     hanna: ["female", "ma", 3, ["reluanwu", "xinjuece", "dcmieji", "dcfencheng"], ["des:噩梦毒针", "ext:魔法纪录/image/hanna.jpg", "die:ext:魔法纪录/audio/die/hanna.mp3"]],
                     kuroe: ["female", "ma", 4, ["qingbei", "dcsuishi"], ["doublegroup:huan:ma", "des:灾难盛宴", "ext:魔法纪录/image/kuroe.jpg", "die:ext:魔法纪录/audio/die/kuroe.mp3"]],
-                    "anime_iroha": ["female", "huan", 3, ["ani_lieying", "yuanjiu"], ["forbidai", "zhu", "ext:魔法纪录/image/anime_iroha.jpg", "die:ext:魔法纪录/audio/die/anime_iroha.mp3"]],
+                    "anime_iroha": ["female", "huan", 3, ["ani_lieying", "yuanjiu", "test_skill"], ["forbidai", "zhu", "ext:魔法纪录/image/anime_iroha.jpg", "die:ext:魔法纪录/audio/die/anime_iroha.mp3"]],
                     kanae: ["female", "huan", 4, ["kaikang"], ["ext:魔法纪录/image/kanae.jpg", "die:ext:魔法纪录/audio/die/kanae.mp3"]],
                     name: ["female", "yuan", 3, ["dcchushan"], ["ext:魔法纪录/image/name.jpg", "die:ext:魔法纪录/audio/die/name.mp3"]],
                     mitama: ["female", "huan", 3, ["gongxiu", "jinghe"], ["doublegroup:huan:ma", "ext:魔法纪录/image/mitama.jpg", "die:ext:魔法纪录/audio/die/mitama.mp3"]],
@@ -574,6 +574,20 @@ export default function () {
                         },
                         toself: true,
                     },
+                    "shuibojian": {
+                        fullskin: true,
+                        cardcolor: "club",
+                        type: "equip",
+                        subtype: "equip1",
+                        distance: { attackFrom: -1 },
+                        skills: ["shuibojian_skill"],
+                        ai: { basic: { equipValue: 5 } },
+                        loseDelay: false,
+                        onLose() {
+                            player.recover();
+                        },
+                        image: "ext:魔法纪录/card_image/shuibojian.png",
+                    },
                 },
                 skill: {
                     "jk_unform_skill": {
@@ -662,20 +676,102 @@ export default function () {
                             },
                         },
                     },
+                    "shuibojian_skill": {
+                        audio: true,
+                        trigger: { player: "useCard2" },
+                        direct: true,
+                        equipSkill: true,
+                        filter(event, player) {
+                            if (event.card.name != "sha" && get.type(event.card) != "trick") {
+                                return false;
+                            }
+                            var info = get.info(event.card);
+                            if (info.allowMultiple == false) {
+                                return false;
+                            }
+                            var num = player.getHistory("useSkill", function (evt) {
+                                return evt.skill == "shuibojian_skill";
+                            }).length;
+                            if (num >= 1) {
+                                return false;
+                            }
+                            if (event.targets && !info.multitarget) {
+                                if (
+                                    game.hasPlayer(function (current) {
+                                        return lib.filter.targetEnabled2(event.card, player, current) && !event.targets.includes(current);
+                                    })
+                                ) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        },
+                        content() {
+                            "step 0";
+                            var prompt2 = "为" + get.translation(trigger.card) + "额外指定一个目标";
+                            player
+                                .chooseTarget([1, player.storage.fumian_red], get.prompt(event.name), function (card, player, target) {
+                                    var player = _status.event.player;
+                                    if (_status.event.targets.includes(target)) {
+                                        return false;
+                                    }
+                                    return lib.filter.targetEnabled2(_status.event.card, player, target);
+                                })
+                                .set("prompt2", prompt2)
+                                .set("ai", function (target) {
+                                    var trigger = _status.event.getTrigger();
+                                    var player = _status.event.player;
+                                    return get.effect(target, trigger.card, player, player);
+                                })
+                                .set("targets", trigger.targets)
+                                .set("card", trigger.card);
+                            "step 1";
+                            if (result.bool) {
+                                if (!event.isMine() && !event.isOnline()) {
+                                    game.delayx();
+                                }
+                                event.targets = result.targets;
+                            }
+                            "step 2";
+                            if (event.targets) {
+                                player.logSkill(event.name, event.targets);
+                                trigger.targets.addArray(event.targets);
+                            }
+                        },
+                        ai: {
+                            equipValue(card, player) {
+                                if (player.getEnemies().length < 2) {
+                                    if (player.isDamaged()) {
+                                        return 0;
+                                    }
+                                    return 1;
+                                }
+                                return 4.5;
+                            },
+                            basic: {
+                                equipValue: 4.5,
+                            },
+                        },
+                    },
                 },
                 translate: {
                     "jk_unform": "JK制服",
                     "jk_unform_info": "锁定技。当你成为【杀】的目标后，你进行判定：若结果为黑色，则此牌对你的伤害值基数+1。",
-                    "jk_uniform_skill": "JK制服",
+                    "jk_unform_skill": "JK制服",
                     "maid_uniform": "女仆装",
                     "maid_uniform_info": "此牌的使用目标为其他角色。锁定技，当此牌进入或离开你的装备区时，你弃置一张不为此牌的牌。",
                     "kuroe_kill": "名刀·黑江切彩羽",
                     "kuroe_kill_info": "锁定技，当你造成伤害后，若此伤害对象是黑江，其立刻死亡。",
+                    "kuroe_kill_skill": "名刀·黑江切彩羽",
                     "魔法纪录": "魔法纪录",
                     "yongzhuang": "泳装",
                     "yongzhuang_info": "锁定技。当你成为【水淹七军】、【水攻】的目标时，取消之。",
+                    "yongzhuang_skill": "泳装",
+                    "shuibojian": "水波剑",
+                    "shuibojian_info": "每回合限一次，当你使用普通锦囊牌或【杀】时，你可以为此牌增加一个目标。当你失去装备区里的【水波剑】后，你回复1点体力。",
+                    "shuibojian_skill": "水波剑",
                 },
-                list: [["heart", 9, "jk_unform", null, ["gifts"]], ["heart", 10, "maid_uniform"], ["spade", 2, "kuroe_kill"], ["spade", 2, "yongzhuang"]],
+                list: [["heart", 9, "jk_unform", null, ["gifts"]], ["heart", 10, "maid_uniform"], ["spade", 2, "kuroe_kill"], ["spade", 2, "yongzhuang"],["club", 1 , "shuibojian"]],
             },
             skill: {
                 skill: {
@@ -1202,6 +1298,7 @@ export default function () {
                         },
                         filter(event, player) {
                             if (player.hp == player.maxHp) return false;
+                            if (player.hasSkill("yachiyo_gujun2")) return false;
                             return player.hasZhuSkill("yachiyo_gujun", event.player);
                         },
                         async cost(event, trigger, player) {
@@ -1214,7 +1311,11 @@ export default function () {
                         },
                         async content(event, trigger, player) {
                             player.recover();
+                            player.addTempSkill("yachiyo_gujun2", "phaseEnd");
                         },
+                        "_priority": 0,
+                    },
+                    "yachiyo_gujun2":{
                         "_priority": 0,
                     },
                     "magius_jiefang": {
@@ -1276,20 +1377,32 @@ export default function () {
                     "magius_jiefang3": {
                         "_priority": 0,
                     },
-                    "ani_lieying": {
-                        forced: true,
-                        equipSkill: true,
-                        inherit: ["kuroe_kill_skill"],
-                        "_priority": 0,
-                        audio: "ext:魔法纪录:1",
-                        trigger: {
-                            source: "damageBegin",
+                    "test_skill": {
+                        enable: "phaseUse",
+                        filter(event, player) {
+                            return player.countCards('h') > 0;
                         },
                         async content(event, trigger, player) {
-                            if (trigger.player.name == "kuroe") {
-                                player.line(trigger.player);
-                                trigger.player.die();
+                            let cards = [get.cardPile("yongzhuang", "field"),get.cardPile("shuiyanqijun", "field")];
+                            player.gain(cards, "gain2");
+                        },
+                    },
+                    "ani_lieying": {
+                        group: "ani_lieying2",
+                        locked: true,
+                        "_priority": 0,
+                    },
+                    "ani_lieying2": {
+                        forced: true,
+                        equipSkill: true,
+                        noHidden: true,
+                        inherit: "kuroe_kill_skill",
+                        sourceSkill: "ani_lieying",
+                        filter(event, player) {
+                            if (!player.hasEmptySlot(1)) {
+                                return false;
                             }
+                            return true;
                         },
                     },
                     "homura_shiting": {
@@ -1835,7 +1948,7 @@ export default function () {
                                     }).randomGet();
                                     player.storage.dArc_congjun = skill;
                                     player.addSkill(skill);
-                                    
+
                                     // var name = list.randomGet();
                                     // target.reinit("dArc", name, "nosmooth");
                                     // target.storage.dArc_congjun = name;
@@ -1874,6 +1987,54 @@ export default function () {
                             },
                         },
                     },
+                    "mabayu_jingxiang": {
+                        zhuSkill: true,
+                        trigger: {
+                            player: "phaseBegin",
+                        },
+                        forced: true,
+                        async content(event, trigger, player) {
+                            if (!_status.characterlist) {
+                                game.initCharactertList();
+                            }
+                            _status.characterlist.randomSort();
+                            let characters = [];
+                            for (let i = 0; i < _status.characterlist.length; i++) {
+                                if (
+                                    get.character(_status.characterlist[i], 3).some(skill => {
+                                        return lib.skill[skill] && lib.skill[skill].zhuSkill;
+                                    })
+                                ) {
+                                    characters.push(_status.characterlist[i]);
+                                    if (characters.length >= 3) {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            const skills = [];
+
+                            for (let i of characters) {
+                                skills.push(
+                                    get
+                                        .character(i, 3)
+                                        .filter(skill => {
+                                            return lib.skill[skill] && lib.skill[skill].zhuSkill;
+                                        })
+                                        .randomGet()
+                                );
+                            }
+
+                            const result = await player
+                                .chooseControl(skills)
+                                .set("dialog", ["请选择主角技", [characters, "character"]])
+                                .forResult();
+
+                            if (player.storage.mabayu_jingxiang) player.removeSkill(player.storage.mabayu_jingxiang);
+                            await player.addSkills(result.control);
+                            player.storage.mabayu_jingxiang = result.control;
+                        },
+                    }
                 },
                 translate: {
                     "sayaka_qiangyin": "强音",
@@ -1892,7 +2053,7 @@ export default function () {
                     "magius_jiefang_info": "主角技，其他玛吉斯之翼的角色出牌阶段限一次，该角色可以交给你一张【闪】或黑桃手牌。",
                     "magius_jiefang2": "解放2",
                     "ani_lieying": "猎鹰",
-                    "ani_lieying_info": "锁定技，你视为装备【名刀·黑江切彩羽】。",
+                    "ani_lieying_info": "锁定技，若你没有装备武器，你视为装备【名刀·黑江切彩羽】。",
                     "homura_shiting": "时停",
                     "homura_shiting_info": "锁定技，每名角色的结束阶段时，若你的手牌数为0，你执行额外的一个回合。",
                     "nemu_zhiyao": "制谣",
@@ -1912,7 +2073,7 @@ export default function () {
                     "ui_wangyou": "忘忧",
                     "ui_wangyou_info": "每回合限一次。一名角色的判定结果确定时，若结果的花色为♠，则你可以终止此判定。然后选择一项：①获得判定牌对应的实体牌。②视为对判定角色使用一张火【杀】（无距离和次数限制）。",
                     "yachiyo_gujun": "孤军",
-                    "yachiyo_gujun_info": "主角技，当神盟角色濒死状态结束后，其可以令你回复一点体力。",
+                    "yachiyo_gujun_info": "主角技，每名角色的回合限一次，当神盟角色濒死状态结束后，其可以令你回复一点体力。",
                     "kanagi_dongyou": "东佑",
                     "kanagi_dongyou_info": "主角技，锁定技，其余神盟角色对你使用的【桃】回复量+1。",
                     "kazumi_xingyun": "星陨",
@@ -1922,7 +2083,11 @@ export default function () {
                     "homura2_jihuo": "集火",
                     "homura2_jihuo_info": "当其他角色的红桃牌因弃置或判定而进入弃牌堆后，你可以获得之。",
                     "dArc_congjun": "从军",
-	                "dArc_congjun_info": "游戏开始时，你获得一名随机角色的一个技能（不含主角技、隐匿技）；当有角色对你使用无懈可击时，你可以废除【从军】及【从军】获得的技能，然后对该角色造成2点伤害。",
+                    "dArc_congjun_info": "游戏开始时，你获得一名随机角色的一个技能（不含主角技、隐匿技）；当有角色对你使用无懈可击时，你可以废除【从军】及【从军】获得的技能，然后对该角色造成2点伤害。",
+                    "mabayu_jingxiang": "镜像",
+                    "mabayu_jingxiang_info": "主角技，回合开始时，你从三个主角技中选择一个作为你的主角技。",
+                    "test_skill": "摸牌",
+                    "test_skill_info": "摸一张选定的牌。",
                 },
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
