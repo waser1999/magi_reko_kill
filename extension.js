@@ -39,12 +39,12 @@ export default function () {
                     kaede: ["female", "huan", 3, ["jijiu", "hongyan", "xinbuyi", "dczhuiyi"], ["doublegroup:huan:ma", "des:大地审判", "ext:魔法纪录/image/kaede.jpg", "die:ext:魔法纪录/audio/die/kaede.mp3"]],
                     momoko: ["female", "huan", 4, ["qiangxix", "buqu"], ["des:宇宙之刃", "ext:魔法纪录/image/momoko.jpg", "die:ext:魔法纪录/audio/die/momoko.mp3"]],
                     asuka: ["female", "huan", 4, ["kurou", "paoxiao", "wushuang"], ["des:龙真螺旋咆击", "ext:魔法纪录/image/asuka.jpg", "die:ext:魔法纪录/audio/die/asuka.mp3"]],
-                    yueye: ["female", "ma", 5, ["shuangxiong"], ["des:樱隐", "ext:魔法纪录/image/yueye.jpg", "die:ext:魔法纪录/audio/die/yueye.mp3"]],
-                    yuexiao: ["female", "ma", 5, ["fuhun"], ["des:樱语", "ext:魔法纪录/image/yuexiao.jpg", "die:ext:魔法纪录/audio/die/yuexiao.mp3"]],
+                    yueye: ["female", "ma", 5, ["olshuangxiong"], ["des:樱隐", "ext:魔法纪录/image/yueye.jpg", "die:ext:魔法纪录/audio/die/yueye.mp3"]],
+                    yuexiao: ["female", "ma", 5, ["olfuhun"], ["des:樱语", "ext:魔法纪录/image/yuexiao.jpg", "die:ext:魔法纪录/audio/die/yuexiao.mp3"]],
                     madoka: ["female", "yuan", 3, ["sbliegong", "xieli"], ["zhu", "des:魔法之雨", "ext:魔法纪录/image/madoka.jpg", "die:ext:魔法纪录/audio/die/madoka.mp3"]],
                     homura: ["female", "yuan", 3, ["reguanxing", "luoshen", "homura_shiting"], ["des:导弹集中轰炸", "ext:魔法纪录/image/homura.jpg", "die:ext:魔法纪录/audio/die/homura.mp3"]],
                     "homura2": ["female", "yuan", 3, ["homura2_jihuo", "yiji", "huoji"], ["des:时间停止攻击", "ext:魔法纪录/image/homura2.jpg", "die:ext:魔法纪录/audio/die/homura2.mp3"]],
-                    nanaka: ["female", "huan", 3, ["xiaoji", "jizhi"], ["des:白椿", "ext:魔法纪录/image/nanaka.jpg", "die:ext:魔法纪录/audio/die/nanaka.mp3"]],
+                    nanaka: ["female", "huan", 3, ["nanaka_xiaoji", "jizhi"], ["des:白椿", "ext:魔法纪录/image/nanaka.jpg", "die:ext:魔法纪录/audio/die/nanaka.mp3"]],
                     hazuki: ["female", "huan", 3, ["huituo", "mingjian", "fangquan"], ["des:雷霆激流", "ext:魔法纪录/image/hazuki.jpg", "die:ext:魔法纪录/audio/die/hazuki.mp3"]],
                     karin: ["female", "ma", 3, ["daoshu", "weicheng"], ["des:幽紫灵火", "ext:魔法纪录/image/karin.jpg", "doublegroup:huan:ma", "die:ext:魔法纪录/audio/die/karin.mp3"]],
                     nemu: ["female", "ma", 5, ["nemu_zhiyao", "nemu_sanyao", "nemu_tiruo"], ["des:创造的孩子们", "ext:魔法纪录/image/nemu.jpg", "die:ext:魔法纪录/audio/die/nemu.mp3"]],
@@ -71,7 +71,7 @@ export default function () {
                     nagisa: ["female", "yuan", 3, ["tiandu", "ollianhuan", "olniepan", "olsbqiwu"], ["ext:魔法纪录/image/nagisa.jpg", "die:ext:魔法纪录/audio/die/nagisa.mp3"]],
                     kanagi: ["female", "huan", 4, ["reshuishi", "kanagi_dongyou"], ["zhu", "ext:魔法纪录/image/kanagi.jpg", "die:ext:魔法纪录/audio/die/kanagi.mp3"]],
                     suzune: ["female", "wan", 4, ["retuogu", "shanzhuan"], ["ext:魔法纪录/image/suzune.jpg", "die:ext:魔法纪录/audio/die/suzune.mp3"]],
-                    dArc: ["female", "wan", 4, ["dArc_congjun", "xiaoji", "gongji"], ["ext:魔法纪录/image/dArc.jpg", "die:ext:魔法纪录/audio/die/dArc.mp3"]],
+                    dArc: ["female", "wan", 4, ["dArc_congjun", "nanaka_xiaoji", "gongji"], ["ext:魔法纪录/image/dArc.jpg", "die:ext:魔法纪录/audio/die/dArc.mp3"]],
                     himika: ["female", "huan", 4, ["dclihuo", "olchunlao"], ["des:陨石拳", "ext:魔法纪录/image/himika.jpg", "die:ext:魔法纪录/audio/die/himika.mp3"]],
                     masara: ["female", "huan", 4, ["rebiyue", "zhendu", "qiluan"], ["des:隐形刺杀", "ext:魔法纪录/image/masara.jpg", "die:ext:魔法纪录/audio/die/masara.mp3"]],
                     seika: ["female", "huan", 4, ["dcxiongyi"], ["des:钻石飞溅", "ext:魔法纪录/image/seika.jpg", "die:ext:魔法纪录/audio/die/seika.mp3"]],
@@ -576,7 +576,6 @@ export default function () {
                     },
                     "shuibojian": {
                         fullskin: true,
-                        cardcolor: "club",
                         type: "equip",
                         subtype: "equip1",
                         distance: { attackFrom: -1 },
@@ -588,6 +587,15 @@ export default function () {
                         },
                         image: "ext:魔法纪录/card_image/shuibojian.png",
                     },
+                    "mengshenjueqiang": {
+                        fullskin: true,
+                        type: "equip",
+                        subtype: "equip1",
+                        distance: { attackFrom: -2 },
+                        skills: ["mengshenjueqiang_skill"],
+                        ai: { basic: { equipValue: 4 } },
+                        image: "ext:魔法纪录/card_image/mengshenjueqiang.png",
+                    }
                 },
                 skill: {
                     "jk_unform_skill": {
@@ -753,6 +761,47 @@ export default function () {
                             },
                         },
                     },
+                    "mengshenjueqiang_skill": {
+                        audio: true,
+                        trigger: { source: "damageSource" },
+                        usable: 1,
+                        equipSkill: true,
+                        filter(event, player) {
+                            return event.getParent().name == "sha";
+                        },
+                        content() {
+                            "step 0";
+                            player.judge(function (card) {
+                                var player = _status.event.getParent("mengshenjueqiang_skill").player;
+                                if (player.isHealthy() && get.color(card) == "red") {
+                                    return 0;
+                                }
+                                return 2;
+                            });
+                            "step 1";
+                            switch (result.color) {
+                                case "red":
+                                    player.recover();
+                                    break;
+                                case "black":
+                                    player.draw(2);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+                        ai: {
+                            equipValue(card, player) {
+                                if (player.isDamaged()) {
+                                    return 4.5;
+                                }
+                                return 6;
+                            },
+                            basic: {
+                                equipValue: 4.5,
+                            },
+                        },
+                    }
                 },
                 translate: {
                     "jk_unform": "JK制服",
@@ -770,23 +819,17 @@ export default function () {
                     "shuibojian": "水波剑",
                     "shuibojian_info": "每回合限一次，当你使用普通锦囊牌或【杀】时，你可以为此牌增加一个目标。当你失去装备区里的【水波剑】后，你回复1点体力。",
                     "shuibojian_skill": "水波剑",
+                    "mengshenjueqiang": "盟神决枪",
+                    "mengshenjueqiang_info": "每回合限一次，当你使用【杀】造成伤害后，你可以进行判定，若结果为：红色，你回复1点体力；黑色：你摸两张牌。",
+                    "mengshenjueqiang_skill": "盟神决枪",
                 },
-                list: [["heart", 9, "jk_unform", null, ["gifts"]], ["heart", 10, "maid_uniform"], ["spade", 2, "kuroe_kill"], ["spade", 2, "yongzhuang"],["club", 1 , "shuibojian"]],
+                list: [["heart", 9, "jk_unform", null, ["gifts"]], ["heart", 10, "maid_uniform"], ["spade", 2, "kuroe_kill"], ["spade", 2, "yongzhuang"], ["club", 1, "shuibojian"],["heart", 1, "mengshenjueqiang"]],
             },
             skill: {
                 skill: {
                     "sayaka_qiangyin": {
-                        enable: "phaseUse",
-                        filterCard: true,
-                        usable: 1,
-                        selectCard: 2,
-                        check(card) {
-                            // 技能发动优先级判断
-                            const player = get.owner(card);
-                            if (player.countCards("h") > player.hp) return 8 - get.value(card);
-                            if (player.hp < player.maxHp) return 6 - get.value(card);
-                            return 4 - get.value(card);
-                        },
+                        inherit: "jieyin",
+                        audio: "jieyin",
                         filterTarget(card, player, target) {
                             if (target.hp >= target.maxHp) return false;
                             if (target == player) return false;
@@ -797,18 +840,6 @@ export default function () {
                             event.target.recover();
                             player.addTempSkill("buqu", { player: "phaseBegin" });
                             event.target.addTempSkill("buqu", { player: "phaseBegin" });
-                        },
-                        ai: {
-                            order: 5.5,
-                            result: {
-                                player(player) {
-                                    if (player.hp < player.maxHp) return 4;
-                                    if (player.countCards("h") > player.hp) return 0;
-                                    return -1;
-                                },
-                                target: 4,
-                            },
-                            threaten: 2,
                         },
                         "_priority": 0,
                     },
@@ -1315,7 +1346,7 @@ export default function () {
                         },
                         "_priority": 0,
                     },
-                    "yachiyo_gujun2":{
+                    "yachiyo_gujun2": {
                         "_priority": 0,
                     },
                     "magius_jiefang": {
@@ -1383,7 +1414,7 @@ export default function () {
                             return player.countCards('h') > 0;
                         },
                         async content(event, trigger, player) {
-                            let cards = [get.cardPile("yongzhuang", "field"),get.cardPile("shuiyanqijun", "field")];
+                            let cards = [get.cardPile("mengshenjueqiang", "field"), get.cardPile("shuiyanqijun", "field")];
                             player.gain(cards, "gain2");
                         },
                     },
@@ -1441,7 +1472,6 @@ export default function () {
                         "_priority": 0,
                     },
                     "nemu_sanyao": {
-                        audio: ["resanyao", 2],
                         trigger: {
                             global: "phaseBegin",
                         },
@@ -1467,6 +1497,8 @@ export default function () {
                                 })
                                 .set("prompt", "请选择标记数")
                                 .forResult();
+
+                            if(choice.control) game.playAudio("skill/resanyao1.mp3");
 
                             switch (choice.control) {
                                 case "一个标记":
@@ -1948,14 +1980,7 @@ export default function () {
                                     }).randomGet();
                                     player.storage.dArc_congjun = skill;
                                     player.addSkill(skill);
-
-                                    // var name = list.randomGet();
-                                    // target.reinit("dArc", name, "nosmooth");
-                                    // target.storage.dArc_congjun = name;
-                                    // target.addSkill("dArc_congjun_show");
                                     player._inits.remove(change);
-                                    // player.hp = player.maxHp;
-                                    // player.update();
                                 }
                             };
                             if (!player._inits) {
@@ -1976,7 +2001,6 @@ export default function () {
                                     "step 0";
                                     game.delay(0.5);
                                     "step 1";
-                                    // player.reinit(player.storage.dArc_congjun, "dArc", "nosmooth");
                                     player.logSkill("dArc_congjun_show");
                                     "step 2";
                                     player.removeSkill("dArc_congjun_show");
@@ -2034,6 +2058,17 @@ export default function () {
                             await player.addSkills(result.control);
                             player.storage.mabayu_jingxiang = result.control;
                         },
+                    },
+                    "nanaka_xiaoji":{
+                        // 继承技能
+                        inherit: "xiaoji",
+                        audio: "xiaoji",
+                        preHidden: true,
+                        getIndex(event, player) {
+                            const evt = event.getl(player);
+                            if (evt && evt.player === player && evt.es && evt.es.length) return 1;
+                            return false;
+                        },
                     }
                 },
                 translate: {
@@ -2088,6 +2123,8 @@ export default function () {
                     "mabayu_jingxiang_info": "主角技，回合开始时，你从三个主角技中选择一个作为你的主角技。",
                     "test_skill": "摸牌",
                     "test_skill_info": "摸一张选定的牌。",
+                    "nanaka_xiaoji": "枭姬",
+                    "nanaka_xiaoji_info": "当你失去装备区里的牌后，你可以摸两张牌。",
                 },
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
