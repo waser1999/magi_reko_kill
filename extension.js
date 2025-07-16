@@ -23,7 +23,7 @@ export default function () {
             character: {
                 character: {
                     yuma: ["female", "yuan", 3, ["zhijian", "guzheng", "wangxi"], ["des:山猫冲击", "ext:魔法纪录/image/yuma.jpg", "die:ext:魔法纪录/audio/die/yuma.mp3"]],
-                    kirika: ["female", "yuan", 4, ["xinshensu", "ganglie"], ["des:吸血鬼之牙", "ext:魔法纪录/image/kirika.jpg", "die:ext:魔法纪录/audio/die/kirika.mp3"]],
+                    kirika: ["female", "yuan", 4, ["xinshensu", "ganglie","shebian"], ["des:吸血鬼之牙", "ext:魔法纪录/image/kirika.jpg", "die:ext:魔法纪录/audio/die/kirika.mp3"]],
                     oriko: ["female", "yuan", 3, ["oriko_yuzhi", "oriko_jiangsha", "weimu", "oriko_xianzhong"], ["zhu", "des:神谕光线", "ext:魔法纪录/image/oriko.jpg", "die:ext:魔法纪录/audio/die/oriko.mp3"]],
                     ashley: ["female", "huan", 4, ["ashley_yuanyu", "ashley_mengshu"], ["des:Ocean Tick Hurricane", "ext:魔法纪录/image/ashley.jpg", "die:ext:魔法纪录/audio/die/ashley.mp3"]],
                     riko: ["female", "huan", 3, ["dcduliang", "dctunchu", "dcshuliang"], ["des:美味猎手", "ext:魔法纪录/image/riko.jpg", "die:ext:魔法纪录/audio/die/riko.mp3"]],
@@ -32,16 +32,16 @@ export default function () {
                     sana: ["female", "huan", 4, ["sana_touming", "xinjushou", "xinjiewei"], ["des:酷刑牢笼", "ext:魔法纪录/image/sana.jpg", "die:ext:魔法纪录/audio/die/sana.mp3"]],
                     iroha: ["female", "huan", 3, ["olhaoshi", "oldimeng", "dckrmingshi", "yuanjiu"], ["zhu", "des:未来之路", "ext:魔法纪录/image/iroha.jpg", "die:ext:魔法纪录/audio/die/iroha.mp3"]],
                     yachiyo: ["female", "huan", 4, ["xingshang", "fangzhu", "yachiyo_gujun"], ["zhu", "des:绝对之雨", "ext:魔法纪录/image/yachiyo.jpg", "die:ext:魔法纪录/audio/die/yachiyo.mp3"]],
-                    felicia: ["female", "huan", 4, ["repojun"], ["des:超级大大锤", "ext:魔法纪录/image/felicia.jpg", "die:ext:魔法纪录/audio/die/felicia.mp3"]],
+                    felicia: ["female", "huan", 4, ["repojun","reyicong"], ["des:超级大大锤", "ext:魔法纪录/image/felicia.jpg", "die:ext:魔法纪录/audio/die/felicia.mp3"]],
                     toka: ["female", "ma", 3, ["xinleiji", "xinguidao", "tianjie", "magius_jiefang"], ["zhu", "des:新创世纪", "ext:魔法纪录/image/toka.jpg", "die:ext:魔法纪录/audio/die/toka.mp3"]],
                     alina: ["female", "ma", 3, ["moying", "juanhui", "reshejian"], ["des:九相", "ext:魔法纪录/image/alina.jpg", "die:ext:魔法纪录/audio/die/alina.mp3"]],
-                    lena: ["female", "huan", 3, ["huashen", "xinsheng"], ["des:无尽海神", "ext:魔法纪录/image/lena.jpg", "die:ext:魔法纪录/audio/die/lena.mp3"]],
+                    lena: ["female", "huan", 3, ["rehuashen", "rexinsheng"], ["des:无尽海神", "ext:魔法纪录/image/lena.jpg", "die:ext:魔法纪录/audio/die/lena.mp3"]],
                     kaede: ["female", "huan", 3, ["jijiu", "hongyan", "xinbuyi", "dczhuiyi"], ["doublegroup:huan:ma", "des:大地审判", "ext:魔法纪录/image/kaede.jpg", "die:ext:魔法纪录/audio/die/kaede.mp3"]],
                     momoko: ["female", "huan", 4, ["qiangxix", "buqu"], ["des:宇宙之刃", "ext:魔法纪录/image/momoko.jpg", "die:ext:魔法纪录/audio/die/momoko.mp3"]],
                     asuka: ["female", "huan", 4, ["kurou", "paoxiao", "wushuang"], ["des:龙真螺旋咆击", "ext:魔法纪录/image/asuka.jpg", "die:ext:魔法纪录/audio/die/asuka.mp3"]],
                     yueye: ["female", "ma", 5, ["olshuangxiong"], ["des:樱隐", "ext:魔法纪录/image/yueye.jpg", "die:ext:魔法纪录/audio/die/yueye.mp3"]],
                     yuexiao: ["female", "ma", 5, ["olfuhun"], ["des:樱语", "ext:魔法纪录/image/yuexiao.jpg", "die:ext:魔法纪录/audio/die/yuexiao.mp3"]],
-                    madoka: ["female", "yuan", 3, ["madoka_liegong","madoka_yingbian","xieli"], ["zhu", "des:魔法之雨", "ext:魔法纪录/image/madoka.jpg", "die:ext:魔法纪录/audio/die/madoka.mp3"]],
+                    madoka: ["female", "yuan", 3, ["madoka_liegong", "madoka_yingbian", "xieli"], ["zhu", "des:魔法之雨", "ext:魔法纪录/image/madoka.jpg", "die:ext:魔法纪录/audio/die/madoka.mp3"]],
                     homura: ["female", "yuan", 3, ["reguanxing", "luoshen", "homura_shiting"], ["des:导弹集中轰炸", "ext:魔法纪录/image/homura.jpg", "die:ext:魔法纪录/audio/die/homura.mp3"]],
                     "homura2": ["female", "yuan", 3, ["homura2_jihuo", "yiji", "huoji"], ["des:时间停止攻击", "ext:魔法纪录/image/homura2.jpg", "die:ext:魔法纪录/audio/die/homura2.mp3"]],
                     nanaka: ["female", "huan", 3, ["nanaka_xiaoji", "jizhi"], ["des:白椿", "ext:魔法纪录/image/nanaka.jpg", "die:ext:魔法纪录/audio/die/nanaka.mp3"]],
@@ -51,7 +51,7 @@ export default function () {
                     mami: ["female", "yuan", 4, ["guose", "reyingzi", "sbluanji", "qiaobian"], ["des:终幕射击", "ext:魔法纪录/image/mami.jpg", "die:ext:魔法纪录/audio/die/mami.mp3"]],
                     kyoko: ["female", "yuan", 4, ["oltuntian", "reguhuo", "jixi"], ["des:盟神决枪", "ext:魔法纪录/image/kyoko.jpg", "die:ext:魔法纪录/audio/die/kyoko.mp3"]],
                     mabayu: ["female", "yuan", 3, ["nzry_chenglve", "nzry_cunmu", "nzry_shicai", "mabayu_jingxiang"], ["zhu", "des:空洞人偶", "ext:魔法纪录/image/mabayu.jpg", "die:ext:魔法纪录/audio/die/mabayu.mp3"]],
-                    ren: ["female", "huan", 3, ["xinwuyan", "duanchang", "zhichi"], ["des:灵魂救赎", "ext:魔法纪录/image/ren.jpg", "die:ext:魔法纪录/audio/die/ren.mp3"]],
+                    ren: ["female", "huan", 3, ["xinwuyan","olbeige", "duanchang"], ["des:灵魂救赎", "ext:魔法纪录/image/ren.jpg", "die:ext:魔法纪录/audio/die/ren.mp3"]],
                     "ulti_madoka": ["female", "yuan", 4, ["twshelie", "twgongxin", "madoka_shenshu", "xieli"], ["zhu", "des:再也没有必要绝望了！", "ext:魔法纪录/image/ulti_madoka.jpg", "die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
                     sayaka: ["female", "yuan", 4, ["xinkuanggu", "gzyinghun", "sayaka_qiangyin"], ["des:无畏极强音", "ext:魔法纪录/image/sayaka.jpg", "die:ext:魔法纪录/audio/die/sayaka.mp3"]],
                     Kagome: ["female", "huan", 3, ["hschenzhi", "hsdianmo", "hszaibi", "reqingguo"], ["ext:魔法纪录/image/Kagome.jpg", "die:ext:魔法纪录/audio/die/Kagome.mp3"]],
@@ -66,7 +66,7 @@ export default function () {
                     "anime_iroha": ["female", "huan", 3, ["ani_lieying", "yuanjiu", "test_skill"], ["forbidai", "zhu", "ext:魔法纪录/image/anime_iroha.jpg", "die:ext:魔法纪录/audio/die/anime_iroha.mp3"]],
                     kanae: ["female", "huan", 4, ["kaikang"], ["ext:魔法纪录/image/kanae.jpg", "die:ext:魔法纪录/audio/die/kanae.mp3"]],
                     name: ["female", "yuan", 3, ["dcchushan"], ["ext:魔法纪录/image/name.jpg", "die:ext:魔法纪录/audio/die/name.mp3"]],
-                    mitama: ["female", "huan", 3, ["gongxiu", "jinghe"], ["doublegroup:huan:ma", "ext:魔法纪录/image/mitama.jpg", "die:ext:魔法纪录/audio/die/mitama.mp3"]],
+                    mitama: ["female", "huan", 3, ["gongxiu", "jinghe","ns_chuanshu"], ["doublegroup:huan:ma", "ext:魔法纪录/image/mitama.jpg", "die:ext:魔法纪录/audio/die/mitama.mp3"]],
                     ui: ["female", "ma", 3, ["ui_jinghua", "ui_wangyou", "ui_leshan", "dckrmingshi"], ["doublegroup:huan:ma", "ext:魔法纪录/image/ui.jpg", "die:ext:魔法纪录/audio/die/ui.mp3"]],
                     nagisa: ["female", "yuan", 3, ["tiandu", "ollianhuan", "olniepan", "olsbqiwu"], ["ext:魔法纪录/image/nagisa.jpg", "die:ext:魔法纪录/audio/die/nagisa.mp3"]],
                     kanagi: ["female", "huan", 4, ["reshuishi", "kanagi_dongyou"], ["zhu", "ext:魔法纪录/image/kanagi.jpg", "die:ext:魔法纪录/audio/die/kanagi.mp3"]],
@@ -78,7 +78,7 @@ export default function () {
                     rera: ["female", "huan", 4, ["xinfu_jijie", "xinfu_jiyuan"], ["des:火焰之环", "ext:魔法纪录/image/rera.jpg", "die:ext:魔法纪录/audio/die/rera.mp3"]],
                     mito: ["female", "huan", 5, ["dcshuangren", "hanzhan"], ["des:绿叶如注", "ext:魔法纪录/image/mito.jpg", "die:ext:魔法纪录/audio/die/mito.mp3"]],
                     ryo: ["female", "ma", 4, ["dcsbyaozuo", "dcsbzhuanwen"], ["ext:魔法纪录/image/ryo.jpg", "die:ext:魔法纪录/audio/die/ryo.mp3"]],
-                    ai: ["female", "ma", 3, ["xingtu", "juezhi"], ["ext:魔法纪录/image/ai.jpg", "die:ext:魔法纪录/audio/die/ai.mp3"]],
+                    ai: ["female", "ma", 3, ["xingtu", "juezhi", "ai_shuxin"], ["ext:魔法纪录/image/ai.jpg", "die:ext:魔法纪录/audio/die/ai.mp3"]],
                     asumi: ["female", "yuan", 4, ["spzhuilie", "zhaxiang"], ["ext:魔法纪录/image/asumi.jpg", "die:ext:魔法纪录/audio/die/asumi.mp3"]],
                     "saint_mami": {
                         sex: "female",
@@ -1471,7 +1471,7 @@ export default function () {
                             "step 0";
                             player.judge(function (card) {
                                 // 使用get函数访问能让ai改判
-                                if(get.color(card) == "black") return 5;
+                                if (get.color(card) == "black") return 5;
                                 return -5;
                             }).judge2 = function (result) {
                                 return result.bool;
@@ -1538,7 +1538,7 @@ export default function () {
                                         .set("prompt", "请选择跳过阶段")
                                         .forResult();
 
-                                    game.log(player, "跳过了", "#y" + stage.control);
+                                    game.log(player, "跳过了", trigger.player, "的" + stage.control);
 
                                     switch (stage.control) {
                                         case "判定阶段":
@@ -2324,9 +2324,15 @@ export default function () {
                                 trigger.untrigger();
                                 trigger.set("responded", true);
                                 trigger.result = { bool: true, card: { name: "shan", isCard: true } };
-                                player.storage.madoka_liegong.remove(result.card.suit);
-                                player.markAuto("madoka_liegong", [get.suit(trigger.card)]);
-                                player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
+                                
+                                if(player.storage.madoka_liegong.length == 1){
+                                    player.unmarkSkill("madoka_liegong");
+                                    player.removeTip("madoka_liegong");
+                                }else{
+                                    player.storage.madoka_liegong.remove(result.card.suit);
+                                    player.markAuto("madoka_liegong", [get.suit(trigger.card)]);
+                                    player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
+                                }
                             } else {
                                 player.gain(result.card);
                             }
@@ -2350,6 +2356,17 @@ export default function () {
                             order: 4,
                             useful: -1,
                             value: -1,
+                        },
+                    },
+                    "ai_shuxin": {
+                        mod: {
+                            targetEnabled(card, player, target, now) {
+                                let prime = [2, 3, 5, 7, 11, 13];
+
+                                if (prime.includes(card.number) && player != target) {
+                                    return false;
+                                }
+                            },
                         },
                     }
                 },
@@ -2411,6 +2428,8 @@ export default function () {
                     "madoka_liegong_info": "①若你的装备区内没有武器牌，则你手牌区内所有【杀】的属性视为无属性。②当你使用牌时，你记录此牌的花色。③当你使用【杀】指定唯一目标后，若你〖烈弓②〗的记录不为空，则你可亮出牌堆顶的X张牌（X为你〖烈弓②〗记录过的花色数-1），令此【杀】的伤害值基数+Y（Y为亮出牌中被〖烈弓②〗记录过的花色的数量），且目标角色不能使用〖烈弓②〗记录过花色的牌响应此【杀】。此【杀】使用结算结束后，你清除〖烈弓②〗的记录。",
                     "madoka_yingbian": "应变",
                     "madoka_yingbian_info": "你的回合外，当你需要出闪时，你可以进行一次判定：若判定结果在【烈弓】所记载的花色内，你可弃置此花色，视为使用或打出一张【闪】，若在其之外，你获得判定牌。",
+                    "ai_shuxin": "数心",
+                    "ai_shuxin_info": "锁定技，除你以外，你不能成为点数为质数的牌的目标。",
                 },
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
