@@ -41,7 +41,7 @@ export default function () {
                     asuka: ["female", "huan", 4, ["kurou", "paoxiao", "wushuang"], ["des:龙真螺旋咆击", "ext:魔法纪录/image/asuka.jpg", "die:ext:魔法纪录/audio/die/asuka.mp3"]],
                     yueye: ["female", "ma", 5, ["olshuangxiong"], ["des:樱隐", "ext:魔法纪录/image/yueye.jpg", "die:ext:魔法纪录/audio/die/yueye.mp3"]],
                     yuexiao: ["female", "ma", 5, ["olfuhun"], ["des:樱语", "ext:魔法纪录/image/yuexiao.jpg", "die:ext:魔法纪录/audio/die/yuexiao.mp3"]],
-                    madoka: ["female", "yuan", 3, ["sbliegong", "xieli"], ["zhu", "des:魔法之雨", "ext:魔法纪录/image/madoka.jpg", "die:ext:魔法纪录/audio/die/madoka.mp3"]],
+                    madoka: ["female", "yuan", 3, ["madoka_liegong","madoka_yingbian","xieli"], ["zhu", "des:魔法之雨", "ext:魔法纪录/image/madoka.jpg", "die:ext:魔法纪录/audio/die/madoka.mp3"]],
                     homura: ["female", "yuan", 3, ["reguanxing", "luoshen", "homura_shiting"], ["des:导弹集中轰炸", "ext:魔法纪录/image/homura.jpg", "die:ext:魔法纪录/audio/die/homura.mp3"]],
                     "homura2": ["female", "yuan", 3, ["homura2_jihuo", "yiji", "huoji"], ["des:时间停止攻击", "ext:魔法纪录/image/homura2.jpg", "die:ext:魔法纪录/audio/die/homura2.mp3"]],
                     nanaka: ["female", "huan", 3, ["nanaka_xiaoji", "jizhi"], ["des:白椿", "ext:魔法纪录/image/nanaka.jpg", "die:ext:魔法纪录/audio/die/nanaka.mp3"]],
@@ -52,7 +52,7 @@ export default function () {
                     kyoko: ["female", "yuan", 4, ["oltuntian", "reguhuo", "jixi"], ["des:盟神决枪", "ext:魔法纪录/image/kyoko.jpg", "die:ext:魔法纪录/audio/die/kyoko.mp3"]],
                     mabayu: ["female", "yuan", 3, ["nzry_chenglve", "nzry_cunmu", "nzry_shicai", "mabayu_jingxiang"], ["zhu", "des:空洞人偶", "ext:魔法纪录/image/mabayu.jpg", "die:ext:魔法纪录/audio/die/mabayu.mp3"]],
                     ren: ["female", "huan", 3, ["xinwuyan", "duanchang", "zhichi"], ["des:灵魂救赎", "ext:魔法纪录/image/ren.jpg", "die:ext:魔法纪录/audio/die/ren.mp3"]],
-                    "ulti_madoka": ["female", "yuan", 4, ["twshelie", "twgongxin", "xieli"], ["zhu", "des:再也没有必要绝望了！", "ext:魔法纪录/image/ulti_madoka.jpg", "die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
+                    "ulti_madoka": ["female", "yuan", 4, ["twshelie", "twgongxin", "madoka_shenshu", "xieli"], ["zhu", "des:再也没有必要绝望了！", "ext:魔法纪录/image/ulti_madoka.jpg", "die:ext:魔法纪录/audio/die/ulti_madoka.mp3"]],
                     sayaka: ["female", "yuan", 4, ["xinkuanggu", "gzyinghun", "sayaka_qiangyin"], ["des:无畏极强音", "ext:魔法纪录/image/sayaka.jpg", "die:ext:魔法纪录/audio/die/sayaka.mp3"]],
                     Kagome: ["female", "huan", 3, ["hschenzhi", "hsdianmo", "hszaibi", "reqingguo"], ["ext:魔法纪录/image/Kagome.jpg", "die:ext:魔法纪录/audio/die/Kagome.mp3"]],
                     mifuyu: ["female", "ma", 3, ["dcwumei", "dczhanmeng"], ["doublegroup:huan:ma", "ext:魔法纪录/image/mifuyu.jpg", "die:ext:魔法纪录/audio/die/mifuyu.mp3"]],
@@ -823,7 +823,7 @@ export default function () {
                     "mengshenjueqiang_info": "每回合限一次，当你使用【杀】造成伤害后，你可以进行判定，若结果为：红色，你回复1点体力；黑色：你摸两张牌。",
                     "mengshenjueqiang_skill": "盟神决枪",
                 },
-                list: [["heart", 9, "jk_unform", null, ["gifts"]], ["heart", 10, "maid_uniform"], ["spade", 2, "kuroe_kill"], ["spade", 2, "yongzhuang"], ["club", 1, "shuibojian"],["heart", 1, "mengshenjueqiang"]],
+                list: [["heart", 9, "jk_unform", null, ["gifts"]], ["heart", 10, "maid_uniform"], ["spade", 2, "kuroe_kill"], ["spade", 2, "yongzhuang"], ["club", 1, "shuibojian"], ["heart", 1, "mengshenjueqiang"]],
             },
             skill: {
                 skill: {
@@ -1463,11 +1463,23 @@ export default function () {
                             name: "谣",
                             content: "当前谣数：#",
                         },
-                        async content(event, trigger, player) {
-                            if (trigger.num > 0) {
+                        filter(event, player) {
+                            return event.num > 0;
+                        },
+                        content() {
+                            // 判定使用老写法，新写法有错误
+                            "step 0";
+                            player.judge(function (card) {
+                                // 使用get函数访问能让ai改判
+                                if(get.color(card) == "black") return 5;
+                                return -5;
+                            }).judge2 = function (result) {
+                                return result.bool;
+                            };
+                            "step 1";
+                            if (result.bool) {
                                 player.addMark("nemu_zhiyao", trigger.num * 2);
                             }
-
                         },
                         "_priority": 0,
                     },
@@ -1498,7 +1510,7 @@ export default function () {
                                 .set("prompt", "请选择标记数")
                                 .forResult();
 
-                            if(choice.control) game.playAudio("skill/resanyao1.mp3");
+                            if (choice.control) game.playAudio("skill/resanyao1.mp3");
 
                             switch (choice.control) {
                                 case "一个标记":
@@ -2059,7 +2071,7 @@ export default function () {
                             player.storage.mabayu_jingxiang = result.control;
                         },
                     },
-                    "nanaka_xiaoji":{
+                    "nanaka_xiaoji": {
                         // 继承技能
                         inherit: "xiaoji",
                         audio: "xiaoji",
@@ -2068,6 +2080,276 @@ export default function () {
                             const evt = event.getl(player);
                             if (evt && evt.player === player && evt.es && evt.es.length) return 1;
                             return false;
+                        },
+                    },
+                    "madoka_liegong": {
+                        audio: 2,
+                        mod: {
+                            cardnature(card, player) {
+                                if (!player.getVEquip(1) && get.name(card, player) == "sha") {
+                                    return false;
+                                }
+                            },
+                        },
+                        trigger: { player: "useCardToPlayered" },
+                        filter(event, player) {
+                            return !event.getParent()._madoka_liegong_player && event.targets.length == 1 && event.card.name == "sha" && player.getStorage("madoka_liegong").length > 0;
+                        },
+                        prompt2(event, player) {
+                            let str = "",
+                                storage = player.getStorage("madoka_liegong");
+                            if (storage.length > 1) {
+                                str += "亮出牌堆顶的" + get.cnNumber(storage.length - 1) + "张牌并增加伤害；且";
+                            }
+                            str += "令" + get.translation(event.target) + "不能使用花色为";
+                            for (let i = 0; i < storage.length; i++) {
+                                str += get.translation(storage[i]);
+                            }
+                            str += "的牌响应" + get.translation(event.card);
+                            return str;
+                        },
+                        logTarget: "target",
+                        locked: false,
+                        check(event, player) {
+                            const target = event.target;
+                            if (get.attitude(player, target) > 0) {
+                                return false;
+                            }
+                            if (
+                                target.hasSkillTag("filterDamage", null, {
+                                    player: player,
+                                    card: event.card,
+                                })
+                            ) {
+                                return false;
+                            }
+                            const storage = player.getStorage("madoka_liegong");
+                            if (storage.length >= 4) {
+                                return true;
+                            }
+                            if (storage.length < 3) {
+                                return false;
+                            }
+                            if (target.hasShan()) {
+                                return storage.includes("heart") && storage.includes("diamond");
+                            }
+                            return true;
+                        },
+                        async content(event, trigger, player) {
+                            const storage = player.getStorage("madoka_liegong").slice(0);
+                            const num = storage.length - 1;
+                            const evt = trigger.getParent();
+                            if (num > 0) {
+                                if (typeof evt.baseDamage != "number") {
+                                    evt.baseDamage = 1;
+                                }
+                                const cards = get.cards(num);
+                                let no_repeat_cards = [];
+                                await game.cardsGotoOrdering(cards);
+                                await player.showCards(cards.slice(0), get.translation(player) + "发动了【烈弓】");
+                                while (cards.length > 0) {
+                                    const card = cards.pop();
+                                    if (storage.includes(get.suit(card, false)) && !no_repeat_cards.includes(get.suit(card, false))) {
+                                        no_repeat_cards.add(card.suit);
+                                    }
+                                    //ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+                                }
+                                evt.baseDamage += no_repeat_cards.length;
+                                //game.updateRoundNumber();
+                            }
+                            evt._madoka_liegong_player = player;
+                            player.addTempSkill("madoka_liegong_clear");
+                            const target = trigger.target;
+                            target.addTempSkill("madoka_liegong_block");
+                            if (!target.storage.madoka_liegong_block) {
+                                target.storage.madoka_liegong_block = [];
+                            }
+                            target.storage.madoka_liegong_block.push([evt.card, storage]);
+                            lib.skill.madoka_liegong.updateBlocker(target);
+                        },
+                        updateBlocker(player) {
+                            const list = [],
+                                storage = player.storage.madoka_liegong_block;
+                            if (storage?.length) {
+                                for (const i of storage) {
+                                    list.addArray(i[1]);
+                                }
+                            }
+                            player.storage.madoka_liegong_blocker = list;
+                        },
+                        ai: {
+                            threaten: 3.5,
+                            directHit_ai: true,
+                            skillTagFilter(player, tag, arg) {
+                                if (arg?.card?.name == "sha") {
+                                    const storage = player.getStorage("madoka_liegong");
+                                    if (storage.length < 3 || !storage.includes("heart") || !storage.includes("diamond")) {
+                                        return false;
+                                    }
+                                    const target = arg.target;
+                                    if (target.hasSkill("bagua_skill") || target.hasSkill("bazhen") || target.hasSkill("rw_bagua_skill")) {
+                                        return false;
+                                    }
+                                    return true;
+                                }
+                                return false;
+                            },
+                        },
+                        intro: {
+                            content: "已记录花色：$",
+                            onunmark: true,
+                        },
+                        group: "madoka_liegong_count",
+                        subSkill: {
+                            clear: {
+                                trigger: { player: "useCardAfter" },
+                                forced: true,
+                                charlotte: true,
+                                popup: false,
+                                filter(event, player) {
+                                    return event._madoka_liegong_player == player;
+                                },
+                                content() {
+                                    player.unmarkSkill("madoka_liegong");
+                                    player.removeTip("madoka_liegong");
+                                },
+                            },
+                            block: {
+                                mod: {
+                                    cardEnabled(card, player) {
+                                        if (!player.storage.madoka_liegong_blocker) {
+                                            return;
+                                        }
+                                        const suit = get.suit(card);
+                                        if (suit == "none") {
+                                            return;
+                                        }
+                                        let evt = _status.event;
+                                        if (evt.name != "chooseToUse") {
+                                            evt = evt.getParent("chooseToUse");
+                                        }
+                                        if (!evt || !evt.respondTo || evt.respondTo[1].name != "sha") {
+                                            return;
+                                        }
+                                        if (player.storage.madoka_liegong_blocker.includes(suit)) {
+                                            return false;
+                                        }
+                                    },
+                                },
+                                trigger: {
+                                    player: ["damageBefore", "damageCancelled", "damageZero"],
+                                    target: ["shaMiss", "useCardToExcluded", "useCardToEnd"],
+                                    global: ["useCardEnd"],
+                                },
+                                forced: true,
+                                firstDo: true,
+                                charlotte: true,
+                                popup: false,
+                                onremove(player) {
+                                    delete player.storage.madoka_liegong_block;
+                                    delete player.storage.madoka_liegong_blocker;
+                                },
+                                filter(event, player) {
+                                    const evt = event.getParent("useCard", true, true);
+                                    if (evt && evt.effectedCount < evt.effectCount) {
+                                        return false;
+                                    }
+                                    if (!event.card || !player.storage.madoka_liegong_block) {
+                                        return false;
+                                    }
+                                    return player.storage.madoka_liegong_block.some(i => i[0] == event.card);
+                                },
+                                content() {
+                                    const storage = player.storage.madoka_liegong_block;
+                                    for (let i = 0; i < storage.length; i++) {
+                                        if (storage[i][0] == trigger.card) {
+                                            storage.splice(i--, 1);
+                                        }
+                                    }
+                                    if (!storage.length) {
+                                        player.removeSkill(event.name);
+                                    } else {
+                                        lib.skill.madoka_liegong.updateBlocker(player);
+                                    }
+                                },
+                            },
+                            count: {
+                                trigger: {
+                                    player: "useCard",
+                                },
+                                forced: true,
+                                locked: false,
+                                popup: false,
+                                filter(event, player, name) {
+                                    if (name != "useCard" && player == event.player) {
+                                        return false;
+                                    }
+                                    const suit = get.suit(event.card);
+                                    if (!lib.suit.includes(suit)) {
+                                        return false;
+                                    }
+                                    if (player.storage.madoka_liegong?.includes(suit)) {
+                                        return false;
+                                    }
+                                    return true;
+                                },
+                                content() {
+                                    player.markAuto("madoka_liegong", [get.suit(trigger.card)]);
+                                    player.storage.madoka_liegong.sort((a, b) => lib.suit.indexOf(b) - lib.suit.indexOf(a));
+                                    player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
+                                },
+                            },
+                        },
+                    },
+                    "madoka_yingbian": {
+                        trigger: {
+                            player: ["chooseToRespondBefore", "chooseToUseBefore"],
+                        },
+                        filter(event, player, name) {
+                            if (event.responded) return false;
+                            if (!player.storage.madoka_liegong || player.storage.madoka_liegong.length == 0) return false;
+                            if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
+                            return true;
+                        },
+                        content() {
+                            "step 0";
+                            player.judge(card => {
+                                if (player.storage.madoka_liegong?.includes(get.suit(card))) return 2;
+                                return -1;
+                            }).judge2 = function (result) {
+                                return result.bool;
+                            };
+                            "step 1";
+                            if (result.bool) {
+                                trigger.untrigger();
+                                trigger.set("responded", true);
+                                trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+                                player.storage.madoka_liegong.remove(result.card.suit);
+                                player.markAuto("madoka_liegong", [get.suit(trigger.card)]);
+                                player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
+                            } else {
+                                player.gain(result.card);
+                            }
+                        },
+                        ai: {
+                            respondShan: true,
+                            freeShan: true,
+                            skillTagFilter(player) {
+                                if (!player.storage.madoka_liegong || player.storage.madoka_liegong.length == 0) {
+                                    return false;
+                                }
+                                return true;
+                            },
+                            effect: {
+                                target(card, player, target, current) {
+                                    if (get.tag(card, "respondShan") && current < 0) {
+                                        return 0.6;
+                                    }
+                                },
+                            },
+                            order: 4,
+                            useful: -1,
+                            value: -1,
                         },
                     }
                 },
@@ -2092,7 +2374,7 @@ export default function () {
                     "homura_shiting": "时停",
                     "homura_shiting_info": "锁定技，每名角色的结束阶段时，若你的手牌数为0，你执行额外的一个回合。",
                     "nemu_zhiyao": "制谣",
-                    "nemu_zhiyao_info": "锁定技，当你受到伤害或流失体力时，你获得等同伤害或流失体力数目2倍的『谣』标记。",
+                    "nemu_zhiyao_info": "锁定技，当你受到伤害或流失体力时，可进行一次判定，若结果不为红色，你获得等同伤害或流失体力数目2倍的『谣』标记。",
                     "nemu_sanyao": "散谣",
                     "nemu_sanyao_info": "一名角色的准备阶段开始时，你可：1. 弃置一个『谣』标记，令其受到一点伤害；2. 弃置两个『谣』标记，跳过该角色的判定、摸牌、出牌、弃牌阶段其中之一；3. 弃置三个『谣』标记，令其翻面。",
                     "nemu_tiruo": "体弱",
@@ -2125,6 +2407,10 @@ export default function () {
                     "test_skill_info": "摸一张选定的牌。",
                     "nanaka_xiaoji": "枭姬",
                     "nanaka_xiaoji_info": "当你失去装备区里的牌后，你可以摸两张牌。",
+                    "madoka_liegong": "烈弓",
+                    "madoka_liegong_info": "①若你的装备区内没有武器牌，则你手牌区内所有【杀】的属性视为无属性。②当你使用牌时，你记录此牌的花色。③当你使用【杀】指定唯一目标后，若你〖烈弓②〗的记录不为空，则你可亮出牌堆顶的X张牌（X为你〖烈弓②〗记录过的花色数-1），令此【杀】的伤害值基数+Y（Y为亮出牌中被〖烈弓②〗记录过的花色的数量），且目标角色不能使用〖烈弓②〗记录过花色的牌响应此【杀】。此【杀】使用结算结束后，你清除〖烈弓②〗的记录。",
+                    "madoka_yingbian": "应变",
+                    "madoka_yingbian_info": "你的回合外，当你需要出闪时，你可以进行一次判定：若判定结果在【烈弓】所记载的花色内，你可弃置此花色，视为使用或打出一张【闪】，若在其之外，你获得判定牌。",
                 },
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
