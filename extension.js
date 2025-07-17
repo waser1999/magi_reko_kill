@@ -37,7 +37,7 @@ export default function(){
             lena: ["female","huan",3,["rehuashen","rexinsheng"],["des:无尽海神","ext:魔法纪录/image/lena.jpg","die:ext:魔法纪录/audio/die/lena.mp3"]],
             kaede: ["female","huan",3,["jijiu","hongyan","xinbuyi","dczhuiyi"],["doublegroup:huan:ma","des:大地审判","ext:魔法纪录/image/kaede.jpg","die:ext:魔法纪录/audio/die/kaede.mp3"]],
             momoko: ["female","huan",4,["qiangxix","buqu"],["des:宇宙之刃","ext:魔法纪录/image/momoko.jpg","die:ext:魔法纪录/audio/die/momoko.mp3"]],
-            asuka: ["female","huan",4,["kurou","wushuang"],["des:龙真螺旋咆击","ext:魔法纪录/image/asuka.jpg","die:ext:魔法纪录/audio/die/asuka.mp3"]],
+            asuka: ["female","huan",4,["kurou","asuka_longzhen"],["des:龙真螺旋咆击","ext:魔法纪录/image/asuka.jpg","die:ext:魔法纪录/audio/die/asuka.mp3"]],
             yueye: ["female","ma",5,["olshuangxiong"],["des:樱隐","ext:魔法纪录/image/yueye.jpg","die:ext:魔法纪录/audio/die/yueye.mp3"]],
             yuexiao: ["female","ma",5,["olfuhun"],["des:樱语","ext:魔法纪录/image/yuexiao.jpg","die:ext:魔法纪录/audio/die/yuexiao.mp3"]],
             madoka: ["female","yuan",3,["madoka_liegong","madoka_yingbian","xieli"],["zhu","des:魔法之雨","ext:魔法纪录/image/madoka.jpg","die:ext:魔法纪录/audio/die/madoka.mp3"]],
@@ -68,7 +68,7 @@ export default function(){
             mitama: ["female","huan",3,["gongxiu","jinghe","ns_chuanshu"],["doublegroup:huan:ma","ext:魔法纪录/image/mitama.jpg","die:ext:魔法纪录/audio/die/mitama.mp3"]],
             ui: ["female","ma",3,["ui_jinghua","ui_wangyou","ui_leshan","dckrmingshi"],["doublegroup:huan:ma","ext:魔法纪录/image/ui.jpg","die:ext:魔法纪录/audio/die/ui.mp3"]],
             nagisa: ["female","yuan",3,["tiandu","ollianhuan","olniepan","olsbqiwu"],["ext:魔法纪录/image/nagisa.jpg","die:ext:魔法纪录/audio/die/nagisa.mp3"]],
-            kanagi: ["female","huan",4,["reshuishi","kanagi_dongyou"],["zhu","ext:魔法纪录/image/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
+            kanagi: ["female","huan",4,["reshuishi","new_reqingnang","kanagi_dongyou"],["zhu","ext:魔法纪录/image/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
             suzune: ["female","wan",4,["retuogu","shanzhuan"],["ext:魔法纪录/image/suzune.jpg","die:ext:魔法纪录/audio/die/suzune.mp3"]],
             dArc: ["female","wan",4,["dArc_congjun","nanaka_xiaoji","gongji"],["ext:魔法纪录/image/dArc.jpg","die:ext:魔法纪录/audio/die/dArc.mp3"]],
             himika: ["female","huan",4,["dclihuo","olchunlao"],["des:陨石拳","ext:魔法纪录/image/himika.jpg","die:ext:魔法纪录/audio/die/himika.mp3"]],
@@ -2545,15 +2545,9 @@ export default function(){
                         trigger.untrigger();
                         trigger.set("responded", true);
                         trigger.result = { bool: true, card: { name: "shan", isCard: true } };
-                        
-                        if(player.storage.madoka_liegong.length == 1){
-                            player.unmarkSkill("madoka_liegong");
-                            player.removeTip("madoka_liegong");
-                        }else{
-                            player.storage.madoka_liegong.remove(result.card.suit);
-                            player.markAuto("madoka_liegong", [get.suit(trigger.card)]);
-                            player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
-                        }
+ 
+                        player.unmarkAuto("madoka_liegong", [get.suit(result.card)]);                  
+                        player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
                     } else {
                         player.gain(result.card);
                     }
@@ -2562,7 +2556,7 @@ export default function(){
                     respondShan: true,
                     freeShan: true,
                     skillTagFilter(player) {
-                        if (!player.storage.madoka_liegong || player.storage.madoka_liegong.length == 0) {
+                        if (!player.getStorage("madoka_liegong")) {
                             return false;
                         }
                         return true;
@@ -2591,6 +2585,54 @@ export default function(){
                     },
                 },
                 "_priority": 0,
+            },
+            "asuka_longzhen":{
+                charlotte: true,
+                forced: true,
+                trigger: {
+                    player: ["useCard1"],
+                },
+                group: "asuka_longzhen_cancel",
+                mod:{
+                    cardUsable(card, player){
+                        if(card.name=="sha" && !player.getStorage("asuka_longzhen").includes(get.suit(card))){
+                            return Infinity;
+                        }
+                    },
+                },
+                filter(event, player) {
+                    return event.card.name == "sha" && event.getParent().type == "phase" && (!player.storage.asuka_longzhen || !player.storage.asuka_longzhen.includes(get.suit(event.card)));
+                },
+                async content(event, trigger, player) {
+                    player.markAuto("asuka_longzhen", [get.suit(trigger.card)]);
+                    player.addTip("asuka_longzhen", get.translation("asuka_longzhen") + player.getStorage("asuka_longzhen").reduce((str, suit) => str + get.translation(suit), ""));
+                },
+                subSkill:{
+                    cancel:{
+                        trigger:{
+                            player:["phaseUseEnd"],
+                        },
+                        forced:true,
+                        filter(event, player){
+                            return player.getStorage("asuka_longzhen");
+                        },
+                        content(){
+                            if(player.getStorage("asuka_longzhen").length >= 4) player.recover();
+
+                            delete player.storage.asuka_longzhen;
+                            player.unmarkSkill("asuka_longzhen");
+                            player.removeTip("asuka_longzhen");
+                        }
+                    }
+                },
+                ai: {
+                    skillTagFilter(player, tag, arg) {
+                        if (arg && arg.name == "sha") {
+                            return true;
+                        }
+                        return false;
+                    },
+                },
             },
         },
         translate: {
@@ -2653,6 +2695,8 @@ export default function(){
             "madoka_yingbian_info": "当你需要出闪时，你可以进行一次判定：若判定结果在【烈弓】所记载的花色内，你可弃置此花色，视为使用或打出一张【闪】，若在其之外，你获得判定牌。",
             "ai_shuxin": "数心",
             "ai_shuxin_info": "锁定技，除你以外，你不能成为点数为质数的牌的目标。",
+            "asuka_longzhen": "龙真",
+            "asuka_longzhen_info": "锁定技，出牌阶段，你使用【杀】无次数限制，你必须使用与当前回合已使用过的花色不同的【杀】。若你使用过所有花色，你在出牌阶段结束后回复一点体力。"
         },
     },
     intro: "魔法纪录所有角色的三国杀，玩的开心（",
