@@ -105,7 +105,7 @@ export default function(){
                 hp: 4,
                 maxHp: 4,
                 hujia: 0,
-                skills: ["dcgeyuan", "dcgusuan","dcjieshu"],
+                skills: ["dcgeyuan", "dcgusuan","dcjieshu","bazhen"],
                 img: "extension/魔法纪录/image/devil_homura.jpg",
             },
         },
