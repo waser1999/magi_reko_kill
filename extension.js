@@ -68,7 +68,7 @@ export default function(){
             mitama: ["female","huan",3,["gongxiu","jinghe","ns_chuanshu"],["doublegroup:huan:ma","ext:魔法纪录/image/mitama.jpg","die:ext:魔法纪录/audio/die/mitama.mp3"]],
             ui: ["female","ma",3,["ui_jinghua","ui_wangyou","ui_leshan","dckrmingshi"],["doublegroup:huan:ma","ext:魔法纪录/image/ui.jpg","die:ext:魔法纪录/audio/die/ui.mp3"]],
             nagisa: ["female","yuan",3,["tiandu","ollianhuan","olniepan","olsbqiwu"],["ext:魔法纪录/image/nagisa.jpg","die:ext:魔法纪录/audio/die/nagisa.mp3"]],
-            kanagi: ["female","huan",4,["reshuishi","new_reqingnang","kanagi_dongyou"],["zhu","ext:魔法纪录/image/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
+            kanagi: ["female","huan",4,["reshuishi","kanagi_duxin","kanagi_dongyou"],["zhu","ext:魔法纪录/image/kanagi.jpg","die:ext:魔法纪录/audio/die/kanagi.mp3"]],
             suzune: ["female","wan",4,["retuogu","shanzhuan"],["ext:魔法纪录/image/suzune.jpg","die:ext:魔法纪录/audio/die/suzune.mp3"]],
             dArc: ["female","wan",4,["dArc_congjun","nanaka_xiaoji","gongji"],["ext:魔法纪录/image/dArc.jpg","die:ext:魔法纪录/audio/die/dArc.mp3"]],
             himika: ["female","huan",4,["dclihuo","olchunlao"],["des:陨石拳","ext:魔法纪录/image/himika.jpg","die:ext:魔法纪录/audio/die/himika.mp3"]],
@@ -2634,6 +2634,49 @@ export default function(){
                     },
                 },
             },
+            "kanagi_duxin": {
+                audio: "shangyi",
+                trigger: { player:"phaseUseBegin" },
+                usable: 1,
+                filterTarget(card, player, target) {
+                    return player != target;
+                },
+                check(event, player) {
+                    if (player.hp == player.maxHp || player.maxHp <= 3) return false;
+                    return true;
+                },
+                async content(event, trigger, player) {
+                    let result = await player.chooseTarget().set("ai", target => {
+                        return -get.attitude(player, target);
+                    }).forResult();
+
+                    let target = result.targets[0];
+                    if (player.maxHp >= 8) {
+                        player.loseMaxHp(2);
+                    } else {
+                        player.loseMaxHp();
+                    }
+
+                    player.line(target, "green");
+                    if (!target.countCards("h")) {
+                        event.finish();
+                    } else {
+                        let card = await player.chooseCardButton(target, target.getCards("h")).forResult();
+                        if (card.bool) {
+                            target.discard(card.links[0]);
+                        }
+                    }
+                },
+                ai: {
+                    order: 11,
+                    result: {
+                        target(player, target) {
+                            return -target.countCards("h");
+                        },
+                    },
+                    threaten: 1.1,
+                },
+            }
         },
         translate: {
             "sayaka_qiangyin": "强音",
@@ -2696,7 +2739,9 @@ export default function(){
             "ai_shuxin": "数心",
             "ai_shuxin_info": "锁定技，除你以外，你不能成为点数为质数的牌的目标。",
             "asuka_longzhen": "龙真",
-            "asuka_longzhen_info": "锁定技，出牌阶段，你使用【杀】无次数限制，你必须使用与当前回合已使用过的花色不同的【杀】。若你使用过所有花色，你在出牌阶段结束后回复一点体力。"
+            "asuka_longzhen_info": "锁定技，出牌阶段，你使用【杀】无次数限制，你必须使用与当前回合已使用过的花色不同的【杀】。若你使用过所有花色，你在出牌阶段结束后回复一点体力。",
+            "kanagi_duxin": "读心",
+            "kanagi_duxin_info": "每回合限一次。出牌阶段开始前，你可以扣减一点体力上限（若体力上限大于等于8则改为两点），观看一名其他角色的手牌并可以弃置其中一张牌。",
         },
     },
     intro: "魔法纪录所有角色的三国杀，玩的开心（",
