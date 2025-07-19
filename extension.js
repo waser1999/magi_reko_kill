@@ -36,7 +36,7 @@ export default function () {
                     toka: ["female", "ma", 3, ["xinleiji", "xinguidao", "tianjie", "magius_jiefang"], ["zhu", "des:新创世纪", "ext:魔法纪录/image/toka.jpg", "die:ext:魔法纪录/audio/die/toka.mp3"]],
                     alina: ["female", "ma", 3, ["moying", "juanhui", "reshejian"], ["des:九相", "ext:魔法纪录/image/alina.jpg", "die:ext:魔法纪录/audio/die/alina.mp3"]],
                     lena: ["female", "huan", 3, ["rehuashen", "rexinsheng"], ["des:无尽海神", "ext:魔法纪录/image/lena.jpg", "die:ext:魔法纪录/audio/die/lena.mp3"]],
-                    kaede: ["female", "huan", 3, ["jijiu", "hongyan", "xinbuyi", "dczhuiyi"], ["doublegroup:huan:ma", "des:大地审判", "ext:魔法纪录/image/kaede.jpg", "die:ext:魔法纪录/audio/die/kaede.mp3"]],
+                    kaede: ["female", "huan", 3, ["kaede_manmiao", "jijiu", "xinbuyi", "dczhuiyi"], ["doublegroup:huan:ma", "des:大地审判", "ext:魔法纪录/image/kaede.jpg", "die:ext:魔法纪录/audio/die/kaede.mp3"]],
                     momoko: ["female", "huan", 4, ["qiangxix", "buqu"], ["des:宇宙之刃", "ext:魔法纪录/image/momoko.jpg", "die:ext:魔法纪录/audio/die/momoko.mp3"]],
                     asuka: ["female", "huan", 4, ["kurou", "asuka_longzhen"], ["des:龙真螺旋咆击", "ext:魔法纪录/image/asuka.jpg", "die:ext:魔法纪录/audio/die/asuka.mp3"]],
                     yueye: ["female", "ma", 5, ["olshuangxiong"], ["des:樱隐", "ext:魔法纪录/image/yueye.jpg", "die:ext:魔法纪录/audio/die/yueye.mp3"]],
@@ -45,7 +45,7 @@ export default function () {
                     homura: ["female", "yuan", 3, ["reguanxing", "luoshen", "homura_shiting"], ["des:导弹集中轰炸", "ext:魔法纪录/image/homura.jpg", "die:ext:魔法纪录/audio/die/homura.mp3"]],
                     "homura2": ["female", "yuan", 3, ["homura2_jihuo", "yiji", "huoji"], ["des:时间停止攻击", "ext:魔法纪录/image/homura2.jpg", "die:ext:魔法纪录/audio/die/homura2.mp3"]],
                     nanaka: ["female", "huan", 3, ["nanaka_xiaoji", "jizhi"], ["des:白椿", "ext:魔法纪录/image/nanaka.jpg", "die:ext:魔法纪录/audio/die/nanaka.mp3"]],
-                    hazuki: ["female", "huan", 3, ["huituo", "mingjian", "fangquan"], ["des:雷霆激流", "ext:魔法纪录/image/hazuki.jpg", "die:ext:魔法纪录/audio/die/hazuki.mp3"]],
+                    hazuki: ["female", "huan", 3, ["huituo", "hazuki_mingjian"], ["des:雷霆激流", "ext:魔法纪录/image/hazuki.jpg", "die:ext:魔法纪录/audio/die/hazuki.mp3"]],
                     karin: ["female", "ma", 3, ["daoshu", "weicheng"], ["des:幽紫灵火", "ext:魔法纪录/image/karin.jpg", "doublegroup:huan:ma", "die:ext:魔法纪录/audio/die/karin.mp3"]],
                     nemu: ["female", "ma", 5, ["nemu_zhiyao", "nemu_sanyao", "nemu_tiruo"], ["des:创造的孩子们", "ext:魔法纪录/image/nemu.jpg", "die:ext:魔法纪录/audio/die/nemu.mp3"]],
                     mami: ["female", "yuan", 4, ["guose", "reyingzi", "sbluanji", "qiaobian"], ["des:终幕射击", "ext:魔法纪录/image/mami.jpg", "die:ext:魔法纪录/audio/die/mami.mp3"]],
@@ -136,7 +136,7 @@ export default function () {
                     homura: "晓美焰",
                     "homura2": "麻花焰",
                     nanaka: "常盘七香",
-                    hazuki: "游佐夜月",
+                    hazuki: "游佐叶月",
                     karin: "御园花凛",
                     nemu: "柊音梦",
                     mami: "巴麻美",
@@ -973,10 +973,20 @@ export default function () {
                             return true;
                         },
                         async content(event, trigger, player) {
+                            player.addTempSkill("sayaka_qiangyin_clear", { player: "phaseBegin" });
                             player.recover();
                             event.target.recover();
-                            player.addTempSkill("buqu", { player: "phaseBegin" });
-                            event.target.addTempSkill("buqu", { player: "phaseBegin" });
+                            player.addAdditionalSkills("sayaka_buqu", "buqu", true);
+                            event.target.addAdditionalSkills("sayaka_buqu", "buqu", true);
+                        },
+                        subSkill: {
+                            clear: {
+                                onremove(player) {
+                                    game.countPlayer(function (current) {
+                                        current.removeAdditionalSkills("sayaka_buqu");
+                                    });
+                                },
+                            },
                         },
                         "_priority": 0,
                         enable: "phaseUse",
@@ -1453,6 +1463,7 @@ export default function () {
                                 trigger.player.judging[0] = result.cards[0];
                                 trigger.orderingCards.addArray(result.cards);
                                 game.log(trigger.player, "的判定牌改为", card);
+                                player.draw();
                                 game.delay(2);
                             }
                         },
@@ -1616,6 +1627,11 @@ export default function () {
                         "_priority": 0,
                     },
                     "homura_shiting": {
+                        mod: {
+                            cardUsable(card, player, num) {
+                                if (card.name == 'sha') return num + player.maxHp - player.hp;
+                            }
+                        },
                         forced: true,
                         charlotte: true,
                         trigger: {
@@ -1864,16 +1880,11 @@ export default function () {
                     },
                     "ui_jinghua": {
                         trigger: {
-                            player: "phaseBegin",
-                        },
-                        filter(event, trigger, player) {
-                            return game.hasPlayer(current => current.countCards("j"));
+                            global: "roundStart",
                         },
                         async content(event, trigger, player) {
                             let result = await player
-                                .chooseTarget([1, game.players.length], "弃置每名角色判定区的所有牌", function (card, player, target) {
-                                    return target.countCards("j");
-                                })
+                                .chooseTarget([1, player.maxHp], "令其获得技能【谦节】，并弃置每名角色判定区的所有牌")
                                 .set("ai", function (target) {
                                     if (target.name == "toka") return true;
                                     return get.attitude(_status.event.player, target) > 0;
@@ -1884,13 +1895,24 @@ export default function () {
                             player.line(result.targets, "green");
                             if (!result.targets.length) return;
                             let num = result.targets.length;
+                            player.addTempSkill("ui_jinghua_cancel", { player: "roundStart" })
 
                             for (let target of result.targets) {
-                                if (target.countCards("j") > 1) num += target.countCards("j") - 1;
+                                target.addAdditionalSkills("ui_qianjie", "drlt_qianjie", true);
+                                if (target.countCards("j")) num += target.countCards("j");
                                 target.discard(target.getCards("j"));
                             }
 
                             player.draw(num);
+                        },
+                        subSkill: {
+                            cancel: {
+                                onremove(player) {
+                                    game.countPlayer(function (current) {
+                                        current.removeAdditionalSkills("ui_qianjie");
+                                    });
+                                },
+                            },
                         },
                         ai: {
                             threaten: 3,
@@ -1907,7 +1929,7 @@ export default function () {
                                 if (
                                     player !== target &&
                                     !game.hasPlayer(function (current) {
-                                        return current !== player && current !== target && current.countCards("h") < target.countCards("h");
+                                        return current !== player && current !== target && current.hp < target.hp;
                                     }) &&
                                     get.attitude(player, target) > 0
                                 ) return true;
@@ -2640,7 +2662,7 @@ export default function () {
                         trigger: { player: "phaseUseBegin" },
                         usable: 1,
                         filterTarget(card, player, target) {
-                            return player != target;
+                            return player != target && target.countCards("h");
                         },
                         check(event, player) {
                             if (player.hp == player.maxHp || player.maxHp <= 3) return false;
@@ -2683,41 +2705,39 @@ export default function () {
                         },
                     },
                     "tsuruno_tuanluan": {
-                        audio: 2,
-                        enable: "phaseUse",
-                        position: "he",
-                        filter: (event, player) => player.hasCard(card => lib.skill.drlt_huairou.filterCard(card, player), lib.skill.drlt_huairou.position),
-                        filterCard: (card, player) => get.type(card) == "equip" && player.canRecast(card),
-                        check(card) {
-                            if (get.position(card) == "e") {
-                                return 0.5 - get.value(card, get.player());
-                            }
-                            if (!get.player().canEquip(card)) {
-                                return 5;
-                            }
-                            return 3 - get.value(card);
-                        },
+                        inherit: "drlt_huairou",
                         async content(event, trigger, player) {
                             let equip_type = get.subtype(event.cards[0]);
                             player.recast(event.cards);
 
                             if (player.isDisabled(equip_type)) player.enableEquip(equip_type);
+                            delete player.getStat().skill.drlt_jueyan;
                         },
-                        discard: false,
-                        lose: false,
-                        delay: false,
-                        prompt: "重铸一张装备牌",
-                        ai: {
-                            order: 10,
-                            result: {
-                                player: 1,
-                            },
+                    },
+                    "hazuki_mingjian": {
+                        inherit: "mingjian",
+                        audio: "mingjian",
+                        content() {
+                            player.give(cards, target);
+                            player.skip("phaseUse");
+                            target.insertPhase();
+                        },
+                        "_priority": 0,
+                    },
+                    "kaede_manmiao": {
+                        forced: true,
+                        charlotte: true,
+                        trigger: {
+                            player: "taoAfter",
+                        },
+                        content() {
+                            player.draw();
                         },
                     },
                 },
                 translate: {
                     "sayaka_qiangyin": "强音",
-                    "sayaka_qiangyin_info": "出牌阶段限一次，你可以弃置两张手牌并选择一名已经受伤的角色。你与其各回复1点体力并各获得【不屈】直到各自角色的下个回合开始阶段。",
+                    "sayaka_qiangyin_info": "出牌阶段限一次，你可以弃置两张手牌并选择一名已经受伤的角色。你与其各回复1点体力并各获得【不屈】直到你的下一回合开始时。",
                     xieli: "协力",
                     "xieli_info": "主角技，当你需要使用或打出【杀】时，你可以令其他见泷原角色依次选择是否打出一张【杀】。若有角色响应，则你视为使用或打出了此【杀】。",
                     yuanjiu: "援救",
@@ -2725,7 +2745,7 @@ export default function () {
                     "oriko_yuzhi": "预知",
                     "oriko_yuzhi_info": "锁定技，一名角色的准备阶段开始时，你从牌堆顶抽取一张牌并放置在武将牌上，称为『视』。『视』的上限与场上玩家数相等。当一名角色死亡时，随机弃置一张『视』。",
                     "oriko_jiangsha": "将杀",
-                    "oriko_jiangsha_info": "当一名角色的判定牌生效前，你可以打出一张『视』代替之。",
+                    "oriko_jiangsha_info": "当一名角色的判定牌生效前，你可以打出一张『视』代替之并摸一张牌。",
                     "oriko_xianzhong": "献种",
                     "oriko_xianzhong_info": "主角技，见泷原角色造成伤害后，其可以令你摸一张牌。",
                     "magius_jiefang": "解放",
@@ -2734,7 +2754,7 @@ export default function () {
                     "ani_lieying": "猎鹰",
                     "ani_lieying_info": "锁定技，若你没有装备武器，你视为装备【名刀·黑江切彩羽】。",
                     "homura_shiting": "时停",
-                    "homura_shiting_info": "锁定技，每名角色的结束阶段时，若你的手牌数为0，你执行额外的一个回合。",
+                    "homura_shiting_info": "锁定技，每名角色的结束阶段时，若你的手牌数为0，你执行额外的一个回合。你的【杀】使用上限始终为已失去的体力数+1。",
                     "nemu_zhiyao": "制谣",
                     "nemu_zhiyao_info": "锁定技，当你受到伤害或流失体力时，可进行一次判定，若结果不为红色，你获得等同伤害或流失体力数目2倍的『谣』标记。",
                     "nemu_sanyao": "散谣",
@@ -2746,7 +2766,7 @@ export default function () {
                     "ashley_mengshu": "萌术",
                     "ashley_mengshu_info": "出牌阶段，你可以将一张黑桃手牌当作【知己知彼】或【远交近攻】使用。若你本局游戏内已经发动过了〖萌术〗，则你必须选择与上次不同的选项。",
                     "ui_jinghua": "净化",
-                    "ui_jinghua_info": "你的准备阶段开始时，你可依次弃置一名武将判定区里存在的所有延时类锦囊，并额外摸等量的牌。",
+                    "ui_jinghua_info": "每轮开始时，你可选择X（X至多为你的体力上限）名角色，令其获得技能【谦节】并依次弃置判定区里存在的所有延时类锦囊，合计Y张。你额外摸X+Y张牌。",
                     "ui_leshan": "乐善",
                     "ui_leshan_info": "出牌阶段限一次，若你的手牌数大于5，你可将一半的手牌（向下取整）交给体力值最少的一名角色。你与该角色各额外回复一点体力。",
                     "ui_wangyou": "忘忧",
@@ -2780,7 +2800,11 @@ export default function () {
                     "kanagi_duxin": "读心",
                     "kanagi_duxin_info": "每回合限一次。出牌阶段开始前，你可以扣减一点体力上限（若体力上限大于等于8则改为两点），观看一名其他角色的手牌并可以弃置其中一张牌。",
                     "tsuruno_tuanluan": "团栾",
-                    "tsuruno_tuanluan_info": "出牌阶段，你可以重铸装备牌。若此装备对应的装备区被废除，恢复该装备栏。"
+                    "tsuruno_tuanluan_info": "出牌阶段，你可以重铸装备牌，若如此做，【决堰】视为未发动过。若此装备对应的装备区被废除，恢复该装备栏。",
+                    "hazuki_mingjian": "明鉴",
+                    "hazuki_mingjian_info": "出牌阶段限一次。你可以将所有手牌交给一名其他角色，并跳过出牌阶段。该角色在你的回合之后执行一个额外的回合。",
+                    "kaede_manmiao": "蔓妙",
+                    "kaede_manmiao_info": "锁定技，你使用【桃】时，摸一张牌。",
                 },
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
