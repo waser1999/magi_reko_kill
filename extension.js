@@ -1895,7 +1895,7 @@ export default function () {
                             player.line(result.targets, "green");
                             if (!result.targets.length) return;
                             let num = result.targets.length;
-                            player.addTempSkill("ui_jinghua_cancel", { player: "roundStart" })
+                            player.addTempSkill("ui_jinghua_cancel", { global: "roundStart" })
 
                             for (let target of result.targets) {
                                 target.addAdditionalSkills("ui_qianjie", "drlt_qianjie", true);
