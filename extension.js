@@ -2725,6 +2725,7 @@ export default function () {
                         "_priority": 0,
                     },
                     "kaede_manmiao": {
+                        inherit: "hongyan",
                         forced: true,
                         charlotte: true,
                         trigger: {
@@ -2804,7 +2805,7 @@ export default function () {
                     "hazuki_mingjian": "明鉴",
                     "hazuki_mingjian_info": "出牌阶段限一次。你可以将所有手牌交给一名其他角色，并跳过出牌阶段。该角色在你的回合之后执行一个额外的回合。",
                     "kaede_manmiao": "蔓妙",
-                    "kaede_manmiao_info": "锁定技，你使用【桃】时，摸一张牌。",
+                    "kaede_manmiao_info": "锁定技，你使用【桃】时，摸一张牌。你的黑桃牌视为红桃牌。",
                 },
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
