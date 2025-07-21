@@ -69,7 +69,7 @@ export default function () {
                     mitama: ["female", "huan", 3, ["gongxiu", "jinghe", "ns_chuanshu"], ["doublegroup:huan:ma", "ext:魔法纪录/image/mitama.jpg", "die:ext:魔法纪录/audio/die/mitama.mp3"]],
                     ui: ["female", "ma", 3, ["ui_jinghua", "ui_wangyou", "ui_leshan", "dckrmingshi"], ["doublegroup:huan:ma", "ext:魔法纪录/image/ui.jpg", "die:ext:魔法纪录/audio/die/ui.mp3"]],
                     nagisa: ["female", "yuan", 3, ["tiandu", "ollianhuan", "olniepan", "olsbqiwu"], ["ext:魔法纪录/image/nagisa.jpg", "die:ext:魔法纪录/audio/die/nagisa.mp3"]],
-                    kanagi: ["female", "huan", 4, ["reshuishi", "kanagi_duxin", "kanagi_dongyou"], ["zhu", "ext:魔法纪录/image/kanagi.jpg", "die:ext:魔法纪录/audio/die/kanagi.mp3"]],
+                    kanagi: ["female", "huan", 4, ["reshuishi", "kanagi_duxin", "kanagi_nvpu", "kanagi_dongyou"], ["zhu", "ext:魔法纪录/image/kanagi.jpg", "die:ext:魔法纪录/audio/die/kanagi.mp3"]],
                     suzune: ["female", "wan", 4, ["retuogu", "shanzhuan"], ["ext:魔法纪录/image/suzune.jpg", "die:ext:魔法纪录/audio/die/suzune.mp3"]],
                     dArc: ["female", "wan", 4, ["dArc_congjun", "nanaka_xiaoji", "gongji"], ["ext:魔法纪录/image/dArc.jpg", "die:ext:魔法纪录/audio/die/dArc.mp3"]],
                     himika: ["female", "huan", 4, ["dclihuo", "olchunlao"], ["des:陨石拳", "ext:魔法纪录/image/himika.jpg", "die:ext:魔法纪录/audio/die/himika.mp3"]],
@@ -332,6 +332,7 @@ export default function () {
                         toself: false,
                         loseDelay: false,
                         onEquip() {
+                            if (player.hasSkill("kanagi_nvpu")) return;
                             if (
                                 player.countCards("he", function (cardx) {
                                     return card.cards && !card.cards.includes(cardx);
@@ -349,6 +350,7 @@ export default function () {
                             }
                         },
                         onLose() {
+                            if (player.hasSkill("kanagi_nvpu")) return;
                             var next = game.createEvent("maid_uniform_lose");
                             event.next.remove(next);
                             var evt = event.getParent();
@@ -1592,7 +1594,7 @@ export default function () {
                             return player.countCards('h') > 0;
                         },
                         async content(event, trigger, player) {
-                            let cards = [get.cardPile("mengshenjueqiang", "field"), get.cardPile("shuiyanqijun", "field")];
+                            let cards = [get.cardPile("maid_uniform", "field"), get.cardPile("du", "field")];
                             player.gain(cards, "gain2");
                         },
                         "_priority": 0,
@@ -2282,34 +2284,11 @@ export default function () {
                     },
                     "nanaka_xiaoji": {
                         inherit: "xiaoji",
-                        audio: "xiaoji",
-                        preHidden: true,
                         getIndex(event, player) {
                             const evt = event.getl(player);
                             if (evt && evt.player === player && evt.es && evt.es.length) return 1;
                             return false;
                         },
-                        audioname: ["sp_sunshangxiang", "re_sunshangxiang"],
-                        trigger: {
-                            player: "loseAfter",
-                            global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
-                        },
-                        frequent: true,
-                        async content(event, trigger, player) {
-                            player.draw(2);
-                        },
-                        ai: {
-                            noe: true,
-                            reverseEquip: true,
-                            effect: {
-                                target(card, player, target, current) {
-                                    if (get.type(card) == "equip" && !get.cardtag(card, "gifts")) {
-                                        return [1, 3];
-                                    }
-                                },
-                            },
-                        },
-                        "_priority": 0,
                     },
                     "madoka_liegong": {
                         audio: "ext:魔法纪录:2",
@@ -2730,10 +2709,34 @@ export default function () {
                         trigger: {
                             player: "taoAfter",
                         },
+                        group: ["kaede_manmiao_du"],
                         content() {
                             player.draw();
                         },
+                        mod: {
+                            cardname(card, player, name) {
+                                if (card.name == "du") {
+                                    return "tao";
+                                }
+                            },
+                        },
+                        ai: {
+                            nodu: true,
+                            usedu: true,
+                        }
                     },
+                    "kanagi_nvpu": {
+                        trigger: {
+                            player: ["equipAfter", "loseAfter"],
+                        },
+                        forced: true,
+                        charlotte: true,
+                        filter(event, player, name) {
+                            return get.name(event.cards[0]) == "maid_uniform";
+                        },
+                        content() {
+                        },
+                    }
                 },
                 translate: {
                     "sayaka_qiangyin": "强音",
@@ -2804,7 +2807,9 @@ export default function () {
                     "hazuki_mingjian": "明鉴",
                     "hazuki_mingjian_info": "出牌阶段限一次。你可以将所有手牌交给一名其他角色，并跳过出牌阶段。该角色在你的回合之后执行一个额外的回合。",
                     "kaede_manmiao": "蔓妙",
-                    "kaede_manmiao_info": "锁定技，你使用【桃】时，摸一张牌。",
+                    "kaede_manmiao_info": "锁定技，你使用【桃】时，摸一张牌。你的【毒】均视为【桃】。",
+                    "kanagi_nvpu": "女仆",
+                    "kanagi_nvpu_info": "锁定技，【女仆装】的效果对你无效。",
                 },
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
