@@ -28,7 +28,7 @@ export default function () {
                     ashley: ["female", "huan", 4, ["ashley_yuanyu", "ashley_mengshu"], ["des:Ocean Tick Hurricane", "ext:魔法纪录/image/ashley.jpg", "die:ext:魔法纪录/audio/die/ashley.mp3"]],
                     riko: ["female", "huan", 3, ["dcduliang", "dctunchu", "dcshuliang"], ["des:美味猎手", "ext:魔法纪录/image/riko.jpg", "die:ext:魔法纪录/audio/die/riko.mp3"]],
                     rika: ["female", "huan", 3, ["wanwei", "spyuejian", "reguose", "tianxiang"], ["des:闪耀光束", "ext:魔法纪录/image/rika.jpg", "die:ext:魔法纪录/audio/die/rika.mp3"]],
-                    tsuruno: ["female", "huan", 4, ["jiang", "lianying", "hunzi", "drlt_qianjie"], ["des:炎扇斩舞", "ext:魔法纪录/image/tsuruno.jpg", "die:ext:魔法纪录/audio/die/tsuruno.mp3"]],
+                    tsuruno: ["female", "huan", 4, ["tsuruno_qiangyun", "jiang", "lianying", "hunzi"], ["des:炎扇斩舞", "ext:魔法纪录/image/tsuruno.jpg", "die:ext:魔法纪录/audio/die/tsuruno.mp3"]],
                     sana: ["female", "huan", 4, ["sana_touming", "xinjushou", "xinjiewei"], ["des:酷刑牢笼", "ext:魔法纪录/image/sana.jpg", "die:ext:魔法纪录/audio/die/sana.mp3"]],
                     iroha: ["female", "huan", 3, ["olhaoshi", "oldimeng", "dckrmingshi", "yuanjiu"], ["zhu", "des:未来之路", "ext:魔法纪录/image/iroha.jpg", "die:ext:魔法纪录/audio/die/iroha.mp3"]],
                     yachiyo: ["female", "huan", 4, ["xingshang", "fangzhu", "yachiyo_gujun"], ["zhu", "des:绝对之雨", "ext:魔法纪录/image/yachiyo.jpg", "die:ext:魔法纪录/audio/die/yachiyo.mp3"]],
@@ -56,7 +56,7 @@ export default function () {
                     sayaka: ["female", "yuan", 4, ["xinkuanggu", "gzyinghun", "sayaka_qiangyin"], ["des:无畏极强音", "ext:魔法纪录/image/sayaka.jpg", "die:ext:魔法纪录/audio/die/sayaka.mp3"]],
                     Kagome: ["female", "huan", 3, ["hschenzhi", "hsdianmo", "hszaibi", "reqingguo"], ["ext:魔法纪录/image/Kagome.jpg", "die:ext:魔法纪录/audio/die/Kagome.mp3"]],
                     mifuyu: ["female", "ma", 3, ["dcwumei", "dczhanmeng"], ["doublegroup:huan:ma", "ext:魔法纪录/image/mifuyu.jpg", "die:ext:魔法纪录/audio/die/mifuyu.mp3"]],
-                    meru: ["female", "huan", 3, ["zhiming", "xingbu"], ["des:", "ext:魔法纪录/image/meru.jpg", "die:ext:魔法纪录/audio/die/meru.mp3"]],
+                    meru: ["female", "huan", 3, ["zhiming", "twxingbu"], ["des:", "ext:魔法纪录/image/meru.jpg", "die:ext:魔法纪录/audio/die/meru.mp3"]],
                     kazumi: ["female", "wan", 3, ["qixing", "kuangfeng", "dawu", "kazumi_xingyun"], ["zhu", "ext:魔法纪录/image/kazumi.jpg", "die:ext:魔法纪录/audio/die/kazumi.mp3"]],
                     kushu: ["female", "huan", 4, ["jiushi", "keji", "refankui"], ["des:肃清天使", "ext:魔法纪录/image/kushu.jpg", "die:ext:魔法纪录/audio/die/kushu.mp3"]],
                     kokoro: ["female", "huan", 5, ["jieyue", "yizhong"], ["des:离散镭射", "ext:魔法纪录/image/kokoro.jpg", "die:ext:魔法纪录/audio/die/kokoro.mp3"]],
@@ -96,7 +96,7 @@ export default function () {
                         hp: 5,
                         maxHp: 5,
                         hujia: 0,
-                        skills: ["drlt_qianjie", "drlt_jueyan", "tsuruno_tuanluan", "relianying"],
+                        skills: ["tsuruno_qiangyun", "drlt_jueyan", "tsuruno_tuanluan", "relianying"],
                         img: "extension/魔法纪录/image/uwasa_tsuruno.jpg",
                         dieAudios: ["ext:魔法纪录/audio/die/uwasa_tsuruno.mp3"],
                     },
@@ -962,7 +962,14 @@ export default function () {
                     "mengshenjueqiang_info": "每回合限一次，当你使用【杀】造成伤害后，你可以进行判定，若结果为：红色，你回复1点体力；黑色：你摸两张牌。",
                     "mengshenjueqiang_skill": "盟神决枪",
                 },
-                list: [["heart", 9, "jk_unform", null, ["gifts"]], ["heart", 10, "maid_uniform"], ["spade", 2, "kuroe_kill"], ["spade", 2, "yongzhuang"], ["club", 1, "shuibojian"], ["heart", 1, "mengshenjueqiang"]],
+                list: [
+                    ["heart", 9, "jk_unform", null, ["gifts"]],
+                    ["heart", 10, "maid_uniform"],
+                    ["spade", 2, "kuroe_kill"],
+                    ["spade", 2, "yongzhuang"],
+                    ["club", 1, "shuibojian"],
+                    ["heart", 1, "mengshenjueqiang"]
+                ],
             },
             skill: {
                 skill: {
@@ -1886,7 +1893,7 @@ export default function () {
                         },
                         async content(event, trigger, player) {
                             let result = await player
-                                .chooseTarget([1, player.maxHp], "令其获得技能【谦节】，并弃置每名角色判定区的所有牌")
+                                .chooseTarget([1, player.maxHp], "令其获得技能【强运】，并弃置每名角色判定区的所有牌")
                                 .set("ai", function (target) {
                                     if (target.name == "toka") return true;
                                     return get.attitude(_status.event.player, target) > 0;
@@ -1900,9 +1907,10 @@ export default function () {
                             player.addTempSkill("ui_jinghua_cancel", { global: "roundStart" })
 
                             for (let target of result.targets) {
-                                target.addAdditionalSkills("ui_qianjie", "drlt_qianjie", true);
+                                target.addAdditionalSkills("ui_qiangyun", "tsuruno_qiangyun", true);
                                 if (target.countCards("j")) num += target.countCards("j");
                                 target.discard(target.getCards("j"));
+                                if (target.isTurnedOver()) target.turnOver();
                             }
 
                             player.draw(num);
@@ -1911,7 +1919,7 @@ export default function () {
                             cancel: {
                                 onremove(player) {
                                     game.countPlayer(function (current) {
-                                        current.removeAdditionalSkills("ui_qianjie");
+                                        current.removeAdditionalSkills("ui_qiangyun");
                                     });
                                 },
                             },
@@ -2735,6 +2743,70 @@ export default function () {
                         },
                         content() {
                         },
+                    },
+                    "tsuruno_qiangyun": {
+                        audio: 2,
+                        group: ["tsuruno_qiangyun_1", "tsuruno_qiangyun_2", "tsuruno_qiangyun_3"],
+                        locked: true,
+                        ai: {
+                            effect: {
+                                target(card) {
+                                    if (card.name == "tiesuo") {
+                                        return "zeroplayertarget";
+                                    }
+                                },
+                            },
+                        },
+                        subSkill: {
+                            1: {
+                                audio: "drlt_qianjie",
+                                trigger: {
+                                    player: ["linkBegin"],
+                                },
+                                forced: true,
+                                filter(event, player, name) {
+                                    return !player.isLink();
+                                },
+                                async content(event, trigger, player) {
+                                    trigger.cancel();
+                                },
+                                ai: {
+                                    noLink: true,
+                                },
+                            },
+                            2: {
+                                mod: {
+                                    targetEnabled(card, player, target) {
+                                        if (get.type(card) == "delay") {
+                                            return false;
+                                        }
+                                    },
+                                },
+                            },
+                            3: {
+                                audio: true,
+                                trigger: {
+                                    player: "turnOverBefore",
+                                },
+                                filter(event, player) {
+                                    return !player.isTurnedOver();
+                                },
+                                forced: true,
+                                content() {
+                                    trigger.cancel();
+                                },
+                                ai: {
+                                    noturnOver: true,
+                                    effect: {
+                                        target(card, player, target, current) {
+                                            if (get.tag(card, "turnOver")) {
+                                                return "zeroplayertarget";
+                                            }
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     }
                 },
                 translate: {
@@ -2768,7 +2840,7 @@ export default function () {
                     "ashley_mengshu": "萌术",
                     "ashley_mengshu_info": "出牌阶段，你可以将一张黑桃手牌当作【知己知彼】或【远交近攻】使用。若你本局游戏内已经发动过了〖萌术〗，则你必须选择与上次不同的选项。",
                     "ui_jinghua": "净化",
-                    "ui_jinghua_info": "每轮开始时，你可选择X（X至多为你的体力上限）名角色，令其获得技能【谦节】并依次弃置判定区里存在的所有延时类锦囊，合计Y张。你额外摸X+Y张牌。",
+                    "ui_jinghua_info": "每轮开始时，你可选择X（X至多为你的体力上限）名角色，令其获得技能【强运】并依次弃置判定区里存在的所有延时类锦囊，合计Y张。若该角色已翻面，你令该角色再次翻面。你额外摸X+Y张牌。",
                     "ui_leshan": "乐善",
                     "ui_leshan_info": "出牌阶段限一次，若你的手牌数大于5，你可将一半的手牌（向下取整）交给体力值最少的一名角色。你与该角色各额外回复一点体力。",
                     "ui_wangyou": "忘忧",
@@ -2801,6 +2873,8 @@ export default function () {
                     "asuka_longzhen_info": "锁定技，出牌阶段，你使用【杀】无次数限制，你必须使用与当前回合已使用过的花色不同的【杀】。若你使用过所有花色，你在出牌阶段结束后回复一点体力。",
                     "kanagi_duxin": "读心",
                     "kanagi_duxin_info": "每回合限一次。出牌阶段开始前，你可以扣减一点体力上限（若体力上限大于等于8则改为两点），观看一名其他角色的手牌并可以弃置其中一张牌。",
+                    "tsuruno_qiangyun": "强运",
+                    "tsuruno_qiangyun_info": "锁定技，当你横置、翻面（叠置）时，取消之。你不能成为延时类锦囊的目标。",
                     "tsuruno_tuanluan": "团栾",
                     "tsuruno_tuanluan_info": "出牌阶段，你可以重铸装备牌，若如此做，【决堰】视为未发动过。若此装备对应的装备区被废除，恢复该装备栏。",
                     "hazuki_mingjian": "明鉴",
@@ -2813,9 +2887,9 @@ export default function () {
             },
             intro: "魔法纪录所有角色的三国杀，玩的开心（",
             author: "Waser",
-            diskURL: "https://pan.baidu.com/s/5Yqdpb-Dh-BTnGepipfd3AA",
+            diskURL: "https://github.com/waser1999/magi_reko_kill",
             forumURL: "",
             version: "1.1",
-        }, files: { "character": ["devil_homura.jpg"], "card": [], "skill": [], "audio": [] }, connect: false
+        }, files: { "character": ["devil_homura.jpg"], "card": [], "skill": [], "audio": [] }, connect: false,
     }
 };
