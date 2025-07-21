@@ -2696,9 +2696,8 @@ export default function () {
                     "hazuki_mingjian": {
                         inherit: "mingjian",
                         audio: "mingjian",
-                        content() {
+                        content(event, trigger, player) {
                             player.give(cards, target);
-                            player.skip("phaseUse");
                             target.insertPhase();
                         },
                         "_priority": 0,
