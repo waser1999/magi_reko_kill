@@ -44,7 +44,7 @@ export default function () {
                     madoka: ["female", "yuan", 3, ["madoka_liegong", "madoka_yingbian", "xieli"], ["zhu", "des:魔法之雨", "ext:魔法纪录/image/madoka.jpg", "die:ext:魔法纪录/audio/die/madoka.mp3"]],
                     homura: ["female", "yuan", 3, ["reguanxing", "luoshen", "homura_shiting"], ["des:导弹集中轰炸", "ext:魔法纪录/image/homura.jpg", "die:ext:魔法纪录/audio/die/homura.mp3"]],
                     "homura2": ["female", "yuan", 3, ["homura2_jihuo", "yiji", "huoji"], ["des:时间停止攻击", "ext:魔法纪录/image/homura2.jpg", "die:ext:魔法纪录/audio/die/homura2.mp3"]],
-                    nanaka: ["female", "huan", 3, ["nanaka_xiaoji", "jizhi"], ["des:白椿", "ext:魔法纪录/image/nanaka.jpg", "die:ext:魔法纪录/audio/die/nanaka.mp3"]],
+                    nanaka: ["female", "huan", 3, ["nanaka_huaxin", "jizhi"], ["des:白椿", "ext:魔法纪录/image/nanaka.jpg", "die:ext:魔法纪录/audio/die/nanaka.mp3"]],
                     hazuki: ["female", "huan", 3, ["huituo", "hazuki_mingjian"], ["des:雷霆激流", "ext:魔法纪录/image/hazuki.jpg", "die:ext:魔法纪录/audio/die/hazuki.mp3"]],
                     karin: ["female", "ma", 3, ["daoshu", "weicheng"], ["des:幽紫灵火", "ext:魔法纪录/image/karin.jpg", "doublegroup:huan:ma", "die:ext:魔法纪录/audio/die/karin.mp3"]],
                     nemu: ["female", "ma", 5, ["nemu_zhiyao", "nemu_sanyao", "nemu_tiruo"], ["des:创造的孩子们", "ext:魔法纪录/image/nemu.jpg", "die:ext:魔法纪录/audio/die/nemu.mp3"]],
@@ -71,11 +71,11 @@ export default function () {
                     nagisa: ["female", "yuan", 3, ["tiandu", "ollianhuan", "olniepan", "olsbqiwu"], ["ext:魔法纪录/image/nagisa.jpg", "die:ext:魔法纪录/audio/die/nagisa.mp3"]],
                     kanagi: ["female", "huan", 4, ["reshuishi", "kanagi_duxin", "kanagi_nvpu", "kanagi_dongyou"], ["zhu", "ext:魔法纪录/image/kanagi.jpg", "die:ext:魔法纪录/audio/die/kanagi.mp3"]],
                     suzune: ["female", "wan", 4, ["retuogu", "shanzhuan"], ["ext:魔法纪录/image/suzune.jpg", "die:ext:魔法纪录/audio/die/suzune.mp3"]],
-                    dArc: ["female", "wan", 4, ["dArc_congjun", "nanaka_xiaoji", "gongji"], ["ext:魔法纪录/image/dArc.jpg", "die:ext:魔法纪录/audio/die/dArc.mp3"]],
+                    dArc: ["female", "wan", 4, ["dArc_congjun", "nanaka_huaxin", "gongji"], ["ext:魔法纪录/image/dArc.jpg", "die:ext:魔法纪录/audio/die/dArc.mp3"]],
                     himika: ["female", "huan", 4, ["dclihuo", "olchunlao"], ["des:陨石拳", "ext:魔法纪录/image/himika.jpg", "die:ext:魔法纪录/audio/die/himika.mp3"]],
                     masara: ["female", "huan", 4, ["rebiyue", "zhendu", "qiluan"], ["des:隐形刺杀", "ext:魔法纪录/image/masara.jpg", "die:ext:魔法纪录/audio/die/masara.mp3"]],
                     seika: ["female", "huan", 4, ["dcxiongyi"], ["des:钻石飞溅", "ext:魔法纪录/image/seika.jpg", "die:ext:魔法纪录/audio/die/seika.mp3"]],
-                    rera: ["female", "huan", 4, ["xinfu_jijie", "xinfu_jiyuan"], ["des:火焰之环", "ext:魔法纪录/image/rera.jpg", "die:ext:魔法纪录/audio/die/rera.mp3"]],
+                    rera: ["female", "huan", 4, ["xinfu_jijie", "rera_nuanxin"], ["des:火焰之环", "ext:魔法纪录/image/rera.jpg", "die:ext:魔法纪录/audio/die/rera.mp3"]],
                     mito: ["female", "huan", 5, ["dcshuangren", "hanzhan"], ["des:绿叶如注", "ext:魔法纪录/image/mito.jpg", "die:ext:魔法纪录/audio/die/mito.mp3"]],
                     ryo: ["female", "ma", 4, ["dcsbyaozuo", "dcsbzhuanwen"], ["ext:魔法纪录/image/ryo.jpg", "die:ext:魔法纪录/audio/die/ryo.mp3"]],
                     ai: ["female", "ma", 3, ["xingtu", "juezhi", "ai_shuxin"], ["ext:魔法纪录/image/ai.jpg", "die:ext:魔法纪录/audio/die/ai.mp3"]],
@@ -726,6 +726,19 @@ export default function () {
                         },
                         toself: true,
                     },
+                    "test_tube": {
+                        fullskin: true,
+                        type: "equip",
+                        subtype: "equip1",
+                        distance: { attackFrom: -1 },
+                        ai: {
+                            basic: {
+                                equipValue: 2,
+                            },
+                        },
+                        skills: ["test_tube_skill"],
+                        image: "ext:魔法纪录/card_image/test_tube.png",
+                    },
                 },
                 skill: {
                     "jk_unform_skill": {
@@ -941,6 +954,18 @@ export default function () {
                         },
                         "_priority": -25,
                     },
+                    "test_tube_skill": {
+                        audio: "ext:魔法纪录:1",
+                        forced: true,
+                        equipSkill: true,
+                        trigger: {
+                            player: "shaDamage",
+                        },
+                        async content(event, trigger, player) {
+                            let card = trigger.card;
+                            trigger.target.gain(game.createCard2("du", card.suit, card.number), "gain2");
+                        }
+                    },
                 },
                 translate: {
                     "jk_unform": "JK制服",
@@ -961,6 +986,9 @@ export default function () {
                     mengshenjueqiang: "盟神决枪",
                     "mengshenjueqiang_info": "每回合限一次，当你使用【杀】造成伤害后，你可以进行判定，若结果为：红色，你回复1点体力；黑色：你摸两张牌。",
                     "mengshenjueqiang_skill": "盟神决枪",
+                    "test_tube": "毒剂试管",
+                    "test_tube_info": "锁定技。当你使用【杀】造成伤害时，你令目标额外获得一张花色与点数与此【杀】相同的【毒】。",
+                    "test_tube_skill": "毒剂试管",
                 },
                 list: [
                     ["heart", 9, "jk_unform", null, ["gifts"]],
@@ -968,7 +996,22 @@ export default function () {
                     ["spade", 2, "kuroe_kill"],
                     ["spade", 2, "yongzhuang"],
                     ["club", 1, "shuibojian"],
-                    ["heart", 1, "mengshenjueqiang"]
+                    ["heart", 1, "mengshenjueqiang"],
+                    ["spade", 2, "test_tube"],
+                    ["club", 4, "du", null, ["gifts"]],
+                    ["club", 5, "du", null, ["gifts"]],
+                    ["club", 9, "du", null, ["gifts"]],
+                    ["club", 10, "du", null, ["gifts"]],
+                    ["spade", 4, "du"],
+                    ["club", 4, "du", null, ["gifts"]],
+                    ["club", 5, "du", null, ["gifts"]],
+                    ["club", 9, "du", null, ["gifts"]],
+                    ["club", 10, "du", null, ["gifts"]],
+                    ["spade", 4, "du"],
+                    ["spade", 1, "guaguliaodu"],
+                    ["heart", 1, "guaguliaodu"],
+                    ["club", 1, "guaguliaodu"],
+                    ["diamond", 1, "guaguliaodu"],
                 ],
             },
             skill: {
@@ -1373,7 +1416,7 @@ export default function () {
                         "_priority": 0,
                     },
                     "oriko_yuzhi": {
-                        group: ["oriko_yuzhi_1", "oriko_yuzhi_2"],
+                        group: ["oriko_yuzhi_1", "oriko_yuzhi_2", "oriko_yuzhi_use"],
                         mark: true,
                         marktext: "视",
                         intro: {
@@ -1391,7 +1434,7 @@ export default function () {
                                     return player.countExpansions("oriko_yuzhi") < game.players.length;
                                 },
                                 content: function () {
-                                    player.addToExpansion(get.cards(1)).gaintag.add("oriko_yuzhi");
+                                    player.addToExpansion(get.cards()).gaintag.add("oriko_yuzhi");
                                 },
                                 sub: true,
                                 sourceSkill: "oriko_yuzhi",
@@ -1412,6 +1455,23 @@ export default function () {
                                 sourceSkill: "oriko_yuzhi",
                                 "_priority": 0,
                             },
+                            "use": {
+                                trigger: {
+                                    player: ["damageEnd", "phaseDrawAfter"],
+                                },
+                                filter: function (event, player) {
+                                    return player.hasExpansions("oriko_yuzhi");
+                                },
+                                async content(event, trigger, player) {
+                                    let num = player.countExpansions("oriko_yuzhi");
+                                    player.gain(player.getExpansions("oriko_yuzhi"));
+                                    const result = await player.chooseCard("he", true, "选择" + get.cnNumber(num) + "张牌作为『视』", num).forResult();
+                                    if (result.bool) {
+                                        player.addToExpansion(result.cards).gaintag.add("oriko_yuzhi");
+                                    }
+                                }
+
+                            }
                         },
                         "_priority": 0,
                     },
@@ -1472,8 +1532,8 @@ export default function () {
                                 trigger.player.judging[0] = result.cards[0];
                                 trigger.orderingCards.addArray(result.cards);
                                 game.log(trigger.player, "的判定牌改为", card);
-                                player.draw();
                                 game.delay(2);
+                                player.draw();
                             }
                         },
                         ai: {
@@ -1596,12 +1656,12 @@ export default function () {
                         "_priority": 0,
                     },
                     "test_skill": {
-                        enable: "phaseUse",
+                        enable: ["phaseUse"],
                         filter(event, player) {
                             return player.countCards('h') > 0;
                         },
                         async content(event, trigger, player) {
-                            let cards = [get.cardPile("maid_uniform", "field"), get.cardPile("du", "field")];
+                            let cards = [get.cardPile("test_tube", "field"), get.cardPile("sha", "field")];
                             player.gain(cards, "gain2");
                         },
                         "_priority": 0,
@@ -1893,7 +1953,9 @@ export default function () {
                         },
                         async content(event, trigger, player) {
                             let result = await player
-                                .chooseTarget([1, player.maxHp], "令其获得技能【强运】，并弃置每名角色判定区的所有牌")
+                                .chooseTarget([1, player.maxHp], "令其获得技能【强运】，并弃置每名角色判定区的所有牌", function (card, player, target) {
+                                    return !target.hasSkill("tsuruno_qiangyun");
+                                })
                                 .set("ai", function (target) {
                                     if (target.name == "toka") return true;
                                     return get.attitude(_status.event.player, target) > 0;
@@ -1910,6 +1972,7 @@ export default function () {
                                 target.addAdditionalSkills("ui_qiangyun", "tsuruno_qiangyun", true);
                                 if (target.countCards("j")) num += target.countCards("j");
                                 target.discard(target.getCards("j"));
+                                if (target.isLinked()) target.link();
                                 if (target.isTurnedOver()) target.turnOver();
                             }
 
@@ -1936,15 +1999,13 @@ export default function () {
                         },
                         check(event, player) {
                             return (game.hasPlayer(function (target) {
-                                if (
+                                return (
                                     player !== target &&
                                     !game.hasPlayer(function (current) {
                                         return current !== player && current !== target && current.hp < target.hp;
                                     }) &&
                                     get.attitude(player, target) > 0
-                                ) return true;
-                                if (target.hp == 1 && get.attitude(player, target) > 0) return true;
-                                return false;
+                                )
                             })
                             );
                         },
@@ -1970,12 +2031,6 @@ export default function () {
                         },
                         ai: {
                             threaten: 2,
-                            noh: true,
-                            skillTagFilter(player, tag) {
-                                if (tag == "noh") {
-                                    if (player.countCards("h") != 2) return false;
-                                }
-                            },
                         },
                         "_priority": 0,
                     },
@@ -2290,7 +2345,7 @@ export default function () {
                         },
                         "_priority": 0,
                     },
-                    "nanaka_xiaoji": {
+                    "nanaka_huaxin": {
                         inherit: "xiaoji",
                         getIndex(event, player) {
                             const evt = event.getl(player);
@@ -2764,8 +2819,8 @@ export default function () {
                                     player: ["linkBegin"],
                                 },
                                 forced: true,
-                                filter(event, player, name) {
-                                    return !player.isLink();
+                                filter(event, player) {
+                                    return !player.isLinked();
                                 },
                                 async content(event, trigger, player) {
                                     trigger.cancel();
@@ -2807,6 +2862,24 @@ export default function () {
                                 },
                             },
                         },
+                    },
+                    "rera_nuanxin": {
+                        inherit: "xinfu_jiyuan",
+                        group: ["rera_nuanxin_gift"],
+                        subSkill: {
+                            gift: {
+                                sourceSkill: "rera_nuanxin",
+                                trigger: {
+                                    player: "giftAccepted",
+                                },
+                                check(event, player, triggername, target) {
+                                    return get.attitude(player, target) > 0;
+                                },
+                                content(event, trigger, player) {
+                                    trigger.target.draw();
+                                },
+                            }
+                        }
                     }
                 },
                 translate: {
@@ -2817,7 +2890,7 @@ export default function () {
                     yuanjiu: "援救",
                     "yuanjiu_info": "主角技，当你需要使用或打出一张【闪】时，你可以令其他神盟角色选择是否打出一张【闪】。若有角色响应，则你视为使用或打出了一张【闪】。",
                     "oriko_yuzhi": "预知",
-                    "oriko_yuzhi_info": "锁定技，一名角色的准备阶段开始时，你从牌堆顶抽取一张牌并放置在武将牌上，称为『视』。『视』的上限与场上玩家数相等。当一名角色死亡时，随机弃置一张『视』。",
+                    "oriko_yuzhi_info": "锁定技，一名角色的准备阶段开始时，你从牌堆顶抽取一张牌并放置在武将牌上，称为『视』。『视』的上限与场上玩家数相等。当一名角色死亡时，随机弃置一张『视』。当你的摸牌阶段结束或受到伤害时，你可以将『视』放入手牌，然后将等量的牌放入『视』。",
                     "oriko_jiangsha": "将杀",
                     "oriko_jiangsha_info": "当一名角色的判定牌生效前，你可以打出一张『视』代替之并摸一张牌。",
                     "oriko_xianzhong": "献种",
@@ -2840,7 +2913,7 @@ export default function () {
                     "ashley_mengshu": "萌术",
                     "ashley_mengshu_info": "出牌阶段，你可以将一张黑桃手牌当作【知己知彼】或【远交近攻】使用。若你本局游戏内已经发动过了〖萌术〗，则你必须选择与上次不同的选项。",
                     "ui_jinghua": "净化",
-                    "ui_jinghua_info": "每轮开始时，你可选择X（X至多为你的体力上限）名角色，令其获得技能【强运】并依次弃置判定区里存在的所有延时类锦囊，合计Y张。若该角色已翻面，你令该角色再次翻面。你额外摸X+Y张牌。",
+                    "ui_jinghua_info": "每轮开始时，你可选择X（X至多为你的体力上限）名角色，令其获得技能【强运】（如有此技能则无法选择）并依次弃置判定区里存在的所有延时类锦囊，合计Y张。若该角色已翻面、横置，你令该角色还原此状态。你额外摸X+Y张牌。",
                     "ui_leshan": "乐善",
                     "ui_leshan_info": "出牌阶段限一次，若你的手牌数大于5，你可将一半的手牌（向下取整）交给体力值最少的一名角色。你与该角色各额外回复一点体力。",
                     "ui_wangyou": "忘忧",
@@ -2861,8 +2934,8 @@ export default function () {
                     "mabayu_jingxiang_info": "主角技，回合开始时，你从三个主角技中选择一个作为你的主角技。",
                     "test_skill": "摸牌",
                     "test_skill_info": "摸一张选定的牌。",
-                    "nanaka_xiaoji": "枭姬",
-                    "nanaka_xiaoji_info": "当你失去装备区里的牌后，你可以摸两张牌。",
+                    "nanaka_huaxin": "华心",
+                    "nanaka_huaxin_info": "当你失去装备区里的牌后，你可以摸两张牌。",
                     "madoka_liegong": "烈弓",
                     "madoka_liegong_info": "①若你的装备区内没有武器牌，则你手牌区内所有【杀】的属性视为无属性。②当你使用牌时，或成为其他角色使用牌的目标后，你记录此牌的花色。③当你使用【杀】指定唯一目标后，若你〖烈弓②〗的记录不为空，则你可亮出牌堆顶的X张牌（X为你〖烈弓②〗记录过的花色数-1），令此【杀】的伤害值基数+Y（Y为亮出牌中被〖烈弓②〗记录过的花色的数量），且目标角色不能使用〖烈弓②〗记录过花色的牌响应此【杀】。此【杀】使用结算结束后，你清除〖烈弓②〗的记录。",
                     "madoka_yingbian": "应变",
@@ -2883,9 +2956,11 @@ export default function () {
                     "kaede_manmiao_info": "锁定技，你使用【桃】时，摸一张牌。你的【毒】均视为【桃】。",
                     "kanagi_nvpu": "女仆",
                     "kanagi_nvpu_info": "锁定技，【女仆装】的效果对你无效。",
+                    "rera_nuanxin": "暖心",
+                    "rera_nuanxin_info": "当有角色进入濒死状态时，或你将牌交给、赠予一名其他角色后，你可以令该角色摸一张牌。",
                 },
             },
-            intro: "魔法纪录所有角色的三国杀，玩的开心（",
+            intro: "魔法纪录所有角色的三国杀，含军争、国战、用间、应变等拓展锦囊。",
             author: "Waser",
             diskURL: "https://github.com/waser1999/magi_reko_kill",
             forumURL: "",
