@@ -56,6 +56,7 @@ export default function () {
                     ["heart", 1, "guaguliaodu"],
                     ["club", 1, "guaguliaodu"],
                     ["diamond", 1, "guaguliaodu"],
+                    ["heart", 5, "special_week"],
                 ],
             },
             skill: { ...skills },

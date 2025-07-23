@@ -20,6 +20,8 @@ const translates = {
     "test_tube": "毒剂试管",
     "test_tube_info": "锁定技。当你使用【杀】造成伤害时，你令目标额外获得一张花色与点数与此【杀】相同的【毒】。",
     "test_tube_skill": "毒剂试管",
+    "special_week": "特别周",
+    "special_week_info": "锁定技，你计算与其他角色的距离-1。",
     "sayaka_qiangyin": "强音",
     "sayaka_qiangyin_info": "出牌阶段限一次，你可以弃置两张手牌并选择一名已经受伤的角色。你与其各回复1点体力并各获得【不屈】直到你的下一回合开始时。",
     xieli: "协力",

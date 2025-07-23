@@ -512,6 +512,13 @@ const cards = {
         skills: ["test_tube_skill"],
         image: "ext:魔法纪录/card_image/test_tube.png",
     },
+    "special_week": {
+        fullskin: true,
+        type: "equip",
+        subtype: "equip4",
+        distance: { globalFrom: -1 },
+        image: "ext:魔法纪录/card_image/special_week.png",
+    }
 }
 
 export default cards;
