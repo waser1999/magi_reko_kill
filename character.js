@@ -33,7 +33,7 @@ const characters = {
         img: "extension/魔法纪录/image/oriko.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/oriko.mp3"],
         description: "神谕光线",
-        isZhu: true
+        isZhugong: true
     },
     "ashley": {
         sex: "female",
@@ -100,7 +100,7 @@ const characters = {
         img: "extension/魔法纪录/image/iroha.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
         description: "未来之路",
-        isZhu: true
+        isZhugong: true
     },
     "yachiyo": {
         sex: "female",
@@ -112,7 +112,7 @@ const characters = {
         img: "extension/魔法纪录/image/yachiyo.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yachiyo.mp3"],
         description: "绝对之雨",
-        isZhu: true
+        isZhugong: true
     },
     "felicia": {
         sex: "female",
@@ -135,7 +135,7 @@ const characters = {
         img: "extension/魔法纪录/image/toka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/toka.mp3"],
         description: "新创世纪",
-        isZhu: true
+        isZhugong: true
     },
     "alina": {
         sex: "female",
@@ -225,7 +225,7 @@ const characters = {
         img: "extension/魔法纪录/image/madoka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/madoka.mp3"],
         description: "魔法之雨",
-        isZhu: true
+        isZhugong: true
     },
     "homura": {
         sex: "female",
@@ -326,7 +326,7 @@ const characters = {
         img: "extension/魔法纪录/image/mabayu.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mabayu.mp3"],
         description: "空洞人偶",
-        isZhu: true
+        isZhugong: true
     },
     "ren": {
         sex: "female",
@@ -349,7 +349,7 @@ const characters = {
         img: "extension/魔法纪录/image/ulti_madoka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ulti_madoka.mp3"],
         description: "再也没有必要绝望了！",
-        isZhu: true
+        isZhugong: true
     },
     "sayaka": {
         sex: "female",
@@ -402,7 +402,7 @@ const characters = {
         skills: ["qixing", "kuangfeng", "dawu", "kazumi_xingyun"],
         img: "extension/魔法纪录/image/kazumi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kazumi.mp3"],
-        isZhu: true
+        isZhugong: true
     },
     "kushu": {
         sex: "female",
@@ -469,8 +469,8 @@ const characters = {
         skills: ["ani_lieying", "yuanjiu", "test_skill"],
         img: "extension/魔法纪录/image/anime_iroha.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/anime_iroha.mp3"],
-        isZhu: true,
-        forbidAI: true
+        isZhugong: true,
+        isAiForbidden: true
     },
     "kanae": {
         sex: "female",
@@ -533,7 +533,7 @@ const characters = {
         skills: ["reshuishi", "kanagi_duxin", "kanagi_nvpu", "kanagi_dongyou"],
         img: "extension/魔法纪录/image/kanagi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kanagi.mp3"],
-        isZhu: true
+        isZhugong: true
     },
     "suzune": {
         sex: "female",
@@ -628,7 +628,8 @@ const characters = {
         hujia: 0,
         skills: ["xingtu", "juezhi", "ai_shuxin"],
         img: "extension/魔法纪录/image/ai.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/ai.mp3"]
+        dieAudios: ["ext:魔法纪录/audio/die/ai.mp3"],
+        description: "无名人工智能之谣",
     },
     "asumi": {
         sex: "female",
@@ -638,7 +639,8 @@ const characters = {
         hujia: 0,
         skills: ["spzhuilie", "zhaxiang"],
         img: "extension/魔法纪录/image/asumi.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/asumi.mp3"]
+        dieAudios: ["ext:魔法纪录/audio/die/asumi.mp3"],
+        description: "绝望交响曲",
     },
     "saint_mami": {
         sex: "female",
@@ -669,6 +671,15 @@ const characters = {
         skills: ["dcgeyuan", "dcgusuan", "dcjieshu", "bazhen"],
         img: "extension/魔法纪录/image/devil_homura.jpg",
     },
+    "hinano": {
+        sex: "female",
+        group: "huan",
+        hp: 3,
+        maxHp: 3,
+        hujia: 0,
+        skills: ["hinano_huawu", "hinano_duji", "hinano_shiyao", "hinano_baoming"],
+        img: "extension/魔法纪录/image/hinano.png",
+    }
 }
 
 const character_translates = {
@@ -739,6 +750,7 @@ const character_translates = {
     "uwasa_tsuruno_prefix": "谣",
     "devil_homura": "魔晓美焰",
     "devil_homura_prefix": "魔",
+    hinano: "都雏乃",
 }
 
 const perfectPairs = {

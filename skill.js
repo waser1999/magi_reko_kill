@@ -893,16 +893,6 @@ const skills = {
             }
             return true;
         },
-        audio: "ext:魔法纪录:1",
-        trigger: {
-            source: "damageBegin",
-        },
-        async content(event, trigger, player) {
-            if (trigger.player.name == "kuroe") {
-                player.line(trigger.player);
-                trigger.player.die();
-            }
-        },
         "_priority": 0,
     },
     "homura_shiting": {
@@ -1991,6 +1981,11 @@ const skills = {
                     return "tao";
                 }
             },
+            aiValue(player, card, num) {
+                if (card.name == "du") {
+                    return get.value({ name: "tao" });
+                }
+            },
         },
         ai: {
             nodu: true,
@@ -2090,6 +2085,171 @@ const skills = {
                 },
             }
         }
-    }
+    },
+    "hinano_huawu": {
+        group: "hinano_huawu2",
+        locked: true,
+        "_priority": 0,
+    },
+    "hinano_huawu2": {
+        forced: true,
+        equipSkill: true,
+        noHidden: true,
+        inherit: "test_tube_skill",
+        sourceSkill: "hinano_huawu",
+        filter(event, player) {
+            if (!player.hasEmptySlot(1)) {
+                return false;
+            }
+            return true;
+        },
+        audio: "ext:魔法纪录:1",
+        "_priority": 0,
+    },
+    "hinano_duji": {
+        forced: true,
+        mod: {
+            cardname(card, player, name) {
+                if (player == _status.currentPhase && card.name == "du") {
+                    return "guohe";
+                }
+            },
+            aiValue(player, card, num) {
+                if (card.name == "du") {
+                    return get.value({ name: "guohe" });
+                }
+            },
+        },
+        init: () => {
+            game.addGlobalSkill("hinano_duji_du");
+            game.addGlobalSkill("g_du");    //赠毒程序代码
+        },
+        onremove: () => {
+            if (!game.hasPlayer(i => i.hasSkill("hinano_duji", null, null, false), true)) {
+                game.removeGlobalSkill("hinano_duji_du");
+            }
+        },
+        subSkill: {
+            du: {
+                mod: {
+                    cardname(card, player, name) {
+                        if (_status.currentPhase && player != _status.currentPhase && _status.currentPhase.hasSkill("hinano_duji") && get.suit(card) == "club") {
+                            return "du";
+                        }
+                    },
+                    aiValue(player, card, num) {
+                        if (get.name(card) == "du" && card.name != "du") {
+                            return get.value({ name: card.name });
+                        }
+                    },
+                },
+                trigger: { player: "dieAfter" },
+                filter: () => {
+                    return !game.hasPlayer(i => i.hasSkill("hinano_duji", null, null, false), true);
+                },
+                silent: true,
+                forceDie: true,
+                content: () => {
+                    game.removeGlobalSkill("hinano_duji_du");
+                },
+            },
+        },
+        ai: { threaten: 2.1 },
+        trigger: {
+            player: "loseHpBefore",
+        },
+        filter(event, player) {
+            return event.type == "du";
+        },
+        content() {
+            trigger.cancel();
+        }
+    },
+    "hinano_shiyao": {
+        global: "hinano_shiyao_global",
+        subSkill: {
+            global: {
+                enable: "phaseUse",
+                usable: 1,
+                filterTarget(card, player, target) {
+                    return target.hasSkill("hinano_shiyao");
+                },
+                filter(event, player) {
+                    const num = game.countPlayer(current => current.hasSkill("hinano_shiyao"));
+                    return num > 0;
+                },
+                selectTarget() {
+                    const num = game.countPlayer(current => current.hasSkill("hinano_shiyao"));
+                    if (num > 1) {
+                        return 1;
+                    }
+                    return -1;
+                },
+                async content(event, trigger, player) {
+                    const target = event.target;
+                    const card = game.createCard("du", lib.suit.randomGet(), Math.ceil(Math.random() * 13));
+                    if (card) {
+                        await target.gain(card, "gain2");
+                    }
+                    const result = await player
+                        .judge(card => {
+                            if (get.color(card) == "red") {
+                                return 2;
+                            }
+                            return 1;
+                        })
+                        .forResult();
+                    if (result.color == "red") {
+                        player.useCard({ name: "guaguliaodu" });
+
+                        let num = 0;
+                        player.getCards("he").filter(card => get.suit(card) == "club").forEach(card => {
+                            player.discard(card);
+                            num++;
+                        });
+                        player.draw(num);
+                    } else if (result.color == "black") {
+                        const cardx = game.createCard("du", lib.suit.randomGet(), Math.ceil(Math.random() * 13));
+                        if (cardx) {
+                            player.getCards("he").filter(card => get.suit(card) == "spade").forEach(card => {
+                                player.discard(card);
+                            });
+                            await player.gain(cardx, "gain2");
+                        }
+                    }
+                },
+                ai: {
+                    order: 1,
+                    result: {
+                        player: 1,
+                    },
+                },
+            },
+        },
+    },
+    "hinano_baoming": {
+        enable: "phaseUse",
+        filter(event, player) {
+            return game.hasPlayer(current => player != current);
+        },
+        limited: true,
+        skillAnimation: "epic",
+        animationColor: "thunder",
+        filterTarget: lib.filter.notMe,
+        selectTarget: -1,        // 表示选择所有目标
+        multiline: true,
+        async contentBefore(event, trigger, player) {
+            player.awakenSkill(event.skill);
+        },
+        async content(event, trigger, player) {
+            const { target } = event;
+            let num = target.countCards("h");
+            target.discard(target.getCards("h"));
+            target.draw(num);
+        },
+        ai: {
+            order: 5,
+        }
+    },
 };
 export default skills;

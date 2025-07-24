@@ -97,6 +97,14 @@ const translates = {
     "kanagi_nvpu_info": "锁定技，【女仆装】的效果对你无效。",
     "rera_nuanxin": "暖心",
     "rera_nuanxin_info": "当有角色进入濒死状态时，或你将牌交给、赠予一名其他角色后，你可以令该角色摸一张牌。",
+    "hinano_huawu": "化武",
+    "hinano_huawu_info": "锁定技，当你未装备武器时，你视为装备【毒剂试管】。",
+    "hinano_duji": "毒剂",
+    "hinano_duji_info": "锁定技，【毒】对你无效。你的回合内，其他角色的梅花牌视为【毒】，你的梅花牌和【毒】视为【过河拆桥】。",
+    "hinano_shiyao": "试药",
+    "hinano_shiyao_info": "每名角色的回合限一次，其可以令你获得一张【毒】，并进行判定：若为黑色，则弃置所有黑桃牌并获得一张【毒】；若为红色，其可视为使用【刮骨疗毒】，弃置所有梅花牌并摸等量的牌。",
+    "hinano_baoming": "爆鸣",
+    "hinano_baoming_info": "限定技。出牌阶段限一次，你依次令所有其他角色弃置所有手牌，并摸等量的牌。若没有人因此进入濒死状态，你复原此技能。",
 }
 
 export default translates;
