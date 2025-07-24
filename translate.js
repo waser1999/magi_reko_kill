@@ -104,7 +104,7 @@ const translates = {
     "hinano_shiyao": "试药",
     "hinano_shiyao_info": "每名角色的回合限一次，其可以令你获得一张【毒】，并进行判定：若为黑色，则弃置所有黑桃牌并获得一张【毒】；若为红色，其可视为使用【刮骨疗毒】，弃置所有梅花牌并摸等量的牌。",
     "hinano_baoming": "爆鸣",
-    "hinano_baoming_info": "限定技。出牌阶段限一次，你依次令所有其他角色弃置所有手牌，并摸等量的牌。若没有人因此进入濒死状态，你复原此技能。",
+    "hinano_baoming_info": "限定技。出牌阶段限一次，你依次令所有其他角色弃置所有手牌，并摸等量的牌。",
 }
 
 export default translates;
