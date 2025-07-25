@@ -105,6 +105,22 @@ const translates = {
     "hinano_shiyao_info": "每名角色的回合限一次，其可以令你获得一张【毒】，并进行判定：若为黑色，则弃置所有黑桃牌并获得一张【毒】；若为红色，其可视为使用【刮骨疗毒】，弃置所有梅花牌并摸等量的牌。",
     "hinano_baoming": "爆鸣",
     "hinano_baoming_info": "限定技。出牌阶段限一次，你依次令所有其他角色弃置所有手牌，并摸等量的牌。",
+    "tamaki_huanyu": "环羽",
+    "tamaki_huanyu_info": "锁定技，当你受到其他角色造成的伤害时，若其手牌数大于你，则其需弃置一张手牌，否则此伤害-1。",
+    "mami_tiro_finale": "终幕",
+    "mami_tiro_finale_info": "①出牌阶段限一次。你可以将两张手牌当【万箭齐发】使用。②每回合限三次，当其他角色因响应你使用的【万箭齐发】而打出【闪】时，你摸一张牌。",
+    "mami_tiro_finale_append": '<span class="text" style="font-family:yuanli">Tiro Finale!</span>',
+    "saint_mami_tiro_finale": "终夜",
+    "saint_mami_tiro_finale_info": "你可以将两张与你本回合以此法转化的花色均不相同的手牌当【万箭齐发】使用，然后当一名角色因响应此牌而打出【闪】时，该角色摸一张牌。若你以此法使用的【万箭齐发】未造成伤害，则你可以在此牌结算完成后摸X张牌。(X为此牌的目标数)。",
+    "saint_mami_tiro_finale_append": '<span class="text" style="font-family:yuanli">Tiro Finale Holly Night!</span>',
+    "mami_duandai": "缎带",
+    "mami_duandai_info": "你可以将一张方片牌当做【乐不思蜀】使用。",
+    "mami_qiaobian": "巧变",
+    "mami_qiaobian_info": "你可以弃置一张手牌并跳过自己的一个阶段（准备阶段和结束阶段除外）。若你以此法跳过了摸牌阶段，则你可以获得至多三名其他角色的各一张手牌；若你以此法跳过了出牌阶段，则你可以移动场上的一张牌。",
+    "homura_juwu": "聚武",
+    "homura_juwu_info": "准备阶段，你可以判定并获得判定牌，且可重复此流程直到结果的颜色不同。",
+    "ryo_yaozuo": "邀作",
+    "ryo_yaozuo_info": "出牌阶段限一次，你令所有其他角色依次选择是否交给你一张牌，未交给你牌的角色，本回合你对其下次造成伤害+1；然后你对离你最近的下家角色发动一次〖撰文〗。",
 }
 
 export default translates;
