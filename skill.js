@@ -283,6 +283,7 @@ const skills = {
         },
     },
     xieli: {
+        audio: "jijiang",
         group: ["xieli1"],
         zhuSkill: true,
         filter(event, player) {
@@ -566,6 +567,7 @@ const skills = {
         "_priority": 1,
     },
     yuanjiu: {
+        audio: "hujia",
         zhuSkill: true,
         trigger: {
             player: ["chooseToRespondBefore", "chooseToUseBefore"],
@@ -756,6 +758,7 @@ const skills = {
         "_priority": 0,
     },
     "oriko_xianzhong": {
+        audio: "songwei",
         zhuSkill: true,
         trigger: {
             global: "damage",
@@ -780,6 +783,7 @@ const skills = {
         "_priority": 0,
     },
     "yachiyo_gujun": {
+        audio: "sbsongwei",
         zhuSkill: true,
         trigger: {
             global: "dying",
@@ -807,6 +811,7 @@ const skills = {
         "_priority": 0,
     },
     "magius_jiefang": {
+        audio: "xinhuangtian",
         zhuSkill: true,
         global: "magius_jiefang2",
         "_priority": 0,
@@ -1292,7 +1297,7 @@ const skills = {
         "_priority": 0,
     },
     "kanagi_dongyou": {
-        audio: "ext:魔法纪录:2",
+        audio: "jiuyuan",
         trigger: {
             target: "taoBegin",
         },
@@ -1341,7 +1346,7 @@ const skills = {
         "_priority": 0,
     },
     "homura2_jihuo": {
-        audio: "ext:魔法纪录:2",
+        audio: "luoying",
         group: ["homura2_jihuo_discard", "homura2_jihuo_judge"],
         subfrequent: ["judge"],
         subSkill: {
@@ -1554,7 +1559,7 @@ const skills = {
         },
     },
     "madoka_liegong": {
-        audio: "ext:魔法纪录:2",
+        audio: "sbliegong",
         mod: {
             cardnature(card, player) {
                 if (!player.getVEquip(1) && get.name(card, player) == "sha") {
@@ -1852,6 +1857,7 @@ const skills = {
         "_priority": 0,
     },
     "asuka_longzhen": {
+        audio: "paoxiao",
         charlotte: true,
         forced: true,
         trigger: {
@@ -1966,6 +1972,7 @@ const skills = {
         "_priority": 0,
     },
     "kaede_manmiao": {
+        audio: "new_reqingnang",
         forced: true,
         charlotte: true,
         trigger: {
@@ -2005,7 +2012,7 @@ const skills = {
         },
     },
     "tsuruno_qiangyun": {
-        audio: 2,
+        audio: "drlt_qianjie",
         group: ["tsuruno_qiangyun_1", "tsuruno_qiangyun_2", "tsuruno_qiangyun_3"],
         locked: true,
         ai: {
@@ -2019,7 +2026,6 @@ const skills = {
         },
         subSkill: {
             1: {
-                audio: "drlt_qianjie",
                 trigger: {
                     player: ["linkBegin"],
                 },
@@ -2044,7 +2050,6 @@ const skills = {
                 },
             },
             3: {
-                audio: true,
                 trigger: {
                     player: "turnOverBefore",
                 },
@@ -2435,6 +2440,7 @@ const skills = {
         },
     },
     "ryo_yaozuo": {
+        audio: "dcsbyaozuo",
         enable: "phaseUse",
         usable: 1,
         filterTarget: lib.filter.notMe,
@@ -2522,6 +2528,149 @@ const skills = {
             },
         },
 
+    },
+    "yuna_chouhai": {
+        audio: "gzquanji",
+        trigger: {
+            player: "damageEnd",
+            source: "damageSource",
+        },
+        frequent: true,
+        preHidden: true,
+        filter(event, player, name) {
+            return !player.hasHistory("useSkill", evt => {
+                return evt.skill == "yuna_chouhai" && evt.event.triggername == name;
+            });
+        },
+        content() {
+            "step 0";
+            const num = Math.max(1, Math.min(player.maxHp, player.getExpansions("yuna_chouhai").length));
+            event.num = num;
+            player.draw(num);
+            "step 1";
+            var hs = player.getCards("he");
+            if (hs.length > 0) {
+                if (hs.length <= event.num) event._result = { bool: true, cards: hs };
+                else player.chooseCard("he", true, "选择" + get.cnNumber(event.num) + "张牌作为“仇”", event.num);
+            } else event.finish();
+            "step 2";
+            if (result.bool) {
+                var cs = result.cards;
+                player.addToExpansion(cs, player, "give").gaintag.add("yuna_chouhai");
+            }
+        },
+        mod: {
+            maxHandcard(player, num) {
+                return num + player.getExpansions("yuna_chouhai").length;
+            },
+        },
+        ai: {
+            notemp: true,
+        },
+        intro: {
+            content: "expansion",
+            markcount: "expansion",
+        },
+        onremove(player, skill) {
+            var cards = player.getExpansions(skill);
+            if (cards.length) {
+                player.loseToDiscardpile(cards);
+            }
+        },
+        locked: false,
+        subSkill: {
+            used: {
+                onremove: true,
+                charlotte: true,
+            },
+        },
+    },
+    "yuna_xuehen": {
+        enable: "phaseUse",
+        usable: 1,
+        audio: 2,
+        audioname: ["re_zhonghui"],
+        filter(event, player) {
+            return player.getExpansions("yuna_chouhai").length > 0;
+        },
+        chooseButton: {
+            dialog(event, player) {
+                return ui.create.dialog("雪恨", player.getExpansions("yuna_chouhai"), "hidden");
+            },
+            backup(links, player) {
+                return {
+                    audio: "paiyi",
+                    audioname: ["re_zhonghui"],
+                    filterTarget: true,
+                    filterCard() {
+                        return false;
+                    },
+                    selectCard: -1,
+                    card: links[0],
+                    delay: false,
+                    content: lib.skill.yuna_xuehen.contentx,
+                    ai: {
+                        order: 10,
+                        result: {
+                            target(player, target) {
+                                if (player != target) {
+                                    return 0;
+                                }
+                                if (player.hasSkill("reyuna_chouhai") || player.countCards("h") + 2 <= player.hp + player.getExpansions("yuna_chouhai").length) {
+                                    return 1;
+                                }
+                                return 0;
+                            },
+                        },
+                    },
+                };
+            },
+            prompt() {
+                return "请选择〖雪恨〗的目标";
+            },
+        },
+        contentx() {
+            "step 0";
+            var card = lib.skill.yuna_xuehen_backup.card;
+            player.loseToDiscardpile(card);
+            "step 1";
+            target.draw(2);
+            "step 2";
+            if (target.countCards("h") > player.countCards("h")) {
+                target.damage();
+            }
+        },
+        ai: {
+            order: 1,
+            combo: "yuna_chouhai",
+            result: {
+                player: 1,
+            },
+        },
+    },
+    "yuna_liuli": {
+        trigger: { target: "useCardToTarget" },
+        forced: true,
+        filter(event, player) {
+            return event.targets.length > 1 && event.player.isIn();
+        },
+        preHidden: true,
+        async content(event, trigger, player) {
+            const result = await player.judge().forResult();
+            const nextNum = result.card.number % game.players.length;
+            if (nextNum == 0) return;
+
+            let target = player;
+            for (let i = 0; i < nextNum; i++) {
+                target = target.next;
+            }
+            player.line(target, "green");
+
+            const evt = trigger.getParent();
+            evt.triggeredTargets2.remove(player);
+            evt.targets.remove(player);
+            evt.targets.push(target);
+        },
     },
 };
 export default skills;

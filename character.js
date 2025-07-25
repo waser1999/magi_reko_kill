@@ -679,6 +679,15 @@ const characters = {
         hujia: 0,
         skills: ["hinano_huawu", "hinano_duji", "hinano_shiyao", "hinano_baoming"],
         img: "extension/魔法纪录/image/hinano.png",
+    },
+    "yuna": {
+        sex: "female",
+        group: "wan",
+        hp: 4,
+        maxHp: 4,
+        hujia: 0,
+        skills: ["yuna_chouhai", "yuna_xuehen", "yuna_liuli"],
+        img: "extension/魔法纪录/image/yuna.png",
     }
 }
 
@@ -751,6 +760,7 @@ const character_translates = {
     "devil_homura": "魔晓美焰",
     "devil_homura_prefix": "魔",
     hinano: "都雏乃",
+    yuna: "红晴结菜",
 }
 
 const perfectPairs = {
