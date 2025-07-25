@@ -2224,7 +2224,11 @@ const skills = {
                 ai: {
                     order: 1,
                     result: {
-                        player: 1,
+                        target(player, target) {
+                            if (get.attitude(player, target) > 0) return 1;
+                            if (player.hp == 1) return 1;
+                            return 0;
+                        }
                     },
                 },
             },
@@ -2587,7 +2591,7 @@ const skills = {
     },
     "yuna_xuehen": {
         enable: "phaseUse",
-        usable: 1,
+        usable: 2,
         audio: 2,
         audioname: ["re_zhonghui"],
         filter(event, player) {
@@ -2613,13 +2617,10 @@ const skills = {
                         order: 10,
                         result: {
                             target(player, target) {
-                                if (player != target) {
+                                if (player == target) {
                                     return 0;
                                 }
-                                if (player.hasSkill("reyuna_chouhai") || player.countCards("h") + 2 <= player.hp + player.getExpansions("yuna_chouhai").length) {
-                                    return 1;
-                                }
-                                return 0;
+                                if (get.attitude(player, target) < 0) return 1;
                             },
                         },
                     },
@@ -2634,10 +2635,12 @@ const skills = {
             var card = lib.skill.yuna_xuehen_backup.card;
             player.loseToDiscardpile(card);
             "step 1";
-            target.draw(2);
-            "step 2";
-            if (target.countCards("h") > player.countCards("h")) {
+            if (target != player) {
                 target.damage();
+            }
+            "step 2";
+            if (target.countCards("h") <= player.countCards("h")) {
+                target.draw(2);
             }
         },
         ai: {
@@ -2652,24 +2655,27 @@ const skills = {
         trigger: { target: "useCardToTarget" },
         forced: true,
         filter(event, player) {
-            return event.targets.length > 1 && event.player.isIn();
+            return get.type(event.card) == "trick" && event.targets.length > 1 && event.player.isIn();
         },
         preHidden: true,
         async content(event, trigger, player) {
-            const result = await player.judge().forResult();
-            const nextNum = result.card.number % game.players.length;
-            if (nextNum == 0) return;
+            const result = await player.chooseTarget("请选择“流离”的对象")
+                .set("ai", target => {
+                    var card = _status.event.getTrigger().card;
+                    // 判断是伤害类锦囊牌
+                    if (get.tag(card, "damage")) return -get.attitude(player, target);
+                    return false;
+                }).forResult();
+            if (result.bool) {
+                await player.useSkill("yuna_chouhai");
+                const target = result.targets[0];
+                player.line(target, "green");
 
-            let target = player;
-            for (let i = 0; i < nextNum; i++) {
-                target = target.next;
+                const evt = trigger.getParent();
+                evt.triggeredTargets2.remove(player);
+                evt.targets.remove(player);
+                evt.targets.push(target);
             }
-            player.line(target, "green");
-
-            const evt = trigger.getParent();
-            evt.triggeredTargets2.remove(player);
-            evt.targets.remove(player);
-            evt.targets.push(target);
         },
     },
 };
