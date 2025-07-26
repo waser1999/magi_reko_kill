@@ -2592,8 +2592,6 @@ const skills = {
     "yuna_xuehen": {
         enable: "phaseUse",
         usable: 2,
-        audio: 2,
-        audioname: ["re_zhonghui"],
         filter(event, player) {
             return player.getExpansions("yuna_chouhai").length > 0;
         },
@@ -2603,8 +2601,7 @@ const skills = {
             },
             backup(links, player) {
                 return {
-                    audio: "paiyi",
-                    audioname: ["re_zhonghui"],
+                    audio: "gzpaiyi",
                     filterTarget: true,
                     filterCard() {
                         return false;
@@ -2638,10 +2635,7 @@ const skills = {
             if (target != player) {
                 target.damage();
             }
-            "step 2";
-            if (target.countCards("h") <= player.countCards("h")) {
-                target.draw(2);
-            }
+            target.draw(2);
         },
         ai: {
             order: 1,
@@ -2655,16 +2649,15 @@ const skills = {
         trigger: { target: "useCardToTarget" },
         forced: true,
         filter(event, player) {
-            return get.type(event.card) == "trick" && event.targets.length > 1 && event.player.isIn();
+            // get.tag()判断是伤害类锦囊牌
+            return get.type(event.card) == "trick" && get.tag(event.card, "damage") && event.targets.length > 1 && event.player.isIn();
         },
         preHidden: true,
         async content(event, trigger, player) {
             const result = await player.chooseTarget("请选择“流离”的对象")
                 .set("ai", target => {
                     var card = _status.event.getTrigger().card;
-                    // 判断是伤害类锦囊牌
-                    if (get.tag(card, "damage")) return -get.attitude(player, target);
-                    return false;
+                    return -get.attitude(player, target);
                 }).forResult();
             if (result.bool) {
                 await player.useSkill("yuna_chouhai");

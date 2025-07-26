@@ -683,11 +683,29 @@ const characters = {
     "yuna": {
         sex: "female",
         group: "wan",
-        hp: 4,
-        maxHp: 4,
+        hp: 3,
+        maxHp: 3,
         hujia: 0,
         skills: ["yuna_chouhai", "yuna_xuehen", "yuna_liuli"],
         img: "extension/魔法纪录/image/yuna.png",
+    },
+    "shigure": {
+        sex: "female",
+        group: "ma",
+        hp: 5,
+        maxHp: 5,
+        hujia: 0,
+        skills: ["kanpo"],
+        img: "extension/魔法纪录/image/shigure.png",
+    },
+    "hagumu": {
+        sex: "female",
+        group: "ma",
+        hp: 5,
+        maxHp: 5,
+        hujia: 0,
+        skills: ["wusheng"],
+        img: "extension/魔法纪录/image/hagumu.png",
     }
 }
 
@@ -761,6 +779,8 @@ const character_translates = {
     "devil_homura_prefix": "魔",
     hinano: "都雏乃",
     yuna: "红晴结菜",
+    shigure: "宫尾时雨",
+    hagumu: "安积育梦",
 }
 
 const perfectPairs = {
@@ -808,6 +828,8 @@ const perfectPairs = {
     mito: ["seika", "rera"],
     seika: ["mito", "rera"],
     rera: ["seika", "mito"],
+    hagumu: ["shigure"],
+    shigure: ["hagumu"],
 }
 
 export default characters;
