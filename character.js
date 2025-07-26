@@ -706,7 +706,17 @@ const characters = {
         hujia: 0,
         skills: ["wusheng"],
         img: "extension/魔法纪录/image/hagumu.png",
-    }
+    },
+    "laura": {
+        sex: "female",
+        group: "wan",
+        hp: 4,
+        maxHp: 4,
+        hujia: 0,
+        skills: ["umi_lunhui", "komari_xueshang"],
+        img: "extension/魔法纪录/image/laura.png",
+        isAiForbidden: true
+    },
 }
 
 const character_translates = {
@@ -781,6 +791,7 @@ const character_translates = {
     yuna: "红晴结菜",
     shigure: "宫尾时雨",
     hagumu: "安积育梦",
+    laura: "劳拉·范德伯恩",
 }
 
 const perfectPairs = {
