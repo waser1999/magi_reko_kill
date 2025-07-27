@@ -2273,18 +2273,6 @@ const skills = {
             },
         }
     },
-    "tamaki_huanyu": {
-        inherit: "dckrmingshi",
-    },
-    "mami_tiro_finale": {
-        inherit: "sbluanji",
-    },
-    "saint_mami_tiro_finale": {
-        inherit: "reluanji",
-    },
-    "mami_duandai": {
-        inherit: "guose",
-    },
     "mami_qiaobian": {
         inherit: "qiaobian",
         async cost(event, trigger, player) {
@@ -2591,7 +2579,10 @@ const skills = {
     },
     "yuna_xuehen": {
         enable: "phaseUse",
-        usable: 2,
+        usable(skill, player) {
+            if (player.storage.xuemeng) return 4;
+            return 2;
+        },
         filter(event, player) {
             return player.getExpansions("yuna_chouhai").length > 0;
         },
@@ -2668,6 +2659,76 @@ const skills = {
                 evt.triggeredTargets2.remove(player);
                 evt.targets.remove(player);
                 evt.targets.push(target);
+            }
+        },
+    },
+    "yuna_xuemeng": {
+        zhuSkill: true,
+        forced: true,
+        trigger: {
+            global: ["gameStart"],
+        },
+        filter(event, player) {
+            if (!player.hasZhuSkill("yuna_xuemeng", event.source)) {
+                return false;
+            }
+            let n = game.countPlayer(current => {
+                return current.group == "huan" || current.group == "ma";
+            })
+            if (n == 0) return false;
+            return true;
+        },
+        content() {
+            player.storage.xuemeng = true;
+        }
+    },
+    "magius_zhishang": {
+        zhuSkill: true,
+        locked: true,
+        forced: true,
+        filter(event, player) {
+            if (!event.source || !event.source.isIn() || event.source.group != "ma") {
+                return false;
+            }
+            if (!player.hasZhuSkill("magius_zhishang", event.source)) {
+                return false;
+            }
+        },
+        direct: true,
+        group: "magius_zhishang_jijun",
+        global: "magius_zhishang_sha",
+        subSkill: {
+            sha: {
+                mod: {
+                    cardUsable(card, player, num) {
+                        if (card.name == "sha") {
+                            if (player.group != "ma") {
+                                return;
+                            }
+                            return (
+                                num +
+                                game.countPlayer(current => {
+                                    return current.hasZhuSkill("magius_zhishang", player) || current.group == "ma";
+                                })
+                            );
+                        }
+                    },
+                },
+            },
+            jijun: {
+                trigger: {
+                    global: "useCardAfter",
+                },
+                forced: true,
+                filter(event, player) {
+                    if (!player.hasZhuSkill("magius_zhishang", event.source)) return false;
+                    if (get.name(event.card) != "sha") return false;
+                    if (!event.player || event.player.group != "ma") return false;
+                    return true;
+                },
+                content() {
+                    player.useSkill("rejijun");
+                }
             }
         },
     },

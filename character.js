@@ -96,7 +96,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["olhaoshi", "oldimeng", "tamaki_huanyu", "yuanjiu"],
+        skills: ["olhaoshi", "oldimeng", "dckrmingshi", "yuanjiu"],
         img: "extension/魔法纪录/image/iroha.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
         description: "未来之路",
@@ -255,7 +255,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["nanaka_huaxin", "jizhi"],
+        skills: ["nanaka_huaxin", "rejizhi"],
         img: "extension/魔法纪录/image/nanaka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/nanaka.mp3"],
         description: "白椿"
@@ -300,7 +300,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["reyingzi", "mami_duandai", "mami_tiro_finale", "mami_qiaobian"],
+        skills: ["reyingzi", "guose", "sbluanji", "mami_qiaobian"],
         img: "extension/魔法纪录/image/mami.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mami.mp3"],
         description: "终幕射击"
@@ -509,7 +509,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["ui_jinghua", "ui_wangyou", "ui_leshan", "tamaki_huanyu"],
+        skills: ["ui_jinghua", "ui_wangyou", "ui_leshan", "dckrmingshi"],
         img: "extension/魔法纪录/image/ui.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ui.mp3"],
         doubleGroup: ["huan", "ma"],
@@ -648,7 +648,7 @@ const characters = {
         hp: 5,
         maxHp: 5,
         hujia: 0,
-        skills: ["reyingzi", "saint_mami_tiro_finale", "starxiaoyan", "starjiaowang"],
+        skills: ["reyingzi", "reluanji", "starxiaoyan", "starjiaowang"],
         img: "extension/魔法纪录/image/saint_mami.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/saint_mami.mp3"],
     },
@@ -681,12 +681,13 @@ const characters = {
         img: "extension/魔法纪录/image/hinano.png",
     },
     "yuna": {
+        isZhugong: true,
         sex: "female",
         group: "wan",
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["yuna_chouhai", "yuna_xuehen", "yuna_liuli"],
+        skills: ["yuna_chouhai", "yuna_xuehen", "yuna_liuli", "yuna_xuemeng"],
         img: "extension/魔法纪录/image/yuna.png",
     },
     "shigure": {
@@ -695,7 +696,7 @@ const characters = {
         hp: 5,
         maxHp: 5,
         hujia: 0,
-        skills: ["kanpo"],
+        skills: ["olkanpo", "ollongdan"],
         img: "extension/魔法纪录/image/shigure.png",
     },
     "hagumu": {
@@ -704,19 +705,28 @@ const characters = {
         hp: 5,
         maxHp: 5,
         hujia: 0,
-        skills: ["wusheng"],
+        skills: ["new_rewusheng", "oltiaoxin"],
         img: "extension/魔法纪录/image/hagumu.png",
     },
-    "laura": {
+    "shizuka": {
         sex: "female",
         group: "wan",
         hp: 4,
         maxHp: 4,
         hujia: 0,
         skills: ["umi_lunhui", "komari_xueshang"],
-        img: "extension/魔法纪录/image/laura.png",
-        isAiForbidden: true
+        img: "extension/魔法纪录/image/shizuka.png",
     },
+    "himena": {
+        isZhugong: true,
+        sex: "female",
+        group: "ma",
+        hp: 4,
+        maxHp: 4,
+        hujia: 0,
+        skills: ["rejijun", "refangtong", "magius_zhishang"],
+        img: "extension/魔法纪录/image/himena.png",
+    }
 }
 
 const character_translates = {
@@ -791,7 +801,8 @@ const character_translates = {
     yuna: "红晴结菜",
     shigure: "宫尾时雨",
     hagumu: "安积育梦",
-    laura: "劳拉·范德伯恩",
+    shizuka: "时女静香",
+    himena: "蓝家姬奈",
 }
 
 const perfectPairs = {
@@ -839,8 +850,9 @@ const perfectPairs = {
     mito: ["seika", "rera"],
     seika: ["mito", "rera"],
     rera: ["seika", "mito"],
-    hagumu: ["shigure"],
-    shigure: ["hagumu"],
+    hagumu: ["shigure", "himena"],
+    shigure: ["hagumu", "himena"],
+    himena: ["hagumu", "shigure"],
 }
 
 export default characters;
