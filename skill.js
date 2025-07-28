@@ -2607,7 +2607,7 @@ const skills = {
                                 if (player == target) {
                                     return 0;
                                 }
-                                if (get.attitude(player, target) < 0) return 1;
+                                if (get.attitude(player, target) < 0) return -3;
                             },
                         },
                     },
