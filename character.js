@@ -108,7 +108,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["xingshang", "fangzhu", "yachiyo_gujun"],
+        skills: ["rexingshang", "fangzhu", "yachiyo_gujun"],
         img: "extension/魔法纪录/image/yachiyo.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yachiyo.mp3"],
         description: "绝对之雨",

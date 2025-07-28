@@ -936,18 +936,18 @@ const skills = {
             return event.num > 0;
         },
         content() {
-            // 判定使用老写法，新写法有错误
-            "step 0";
-            player.judge(function (card) {
-                // 使用get函数访问能让ai改判
-                if (get.color(card) == "black") return 5;
-                return -5;
-            }).judge2 = function (result) {
-                return result.bool;
-            };
-            "step 1";
-            if (result.bool) {
-                player.addMark("nemu_zhiyao", trigger.num * 2);
+            let num = trigger.num;
+            for (let i = 0; i < num; i++) {
+                player.judge(function (card) {
+                    // 使用get函数访问能让ai改判
+                    if (get.color(card) == "black") {
+                        player.addMark("nemu_zhiyao", 2);
+                        return 5;
+                    }
+                    return -5;
+                }).judge2 = function (result) {
+                    return result.bool;
+                };
             }
         },
         "_priority": 0,
@@ -1506,7 +1506,6 @@ const skills = {
         trigger: {
             player: "phaseBegin",
         },
-        forced: true,
         async content(event, trigger, player) {
             if (!_status.characterlist) {
                 game.initCharactertList();
@@ -1544,8 +1543,8 @@ const skills = {
                 .set("dialog", ["请选择主角技", [characters, "character"]])
                 .forResult();
 
-            if (player.storage.mabayu_jingxiang) player.removeSkill(player.storage.mabayu_jingxiang);
-            await player.addSkills(result.control);
+            if (player.storage.mabayu_jingxiang) player.removeAdditionalSkills("mabayu_jingxiang");
+            await player.addAdditionalSkills("mabayu_jingxiang", result.control, true);
             player.storage.mabayu_jingxiang = result.control;
         },
         "_priority": 0,
