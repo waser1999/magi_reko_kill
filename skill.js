@@ -935,19 +935,17 @@ const skills = {
         filter(event, player) {
             return event.num > 0;
         },
-        content() {
+        async content(event, trigger, player) {
             let num = trigger.num;
             for (let i = 0; i < num; i++) {
-                player.judge(function (card) {
+                const result = await player.judge(function (card) {
                     // 使用get函数访问能让ai改判
                     if (get.color(card) == "black") {
-                        player.addMark("nemu_zhiyao", 2);
                         return 5;
                     }
                     return -5;
-                }).judge2 = function (result) {
-                    return result.bool;
-                };
+                }).forResult();
+                if (result.bool) player.addMark("nemu_zhiyao", 2);
             }
         },
         "_priority": 0,
