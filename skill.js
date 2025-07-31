@@ -55,8 +55,7 @@ const skills = {
         },
         async content(event, trigger, player) {
             if (trigger.player.name == "kuroe") {
-                player.line(trigger.player);
-                trigger.player.die();
+                trigger.num++;
             }
         },
         "_priority": 0,
@@ -679,7 +678,7 @@ const skills = {
                     player.gain(player.getExpansions("oriko_yuzhi"));
                     const result = await player.chooseCard("he", true, "选择" + get.cnNumber(num) + "张牌作为『视』", num).forResult();
                     if (result.bool) {
-                        player.addToExpansion(result.cards).gaintag.add("oriko_yuzhi");
+                        player.addToExpansion(result.cards, player, "giveAuto").gaintag.add("oriko_yuzhi");
                     }
                 }
 
@@ -1965,6 +1964,11 @@ const skills = {
         content(event, trigger, player) {
             player.give(cards, target);
             target.insertPhase();
+            var evt = event.getParent("phaseUse");
+            if (evt && evt.player == player) {
+                evt.skipped = true;
+                game.log(player, "结束了出牌阶段");
+            }
         },
         "_priority": 0,
     },
@@ -2727,6 +2731,45 @@ const skills = {
                     player.useSkill("rejijun");
                 }
             }
+        },
+    },
+    "masara_cisha": {
+        trigger: { global: "phaseUseBegin" },
+        filter(event, player) {
+            return event.player.isIn() && player.countCards("h") > 0 && player != event.player;
+        },
+        direct: true,
+        preHidden: true,
+        content() {
+            "step 0";
+            var nono = Math.abs(get.attitude(player, trigger.player)) < 3;
+            if (get.damageEffect(trigger.player, player, player) <= 0) {
+                nono = true;
+            } else if (trigger.player.hp > 1 && player.countCards("h") < 3 && trigger.player.countCards("h") >= 3) {
+                nono = true;
+            }
+            var next = player.chooseToDiscard(get.prompt2("masara_cisha", trigger.player));
+            next.set("ai", function (card) {
+                if (_status.event.nono) {
+                    return -1;
+                }
+                return 7 - get.useful(card);
+            });
+            next.set("logSkill", ["masara_cisha", trigger.player]);
+            next.set("nono", nono);
+            next.setHiddenSkill("masara_cisha");
+            "step 1";
+            if (result.bool) {
+                let card = player.useCard({ name: "sha", nature: "stab", isCard: true }, trigger.player, false);
+                player.addTempSkill("qinggang2");
+                player.storage.qinggang2.add(card);
+            } else {
+                event.finish();
+            }
+        },
+        ai: {
+            threaten: 2,
+            expose: 0.3,
         },
     },
 };
