@@ -227,7 +227,6 @@ const skills = {
     },
     "sayaka_qiangyin": {
         inherit: "jieyin",
-        audio: "jieyin",
         filterTarget(card, player, target) {
             if (target.hp >= target.maxHp) return false;
             if (target == player) return false;
@@ -282,7 +281,6 @@ const skills = {
         },
     },
     xieli: {
-        audio: "jijiang",
         group: ["xieli1"],
         zhuSkill: true,
         filter(event, player) {
@@ -566,7 +564,6 @@ const skills = {
         "_priority": 1,
     },
     yuanjiu: {
-        audio: "hujia",
         zhuSkill: true,
         trigger: {
             player: ["chooseToRespondBefore", "chooseToUseBefore"],
@@ -691,7 +688,6 @@ const skills = {
             global: "judge",
         },
         direct: true,
-        audio: ["guicai", 2],
         filter(event, player) {
             return player.getExpansions("oriko_yuzhi").length && event.player.isIn();
         },
@@ -757,7 +753,6 @@ const skills = {
         "_priority": 0,
     },
     "oriko_xianzhong": {
-        audio: "songwei",
         zhuSkill: true,
         trigger: {
             global: "damage",
@@ -782,7 +777,6 @@ const skills = {
         "_priority": 0,
     },
     "yachiyo_gujun": {
-        audio: "sbsongwei",
         zhuSkill: true,
         trigger: {
             global: "dying",
@@ -810,7 +804,6 @@ const skills = {
         "_priority": 0,
     },
     "magius_jiefang": {
-        audio: "xinhuangtian",
         zhuSkill: true,
         global: "magius_jiefang2",
         "_priority": 0,
@@ -983,8 +976,6 @@ const skills = {
                 .set("prompt", "请选择标记数")
                 .forResult();
 
-            if (choice.control) game.playAudio("skill/resanyao1.mp3");
-
             switch (choice.control) {
                 case "一个标记":
                     trigger.player.damage();
@@ -1058,7 +1049,6 @@ const skills = {
         "_priority": 0,
     },
     "ashley_yuanyu": {
-        audio: "zongkui",
         trigger: {
             player: "damageBegin4",
         },
@@ -1118,7 +1108,6 @@ const skills = {
             },
             backup(links, player) {
                 return {
-                    audio: "bmcanshi",
                     filterCard: { suit: "spade" },
                     position: "hs",
                     popname: true,
@@ -1304,7 +1293,6 @@ const skills = {
         "_priority": 0,
     },
     "kanagi_dongyou": {
-        audio: "jiuyuan",
         trigger: {
             target: "taoBegin",
         },
@@ -1353,12 +1341,10 @@ const skills = {
         "_priority": 0,
     },
     "homura2_jihuo": {
-        audio: "luoying",
         group: ["homura2_jihuo_discard", "homura2_jihuo_judge"],
         subfrequent: ["judge"],
         subSkill: {
             discard: {
-                audio: "luoying",
                 trigger: {
                     global: "loseAfter",
                 },
@@ -1412,7 +1398,6 @@ const skills = {
                 "_priority": 0,
             },
             judge: {
-                audio: "luoying",
                 trigger: {
                     global: "cardsDiscardAfter",
                 },
@@ -1565,7 +1550,6 @@ const skills = {
         },
     },
     "madoka_liegong": {
-        audio: "sbliegong",
         mod: {
             cardnature(card, player) {
                 if (!player.getVEquip(1) && get.name(card, player) == "sha") {
@@ -1860,7 +1844,6 @@ const skills = {
         "_priority": 0,
     },
     "asuka_longzhen": {
-        audio: "paoxiao",
         charlotte: true,
         forced: true,
         trigger: {
@@ -1909,7 +1892,6 @@ const skills = {
         },
     },
     "kanagi_duxin": {
-        audio: "shangyi",
         trigger: { player: "phaseUseBegin" },
         usable: 1,
         filterTarget(card, player, target) {
@@ -1967,7 +1949,6 @@ const skills = {
     },
     "hazuki_mingjian": {
         inherit: "mingjian",
-        audio: "mingjian",
         content(event, trigger, player) {
             player.give(cards, target);
             target.insertPhase();
@@ -1980,7 +1961,6 @@ const skills = {
         "_priority": 0,
     },
     "kaede_manmiao": {
-        audio: "new_reqingnang",
         forced: true,
         charlotte: true,
         trigger: {
@@ -2020,7 +2000,6 @@ const skills = {
         },
     },
     "tsuruno_qiangyun": {
-        audio: "drlt_qianjie",
         group: ["tsuruno_qiangyun_1", "tsuruno_qiangyun_2", "tsuruno_qiangyun_3"],
         locked: true,
         ai: {
@@ -2072,6 +2051,29 @@ const skills = {
                     noturnOver: true,
                 },
             },
+        },
+    },
+    "tsuruno_jizhi": {
+        init2(player) {
+            player.removeSkill(["jiang", "lianying", "reyingzi", "gzyinghun"]);
+            if (player.hp <= 4) {
+                player.addSkill("jiang");
+            }
+            if (player.hp <= 3) {
+                player.addSkill("reyingzi");
+            }
+            if (player.hp <= 2) {
+                player.addSkill("lianying");
+            }
+            if (player.hp <= 1) {
+                player.addSkill("gzyinghun");
+            }
+        },
+        trigger: { player: "changeHp" },
+        firstDo: true,
+        silent: true,
+        content() {
+            lib.skill.tsuruno_jizhi.init2(player);
         },
     },
     "rera_nuanxin": {
@@ -2373,7 +2375,6 @@ const skills = {
         },
     },
     "homura_juwu": {
-        audio: "luoshen",
         trigger: { player: "phaseZhunbeiBegin" },
         frequent: true,
         content() {
@@ -2433,7 +2434,6 @@ const skills = {
         },
     },
     "ryo_yaozuo": {
-        audio: "dcsbyaozuo",
         enable: "phaseUse",
         usable: 1,
         filterTarget: lib.filter.notMe,
@@ -2499,7 +2499,6 @@ const skills = {
         },
         subSkill: {
             effect: {
-                audio: "dcsbyaozuo",
                 onremove: true,
                 charlotte: true,
                 mark: true,
@@ -2523,7 +2522,6 @@ const skills = {
 
     },
     "yuna_chouhai": {
-        audio: "gzquanji",
         trigger: {
             player: "damageEnd",
             source: "damageSource",
@@ -2593,7 +2591,6 @@ const skills = {
             },
             backup(links, player) {
                 return {
-                    audio: "gzpaiyi",
                     filterTarget: true,
                     filterCard() {
                         return false;
@@ -2771,5 +2768,194 @@ const skills = {
             expose: 0.3,
         },
     },
+    "asumi_zhuilie": {
+        mod: {
+            targetInRange(card) {
+                if (card.name == "sha") {
+                    return true;
+                }
+            },
+        },
+        trigger: { player: "useCardToTargeted" },
+        filter(event, player) {
+            return event.card && event.card.name == "sha" && !player.inRange(event.target);
+        },
+        forced: true,
+        logTarget: "target",
+        async content(event, trigger, player) {
+            const next = player.judge(function (card) {
+                return get.type(card) == "equip" ? 6 : -6;
+            });
+            next.judge2 = function (result) {
+                return result.bool;
+            };
+            const { result } = await next;
+            if (trigger.getParent().addCount !== false) {
+                trigger.getParent().addCount = false;
+                var stat = player.getStat();
+                if (stat && stat.card && stat.card.sha) {
+                    stat.card.sha--;
+                }
+            }
+            if (result.bool === true) {
+                var map = trigger.customArgs;
+                var id = trigger.target.playerid;
+                if (!map[id]) {
+                    map[id] = {};
+                }
+                if (typeof map[id].extraDamage != "number") {
+                    map[id].extraDamage = 0;
+                }
+                map[id].extraDamage += trigger.target.hp - 1;
+            } else if (result.bool === false && get.type(result.card) != "basic") {
+                await player.loseHp();
+                await player.gain(result.card);
+            }
+        },
+        group: "asumi_zhuilie_sha",
+        subSkill: {
+            sha: {
+                silent: true,
+                charlotte: true,
+                trigger: { player: "useCardToTargeted" },
+                filter(event, player) {
+                    return event.card && event.card.name == "sha";
+                },
+                async content(event, trigger, player) {
+                    trigger.target.addTempSkill("qinggang2");
+                    trigger.target.storage.qinggang2.add(trigger.card);
+                    trigger.target.markSkill("qinggang2");
+                },
+            },
+        },
+    },
+    "asumi_zhuilie2": {
+        onremove: true,
+        intro: {
+            content: "使用【杀】的次数上限+#",
+        },
+        mod: {
+            cardUsable(card, player, num) {
+                if (card.name == "sha") {
+                    return num + player.countMark("asumi_zhuilie2");
+                }
+            },
+        },
+    },
+    "asumi_yinhu": {
+        trigger: { player: "loseHpEnd" },
+        filter(event, player) {
+            return player.isIn() && event.num > 0;
+        },
+        getIndex: event => event.num,
+        forced: true,
+        async content(event, trigger, player) {
+            await player.draw(3);
+        },
+        ai: {
+            maihp: true,
+            effect: {
+                target(card, player, target) {
+                    if (get.tag(card, "damage")) {
+                        if (player.hasSkillTag("jueqing", false, target)) {
+                            return [1, 1];
+                        }
+                        return 1.2;
+                    }
+                    if (get.tag(card, "loseHp")) {
+                        if (target.hp <= 1) {
+                            return;
+                        }
+                        var using = target.isPhaseUsing();
+                        if (target.hp <= 2) {
+                            return [1, player.countCards("h") <= 1 && using ? 3 : 0];
+                        }
+                        if (using && target.countCards("h", { name: "sha", color: "red" })) {
+                            return [1, 3];
+                        }
+                        return [1, target.countCards("h") <= target.hp || (using && game.hasPlayer(current => current != player && get.attitude(player, current) < 0 && player.inRange(current))) ? 3 : 2];
+                    }
+                },
+            },
+        },
+    },
+    "name_dengtai": {
+        unique: true,
+        preHidden: true,
+        trigger: {
+            global: "phaseBefore",
+            player: "enterGame",
+        },
+        filter(event, player) {
+            return event.name != "phase" || game.phaseNumber == 0;
+        },
+        forced: true,
+        init(player) {
+            player.useSkill("name_dengtai");
+        },
+        async content(event, trigger, player) {
+            if (!_status.characterlist) {
+                game.initCharactertList();
+            }
+            _status.characterlist.randomSort();
+            let characters = [];
+            for (let i = 0; i < _status.characterlist.length; i++) {
+                if (
+                    get.character(_status.characterlist[i], 3).some(skill => {
+                        return lib.skill[skill] && !lib.skill[skill].charlotte;
+                    })
+                ) {
+                    characters.push(_status.characterlist[i]);
+                    if (characters.length >= 6) {
+                        break;
+                    }
+                }
+            }
+            if (characters.length < 2) {
+                return;
+            }
+            const first = characters.slice(0, characters.length / 2),
+                last = characters.slice(characters.length / 2, 6);
+            const skills1 = [],
+                skills2 = [];
+            for (let i of first) {
+                skills1.push(
+                    get
+                        .character(i, 3)
+                        .filter(skill => {
+                            return lib.skill[skill] && !lib.skill[skill].charlotte;
+                        })
+                        .randomGet()
+                );
+            }
+            for (let i of last) {
+                skills2.push(
+                    get
+                        .character(i, 3)
+                        .filter(skill => {
+                            return lib.skill[skill] && !lib.skill[skill].charlotte;
+                        })
+                        .randomGet()
+                );
+            }
+            const result1 = await player
+                .chooseControl(skills1)
+                .set("dialog", ["小名：请选择第一个技能", [first, "character"]])
+                .forResult();
+            const gains = [];
+            gains.add(result1.control);
+            const result2 = await player
+                .chooseControl(skills2)
+                .set("dialog", ["小名：请选择第二个技能", [last, "character"]])
+                .forResult();
+            gains.add(result2.control);
+            await player.addSkills(gains);
+            await player.removeSkill("name_dengtai");
+        },
+    },
+    "shizuka_xueji": {
+        inherit: "umi_lunhui",
+        round: 1,
+    }
 };
 export default skills;

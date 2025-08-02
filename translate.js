@@ -91,6 +91,8 @@ const translates = {
     "tsuruno_qiangyun_info": "锁定技，当你横置、翻面（叠置）时，取消之。你不能成为延时类锦囊的目标。",
     "tsuruno_tuanluan": "团栾",
     "tsuruno_tuanluan_info": "出牌阶段，你可以重铸装备牌，若如此做，【决堰】视为未发动过。若此装备对应的装备区被废除，恢复该装备栏。",
+    "tsuruno_jizhi": "急智",
+    "tsuruno_jizhi_info": "锁定技，当你的体力值变化后，若你的体力值：不大于4，你获得【激昂】；不大于3，你获得【英姿】；不大于2，你获得【连营】；不大于1，你获得【英魂】。",
     "hazuki_mingjian": "明鉴",
     "hazuki_mingjian_info": "出牌阶段限一次。你可以将所有手牌交给一名其他角色，并结束出牌阶段。该角色在你的回合之后执行一个额外的回合。",
     "kaede_manmiao": "蔓妙",
@@ -124,6 +126,14 @@ const translates = {
     "yuna_xuemeng_info": "主角技。游戏开始时，若场上有神盟或玛吉斯角色，你将【雪恨】修改为：出牌阶段限四次。",
     "masara_cisha": "刺杀",
     "masara_cisha_info": "一名角色的出牌阶段开始时，你可以弃置一张手牌，视为对该角色使用了一张无视防具的刺【杀】。",
+    "asumi_zhuilie": "追猎",
+    "asumi_zhuilie_info": "锁定技，你使用【杀】无距离限制和无视防具；当你使用【杀】指定目标后，若其不在你的攻击范围内，此【杀】不计入使用次数限制且你判定。若判定结果为装备牌，此【杀】的伤害基数改为X（X为其体力值）。若为其他非基本牌，你失去1点体力并获得判定牌。",
+    "asumi_yinhu": "银狐",
+    "asumi_yinhu_info": "锁定技。当你失去1点体力后，你摸三张牌。",
+    "name_dengtai": "灯台",
+    "name_dengtai_info": "锁定技，明置武将牌时，你获得两个武将的各一个技能，之后你失去此技能。",
+    "shizuka_xueji": "血祭",
+    "shizuka_xueji_info": "每轮限一次。一名其他角色的回合结束时，若你的手牌数小于体力值，则你可以失去1点体力。若如此做，你摸两张牌并进行一个额外回合，且你于此回合内计算与此角色的距离视为1。",
 }
 
 export default translates;
