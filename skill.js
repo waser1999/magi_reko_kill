@@ -223,7 +223,7 @@ const skills = {
         async content(event, trigger, player) {
             let card = trigger.card;
             trigger.target.gain(game.createCard2("du", card.suit, card.number), "gain2");
-        }
+        },
     },
     "sayaka_qiangyin": {
         inherit: "jieyin",
@@ -645,7 +645,7 @@ const skills = {
                     return player.countExpansions("oriko_yuzhi") < game.players.length;
                 },
                 content: function () {
-                    player.addToExpansion(get.cards()).gaintag.add("oriko_yuzhi");
+                    player.addToExpansion(get.cards(), player, "draw").gaintag.add("oriko_yuzhi");
                 },
                 sub: true,
                 sourceSkill: "oriko_yuzhi",
@@ -917,6 +917,9 @@ const skills = {
             // 执行额外回合
             player.insertPhase();
         },
+        ai: {
+            noh: true,
+        },
         "_priority": 0,
     },
     "nemu_zhiyao": {
@@ -946,6 +949,10 @@ const skills = {
                 }).forResult();
                 if (result.bool) player.addMark("nemu_zhiyao", 2);
             }
+        },
+        ai: {
+            threaten: 1.5,
+            maixie: true,
         },
         "_priority": 0,
     },
@@ -1044,6 +1051,9 @@ const skills = {
         },
         async content(event, trigger, player) {
             player.loseHp();
+        },
+        ai: {
+            combo: "nemu_zhiyao",
         },
         "_priority": 0,
     },
@@ -1798,15 +1808,12 @@ const skills = {
             if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
             return true;
         },
-        content() {
-            "step 0";
-            player.judge(card => {
+        async content(event, trigger, player) {
+            let result = await player.judge(card => {
                 if (player.storage.madoka_liegong?.includes(get.suit(card))) return 2;
                 return -1;
-            }).judge2 = function (result) {
-                return result.bool;
-            };
-            "step 1";
+            }).forResult();
+
             if (result.bool) {
                 trigger.untrigger();
                 trigger.set("responded", true);
@@ -2063,13 +2070,6 @@ const skills = {
                 },
                 ai: {
                     noturnOver: true,
-                    effect: {
-                        target(card, player, target, current) {
-                            if (get.tag(card, "turnOver")) {
-                                return "zeroplayertarget";
-                            }
-                        },
-                    },
                 },
             },
         },
@@ -2606,8 +2606,8 @@ const skills = {
                         order: 10,
                         result: {
                             target(player, target) {
-                                if (player == target) {
-                                    return 0;
+                                if (player == target && player.countCards("h") < player.maxHp) {
+                                    return 2;
                                 }
                                 if (get.attitude(player, target) < 0) return -3;
                             },
@@ -2648,7 +2648,6 @@ const skills = {
         async content(event, trigger, player) {
             const result = await player.chooseTarget("请选择“流离”的对象")
                 .set("ai", target => {
-                    var card = _status.event.getTrigger().card;
                     return -get.attitude(player, target);
                 }).forResult();
             if (result.bool) {
