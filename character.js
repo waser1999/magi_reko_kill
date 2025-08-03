@@ -165,7 +165,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["kaede_manmiao", "jijiu", "kaede_buyi", "dczhuiyi"],
+        skills: ["kaede_manmiao", "kaede_buyi", "dczhuiyi"],
         img: "extension/魔法纪录/image/kaede.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kaede.mp3"],
         description: "大地审判",

@@ -1970,7 +1970,7 @@ const skills = {
         trigger: {
             player: "taoAfter",
         },
-        group: ["kaede_manmiao_du"],
+        group: ["kaede_manmiao_jijiu"],
         content() {
             player.draw();
         },
@@ -1989,7 +1989,48 @@ const skills = {
         ai: {
             nodu: true,
             usedu: true,
-        }
+        },
+        subSkill: {
+            jijiu: {
+                mod: {
+                    aiValue(player, card, num) {
+                        if (get.name(card) != "tao" && get.color(card) != "red") {
+                            return;
+                        }
+                        const cards = player.getCards("hs", card => get.name(card) == "tao" || get.color(card) == "red");
+                        cards.sort((a, b) => (get.name(a) == "tao" ? 1 : 2) - (get.name(b) == "tao" ? 1 : 2));
+                        var geti = () => {
+                            if (cards.includes(card)) {
+                                cards.indexOf(card);
+                            }
+                            return cards.length;
+                        };
+                        return Math.max(num, [6.5, 4, 3, 2][Math.min(geti(), 2)]);
+                    },
+                    aiUseful() {
+                        return lib.skill.kanpo.mod.aiValue.apply(this, arguments);
+                    },
+                },
+                locked: false,
+                enable: "chooseToUse",
+                audio: "kaede_manmiao",
+                viewAsFilter(player) {
+                    return player != _status.currentPhase && player.countCards("hes", { color: "red" }) > 0;
+                },
+                filterCard(card) {
+                    return get.color(card) == "red";
+                },
+                position: "hes",
+                viewAs: { name: "tao" },
+                prompt: "将一张红色牌当桃使用",
+                check(card) {
+                    return 15 - get.value(card);
+                },
+                ai: {
+                    threaten: 1.5,
+                },
+            }
+        },
     },
     "kaede_buyi": {
         trigger: { global: "dying" },
