@@ -3047,5 +3047,178 @@ const skills = {
             },
         },
     },
+    "mami_tiro_finale": {
+        audio: "ext:魔法纪录/audio/skill:2",
+        enable: "phaseUse",
+        trigger: { global: "respond" },
+        viewAs: { name: "wanjian" },
+        forced: true,
+        locked: false,
+        filter(event, player) {
+            if (event.name == "chooseToUse") {
+                return player.countCards("hs") > 1 && !player.hasSkill("mami_tiro_finale_used");
+            }
+            var evt = event.getParent(2);
+            return (
+                evt.name == "wanjian" &&
+                evt.getParent().player == player &&
+                event.player != player &&
+                player.getHistory("gain", function (evt) {
+                    return evt.getParent(2).name == "mami_tiro_finale";
+                }).length < 3
+            );
+        },
+        filterCard: true,
+        selectCard: 2,
+        position: "hs",
+        prompt: "将两张手牌当【万箭齐发】使用",
+        check(card) {
+            var player = _status.event.player;
+            var targets = game.filterPlayer(function (current) {
+                return player.canUse("wanjian", current);
+            });
+            var num = 0;
+            for (var i = 0; i < targets.length; i++) {
+                var eff = get.sgn(get.effect(targets[i], { name: "wanjian" }, player, player));
+                if (targets[i].hp == 1) {
+                    eff *= 1.5;
+                }
+                if (get.attitude(player, targets[i]) == 0 || targets[i].group == "yuan") {
+                    eff += 0.5;
+                }
+                num += eff;
+            }
+            if (!player.needsToDiscard(-1)) {
+                if (targets.length >= 7) {
+                    if (num < 1) {
+                        return 0;
+                    }
+                } else if (targets.length >= 5) {
+                    if (num < 0.5) {
+                        return 0;
+                    }
+                }
+            }
+            return 6 - get.value(card);
+        },
+        content() {
+            player.draw();
+        },
+        precontent() {
+            player.addTempSkill("mami_tiro_finale_used", "phaseUseAfter");
+        },
+        ai: {
+            threaten: 1.6,
+        },
+        subSkill: {
+            used: {
+                charlotte: true
+            }
+        },
+    },
+    "saint_mami_tiro_finale": {
+        audio: "ext:魔法纪录/audio/skill:2",
+        enable: "phaseUse",
+        viewAs: { name: "wanjian" },
+        filterCard(card, player) {
+            if (!player.storage.saint_mami_tiro_finale) {
+                return true;
+            }
+            return !player.storage.saint_mami_tiro_finale.includes(get.suit(card));
+        },
+        position: "hs",
+        selectCard: 2,
+        check(card) {
+            const player = _status.event.player;
+            const targets = game.filterPlayer(function (current) {
+                return player.canUse("wanjian", current);
+            });
+            let num = 0;
+            for (let i = 0; i < targets.length; i++) {
+                let eff = get.sgn(get.effect(targets[i], { name: "wanjian" }, player, player));
+                if (targets[i].hp == 1) {
+                    eff *= 1.5;
+                }
+                num += eff;
+            }
+            if (!player.needsToDiscard(-1)) {
+                if (targets.length >= 7) {
+                    if (num < 2) {
+                        return 0;
+                    }
+                } else if (targets.length >= 5) {
+                    if (num < 1.5) {
+                        return 0;
+                    }
+                }
+            }
+            return 6 - get.value(card);
+        },
+        ai: {
+            basic: {
+                order: 8.9,
+            },
+        },
+        group: ["saint_mami_tiro_finale_count", "saint_mami_tiro_finale_reset", "saint_mami_tiro_finale_respond", "saint_mami_tiro_finale_damage", "saint_mami_tiro_finale_draw"],
+        subSkill: {
+            reset: {
+                trigger: { player: "phaseAfter" },
+                silent: true,
+                async content(event, trigger, player) {
+                    delete player.storage.saint_mami_tiro_finale;
+                    delete player.storage.saint_mami_tiro_finale2;
+                },
+            },
+            count: {
+                trigger: { player: "useCard" },
+                silent: true,
+                filter(event) {
+                    return event.skill == "saint_mami_tiro_finale";
+                },
+                async content(event, trigger, player) {
+                    player.storage.saint_mami_tiro_finale2 = trigger.card;
+                    if (!player.storage.saint_mami_tiro_finale) {
+                        player.storage.saint_mami_tiro_finale = [];
+                    }
+                    player.storage.saint_mami_tiro_finale.addArray(trigger.cards.map(c => get.suit(c)));
+                },
+            },
+            respond: {
+                trigger: { global: "respond" },
+                silent: true,
+                filter(event) {
+                    return event.getParent(2).skill == "saint_mami_tiro_finale";
+                },
+                async content(event, trigger, player) {
+                    await trigger.player.draw();
+                },
+            },
+            damage: {
+                trigger: { source: "damage" },
+                forced: true,
+                silent: true,
+                popup: false,
+                filter(event, player) {
+                    return player.storage.saint_mami_tiro_finale2 && event.card == player.storage.saint_mami_tiro_finale2;
+                },
+                async content(event, trigger, player) {
+                    delete player.storage.saint_mami_tiro_finale2;
+                },
+            },
+            draw: {
+                trigger: { player: "useCardAfter" },
+                forced: true,
+                silent: true,
+                popup: false,
+                filter(event, player) {
+                    return player.storage.saint_mami_tiro_finale2 && event.card == player.storage.saint_mami_tiro_finale2;
+                },
+                async content(event, trigger, player) {
+                    await player.draw(trigger.targets.length);
+                    delete player.storage.saint_mami_tiro_finale2;
+                },
+            },
+        },
+    },
 };
 export default skills;

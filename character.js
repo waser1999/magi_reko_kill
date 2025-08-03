@@ -300,7 +300,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["reyingzi", "guose", "sbluanji", "mami_qiaobian"],
+        skills: ["reyingzi", "guose", "mami_tiro_finale", "mami_qiaobian"],
         img: "extension/魔法纪录/image/mami.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mami.mp3"],
         description: "终幕射击"
@@ -648,7 +648,7 @@ const characters = {
         hp: 5,
         maxHp: 5,
         hujia: 0,
-        skills: ["reyingzi", "reluanji", "starxiaoyan", "starjiaowang"],
+        skills: ["reyingzi", "saint_mami_tiro_finale", "starxiaoyan", "starjiaowang"],
         img: "extension/魔法纪录/image/saint_mami.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/saint_mami.mp3"],
     },
