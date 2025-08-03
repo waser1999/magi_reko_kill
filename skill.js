@@ -894,6 +894,7 @@ const skills = {
         "_priority": 0,
     },
     "homura_shiting": {
+        audio: "ext:魔法纪录/audio/skill:2",
         mod: {
             cardUsable(card, player, num) {
                 if (card.name == 'sha') return num + player.maxHp - player.hp;
@@ -1247,7 +1248,7 @@ const skills = {
             return event.result && event.result.suit == "spade";
         },
         check(event, player) {
-            return event.result.judge * get.attitude(player, event.player) <= 0;
+            return event.result.judge * get.attitude(player, event.player) < 0;
         },
         content() {
             "step 0";
@@ -1990,6 +1991,40 @@ const skills = {
             usedu: true,
         }
     },
+    "kaede_buyi": {
+        trigger: { global: "dying" },
+        filter(event, player) {
+            return event.player.countCards("h") > 0;
+        },
+        check(event, player) {
+            return get.attitude(player, event.player) > 0;
+        },
+        content() {
+            "step 0";
+            if (player == trigger.player) {
+                player.chooseCard("h", true).set("ai", function (card) {
+                    if (get.type(card) != "basic") {
+                        return 100 - get.value(card);
+                    }
+                    return 0;
+                });
+            } else {
+                player.choosePlayerCard("h", trigger.player, true);
+            }
+            "step 1";
+            var card = result.cards[0],
+                target = trigger.player;
+            player.showCards(card, get.translation(player) + "对" + (player == target ? "自己" : get.translation(target)) + "发动了【补益】");
+            if (get.type(card, null, target) != "basic") {
+                player.useCard({ name: "tao", isCard: true }, target, false);
+                target.discard(card);
+                if (target.countCards("h") == 1) {
+                    target.draw();
+                }
+            }
+        },
+        logTarget: "player",
+    },
     "kanagi_nvpu": {
         trigger: {
             player: ["equipAfter", "loseAfter"],
@@ -2060,8 +2095,9 @@ const skills = {
         },
     },
     "tsuruno_jizhi": {
+        derivation: ["jiang", "reyingzi", "rezhiheng", "gzyinghun"],
         init2(player) {
-            player.removeSkill(["jiang", "lianying", "reyingzi", "gzyinghun"]);
+            player.removeSkill(["jiang", "rezhiheng", "reyingzi", "gzyinghun"]);
             if (player.hp <= 4) {
                 player.addSkill("jiang");
             }
@@ -2069,7 +2105,7 @@ const skills = {
                 player.addSkill("reyingzi");
             }
             if (player.hp <= 2) {
-                player.addSkill("lianying");
+                player.addSkill("rezhiheng");
             }
             if (player.hp <= 1) {
                 player.addSkill("gzyinghun");
@@ -2609,10 +2645,10 @@ const skills = {
                         order: 10,
                         result: {
                             target(player, target) {
-                                if (player == target && player.countCards("h") < player.maxHp) {
+                                if (get.attitude(player, target) < 0 && target.hp == 1) return -3;
+                                if (player == target && player.countCards("h") <= 1) {
                                     return 2;
                                 }
-                                if (get.attitude(player, target) < 0) return -3;
                             },
                         },
                     },
@@ -3217,6 +3253,28 @@ const skills = {
                     await player.draw(trigger.targets.length);
                     delete player.storage.saint_mami_tiro_finale2;
                 },
+            },
+        },
+    },
+    "kirika_shensu": {
+        audio: "ext:魔法纪录/audio/skill:2",
+        group: ["kirika_shensu_1", "kirika_shensu_2", "kirika_shensu_4"],
+        preHidden: ["kirika_shensu_1", "kirika_shensu_2", "kirika_shensu_4"],
+        subSkill: {
+            1: {
+                audio: "kirika_shensu",
+                inherit: "shensu1",
+                sourceSkill: "kirika_shensu",
+            },
+            2: {
+                audio: "kirika_shensu",
+                inherit: "shensu2",
+                sourceSkill: "kirika_shensu",
+            },
+            4: {
+                audio: "kirika_shensu",
+                inherit: "shensu4",
+                sourceSkill: "kirika_shensu",
             },
         },
     },
