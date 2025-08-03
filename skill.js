@@ -684,6 +684,7 @@ const skills = {
         "_priority": 0,
     },
     "oriko_jiangsha": {
+        audio: "ext:魔法纪录/audio/skill:2",
         trigger: {
             global: "judge",
         },
@@ -916,6 +917,7 @@ const skills = {
         "_priority": 0,
     },
     "nemu_zhiyao": {
+        audio: "ext:魔法纪录/audio/skill:2",
         forced: true,
         charlotte: true,
         trigger: {
@@ -1961,6 +1963,7 @@ const skills = {
         "_priority": 0,
     },
     "kaede_manmiao": {
+        audio: "ext:魔法纪录/audio/skill:2",
         forced: true,
         charlotte: true,
         trigger: {
@@ -2000,6 +2003,7 @@ const skills = {
         },
     },
     "tsuruno_qiangyun": {
+        audio: "ext:魔法纪录/audio/skill:2",
         group: ["tsuruno_qiangyun_1", "tsuruno_qiangyun_2", "tsuruno_qiangyun_3"],
         locked: true,
         ai: {
@@ -2013,6 +2017,7 @@ const skills = {
         },
         subSkill: {
             1: {
+                audio: "tsuruno_qiangyun",
                 trigger: {
                     player: ["linkBegin"],
                 },
@@ -2037,6 +2042,7 @@ const skills = {
                 },
             },
             3: {
+                audio: "tsuruno_qiangyun",
                 trigger: {
                     player: "turnOverBefore",
                 },
@@ -2956,6 +2962,90 @@ const skills = {
     "shizuka_xueji": {
         inherit: "umi_lunhui",
         round: 1,
-    }
+    },
+    "iroha_dimeng": {
+        audio: "ext:魔法纪录/audio/skill:2",
+        enable: "phaseUse",
+        usable: 1,
+        filter(event, player) {
+            return game.hasPlayer(current => lib.skill.iroha_dimeng.filterTarget(null, player, current));
+        },
+        selectTarget: 2,
+        complexTarget: true,
+        filterTarget(card, player, target) {
+            if (target == player) {
+                return false;
+            }
+            var ps = player.countCards("he");
+            if (!ui.selected.targets.length) {
+                var hs = target.countCards("h");
+                return game.hasPlayer(function (current) {
+                    if (current == player || current == target) {
+                        return false;
+                    }
+                    var cs = current.countCards("h");
+                    return (hs > 0 || cs > 0) && Math.abs(hs - cs) <= ps;
+                });
+            }
+            var current = ui.selected.targets[0],
+                hs = target.countCards("h"),
+                cs = current.countCards("h");
+            return (hs > 0 || cs > 0) && Math.abs(hs - cs) <= ps;
+        },
+        multitarget: true,
+        multiline: true,
+        content() {
+            targets[0].swapHandcards(targets[1]);
+            player.addTempSkill("iroha_dimeng_discard", "phaseUseAfter");
+            player.markAuto("iroha_dimeng_discard", [targets]);
+        },
+        ai: {
+            threaten: 4.5,
+            pretao: true,
+            nokeep: true,
+            order: 1,
+            expose: 0.2,
+            result: {
+                target(player, target) {
+                    if (!ui.selected.targets.length) {
+                        return -Math.sqrt(target.countCards("h"));
+                    }
+                    var h1 = ui.selected.targets[0].getCards("h"),
+                        h2 = target.getCards("h");
+                    if (h2.length > h1.length) {
+                        return 0;
+                    }
+                    var delval = get.value(h2, target) - get.value(h1, ui.selected.targets[0]);
+                    if (delval >= 0) {
+                        return 0;
+                    }
+                    return -delval * (h1.length - h2.length);
+                },
+            },
+        },
+        subSkill: {
+            discard: {
+                audio: "ext:魔法纪录/audio/skill:2",
+                trigger: { player: "phaseUseEnd" },
+                forced: true,
+                charlotte: true,
+                onremove: true,
+                filter(event, player) {
+                    return player.countCards("he") > 0;
+                },
+                async content(event, trigger, player) {
+                    for (let targets of player.getStorage("iroha_dimeng_discard")) {
+                        if (targets.length < 2) {
+                            continue;
+                        }
+                        const num = Math.abs(targets[0].countCards("h") - targets[1].countCards("h"));
+                        if (num > 0 && player.countCards("he") > 0) {
+                            await player.chooseToDiscard("he", true, num);
+                        }
+                    }
+                },
+            },
+        },
+    },
 };
 export default skills;

@@ -134,6 +134,8 @@ const translates = {
     "name_dengtai_info": "锁定技，明置武将牌时，你获得两个武将的各一个技能，之后你失去此技能。",
     "shizuka_xueji": "血祭",
     "shizuka_xueji_info": "每轮限一次。一名其他角色的回合结束时，若你的手牌数小于体力值，则你可以失去1点体力。若如此做，你摸两张牌并进行一个额外回合，且你于此回合内计算与此角色的距离视为1。",
+    "iroha_dimeng": "缔盟",
+    "iroha_dimeng_info": "出牌阶段限一次，你可令两名手牌数之差不大于你牌数的其他角色交换手牌。若如此做，此阶段结束时，你弃置X张牌（X为这两名角色手牌数之差）。",
 }
 
 export default translates;
