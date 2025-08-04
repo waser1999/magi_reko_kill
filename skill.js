@@ -3419,5 +3419,110 @@ const skills = {
             player.draw();
         },
     },
+    "nayuta_kanwu": {
+        audio: "huanshi",
+        trigger: { global: "judge" },
+        direct: true,
+        preHidden: true,
+        filter(event, player) {
+            return player.countCards("hes") > 0;
+        },
+        content() {
+            "step 0";
+            player
+                .chooseCard(get.translation(trigger.player) + "的" + (trigger.judgestr || "") + "判定为" + get.translation(trigger.player.judging[0]) + "，" + get.prompt("nayuta_kanwu"), "hes", function (card) {
+                    var player = _status.event.player;
+                    var mod2 = game.checkMod(card, player, "unchanged", "cardEnabled2", player);
+                    if (mod2 != "unchanged") {
+                        return mod2;
+                    }
+                    var mod = game.checkMod(card, player, "unchanged", "cardRespondable", player);
+                    if (mod != "unchanged") {
+                        return mod;
+                    }
+                    return get.color(card) == "red";
+                })
+                .set("ai", function (card) {
+                    var trigger = _status.event.getTrigger();
+                    var player = _status.event.player;
+                    var judging = _status.event.judging;
+                    var result = trigger.judge(card) - trigger.judge(judging);
+                    var attitude = get.attitude(player, trigger.player);
+                    if (attitude == 0 || result == 0) {
+                        return 0;
+                    }
+                    if (attitude > 0) {
+                        return result - get.value(card) / 2;
+                    } else {
+                        return -result - get.value(card) / 2;
+                    }
+                })
+                .set("judging", trigger.player.judging[0])
+                .setHiddenSkill("nayuta_kanwu");
+            "step 1";
+            if (result.bool) {
+                player.respond(result.cards, "nayuta_kanwu", "highlight", "noOrdering");
+            } else {
+                event.finish();
+            }
+            "step 2";
+            if (result.bool) {
+                if (trigger.player.judging[0].clone) {
+                    trigger.player.judging[0].clone.classList.remove("thrownhighlight");
+                    game.broadcast(function (card) {
+                        if (card.clone) {
+                            card.clone.classList.remove("thrownhighlight");
+                        }
+                    }, trigger.player.judging[0]);
+                    game.addVideo("deletenode", player, get.cardsInfo([trigger.player.judging[0].clone]));
+                }
+                game.cardsDiscard(trigger.player.judging[0]);
+                trigger.player.judging[0] = result.cards[0];
+                trigger.orderingCards.addArray(result.cards);
+                game.log(trigger.player, "的判定牌改为", result.cards[0]);
+                game.delay(2);
+            }
+        },
+        ai: {
+            rejudge: true,
+            tag: {
+                rejudge: 1,
+            },
+        },
+    },
+    "nayuta_mingsu": {
+        trigger: {
+            player: ["loseAfter", "useCard", "respond"],
+            global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
+        },
+        filter(event, player) {
+            if (player == _status.currentPhase) {
+                return false;
+            }
+            if (event.name == "useCard" || event.name == "respond") {
+                return (
+                    get.color(event.card, false) == "red" &&
+                    player.hasHistory("lose", function (evt) {
+                        return evt.getParent() == event && evt.hs && evt.hs.length > 0;
+                    })
+                );
+            }
+            var evt = event.getl(player);
+            if (!evt || !evt.es || !evt.es.length) {
+                return false;
+            }
+            for (var i of evt.es) {
+                if (get.color(i, player) == "red") {
+                    return true;
+                }
+            }
+            return false;
+        },
+        frequent: true,
+        preHidden: true,
+        content() {
+            player.draw();
+        },
+    },
 };
 export default skills;
