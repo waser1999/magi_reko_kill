@@ -143,7 +143,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["moying", "juanhui", "reshejian"],
+        skills: ["alina_moying", "juanhui"],
         img: "extension/魔法纪录/image/alina.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/alina.mp3"],
         description: "九相"

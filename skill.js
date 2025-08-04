@@ -3800,5 +3800,69 @@ const skills = {
         inherit: "olfuhun",
         audio: "ext:魔法纪录/audio/skill:2",
     },
+    "alina_moying": {
+        trigger: {
+            player: "loseAfter",
+            global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
+        },
+        usable: 1,
+        audio: "ext:魔法纪录/audio/skill:2",
+        filter(event, player) {
+            if (player == _status.currentPhase || event.getParent().name == "useCard") {
+                return false;
+            }
+            if (event.name == "gain" && event.player == player) {
+                return false;
+            }
+            var evt = event.getl(player);
+            return evt && evt.cards2 && evt.cards2.length == 1 && ["equip", "trick"].includes(get.type2(evt.cards2[0], evt.type == "discard" && evt.hs.includes(evt.cards2[0]) ? player : false));
+        },
+        async content(event, trigger, player) {
+            var number = trigger.getl(player).cards2[0].number;
+            var numbers = [number - 2, number - 1, number, number + 1, number + 2];
+            for (let i = 0; i < numbers.length; i++) {
+                if (numbers[i] <= 0) numbers[i] = numbers[i] + 13;
+                if (numbers[i] > 13) numbers[i] = numbers[i] - 13;
+            }
+
+            await player.draw(13);
+            let cards = player.getCards("he").filter(function (card) {
+                return !numbers.includes(get.number(card));
+            });
+            let num = cards.length;
+            player.discard(cards);
+
+            let target = _status.currentPhase;
+            if (target && num >= 2) {
+                let result = await player.chooseControl(["弃置手牌", "造成1点伤害", "取消"])
+                    .set("ai", function () {
+                        const target = _status.currentPhase;
+                        if (get.attitude(player, target) > 0) return 2;
+
+                        var eff0 = get.effect(target, { name: "guohe_copy2" }, player, player) * Math.min(1.7, target.countCards("he"));
+                        var eff1 = get.damageEffect(target, player, player);
+                        return eff0 > eff1 ? 0 : 1;
+                    })
+                    .forResult();
+
+                switch (result.index) {
+                    case 0:
+                        player.line(target);
+                        player.discardPlayerCard(target, num, true, "he");
+                        break;
+                    case 1:
+                        player.line(target);
+                        target.damage();
+                        break;
+                    case 2:
+                        trigger.cancel();
+                        break;
+                }
+            }
+        },
+        ai: {
+            noe: true,
+        },
+    },
 };
 export default skills;
