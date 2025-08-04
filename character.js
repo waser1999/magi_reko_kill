@@ -281,7 +281,6 @@ const characters = {
         img: "extension/魔法纪录/image/karin.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/karin.mp3"],
         description: "幽紫灵火",
-        doubleGroup: ["huan", "ma"],
     },
     "nemu": {
         sex: "female",
@@ -670,6 +669,7 @@ const characters = {
         hujia: 0,
         skills: ["dcgeyuan", "dcgusuan", "dcjieshu", "bazhen"],
         img: "extension/魔法纪录/image/devil_homura.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/devil_homura.mp3"],
     },
     "hinano": {
         sex: "female",
@@ -679,6 +679,7 @@ const characters = {
         hujia: 0,
         skills: ["hinano_huawu", "hinano_duji", "hinano_shiyao", "hinano_baoming"],
         img: "extension/魔法纪录/image/hinano.png",
+        dieAudios: ["ext:魔法纪录/audio/die/hinano.mp3"],
     },
     "yuna": {
         isZhugong: true,
@@ -689,6 +690,7 @@ const characters = {
         hujia: 0,
         skills: ["yuna_chouhai", "yuna_xuehen", "yuna_liuli", "yuna_xuemeng"],
         img: "extension/魔法纪录/image/yuna.png",
+        dieAudios: ["ext:魔法纪录/audio/die/yuna.mp3"],
     },
     "shigure": {
         sex: "female",
@@ -698,6 +700,7 @@ const characters = {
         hujia: 0,
         skills: ["olkanpo", "ollongdan"],
         img: "extension/魔法纪录/image/shigure.png",
+        dieAudios: ["ext:魔法纪录/audio/die/shigure.mp3"],
     },
     "hagumu": {
         sex: "female",
@@ -707,6 +710,7 @@ const characters = {
         hujia: 0,
         skills: ["new_rewusheng", "oltiaoxin"],
         img: "extension/魔法纪录/image/hagumu.png",
+        dieAudios: ["ext:魔法纪录/audio/die/hagumu.mp3"],
     },
     "shizuka": {
         sex: "female",
@@ -716,6 +720,7 @@ const characters = {
         hujia: 0,
         skills: ["shizuka_xueji", "komari_xueshang"],
         img: "extension/魔法纪录/image/shizuka.png",
+        dieAudios: ["ext:魔法纪录/audio/die/shizuka.mp3"],
     },
     "himena": {
         isZhugong: true,
@@ -726,7 +731,19 @@ const characters = {
         hujia: 0,
         skills: ["rejijun", "refangtong", "magius_zhishang"],
         img: "extension/魔法纪录/image/himena.png",
-    }
+        dieAudios: ["ext:魔法纪录/audio/die/himena.mp3"],
+    },
+    "nayuta": {
+        sex: "female",
+        group: "wan",
+        hp: 4,
+        maxHp: 4,
+        hujia: 0,
+        skills: ["nayuta_kanwu", "nayuta_mingsu", "olhongyuan"],
+        img: "extension/魔法纪录/image/nayuta.png",
+        dieAudios: ["ext:魔法纪录/audio/die/nayuta.mp3"],
+        doubleGroup: ["wan", "ma"],
+    },
 }
 
 const character_translates = {
@@ -803,6 +820,7 @@ const character_translates = {
     hagumu: "安积育梦",
     shizuka: "时女静香",
     himena: "蓝家姬奈",
+    nayuta: "里见那由他",
 }
 
 const perfectPairs = {
@@ -826,7 +844,7 @@ const perfectPairs = {
     momoko: ["yachiyo", "kaede", "lena", "mitama"],
     lena: ["momoko", "kaede"],
     kaede: ["momoko", "lena"],
-    toka: ["alina", "nemu", "ui"],
+    toka: ["alina", "nemu", "ui", "nayuta"],
     alina: ["toka", "nemu", "karin"],
     nemu: ["alina", "toka", "ui"],
     karin: ["alina"],
@@ -853,6 +871,7 @@ const perfectPairs = {
     hagumu: ["shigure", "himena"],
     shigure: ["hagumu", "himena"],
     himena: ["hagumu", "shigure"],
+    nayuta: ["toka"],
 }
 
 export default characters;
