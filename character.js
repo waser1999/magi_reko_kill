@@ -63,7 +63,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["wanwei", "spyuejian", "reguose", "tianxiang"],
+        skills: ["rika_sanshe", "reguose", "rika_liuge"],
         img: "extension/魔法纪录/image/rika.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/rika.mp3"],
         description: "闪耀光束"
@@ -177,7 +177,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["qiangxix", "buqu"],
+        skills: ["momoko_qiangxi", "buqu"],
         img: "extension/魔法纪录/image/momoko.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/momoko.mp3"],
         description: "宇宙之刃"
@@ -199,7 +199,7 @@ const characters = {
         hp: 5,
         maxHp: 5,
         hujia: 0,
-        skills: ["olshuangxiong"],
+        skills: ["yueye_yingyin"],
         img: "extension/魔法纪录/image/yueye.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yueye.mp3"],
         description: "樱隐"
@@ -210,7 +210,7 @@ const characters = {
         hp: 5,
         maxHp: 5,
         hujia: 0,
-        skills: ["olfuhun"],
+        skills: ["yuexiao_yingyu"],
         img: "extension/魔法纪录/image/yuexiao.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yuexiao.mp3"],
         description: "樱语"
@@ -333,7 +333,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["xinwuyan", "olbeige", "duanchang"],
+        skills: ["xinwuyan", "ren_beige", "duanchang"],
         img: "extension/魔法纪录/image/ren.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ren.mp3"],
         description: "灵魂救赎"

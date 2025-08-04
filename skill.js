@@ -3524,5 +3524,281 @@ const skills = {
             player.draw();
         },
     },
+    "rika_liuge": {
+        audio: "ext:魔法纪录/audio/skill:2",
+        trigger: { player: "damageBegin3" },
+        filter(event, player) {
+            return player.countCards("he", { color: "red" }) > 0 && event.num > 0;
+        },
+        async cost(event, trigger, player) {
+            event.result = await player
+                .chooseCardTarget({
+                    position: "he",
+                    filterCard(card, player) {
+                        return get.color(card) == "red" && lib.filter.cardDiscardable(card, player);
+                    },
+                    filterTarget(card, player, target) {
+                        return player != target;
+                    },
+                    ai1(card) {
+                        return 10 - get.value(card);
+                    },
+                    ai2(target) {
+                        const att = get.attitude(_status.event.player, target);
+                        const trigger = _status.event.getTrigger();
+                        let da = 0;
+                        if (_status.event.player.hp == 1) {
+                            da = 10;
+                        }
+                        if (trigger.num > 1) {
+                            if (target.maxHp > 5 && target.hp > 1) {
+                                return -att / 10 + da;
+                            }
+                            return -att + da;
+                        }
+                        const eff = get.damageEffect(target, trigger.source, target, trigger.nature);
+                        if (att == 0) {
+                            return 0.1 + da;
+                        }
+                        if (eff >= 0 && trigger.num == 1) {
+                            return att + da;
+                        }
+                        if (target.hp == target.maxHp) {
+                            return -att + da;
+                        }
+                        if (target.hp == 1) {
+                            if (target.maxHp <= 4 && !target.hasSkillTag("maixie")) {
+                                if (target.maxHp <= 3) {
+                                    return -att + da;
+                                }
+                                return -att / 2 + da;
+                            }
+                            return da;
+                        }
+                        if (target.hp == target.maxHp - 1) {
+                            if (target.hp > 2 || target.hasSkillTag("maixie")) {
+                                return att / 5 + da;
+                            }
+                            if (att > 0) {
+                                return 0.02 + da;
+                            }
+                            return 0.05 + da;
+                        }
+                        return att / 2 + da;
+                    },
+                    prompt: get.prompt2(event.skill),
+                })
+                .forResult();
+        },
+        async content(event, trigger, player) {
+            trigger.player = event.targets[0];
+            trigger.player.addSkill("rika_liuge2");
+            await player.discard(event.cards[0]);
+        },
+        ai: {
+            maixie_defend: true,
+            effect: {
+                target(card, player, target) {
+                    if (player.hasSkillTag("jueqing", false, target)) {
+                        return;
+                    }
+                    if (get.tag(card, "damage") && target.countCards("he") > 1) {
+                        return 0.7;
+                    }
+                },
+            },
+            threaten(player, target) {
+                if (target.countCards("he") == 0) {
+                    return 2;
+                }
+            },
+        },
+    },
+    rika_liuge2: {
+        trigger: { player: ["damageAfter", "damageCancelled", "damageZero"] },
+        forced: true,
+        popup: false,
+        audio: false,
+        vanish: true,
+        charlotte: true,
+        sourceSkill: "rika_liuge",
+        async content(event, trigger, player) {
+            player.removeSkill("rika_liuge2");
+            player.popup("rika_liuge");
+            if (player.getDamagedHp()) {
+                await player.draw(player.getDamagedHp());
+            }
+        },
+    },
+    "rika_sanshe": {
+        trigger: { target: ["rewriteGainResult", "rewriteDiscardResult"] },
+        direct: true,
+        preHidden: true,
+        filter(event, player) {
+            return event.player != player;
+        },
+        mod: {
+            maxHandcardBase(player) {
+                return player.maxHp;
+            },
+        },
+        content() {
+            "step 0";
+            var prompt = "即将失去" + get.translation(trigger.result.cards) + "，是否发动【散射】？";
+            var next = player.choosePlayerCard(player, prompt, trigger.position);
+            next.set("ai", function (button) {
+                return 20 - get.value(button.link);
+            });
+            next.filterButton = trigger.filterButton;
+            next.selectButton = trigger.result.cards.length;
+            next.setHiddenSkill("rika_sanshe");
+            "step 1";
+            if (result.bool) {
+                player.logSkill("rika_sanshe");
+                trigger.result.cards = result.links.slice(0);
+                trigger.result.links = result.links.slice(0);
+                trigger.cards = result.links.slice(0);
+                trigger.untrigger();
+            }
+        },
+    },
+    "ren_beige": {
+        inherit: "olbeige",
+        audio: "ext:魔法纪录/audio/skill:2",
+    },
+    "momoko_qiangxi": {
+        inherit: "qiangxix",
+        audio: "ext:魔法纪录/audio/skill:2",
+    },
+    "yueye_yingyin": {
+        audio: "ext:魔法纪录/audio/skill:2",
+        trigger: { player: "phaseDrawEnd" },
+        filter: (event, player) => player.countCards("he") > 0,
+        async cost(event, trigger, player) {
+            event.result = await player
+                .chooseToDiscard("he", get.prompt("yueye_yingyin"), "弃置一张牌，然后你本回合内可以将一张与此牌颜色不同的牌当做【决斗】使用", "chooseonly")
+                .set("ai", function (card) {
+                    let player = _status.event.player;
+                    if (!_status.event.goon || player.skipList.includes("phaseUse")) {
+                        return -get.value(card);
+                    }
+                    let color = get.color(card),
+                        effect = 0,
+                        cards = player.getCards("hes"),
+                        sha = false;
+                    for (const cardx of cards) {
+                        if (cardx == card || get.color(cardx) == color) {
+                            continue;
+                        }
+                        const cardy = get.autoViewAs({ name: "juedou" }, [cardx]),
+                            eff1 = player.getUseValue(cardy);
+                        if (get.position(cardx) == "e") {
+                            let eff2 = get.value(cardx);
+                            if (eff1 > eff2) {
+                                effect += eff1 - eff2;
+                            }
+                            continue;
+                        } else if (get.name(cardx) == "sha") {
+                            if (sha) {
+                                effect += eff1;
+                                continue;
+                            } else {
+                                sha = true;
+                            }
+                        }
+                        let eff2 = player.getUseValue(cardx, null, true);
+                        if (eff1 > eff2) {
+                            effect += eff1 - eff2;
+                        }
+                    }
+                    return effect - get.value(card);
+                })
+                .set("goon", player.hasValueTarget({ name: "juedou" }) && !player.hasSkill("yueye_yingyin_effect"))
+                .forResult();
+        },
+        async content(event, trigger, player) {
+            const { cards } = event,
+                color = get.color(cards[0], player);
+            await player.modedDiscard(cards);
+            player.markAuto("yueye_yingyin_effect", [color]);
+            player.addTempSkill("yueye_yingyin_effect");
+        },
+        group: "yueye_yingyin_jianxiong",
+        subSkill: {
+            effect: {
+                audio: "yueye_yingyin",
+                enable: "chooseToUse",
+                viewAs: { name: "juedou" },
+                position: "hes",
+                viewAsFilter(player) {
+                    return player.hasCard(card => lib.skill.yueye_yingyin_effect.filterCard(card, player), "hes");
+                },
+                filterCard(card, player) {
+                    const color = get.color(card),
+                        colors = player.getStorage("yueye_yingyin_effect");
+                    for (const i of colors) {
+                        if (color != i) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                prompt() {
+                    const colors = _status.event.player.getStorage("yueye_yingyin_effect");
+                    let str = "将一张颜色";
+                    for (let i = 0; i < colors.length; i++) {
+                        if (i > 0) {
+                            str += "或";
+                        }
+                        str += "不为";
+                        str += get.translation(colors[i]);
+                    }
+                    str += "的牌当做【决斗】使用";
+                    return str;
+                },
+                check(card) {
+                    const player = _status.event.player;
+                    if (get.position(card) == "e") {
+                        const raw = get.value(card);
+                        const eff = player.getUseValue(get.autoViewAs({ name: "juedou" }, [card]));
+                        return eff - raw;
+                    }
+                    const raw = player.getUseValue(card, null, true);
+                    const eff = player.getUseValue(get.autoViewAs({ name: "juedou" }, [card]));
+                    return eff - raw;
+                },
+                onremove: true,
+                charlotte: true,
+                ai: { order: 7 },
+            },
+            jianxiong: {
+                audio: "yueye_yingyin",
+                trigger: { player: "phaseJieshuBegin" },
+                forced: true,
+                locked: false,
+                filter(event, player) {
+                    return player.hasHistory("damage", function (evt) {
+                        //Disable Umi Kato's chaofan
+                        return evt.card && evt.cards && evt.cards.some(card => get.position(card, true));
+                    });
+                },
+                content() {
+                    const cards = [];
+                    player.getHistory("damage", function (evt) {
+                        if (evt.card && evt.cards) {
+                            cards.addArray(evt.cards.filterInD("d"));
+                        }
+                    });
+                    if (cards.length) {
+                        player.gain(cards, "gain2");
+                    }
+                },
+            },
+        },
+    },
+    "yuexiao_yingyu": {
+        inherit: "olfuhun",
+        audio: "ext:魔法纪录/audio/skill:2",
+    },
 };
 export default skills;
