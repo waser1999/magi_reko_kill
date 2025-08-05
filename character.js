@@ -299,7 +299,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["reyingzi", "guose", "mami_tiro_finale", "mami_qiaobian"],
+        skills: ["reyingzi", "mami_duanbian", "mami_tiro_finale"],
         img: "extension/魔法纪录/image/mami.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mami.mp3"],
         description: "终幕射击"

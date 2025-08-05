@@ -2359,8 +2359,14 @@ const skills = {
             },
         }
     },
-    "mami_qiaobian": {
-        inherit: "qiaobian",
+    "mami_duanbian": {
+        trigger: {
+            player: ["phaseJudgeBefore", "phaseDrawBefore", "phaseUseBefore", "phaseDiscardBefore"],
+        },
+        filter(event, player) {
+            return player.countCards("h") > 0;
+        },
+        preHidden: true,
         async cost(event, trigger, player) {
             let check,
                 str = "弃置一张手牌并跳过";
@@ -2374,7 +2380,7 @@ const skills = {
             }
             switch (trigger.name) {
                 case "phaseJudge":
-                    check = player.countCards("j");
+                    check = player.countCards("j") || player.hasCard(card => get.suit(card) == "diamond" || get.name(card) == "lebu");
                     break;
                 case "phaseDraw": {
                     let i,
@@ -2414,7 +2420,7 @@ const skills = {
                     }
                     break;
                 case "phaseDiscard":
-                    check = player.needsToDiscard();
+                    check = player.needsToDiscard() || player.hasCard(card => get.suit(card) == "diamond" || get.name(card) == "lebu");
                     break;
             }
             event.result = await player
@@ -2422,6 +2428,9 @@ const skills = {
                 .set("ai", card => {
                     if (!_status.event.check) {
                         return -1;
+                    }
+                    if (get.suit(card) == "diamond" || get.name(card) == "lebu") {
+                        return 7;
                     }
                     return 7 - get.value(card);
                 })
@@ -2455,7 +2464,24 @@ const skills = {
                 await player.gainMultiple(result.targets);
                 await game.delay();
             }
+
+            let card = event.cards[0];
+            if (get.suit(card) == "diamond" || get.name(card) == "lebu") {
+                let result = await player.chooseTarget("请选择使用【乐不思蜀】的目标", true, function (card, player, target) {
+                    if (target == player) return false;
+                    if (target.hasJudge("lebu")) return false;
+                    return true;
+                }).set("ai", function (target) {
+                    return get.effect(target, { name: "lebu" }, player, player) > 0;
+                }).forResult();
+
+                if (result.bool) {
+                    player.line(result.targets, "green");
+                    result.targets[0].addJudge({ name: "lebu" }, card);
+                }
+            }
         },
+        ai: { threaten: 3 },
     },
     "homura_juwu": {
         trigger: { player: "phaseZhunbeiBegin" },
@@ -2493,7 +2519,7 @@ const skills = {
             "step 2";
             if (result.judge > 0) {
                 event.cards.push(result.card);
-                player.chooseBool("是否再次发动【洛神】？").set("frequentSkill", "homura_juwu");
+                player.chooseBool("是否再次发动【聚武】？").set("frequentSkill", "homura_juwu");
             } else {
                 for (var i = 0; i < event.cards.length; i++) {
                     if (get.position(event.cards[i], true) != "o") {
