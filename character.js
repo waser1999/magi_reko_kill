@@ -188,7 +188,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["kurou", "asuka_longzhen"],
+        skills: ["asuka_kurou", "asuka_longzhen"],
         img: "extension/魔法纪录/image/asuka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/asuka.mp3"],
         description: "龙真螺旋咆击"
@@ -344,11 +344,12 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["twshelie", "twgongxin", "sbliegong", "xieli"],
+        skills: ["madoka_dengshen", "twshelie", "sbliegong", "xieli"],
         img: "extension/魔法纪录/image/ulti_madoka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ulti_madoka.mp3"],
         description: "再也没有必要绝望了！",
-        isZhugong: true
+        isZhugong: true,
+        isAiForbidden: true,
     },
     "sayaka": {
         sex: "female",
@@ -550,7 +551,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["dArc_congjun", "nanaka_huaxin", "gongji"],
+        skills: ["retieji", "nanaka_huaxin", "gongji"],
         img: "extension/魔法纪录/image/dArc.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/dArc.mp3"]
     },
@@ -670,6 +671,7 @@ const characters = {
         skills: ["dcgeyuan", "dcgusuan", "dcjieshu", "bazhen"],
         img: "extension/魔法纪录/image/devil_homura.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/devil_homura.mp3"],
+        isAiForbidden: true,
     },
     "hinano": {
         sex: "female",

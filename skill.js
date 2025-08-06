@@ -1436,66 +1436,6 @@ const skills = {
         },
         "_priority": 0,
     },
-    "dArc_congjun": {
-        unique: true,
-        forceunique: true,
-        locked: true,
-        init(player) {
-            if (player.storage.dArc_congjun || ![player.name1, player.name2].includes("dArc")) {
-                return false;
-            }
-            var change = function (target) {
-                if (target == player) {
-                    var list;
-                    if (_status.connectMode) {
-                        list = get.charactersOL();
-                    } else {
-                        list = get.gainableCharacters();
-                    }
-                    var name = list.randomGet();
-                    var skill = get.character(name).skills.filter(skill => {
-                        let info = get.info(skill);
-                        return info && !info.hiddenSkill && !info.zhuSkill && !info.charlotte;
-                    }).randomGet();
-                    player.storage.dArc_congjun = skill;
-                    player.addSkill(skill);
-                    player._inits.remove(change);
-                }
-            };
-            if (!player._inits) {
-                player._inits = [];
-            }
-            player._inits.push(change);
-        },
-        subSkill: {
-            show: {
-                trigger: {
-                    global: "useCard",
-                },
-                filter(event, player) {
-                    return player.storage.dArc_congjun && event.card.name == "wuxie" && event.getRand() < 0.1 && player.getEnemies().includes(event.player);
-                },
-                direct: true,
-                skillAnimation: true,
-                animationColor: "thunder",
-                content() {
-                    "step 0";
-                    game.delay(0.5);
-                    "step 1";
-                    player.logSkill("dArc_congjun_show");
-                    "step 2";
-                    player.removeSkill("dArc_congjun_show");
-                    player.removeSkill(player.storage.dArc_congjun);
-                    player.line(trigger.player, "green");
-                    trigger.player.damage(2);
-                },
-                sub: true,
-                sourceSkill: "dArc_congjun",
-                "_priority": 0,
-            },
-        },
-        "_priority": 0,
-    },
     "mabayu_jingxiang": {
         zhuSkill: true,
         trigger: {
@@ -1834,6 +1774,16 @@ const skills = {
         },
         "_priority": 0,
     },
+    "madoka_dengshen": {
+        trigger: {
+            source: "damageBefore",
+        },
+        forced: true,
+        async content(event, trigger, player) {
+            trigger.cancel();
+            trigger.player.loseMaxHp(trigger.num);
+        },
+    },
     "ai_shuxin": {
         mod: {
             targetEnabled(card, player, target, now) {
@@ -1847,6 +1797,7 @@ const skills = {
         "_priority": 0,
     },
     "asuka_longzhen": {
+        audio: "ext:魔法纪录/audio/skill:2",
         charlotte: true,
         forced: true,
         trigger: {
@@ -1877,7 +1828,7 @@ const skills = {
                     return player.getStorage("asuka_longzhen");
                 },
                 content() {
-                    if (player.getStorage("asuka_longzhen").length >= 4) player.recover();
+                    if (player.getStorage("asuka_longzhen").length >= 3) player.recover();
 
                     delete player.storage.asuka_longzhen;
                     player.unmarkSkill("asuka_longzhen");
@@ -1893,6 +1844,10 @@ const skills = {
                 return false;
             },
         },
+    },
+    "asuka_kurou": {
+        inherit: "kurou",
+        audio: "ext:魔法纪录/audio/skill:2",
     },
     "kanagi_duxin": {
         trigger: { player: "phaseUseBegin" },
