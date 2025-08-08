@@ -466,9 +466,10 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["ani_lieying", "olenyuan", "dckrmingshi"],
+        skills: ["ani_lieying", "jueqing", "shangshi", "dckrmingshi"],
         img: "extension/魔法纪录/image/dp_iroha.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/dp_iroha.mp3"],
+        description: "沉默的魔女化身"
     },
     "kanae": {
         sex: "female",
