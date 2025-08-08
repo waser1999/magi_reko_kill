@@ -280,12 +280,12 @@ const skills = {
             threaten: 2,
         },
     },
-    xieli: {
-        group: ["xieli1"],
+    "madoka_xieli": {
+        group: ["madoka_xieli1"],
         zhuSkill: true,
         filter(event, player) {
-            if (!player.hasZhuSkill("xieli") || !game.hasPlayer(current => current != player && current.group == "yuan")) return false;
-            return !event.xieli && (event.type != "phase" || !player.hasSkill("xieli3"));
+            if (!player.hasZhuSkill("madoka_xieli") || !game.hasPlayer(current => current != player && current.group == "yuan")) return false;
+            return !event.madoka_xieli && (event.type != "phase" || !player.hasSkill("madoka_xieli3"));
         },
         enable: ["chooseToUse", "chooseToRespond"],
         viewAs: {
@@ -301,7 +301,7 @@ const skills = {
             },
             respondSha: true,
             skillTagFilter(player) {
-                if (!player.hasZhuSkill("xieli") || !game.hasPlayer(current => current != player && current.group == "yuan")) return false;
+                if (!player.hasZhuSkill("madoka_xieli") || !game.hasPlayer(current => current != player && current.group == "yuan")) return false;
             },
             yingbian(card, player, targets, viewer) {
                 if (get.attitude(viewer, player) <= 0) return 0;
@@ -499,23 +499,23 @@ const skills = {
         },
         "_priority": 0,
     },
-    "xieli1": {
+    "madoka_xieli1": {
         trigger: {
             player: ["useCardBegin", "respondBegin"],
         },
         logTarget: "targets",
-        sourceSkill: "xieli",
+        sourceSkill: "madoka_xieli",
         filter(event, player) {
-            return event.skill == "xieli";
+            return event.skill == "madoka_xieli";
         },
         forced: true,
         async content(event, trigger, player) {
             delete trigger.skill;
-            trigger.getParent().set("xieli", true);
+            trigger.getParent().set("madoka_xieli", true);
             while (true) {
                 if (event.current == undefined) event.current = player.next;
                 if (event.current == player) {
-                    player.addTempSkill("xieli3");
+                    player.addTempSkill("madoka_xieli3");
                     trigger.cancel();
                     trigger.getParent().goto(0);
                     return;
@@ -526,7 +526,7 @@ const skills = {
                         return get.attitude(event.player, event.source) - 2;
                     });
                     chooseToRespondEvent.set("source", player);
-                    chooseToRespondEvent.set("xieli", true);
+                    chooseToRespondEvent.set("madoka_xieli", true);
                     chooseToRespondEvent.set("skillwarn", "替" + get.translation(player) + "打出一张杀");
                     chooseToRespondEvent.noOrdering = true;
                     chooseToRespondEvent.autochoose = lib.filter.autoRespondSha;
@@ -546,24 +546,24 @@ const skills = {
         },
         "_priority": 0,
     },
-    "xieli3": {
+    "madoka_xieli3": {
         trigger: {
             global: ["useCardAfter", "useSkillAfter", "phaseAfter"],
         },
         silent: true,
         charlotte: true,
-        sourceSkill: "xieli",
+        sourceSkill: "madoka_xieli",
         filter(event) {
-            return event.skill != "xieli";
+            return event.skill != "madoka_xieli";
         },
         async content(event, trigger, player) {
-            player.removeSkill("xieli3");
+            player.removeSkill("madoka_xieli3");
         },
         forced: true,
         popup: false,
         "_priority": 1,
     },
-    yuanjiu: {
+    "iroha_yuanjiu": {
         zhuSkill: true,
         trigger: {
             player: ["chooseToRespondBefore", "chooseToUseBefore"],
@@ -571,7 +571,7 @@ const skills = {
         filter(event, player) {
             if (event.responded) return false;
             if (player.storage.yuanjiuing) return false;
-            if (!player.hasZhuSkill("yuanjiu")) return false;
+            if (!player.hasZhuSkill("iroha_yuanjiu")) return false;
             if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
             return game.hasPlayer(current => current != player && current.group == "huan");
         },
@@ -617,7 +617,7 @@ const skills = {
             respondShan: true,
             skillTagFilter(player) {
                 if (player.storage.yuanjiuing) return false;
-                if (!player.hasZhuSkill("yuanjiu")) return false;
+                if (!player.hasZhuSkill("iroha_yuanjiu")) return false;
                 return game.hasPlayer(current => current != player && current.group == "huan");
             },
         },
@@ -1486,6 +1486,7 @@ const skills = {
     },
     "nanaka_huaxin": {
         inherit: "xiaoji",
+        audio: "ext:魔法纪录/audio/skill:2",
         getIndex(event, player) {
             const evt = event.getl(player);
             if (evt && evt.player === player && evt.es && evt.es.length) return 1;
@@ -2116,6 +2117,7 @@ const skills = {
     },
     "rera_nuanxin": {
         inherit: "xinfu_jiyuan",
+        audio: "ext:魔法纪录/audio/skill:2",
         group: ["rera_nuanxin_gift"],
         subSkill: {
             gift: {

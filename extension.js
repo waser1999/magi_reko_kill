@@ -20,7 +20,17 @@ export default function () {
             game.addGroup("ma", "玛吉斯", "玛吉斯之翼", { color: "#000000" });
             game.addGroup("wan", "万方", "万方之人", { color: "#FF8C00" });
             // 特殊标记高亮
-            lib.namePrefix.set("DP", { color: "#FFD700" });
+            lib.namePrefix.set("DP", {
+                getSpan: () => {
+                    const span = document.createElement("span"), style = span.style;
+                    style.writingMode = style.webkitWritingMode = "horizontal-tb";
+                    style.fontFamily = "MotoyaLMaru";
+                    style.transform = "scaleY(0.85)";
+                    style.color = "#FFD700";
+                    span.textContent = "DP";
+                    return span.outerHTML;
+                }
+            });
             lib.namePrefix.set("圣", { color: "#FFD700" });
             lib.namePrefix.set("谣", { color: "#FFD700" });
             lib.namePrefix.set("神使", { color: "#FFD700" });
