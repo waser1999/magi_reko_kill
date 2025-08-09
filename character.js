@@ -685,7 +685,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["rejijun", "refangtong", "magius_zhishang"],
+        skills: ["himena_zhiquan", "himena_shanji", "magius_zhishang"],
         img: "extension/魔法纪录/image/himena.png",
         dieAudios: ["ext:魔法纪录/audio/die/himena.mp3"],
     },

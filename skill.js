@@ -2802,7 +2802,7 @@ const skills = {
                     return true;
                 },
                 content() {
-                    player.useSkill("rejijun");
+                    player.useSkill("himena_zhiquan");
                 }
             }
         },
@@ -3857,6 +3857,134 @@ const skills = {
         },
         ai: {
             noe: true,
+        },
+    },
+    "himena_zhiquan": {
+        trigger: { player: "useCardAfter" },
+        filter(event, player) {
+            return event.targets && event.targets.includes(player);
+        },
+        frequent: true,
+        content() {
+            player.judge(card => 1).callback = lib.skill.himena_zhiquan.callback;
+        },
+        callback() {
+            if (typeof card.number == "number") {
+                player.addToExpansion(card, "gain2").gaintag.add("himena_zhiquan");
+            }
+            if (player.getExpansions("himena_zhiquan").some(current => current.number == get.number(card))) {
+                player.useSkill("himena_shanji");
+            }
+        },
+        onremove(player, skill) {
+            var cards = player.getExpansions(skill);
+            if (cards.length) {
+                player.loseToDiscardpile(cards);
+            }
+        },
+        intro: {
+            content: "expansion",
+            markcount: "expansion",
+        },
+        marktext: "权",
+        ai: { combo: "himena_shanji" },
+    },
+    "himena_shanji": {
+        trigger: { player: "phaseJieshuBegin" },
+        async cost(event, trigger, player) {
+            event.result = await player
+                .chooseBool(get.prompt2("himena_shanji"))
+                .set("ai", card => {
+                    var player = _status.event.player;
+                    if (!game.hasPlayer(target => target != player && get.damageEffect(target, player, player, "thunder") > 0)) {
+                        return 0;
+                    }
+                    if (
+                        player.getExpansions("himena_zhiquan").reduce(function (num, card) {
+                            return num + get.number(card, false);
+                        }, 0) > 36
+                    ) {
+                        return 1 / (get.value(card) || 0.5);
+                    } else {
+                        if (lib.skill.himena_shanji.thunderEffect(card, player)) {
+                            return 10 - get.value(card);
+                        }
+                        return 5 - get.value(card);
+                    }
+                })
+                .forResult();
+        },
+        async content(event, trigger, player) {
+            const cards = event.cards;
+            const result = await player
+                .chooseButton(["###是否移去任意张“权”，对一名其他角色造成1点雷属性伤害？###若你移去的“权”的点数和大于36，则改为造成3点雷属性伤害", player.getExpansions("himena_zhiquan")], [1, player.getExpansions("himena_zhiquan").length])
+                .set("ai", button => {
+                    var player = _status.event.player;
+                    var cards = player.getExpansions("himena_zhiquan");
+                    if (
+                        cards.reduce(function (num, card) {
+                            return num + get.number(card, false);
+                        }, 0) <= 36
+                    ) {
+                        if (!ui.selected.buttons.length) {
+                            return 1 / get.number(button.link, false);
+                        }
+                        return 0;
+                    } else {
+                        var num = 0,
+                            list = [];
+                        cards.sort((a, b) => get.number(b, false) - get.number(a, false));
+                        for (var i = 0; i < cards.length; i++) {
+                            list.push(cards[i]);
+                            num += get.number(cards[i], false);
+                            if (num > 36) {
+                                break;
+                            }
+                        }
+                        return list.includes(button.link) ? 1 : 0;
+                    }
+                })
+                .forResult();
+            if (result?.bool) {
+                const bool =
+                    result.links.reduce(function (num, card) {
+                        return num + get.number(card, false);
+                    }, 0) > 36;
+                await player.loseToDiscardpile(result.links);
+                const result2 = await player
+                    .chooseTarget("请选择一名其他角色", "对其造成" + (bool ? 3 : 1) + "点雷属性伤害", lib.filter.notMe)
+                    .set("ai", target => get.damageEffect(target, _status.event.player, _status.event.player, "thunder"))
+                    .forResult();
+                if (result2?.bool) {
+                    const target = result2.targets[0];
+                    player.line(target, "thunder");
+                    target.damage(bool ? 3 : 1, "thunder");
+                }
+            }
+        },
+        thunderEffect(card, player) {
+            let cards = player.getExpansions("himena_zhiquan"),
+                num = 0;
+            cards.push(card);
+            if (
+                cards.reduce(function (num, card) {
+                    return num + get.number(card, false);
+                }, 0) <= 36
+            ) {
+                return false;
+            }
+            cards.sort((a, b) => get.number(b, false) - get.number(a, false));
+            let bool = false;
+            for (let i = 0; i < cards.length; i++) {
+                if (cards[i] == card) {
+                    bool = true;
+                }
+                num += get.number(cards[i], false);
+                if (num > 36) {
+                    break;
+                }
+            }
+            return bool;
         },
     },
 };
