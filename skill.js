@@ -3891,6 +3891,9 @@ const skills = {
     },
     "himena_shanji": {
         trigger: { player: "phaseJieshuBegin" },
+        filter(event, player) {
+            return player.getExpansions("himena_zhiquan").length > 0;
+        },
         async cost(event, trigger, player) {
             event.result = await player
                 .chooseBool(get.prompt2("himena_shanji"))
