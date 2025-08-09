@@ -953,83 +953,96 @@ const skills = {
         "_priority": 0,
     },
     "nemu_sanyao": {
+        audio: "ext:魔法纪录/audio/skill:2",
         trigger: {
             global: "phaseBegin",
         },
         filter(event, player) {
             return player.hasMark("nemu_zhiyao");
         },
-        async content(event, trigger, player) {
+        async cost(event, trigger, player) {
             let markNum = player.countMark("nemu_zhiyao");
             let choices = ["一个标记"]
             if (markNum >= 2) choices.push("两个标记");
             if (markNum >= 3) choices.push("三个标记");
+            choices.push("cancel");
 
-            let choice = await player.chooseControl(choices)
+            const result = await player.chooseControl(choices)
                 .set("ai", () => {
                     const target = _status.currentPhase;
                     let attitude = get.attitude(player, target);
                     let markNum = player.countMark("nemu_zhiyao");
 
-                    if (markNum == 1 && attitude < 0 && (target.hp - player.hp >= 2 || target.hp == 1)) return "一个标记";
-                    if (markNum >= 3 && attitude < 0 && target.hasSkillTag('threaten')) return "三个标记";
-                    if (markNum >= 2 && ((attitude < 0 && target.countCards("j") == 0)) || (attitude > 0 && target.countCards("j") > 0)) return "两个标记";
-                    return false;
+                    if (markNum == 1 && attitude < 0 && (target.hp - player.hp >= 2 || target.hp == 1)) return 0;
+                    if (markNum >= 3 && attitude < 0 && target.hasSkillTag('threaten')) return 2;
+                    if (markNum >= 2 && ((attitude < 0 && target.countCards("j") == 0)) || (attitude > 0 && target.countCards("j") > 0)) return 1;
+                    return -1;
                 })
                 .set("prompt", "请选择标记数")
                 .forResult();
 
-            switch (choice.control) {
-                case "一个标记":
+            let stage = 0;
+            if (result.index == 1) {
+                let phase = ["判定阶段", "摸牌阶段", "出牌阶段", "弃牌阶段", "cancel"];
+                let choosePhase = await player.chooseControl(phase)
+                    .set("ai", () => {
+                        const target = _status.currentPhase;
+                        let attitude = get.attitude(player, target);
+                        let markNum = player.countMark("nemu_zhiyao");
+
+                        if (attitude > 0) {
+                            if (target.countCards("j") > 0) return 0;
+                            if (target.countCards("s") - target.hp >= 0) return 3;
+                        }
+                        if (attitude < 0) {
+                            if (target.countCards("h") <= 1) return 1;
+                            return 2;
+                        }
+                        return -1;
+                    })
+                    .set("prompt", "请选择跳过阶段")
+                    .forResult();
+                stage = choosePhase.index;
+                game.log(player, "跳过了", trigger.player, "的" + phase[stage]);
+            }
+
+            if (result.index != -1 && stage != -1) {
+                player.removeMark("nemu_zhiyao", result.index + 1);
+                player.line(trigger.player);
+            }
+
+            event.result = {
+                bool: result.index == -1 || stage == -1 ? false : true,
+                cost_data: {
+                    result: result.index,
+                    stage_data: stage,
+                }
+            }
+        },
+        async content(event, trigger, player) {
+            switch (event.cost_data.result) {
+                case 0:
                     trigger.player.damage();
-                    player.line(trigger.player);
-                    player.removeMark("nemu_zhiyao", 1);
                     break;
-                case "两个标记":
-                    let stage = await player.chooseControl(["判定阶段", "摸牌阶段", "出牌阶段", "弃牌阶段"])
-                        .set("ai", () => {
-                            const target = _status.currentPhase;
-                            let attitude = get.attitude(player, target);
-                            let markNum = player.countMark("nemu_zhiyao");
-
-                            if (attitude > 0) {
-                                if (target.countCards("j") > 0) return "判定阶段";
-                                if (target.countCards("s") - target.hp >= 0) return "弃牌阶段";
-                            }
-                            if (attitude < 0) {
-                                if (target.countCards("h") <= 1) return "摸牌阶段";
-                                return "出牌阶段";
-                            }
-                            return false;
-                        })
-                        .set("prompt", "请选择跳过阶段")
-                        .forResult();
-
-                    game.log(player, "跳过了", trigger.player, "的" + stage.control);
-
-                    switch (stage.control) {
-                        case "判定阶段":
+                case 1:
+                    switch (event.cost_data.stage_data) {
+                        case 0:
                             trigger.player.skip("phaseJudge");
                             break;
-                        case "摸牌阶段":
+                        case 1:
                             trigger.player.skip("phaseDraw");
                             break;
-                        case "出牌阶段":
+                        case 2:
                             trigger.player.skip("phaseUse");
                             break;
-                        case "弃牌阶段":
+                        case 3:
                             trigger.player.skip("phaseDiscard");
                             break;
                     }
-
-                    player.removeMark("nemu_zhiyao", 2);
-                    player.line(trigger.player);
                     break;
-                case "三个标记":
+                case 2:
                     trigger.cancel();
                     trigger.player.turnOver();
-                    player.removeMark("nemu_zhiyao", 3);
-                    player.line(trigger.player);
                     break;
             }
         },
