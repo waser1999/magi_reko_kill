@@ -2390,7 +2390,7 @@ const skills = {
                     }
                     break;
                 case "phaseDiscard":
-                    check = player.needsToDiscard() || player.hasCard(card => get.suit(card) == "diamond" || get.name(card) == "lebu");
+                    check = player.needsToDiscard();
                     break;
             }
             event.result = await player
