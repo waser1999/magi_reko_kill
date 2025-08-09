@@ -10,7 +10,6 @@ const characters = {
         skills: ["zhijian", "guzheng", "wangxi"],
         img: "extension/魔法纪录/image/yuma.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yuma.mp3"],
-        description: "山猫冲击"
     },
     "kirika": {
         sex: "female",
@@ -21,7 +20,6 @@ const characters = {
         skills: ["kirika_shensu", "ganglie", "shebian"],
         img: "extension/魔法纪录/image/kirika.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kirika.mp3"],
-        description: "吸血鬼之牙"
     },
     "oriko": {
         sex: "female",
@@ -32,7 +30,6 @@ const characters = {
         skills: ["oriko_yuzhi", "oriko_jiangsha", "weimu", "oriko_xianzhong"],
         img: "extension/魔法纪录/image/oriko.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/oriko.mp3"],
-        description: "神谕光线",
         isZhugong: true
     },
     "ashley": {
@@ -44,7 +41,6 @@ const characters = {
         skills: ["ashley_yuanyu", "ashley_mengshu"],
         img: "extension/魔法纪录/image/ashley.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ashley.mp3"],
-        description: "Ocean Tick Hurricane"
     },
     "riko": {
         sex: "female",
@@ -55,7 +51,6 @@ const characters = {
         skills: ["dcduliang", "tunchu", "shuliang"],
         img: "extension/魔法纪录/image/riko.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/riko.mp3"],
-        description: "美味猎手"
     },
     "rika": {
         sex: "female",
@@ -66,7 +61,6 @@ const characters = {
         skills: ["rika_sanshe", "reguose", "rika_liuge"],
         img: "extension/魔法纪录/image/rika.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/rika.mp3"],
-        description: "闪耀光束"
     },
     "tsuruno": {
         sex: "female",
@@ -77,7 +71,6 @@ const characters = {
         skills: ["tsuruno_qiangyun", "tsuruno_jizhi"],
         img: "extension/魔法纪录/image/tsuruno.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/tsuruno.mp3"],
-        description: "炎扇斩舞"
     },
     "sana": {
         sex: "female",
@@ -88,7 +81,6 @@ const characters = {
         skills: ["sana_touming", "xinjushou", "xinjiewei"],
         img: "extension/魔法纪录/image/sana.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/sana.mp3"],
-        description: "酷刑牢笼"
     },
     "iroha": {
         sex: "female",
@@ -99,7 +91,6 @@ const characters = {
         skills: ["olhaoshi", "iroha_dimeng", "dckrmingshi", "iroha_yuanjiu"],
         img: "extension/魔法纪录/image/iroha.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
-        description: "未来之路",
         isZhugong: true,
     },
     "yachiyo": {
@@ -111,7 +102,6 @@ const characters = {
         skills: ["rexingshang", "fangzhu", "yachiyo_gujun"],
         img: "extension/魔法纪录/image/yachiyo.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yachiyo.mp3"],
-        description: "绝对之雨",
         isZhugong: true
     },
     "felicia": {
@@ -123,7 +113,6 @@ const characters = {
         skills: ["repojun", "reyicong"],
         img: "extension/魔法纪录/image/felicia.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/felicia.mp3"],
-        description: "超级大大锤"
     },
     "toka": {
         sex: "female",
@@ -134,7 +123,6 @@ const characters = {
         skills: ["xinleiji", "xinguidao", "magius_jiefang"],
         img: "extension/魔法纪录/image/toka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/toka.mp3"],
-        description: "新创世纪",
         isZhugong: true
     },
     "alina": {
@@ -146,7 +134,6 @@ const characters = {
         skills: ["alina_moying", "juanhui"],
         img: "extension/魔法纪录/image/alina.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/alina.mp3"],
-        description: "九相"
     },
     "lena": {
         sex: "female",
@@ -157,7 +144,6 @@ const characters = {
         skills: ["rehuashen", "rexinsheng"],
         img: "extension/魔法纪录/image/lena.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
-        description: "无尽海神"
     },
     "kaede": {
         sex: "female",
@@ -168,7 +154,6 @@ const characters = {
         skills: ["kaede_manmiao", "kaede_buyi", "dczhuiyi"],
         img: "extension/魔法纪录/image/kaede.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kaede.mp3"],
-        description: "大地审判",
         doubleGroup: ["huan", "ma"],
     },
     "momoko": {
@@ -180,7 +165,6 @@ const characters = {
         skills: ["momoko_qiangxi", "buqu"],
         img: "extension/魔法纪录/image/momoko.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/momoko.mp3"],
-        description: "宇宙之刃"
     },
     "asuka": {
         sex: "female",
@@ -191,7 +175,6 @@ const characters = {
         skills: ["asuka_kurou", "asuka_longzhen"],
         img: "extension/魔法纪录/image/asuka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/asuka.mp3"],
-        description: "龙真螺旋咆击"
     },
     "yueye": {
         sex: "female",
@@ -202,7 +185,6 @@ const characters = {
         skills: ["yueye_yingyin"],
         img: "extension/魔法纪录/image/yueye.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yueye.mp3"],
-        description: "樱隐"
     },
     "yuexiao": {
         sex: "female",
@@ -213,7 +195,6 @@ const characters = {
         skills: ["yuexiao_yingyu"],
         img: "extension/魔法纪录/image/yuexiao.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yuexiao.mp3"],
-        description: "樱语"
     },
     "madoka": {
         sex: "female",
@@ -224,7 +205,6 @@ const characters = {
         skills: ["madoka_liegong", "madoka_yingbian", "madoka_xieli"],
         img: "extension/魔法纪录/image/madoka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/madoka.mp3"],
-        description: "魔法之雨",
         isZhugong: true
     },
     "homura": {
@@ -236,7 +216,6 @@ const characters = {
         skills: ["reguanxing", "homura_juwu", "homura_shiting"],
         img: "extension/魔法纪录/image/homura.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/homura.mp3"],
-        description: "导弹集中轰炸"
     },
     "homura2": {
         sex: "female",
@@ -247,7 +226,6 @@ const characters = {
         skills: ["homura2_jihuo", "yiji", "huoji"],
         img: "extension/魔法纪录/image/homura2.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/homura2.mp3"],
-        description: "时间停止攻击"
     },
     "nanaka": {
         sex: "female",
@@ -258,7 +236,6 @@ const characters = {
         skills: ["nanaka_huaxin", "rejizhi"],
         img: "extension/魔法纪录/image/nanaka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/nanaka.mp3"],
-        description: "白椿"
     },
     "hazuki": {
         sex: "female",
@@ -269,7 +246,6 @@ const characters = {
         skills: ["huituo", "hazuki_mingjian"],
         img: "extension/魔法纪录/image/hazuki.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/hazuki.mp3"],
-        description: "雷霆激流"
     },
     "karin": {
         sex: "female",
@@ -280,7 +256,6 @@ const characters = {
         skills: ["daoshu", "weicheng"],
         img: "extension/魔法纪录/image/karin.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/karin.mp3"],
-        description: "幽紫灵火",
     },
     "nemu": {
         sex: "female",
@@ -291,7 +266,6 @@ const characters = {
         skills: ["nemu_zhiyao", "nemu_sanyao", "nemu_tiruo"],
         img: "extension/魔法纪录/image/nemu.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/nemu.mp3"],
-        description: "创造的孩子们"
     },
     "mami": {
         sex: "female",
@@ -302,7 +276,6 @@ const characters = {
         skills: ["reyingzi", "mami_duanbian", "mami_tiro_finale"],
         img: "extension/魔法纪录/image/mami.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mami.mp3"],
-        description: "终幕射击"
     },
     "kyoko": {
         sex: "female",
@@ -313,7 +286,6 @@ const characters = {
         skills: ["oltuntian", "jixi", "reguhuo"],
         img: "extension/魔法纪录/image/kyoko.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kyoko.mp3"],
-        description: "盟神决枪"
     },
     "mabayu": {
         sex: "female",
@@ -324,7 +296,6 @@ const characters = {
         skills: ["nzry_chenglve", "nzry_cunmu", "nzry_shicai", "mabayu_jingxiang"],
         img: "extension/魔法纪录/image/mabayu.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mabayu.mp3"],
-        description: "空洞人偶",
         isZhugong: true
     },
     "ren": {
@@ -336,7 +307,6 @@ const characters = {
         skills: ["xinwuyan", "ren_beige", "duanchang"],
         img: "extension/魔法纪录/image/ren.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ren.mp3"],
-        description: "灵魂救赎"
     },
     "ulti_madoka": {
         sex: "female",
@@ -347,7 +317,6 @@ const characters = {
         skills: ["madoka_dengshen", "twshelie", "sbliegong", "madoka_xieli"],
         img: "extension/魔法纪录/image/ulti_madoka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ulti_madoka.mp3"],
-        description: "再也没有必要绝望了！",
         isZhugong: true,
         isAiForbidden: true,
     },
@@ -360,7 +329,6 @@ const characters = {
         skills: ["xinkuanggu", "gzyinghun", "sayaka_qiangyin"],
         img: "extension/魔法纪录/image/sayaka.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/sayaka.mp3"],
-        description: "无畏极强音"
     },
     "Kagome": {
         sex: "female",
@@ -413,7 +381,6 @@ const characters = {
         skills: ["jiushi", "keji", "refankui"],
         img: "extension/魔法纪录/image/kushu.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kushu.mp3"],
-        description: "肃清天使"
     },
     "kokoro": {
         sex: "female",
@@ -424,7 +391,6 @@ const characters = {
         skills: ["jieyue", "yizhong"],
         img: "extension/魔法纪录/image/kokoro.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kokoro.mp3"],
-        description: "离散镭射"
     },
     "ayame": {
         sex: "female",
@@ -435,7 +401,6 @@ const characters = {
         skills: ["tianyi", "hanzhan"],
         img: "extension/魔法纪录/image/ayame.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ayame.mp3"],
-        description: "未确认飞行火焰"
     },
     "hanna": {
         sex: "female",
@@ -446,7 +411,6 @@ const characters = {
         skills: ["xinjuece", "dcmieji", "dcfencheng", "reluanwu"],
         img: "extension/魔法纪录/image/hanna.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/hanna.mp3"],
-        description: "噩梦毒针"
     },
     "kuroe": {
         sex: "female",
@@ -457,7 +421,6 @@ const characters = {
         skills: ["qingbei", "dcsuishi"],
         img: "extension/魔法纪录/image/kuroe.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kuroe.mp3"],
-        description: "灾难盛宴",
         doubleGroup: ["huan", "ma"],
     },
     "dp_iroha": {
@@ -469,7 +432,6 @@ const characters = {
         skills: ["ani_lieying", "jueqing", "shangshi", "dckrmingshi"],
         img: "extension/魔法纪录/image/dp_iroha.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/dp_iroha.mp3"],
-        description: "沉默的魔女化身"
     },
     "kanae": {
         sex: "female",
@@ -563,7 +525,6 @@ const characters = {
         skills: ["dclihuo", "olchunlao"],
         img: "extension/魔法纪录/image/himika.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/himika.mp3"],
-        description: "陨石拳"
     },
     "masara": {
         sex: "female",
@@ -574,7 +535,6 @@ const characters = {
         skills: ["rebiyue", "masara_cisha", "qiluan"],
         img: "extension/魔法纪录/image/masara.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/masara.mp3"],
-        description: "隐形刺杀"
     },
     "seika": {
         sex: "female",
@@ -585,7 +545,6 @@ const characters = {
         skills: ["dcxiongyi"],
         img: "extension/魔法纪录/image/seika.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/seika.mp3"],
-        description: "钻石飞溅"
     },
     "rera": {
         sex: "female",
@@ -596,7 +555,6 @@ const characters = {
         skills: ["xinfu_jijie", "rera_nuanxin"],
         img: "extension/魔法纪录/image/rera.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/rera.mp3"],
-        description: "火焰之环"
     },
     "mito": {
         sex: "female",
@@ -607,7 +565,6 @@ const characters = {
         skills: ["dcshuangren", "hanzhan"],
         img: "extension/魔法纪录/image/mito.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mito.mp3"],
-        description: "绿叶如注"
     },
     "ryo": {
         sex: "female",
@@ -628,7 +585,6 @@ const characters = {
         skills: ["xingtu", "scls_juezhi", "ai_shuxin"],
         img: "extension/魔法纪录/image/ai.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ai.mp3"],
-        description: "无名人工智能之谣",
     },
     "asumi": {
         sex: "female",
@@ -639,7 +595,6 @@ const characters = {
         skills: ["asumi_zhuilie", "asumi_yinhu"],
         img: "extension/魔法纪录/image/asumi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/asumi.mp3"],
-        description: "绝望交响曲",
     },
     "saint_mami": {
         sex: "female",
@@ -837,7 +792,8 @@ const perfectPairs = {
     sayaka: ["madoka", "kyoko", "homura2", "mami"],
     yuma: ["kyoko"],
     mabayu: ["mami", "homura", "homura2"],
-    iroha: ["yachiyo", "felicia", "sana", "kuroe", "ui"],
+    iroha: ["yachiyo", "felicia", "sana", "kuroe", "ui", "dp_iroha"],
+    dp_iroha: ["iroha"],
     yachiyo: ["iroha", "tsuruno", "momoko", "mifuyu", "meru", "kanae"],
     felicia: ["iroha", "tsuruno"],
     tsuruno: ["felicia", "yachiyo"],
@@ -875,5 +831,76 @@ const perfectPairs = {
     nayuta: ["toka"],
 }
 
+const characterTitles = {
+    yuma: "山猫冲击",
+    kirika: "吸血鬼之牙",
+    oriko: "神谕光线",
+    ashley: "Ocean Tick Hurricane",
+    riko: "美味猎手",
+    rika: "闪耀光束",
+    tsuruno: "炎扇斩舞",
+    sana: "酷刑牢笼",
+    iroha: "未来之路",
+    yachiyo: "绝对之雨",
+    felicia: "超级大大锤",
+    toka: "新创世纪☆彡",
+    alina: "九相",
+    lena: "无尽海神",
+    kaede: "大地审判",
+    momoko: "宇宙之刃",
+    asuka: "龙真螺旋咆击",
+    yueye: "樱隐",
+    yuexiao: "樱语",
+    madoka: "魔法之雨",
+    homura: "导弹集中轰炸",
+    "homura2": "时间停止攻击",
+    nanaka: "白椿",
+    hazuki: "雷霆激流",
+    karin: "幽紫灵火",
+    nemu: "创造的孩子们",
+    mami: "终幕射击",
+    kyoko: "盟神抉枪",
+    mabayu: "空洞人偶",
+    ren: "灵魂救赎",
+    "ulti_madoka": "已经没必要再绝望了！",
+    sayaka: "无畏极强音",
+    Kagome: "幻想之树",
+    mifuyu: "侵袭妄想",
+    meru: "漆黑的阿卡纳",
+    kazumi: "外缘极限",
+    kushu: "肃清天使",
+    kokoro: "离散镭射",
+    ayame: "未确认飞行火焰",
+    hanna: "噩梦毒针",
+    kuroe: "灾难盛宴",
+    "dp_iroha": "沉默的魔女化身",
+    kanae: "无思考",
+    name: "无名少女",
+    mitama: "绝对自坏演舞",
+    ui: "希望之光",
+    nagisa: "魔法肥皂泡",
+    kanagi: "断罪的光芒",
+    suzune: "燃椿之焰",
+    dArc: "La Lumière",
+    himika: "陨石拳",
+    masara: "隐形暗杀",
+    seika: "钻石飞溅",
+    rera: "火焰之轮",
+    mito: "绿叶如注",
+    ryo: "绝对炎上观鸟炮!!",
+    ai: "无名人工智能之谣",
+    asumi: "绝望交响曲",
+    "saint_mami": "终夜圣击",
+    "uwasa_tsuruno": "谣·炎扇斩舞",
+    "devil_homura": "棒针的连续穿刺",
+    hinano: "狂怒原子",
+    yuna: "雷霆埋葬",
+    shigure: "极限爆破怨恨",
+    hagumu: "转圈圈再见",
+    shizuka: "巫流·祈祷通天之光",
+    himena: "情绪摇滚爱★水妖",
+    nayuta: "文化跃进的气流",
+}
+
 export default characters;
-export { character_translates, perfectPairs };
+export { character_translates, perfectPairs, characterTitles };
