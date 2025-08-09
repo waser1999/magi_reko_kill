@@ -2426,13 +2426,12 @@ const skills = {
             if (get.suit(card) == "diamond" || get.name(card) == "lebu") {
                 let result = await player.chooseTarget("请选择使用【乐不思蜀】的目标", true, function (card, player, target) {
                     if (target == player) return false;
-                    if (target.hasJudge("lebu")) return false;
                     return true;
                 }).set("ai", function (target) {
                     return get.effect(target, { name: "lebu" }, player, player) > 0;
                 }).forResult();
 
-                if (result.bool) {
+                if (result.bool && !result.targets[0].hasJudge("lebu")) {
                     player.line(result.targets, "green");
                     result.targets[0].addJudge({ name: "lebu" }, card);
                 }

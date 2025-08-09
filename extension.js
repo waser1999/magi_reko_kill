@@ -40,6 +40,7 @@ export default function () {
                 translate: { ...character_translates },
                 perfectPair: { ...perfectPairs },
                 characterTitle: { ...characterTitles },
+                connect: true,
             },
             card: {
                 card: { ...cards },
@@ -77,6 +78,6 @@ export default function () {
             diskURL: "https://github.com/waser1999/magi_reko_kill",
             forumURL: "",
             version: "1.1",
-        }, files: { "character": ["devil_homura.jpg"], "card": [], "skill": [], "audio": [] }, connect: false,
+        }, files: { "character": ["devil_homura.jpg"], "card": [], "skill": [], "audio": [] }, connect: true,
     }
 };
