@@ -1921,6 +1921,7 @@ const skills = {
     },
     "hazuki_mingjian": {
         inherit: "mingjian",
+        audio: "ext:魔法纪录/audio/skill:2",
         content(event, trigger, player) {
             player.give(cards, target);
             target.insertPhase();
