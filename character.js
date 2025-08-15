@@ -439,7 +439,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["kaikang"],
+        skills: ["kaikang", "mashu"],
         img: "extension/魔法纪录/image/kanae.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kanae.mp3"]
     },
@@ -455,14 +455,13 @@ const characters = {
     },
     "mitama": {
         sex: "female",
-        group: "huan",
+        group: "wan",
         hp: 3,
         maxHp: 3,
         hujia: 0,
         skills: ["gongxiu", "jinghe", "ns_chuanshu"],
         img: "extension/魔法纪录/image/mitama.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mitama.mp3"],
-        doubleGroup: ["huan", "ma"],
     },
     "ui": {
         sex: "female",
@@ -700,6 +699,16 @@ const characters = {
         dieAudios: ["ext:魔法纪录/audio/die/nayuta.mp3"],
         doubleGroup: ["wan", "ma"],
     },
+    "mikage": {
+        sex: "female",
+        group: "wan",
+        hp: 3,
+        maxHp: 3,
+        hujia: 0,
+        skills: ["mikage_yuying", "mikage_yingbing"],
+        img: "extension/魔法纪录/image/mikage.png",
+        dieAudios: ["ext:魔法纪录/audio/die/mikage.mp3"],
+    }
 }
 
 const character_translates = {
@@ -777,6 +786,7 @@ const character_translates = {
     shizuka: "时女静香",
     himena: "蓝家姬奈",
     nayuta: "里见那由他",
+    mikage: "八云御影",
 }
 
 const perfectPairs = {
@@ -817,7 +827,7 @@ const perfectPairs = {
     meru: ["yachiyo"],
     kuroe: ["iroha"],
     kanae: ["yachiyo"],
-    mitama: ["momoko"],
+    mitama: ["momoko", "mikage"],
     nagisa: ["mami"],
     ui: ["toka", "nemu", "iroha"],
     kokoro: ["masara"],
@@ -828,7 +838,8 @@ const perfectPairs = {
     hagumu: ["shigure", "himena"],
     shigure: ["hagumu", "himena"],
     himena: ["hagumu", "shigure"],
-    nayuta: ["toka"],
+    nayuta: ["toka", "mikage"],
+    mikage: ["nayuta", "mitama"],
 }
 
 const characterTitles = {
@@ -900,6 +911,7 @@ const characterTitles = {
     shizuka: "巫流·祈祷通天之光",
     himena: "情绪摇滚爱★水妖",
     nayuta: "文化跃进的气流",
+    mikage: "只有现在是坏孩子！",
 }
 
 export default characters;

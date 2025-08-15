@@ -3991,5 +3991,186 @@ const skills = {
             return bool;
         },
     },
+    "mikage_yuying": {
+        mod: {
+            ignoredHandcard(card, player) {
+                if (card.name == "ying") return true
+            },
+            cardDiscardable(card, player, name) {
+                if (name == "phaseDiscard" && card.name == "ying") {
+                    return false;
+                }
+            },
+        },
+        audio: false,
+        trigger: {
+            player: "loseAfter"
+        },
+        filter(event, player) {
+            return event.cards.filter(card => card.name != "ying" && get.color(card) == "red").length >= 1;
+        },
+        forced: true,
+        charlotte: true,
+        async content(event, trigger, player) {
+            await player.gain(lib.card.ying.getYing())
+        },
+        group: "mikage_yuying_shan",
+        subSkill: {
+            shan: {
+                audio: false,
+                enable: ['chooseToUse', 'chooseToRespond'],
+                filter(event, player) {
+                    var list = ['shan'];
+                    return player.countCards("hs", card => card.name == "ying") && list.some(name => event.filterCard({
+                        name: name
+                    }, player, event))
+                },
+                chooseButton: {
+                    dialog(event, player) {
+                        var list = ['shan'];
+                        return ui.create.dialog("御影", [list, "vcard"]);
+                    },
+                    filter(button, player) {
+                        return _status.event.getParent().filterCard({
+                            name: button.link[2]
+                        }, player, _status.event.getParent());
+                    },
+                    backup(links, player) {
+                        return {
+                            audio: false,
+                            filterCard: {
+                                name: "ying"
+                            },
+                            position: "hs",
+                            viewAs: {
+                                name: links[0][2]
+                            },
+                            ai1(card) {
+                                if (player.countCards("hes", {
+                                    name: links[0][2]
+                                }) > 0) return false
+                                return true;
+                            },
+                        };
+                    },
+                    prompt(links, player) {
+                        return "将一张【影】当做" + get.translation(links[0][2]) + "使用";
+                    },
+                },
+                ai: {
+                    respondShan: true,
+                    skillTagFilter(player, tag, arg) {
+                        if (!player.countCards("h", "ying")) return false;
+                    },
+                    order: 6,
+                    result: {
+                        player: 1
+                    },
+                },
+            }
+        }
+    },
+    "mikage_yingbing": {
+        init: player => {
+            game.addGlobalSkill("mikage_yingbing_order");
+        },
+        onremove: player => {
+            if (!game.hasPlayer(current => current.hasSkill("mikage_yingbing", null, null, false), true)) {
+                game.removeGlobalSkill("mikage_yingbing_order");
+            }
+        },
+        trigger: { global: "useCard" },
+        direct: true,
+        filter(event, player) {
+            return event.card.name == "sha" && player.countCards("hs", card => card.name == "ying") > 0 && event.player.isPhaseUsing();
+        },
+        content() {
+            "step 0";
+            var go = false;
+            if (get.attitude(player, trigger.player) > 0) {
+                if (trigger.addCount === false || !trigger.player.isPhaseUsing()) {
+                    go = false;
+                } else if (!trigger.player.hasSkill("paoxiao") && !trigger.player.hasSkill("tanlin3") && !trigger.player.hasSkill("zhaxiang2") && !trigger.player.hasSkill("fengnu") && !trigger.player.getEquip("zhuge") && !trigger.player.hasSkill("asuka_longzhen")) {
+                    var nh = trigger.player.countCards("h");
+                    if (player == trigger.player) {
+                        go = player.countCards("h", "sha") > 0;
+                    } else if (nh >= 4) {
+                        go = true;
+                    } else if (player.countCards("hs", card => card.name == "ying") > 0) {
+                        if (nh == 3) {
+                            go = Math.random() < 0.8;
+                        } else if (nh == 2) {
+                            go = Math.random() < 0.5;
+                        }
+                    } else if (nh >= 3) {
+                        if (nh == 3) {
+                            go = Math.random() < 0.5;
+                        } else if (nh == 2) {
+                            go = Math.random() < 0.2;
+                        }
+                    }
+                }
+            }
+            //AI停顿
+            if (
+                go &&
+                !event.isMine() &&
+                !event.isOnline() &&
+                player.hasCard(function (card) {
+                    return player.countCards("hs", card => card.name == "ying") > 0;
+                }, "he")
+            ) {
+                game.delayx();
+            }
+            var next = player.chooseToDiscard(get.prompt("mikage_yingbing"), "弃置一张【影】" + "，令" + get.translation(trigger.player) + "本次使用的【杀】不计入使用次数", { name: "ying" });
+            next.logSkill = ["mikage_yingbing", trigger.player];
+            next.set("ai", function (card) {
+                if (_status.event.go) {
+                    return 6 - get.value(card);
+                }
+                return 0;
+            });
+            next.set("go", go);
+            "step 1";
+            if (result.bool) {
+                if (trigger.addCount !== false) {
+                    trigger.addCount = false;
+                    trigger.player.getStat().card.sha--;
+                }
+                if (player != trigger.player) {
+                    player.draw();
+                }
+            }
+        },
+        ai: {
+            expose: 0.2,
+        },
+        subSkill: {
+            order: {
+                mod: {
+                    aiOrder: (player, card, num) => {
+                        if (num && card.name === "sha" && get.color(card) === "red") {
+                            let gp = game.findPlayer(current => {
+                                return current.hasSkill("mikage_yingbing") && current.hasCard(i => true, "he");
+                            });
+                            if (gp) {
+                                return num + 0.15 * Math.sign(get.attitude(player, gp));
+                            }
+                        }
+                    },
+                },
+                trigger: { player: "dieAfter" },
+                filter: (event, player) => {
+                    return !game.hasPlayer(current => current.hasSkill("mikage_yingbing", null, null, false), true);
+                },
+                silent: true,
+                forceDie: true,
+                charlotte: true,
+                content: () => {
+                    game.removeGlobalSkill("mikage_yingbing_order");
+                },
+            },
+        },
+    },
 };
 export default skills;

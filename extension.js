@@ -18,7 +18,7 @@ export default function () {
             game.addGroup("yuan", "见泷原", "圆环之理", { color: "#C71585" });
             game.addGroup("huan", "神盟", "神滨魔法联盟", { color: "#FF1493" });
             game.addGroup("ma", "玛吉斯", "玛吉斯之翼", { color: "#000000" });
-            game.addGroup("wan", "万方", "万方之人", { color: "#FF8C00" });
+            game.addGroup("wan", "群雄", "万方群雄", { color: "#8b0000" });
             // 特殊标记高亮
             lib.namePrefix.set("DP", {
                 getSpan: () => {
@@ -77,7 +77,7 @@ export default function () {
             author: "Waser",
             diskURL: "https://github.com/waser1999/magi_reko_kill",
             forumURL: "",
-            version: "1.1",
+            version: "1.8",
         }, files: { "character": ["devil_homura.jpg"], "card": [], "skill": [], "audio": [] }, connect: true,
     }
 };
