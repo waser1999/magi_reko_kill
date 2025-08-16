@@ -77,7 +77,7 @@ export default function () {
             author: "Waser",
             diskURL: "https://github.com/waser1999/magi_reko_kill",
             forumURL: "",
-            version: "1.8",
+            version: "1.8.1",
         }, files: { "character": ["devil_homura.jpg"], "card": [], "skill": [], "audio": [] }, connect: true,
     }
 };

@@ -223,7 +223,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["homura2_jihuo", "yiji", "huoji"],
+        skills: ["homura2_jihuo", "ollianhuan", "huoji"],
         img: "extension/魔法纪录/image/homura2.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/homura2.mp3"],
     },
@@ -480,7 +480,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["tiandu", "ollianhuan", "olniepan", "olsbqiwu"],
+        skills: ["tiandu", "new_reyiji", "olniepan"],
         img: "extension/魔法纪录/image/nagisa.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/nagisa.mp3"]
     },
@@ -708,7 +708,17 @@ const characters = {
         skills: ["mikage_yuying", "mikage_yingbing"],
         img: "extension/魔法纪录/image/mikage.png",
         dieAudios: ["ext:魔法纪录/audio/die/mikage.mp3"],
-    }
+    },
+    "sakura": {
+        sex: "female",
+        group: "ma",
+        hp: 4,
+        maxHp: 4,
+        hujia: 0,
+        skills: ["tiandu", "sakura_yinghu", "sakura_yingmeng"],
+        img: "extension/魔法纪录/image/sakura.png",
+        dieAudios: ["ext:魔法纪录/audio/die/sakura.mp3"],
+    },
 }
 
 const character_translates = {
@@ -787,6 +797,7 @@ const character_translates = {
     himena: "蓝家姬奈",
     nayuta: "里见那由他",
     mikage: "八云御影",
+    sakura: "柊樱子",
 }
 
 const perfectPairs = {
@@ -811,9 +822,9 @@ const perfectPairs = {
     momoko: ["yachiyo", "kaede", "lena", "mitama"],
     lena: ["momoko", "kaede"],
     kaede: ["momoko", "lena"],
-    toka: ["alina", "nemu", "ui", "nayuta"],
+    toka: ["alina", "nemu", "ui", "nayuta", "sakura"],
     alina: ["toka", "nemu", "karin"],
-    nemu: ["alina", "toka", "ui"],
+    nemu: ["alina", "toka", "ui", "ai", "sakura"],
     karin: ["alina"],
     nanaka: ["hazuki"],
     hazuki: ["nanaka"],
@@ -829,7 +840,8 @@ const perfectPairs = {
     kanae: ["yachiyo"],
     mitama: ["momoko", "mikage"],
     nagisa: ["mami"],
-    ui: ["toka", "nemu", "iroha"],
+    ui: ["toka", "nemu", "iroha", "sakura"],
+    ai: ["nemu"],
     kokoro: ["masara"],
     masara: ["kokoro"],
     mito: ["seika", "rera"],
@@ -840,6 +852,7 @@ const perfectPairs = {
     himena: ["hagumu", "shigure"],
     nayuta: ["toka", "mikage"],
     mikage: ["nayuta", "mitama"],
+    sakura: ["nemu", "ryo", "toka", "ui"],
 }
 
 const characterTitles = {
@@ -912,6 +925,7 @@ const characterTitles = {
     himena: "情绪摇滚爱★水妖",
     nayuta: "文化跃进的气流",
     mikage: "只有现在是坏孩子！",
+    sakura: "万年樱之谣",
 }
 
 export default characters;

@@ -2809,6 +2809,7 @@ const skills = {
         },
     },
     "masara_cisha": {
+        audio: "ext:魔法纪录/audio/skill:2",
         trigger: { global: "phaseUseBegin" },
         filter(event, player) {
             return event.player.isIn() && player.countCards("h") > 0 && player != event.player;
@@ -4082,7 +4083,7 @@ const skills = {
         trigger: { global: "useCard" },
         direct: true,
         filter(event, player) {
-            return event.card.name == "sha" && player.countCards("hs", card => card.name == "ying") > 0 && event.player.isPhaseUsing();
+            return event.card.name == "sha" && player.countCards("hs", card => card.name == "ying" || card.name == "shan") > 0 && event.player.isPhaseUsing();
         },
         content() {
             "step 0";
@@ -4096,7 +4097,7 @@ const skills = {
                         go = player.countCards("h", "sha") > 0;
                     } else if (nh >= 4) {
                         go = true;
-                    } else if (player.countCards("hs", card => card.name == "ying") > 0) {
+                    } else if (player.countCards("hs", card => card.name == "ying" || card.name == "shan") > 0) {
                         if (nh == 3) {
                             go = Math.random() < 0.8;
                         } else if (nh == 2) {
@@ -4117,12 +4118,12 @@ const skills = {
                 !event.isMine() &&
                 !event.isOnline() &&
                 player.hasCard(function (card) {
-                    return player.countCards("hs", card => card.name == "ying") > 0;
+                    return player.countCards("hs", card => card.name == "ying" || card.name == "shan") > 0;
                 }, "he")
             ) {
                 game.delayx();
             }
-            var next = player.chooseToDiscard(get.prompt("mikage_yingbing"), "弃置一张【影】" + "，令" + get.translation(trigger.player) + "本次使用的【杀】不计入使用次数", { name: "ying" });
+            var next = player.chooseToDiscard(get.prompt("mikage_yingbing"), "弃置一张【影】或【闪】" + "，令" + get.translation(trigger.player) + "本次使用的【杀】不计入使用次数", { name: ["ying", "shan"] });
             next.logSkill = ["mikage_yingbing", trigger.player];
             next.set("ai", function (card) {
                 if (_status.event.go) {
@@ -4149,7 +4150,7 @@ const skills = {
             order: {
                 mod: {
                     aiOrder: (player, card, num) => {
-                        if (num && card.name === "sha" && get.color(card) === "red") {
+                        if (num && card.name === "sha") {
                             let gp = game.findPlayer(current => {
                                 return current.hasSkill("mikage_yingbing") && current.hasCard(i => true, "he");
                             });
@@ -4168,6 +4169,237 @@ const skills = {
                 charlotte: true,
                 content: () => {
                     game.removeGlobalSkill("mikage_yingbing_order");
+                },
+            },
+        },
+    },
+    "sakura_yinghu": {
+        trigger: {
+            global: "roundStart",
+        },
+        filter(event, player) {
+            return game.hasPlayer(current => current != player);
+        },
+        async cost(event, trigger, player) {
+            if (player.storage.sakura_yinghu2 && get.attitude(player, player.storage.sakura_yinghu2[0]) > 0) return false;
+            const result = await player
+                .chooseTarget("请选择【樱护】的目标", lib.translate.sakura_yinghu_info, false, function (card, player, target) {
+                    return target != player && (!player.storage.sakura_yinghu2 || !player.storage.sakura_yinghu2.includes(target));
+                })
+                .set("ai", function (target) {
+                    let att = get.attitude(_status.event.player, target);
+                    if (att > 0) {
+                        return att + 1;
+                    }
+                    if (att == 0) {
+                        return Math.random();
+                    }
+                    return att;
+                })
+                .set("animate", false)
+                .forResult();
+            event.result = {
+                bool: result.bool,
+                cost_data: result.bool ? result.targets[0] : null,
+            };
+        },
+        async content(event, trigger, player) {
+            let target = event.cost_data;
+            if (player.storage.sakura_yinghu2) {
+                lib.skill.sakura_yinghu2.onremove(player);
+            }
+
+            if (!player.storage.sakura_yinghu2) {
+                player.storage.sakura_yinghu2 = [];
+            }
+            player.storage.sakura_yinghu2.push(target);
+            player.addSkill("sakura_yinghu2");
+
+            const func = (player, target) => {
+                if (!target.storage.sakura_yinghu_mark) {
+                    target.storage.sakura_yinghu_mark = [];
+                }
+                target.storage.sakura_yinghu_mark.add(player);
+                target.storage.sakura_yinghu_mark.sortBySeat();
+                target.markSkill("sakura_yinghu_mark", null, null, true);
+            };
+            if (event.isMine()) {
+                func(player, target);
+            } else if (player.isOnline2()) {
+                player.send(func, player, target);
+            }
+        },
+    },
+    sakura_yinghu_mark: {
+        marktext: "护",
+        intro: {
+            name: "樱护",
+            content: "当你受到伤害后，$受到等量的伤害，当你回复体力后，$回复等量的体力",
+        },
+    },
+    sakura_yinghu2: {
+        audio: "sakura_yinghu",
+        charlotte: true,
+        trigger: { global: ["damageEnd", "recoverEnd"] },
+        forced: true,
+        sourceSkill: "sakura_yinghu",
+        filter(event, player) {
+            if (event.player.isDead() || !player.storage.sakura_yinghu2 || !player.storage.sakura_yinghu2.includes(event.player) || event.num <= 0) {
+                return false;
+            }
+            if (event.name == "damage") {
+                return true;
+            }
+            return player.isDamaged();
+        },
+        logTarget: "player",
+        content() {
+            "step 0";
+            var target = trigger.player;
+            if (!target.storage.sakura_yinghu_mark) {
+                target.storage.sakura_yinghu_mark = [];
+            }
+            target.storage.sakura_yinghu_mark.add(player);
+            target.storage.sakura_yinghu_mark.sortBySeat();
+            target.markSkill("sakura_yinghu_mark");
+            game.delayx();
+            "step 1";
+            player[trigger.name](trigger.num, "nosource");
+        },
+        onremove(player) {
+            if (!player.storage.sakura_yinghu2) {
+                return;
+            }
+            game.countPlayer(function (current) {
+                if (player.storage.sakura_yinghu2.includes(current) && current.storage.sakura_yinghu_mark) {
+                    current.storage.sakura_yinghu_mark.remove(player);
+                    if (!current.storage.sakura_yinghu_mark.length) {
+                        current.unmarkSkill("sakura_yinghu_mark");
+                    } else {
+                        current.markSkill("sakura_yinghu_mark");
+                    }
+                }
+            });
+            delete player.storage.sakura_yinghu2;
+        },
+        group: "sakura_yinghu3",
+    },
+    sakura_yinghu3: {
+        trigger: { global: "dieBegin" },
+        silent: true,
+        sourceSkill: "sakura_yinghu",
+        filter(event, player) {
+            return event.player == player || (player.storage.sakura_yinghu2 && player.storage.sakura_yinghu2.includes(player));
+        },
+        content() {
+            if (player == trigger.player) {
+                lib.skill.sakura_yinghu2.onremove(player);
+            } else {
+                player.storage.sakura_yinghu2.remove(event.player);
+                lib.skill.sakura_yinghu2.onremove(player);
+            }
+        },
+    },
+    "sakura_yingmeng": {
+        trigger: { player: "damageEnd" },
+        getIndex: event => event.num,
+        filter(event) {
+            return event.num > 0;
+        },
+        async content(event, trigger, player) {
+            const result = await player.judge().forResult();
+            const color = result?.color;
+            let result2;
+            switch (color) {
+                case "black":
+                    if (game.hasPlayer(current => current.countDiscardableCards(player, "hej"))) {
+                        result2 = await player
+                            .chooseTarget(
+                                "弃置一名角色区域内的一张牌",
+                                (card, player, target) => {
+                                    return target.countDiscardableCards(player, "hej");
+                                },
+                                true
+                            )
+                            .set("ai", target => {
+                                const player = get.player();
+                                let att = get.attitude(player, target);
+                                if (att < 0) {
+                                    att = -Math.sqrt(-att);
+                                } else {
+                                    att = Math.sqrt(att);
+                                }
+                                return att * lib.card.guohe.ai.result.target(player, target);
+                            })
+                            .forResult();
+                    }
+                    break;
+
+                case "red": {
+                    const next = player.chooseTarget("令一名角色摸一张牌");
+                    if (player.storage.sakura_yinghu2?.length) {
+                        next.set("prompt2", "（若目标为" + get.translation(player.storage.sakura_yinghu2) + "则改为摸两张牌）");
+                    }
+                    next.set("ai", target => {
+                        const player = get.player();
+                        let att = get.attitude(player, target) / Math.sqrt(1 + target.countCards("h"));
+                        if (target.hasSkillTag("nogain")) {
+                            att /= 10;
+                        }
+                        if (player.storage.sakura_yinghu2?.includes(target)) {
+                            return att * 2;
+                        }
+                        return att;
+                    });
+                    result2 = await next.forResult();
+                    break;
+                }
+
+                default:
+                    break;
+            }
+            if (result2?.bool && result2?.targets?.length) {
+                const target = result2.targets[0];
+                player.line(target, "green");
+                if (color == "black") {
+                    if (target.countDiscardableCards(player, "hej")) {
+                        await player.discardPlayerCard(target, "hej", true);
+                    }
+                } else {
+                    if (player.storage.sakura_yinghu2?.includes(target)) {
+                        target.storage.sakura_yinghu_mark ??= [];
+                        target.storage.sakura_yinghu_mark.add(player);
+                        target.storage.sakura_yinghu_mark.sortBySeat();
+                        target.markSkill("sakura_yinghu_mark");
+                        await target.draw(2);
+                    } else {
+                        await target.draw();
+                    }
+                }
+            }
+        },
+        ai: {
+            maixie: true,
+            maixie_hp: true,
+            effect: {
+                target(card, player, target) {
+                    if (get.tag(card, "damage")) {
+                        if (player.hasSkillTag("jueqing", false, target)) {
+                            return [1, -2];
+                        }
+                        if (!target.hasFriend()) {
+                            return;
+                        }
+                        if (target.hp >= 4) {
+                            return [1, get.tag(card, "damage") * 1.5];
+                        }
+                        if (target.hp == 3) {
+                            return [1, get.tag(card, "damage") * 1];
+                        }
+                        if (target.hp == 2) {
+                            return [1, get.tag(card, "damage") * 0.5];
+                        }
+                    }
                 },
             },
         },
