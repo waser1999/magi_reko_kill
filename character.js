@@ -336,7 +336,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["hschenzhi", "hsdianmo", "hszaibi", "reqingguo"],
+        skills: ["hsdianmo", "hszaibi"],
         img: "extension/魔法纪录/image/Kagome.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Kagome.mp3"]
     },
@@ -469,7 +469,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["ui_jinghua", "ui_wangyou", "ui_leshan", "dckrmingshi"],
+        skills: ["ui_jinghua", "ui_wangyou", "dckrmingshi"],
         img: "extension/魔法纪录/image/ui.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/ui.mp3"],
         doubleGroup: ["huan", "ma"],
@@ -480,7 +480,7 @@ const characters = {
         hp: 3,
         maxHp: 3,
         hujia: 0,
-        skills: ["tiandu", "new_reyiji", "olniepan"],
+        skills: ["tiandu", "new_reqingnang", "olniepan"],
         img: "extension/魔法纪录/image/nagisa.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/nagisa.mp3"]
     },

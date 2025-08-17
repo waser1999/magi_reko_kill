@@ -1209,48 +1209,6 @@ const skills = {
         },
         "_priority": 0,
     },
-    "ui_leshan": {
-        enable: "phaseUse",
-        filter(event, trigger, player) {
-            return _status.event.player.countCards("h") > 5;
-        },
-        check(event, player) {
-            return (game.hasPlayer(function (target) {
-                return (
-                    player !== target &&
-                    !game.hasPlayer(function (current) {
-                        return current !== player && current !== target && current.hp < target.hp;
-                    }) &&
-                    get.attitude(player, target) > 0
-                )
-            })
-            );
-        },
-        async content(event, trigger, player) {
-            const { result } = await player.chooseCardTarget({
-                selectCard: Math.floor(player.countCards("h") / 2),
-                filterTarget(card, player, target) {
-                    return target.isMinHp() && target != player;
-                },
-                prompt: "将一半的手牌交给场上体力值最少的一名角色",
-                forced: true,
-                ai2(target) {
-                    return get.attitude(_status.event.player, target);
-                },
-            });
-            player.line(result.targets, "green");
-
-            if (result.targets && result.targets[0]) {
-                await player.give(result.cards, result.targets[0]);
-                player.recover();
-                result.targets[0].recover();
-            }
-        },
-        ai: {
-            threaten: 2,
-        },
-        "_priority": 0,
-    },
     "ui_wangyou": {
         audio: "ext:魔法纪录:2",
         trigger: {
@@ -3794,8 +3752,111 @@ const skills = {
         },
     },
     "yuexiao_yingyu": {
-        inherit: "olfuhun",
+        enable: ["chooseToUse", "chooseToRespond"],
+        filterCard: true,
+        selectCard: 2,
+        position: "hs",
         audio: "ext:魔法纪录/audio/skill:2",
+        derivation: ["new_rewusheng", "olpaoxiao"],
+        viewAs: { name: "sha" },
+        prompt: "将两张牌当杀使用或打出",
+        viewAsFilter(player) {
+            return player.countCards("hes") > 1;
+        },
+        check(card) {
+            if (_status.event.player.hasSkill("new_rewusheng") && get.color(card) == "red") {
+                return 0;
+            }
+            if (_status.event.name == "chooseToRespond") {
+                if (card.name == "sha") {
+                    return 0;
+                }
+                return 6 - get.useful(card);
+            }
+            if (_status.event.player.countCards("hs") < 4) {
+                return 6 - get.useful(card);
+            }
+            return 7 - get.useful(card);
+        },
+        ai: {
+            respondSha: true,
+            skillTagFilter(player) {
+                if (player.countCards("hs") < 2) {
+                    return false;
+                }
+            },
+            order(item, player) {
+                if (player.hasSkill("new_rewusheng") && player.hasSkill("olpaoxiao")) {
+                    return 1;
+                }
+                if (player.countCards("hs") < 4) {
+                    return 1;
+                }
+                return 4;
+            },
+        },
+        subSkill: {
+            effect: {
+                audio: "yuexiao_yingyu",
+                trigger: {
+                    source: "damageSource",
+                },
+                forced: true,
+                filter(event, player) {
+                    if (["new_rewusheng", "olpaoxiao"].every(skill => player.hasSkill(skill, null, false, false))) {
+                        return false;
+                    }
+                    return player.isPhaseUsing();
+                },
+                content() {
+                    player.addTempSkills(["new_rewusheng", "olpaoxiao"]);
+                },
+            },
+            mark: {
+                audio: "yuexiao_yingyu",
+                forced: true,
+                locked: false,
+                trigger: { player: "useCard" },
+                firstDo: true,
+                filter(event, player) {
+                    return event.card?.name == "sha" && get.is.convertedCard(event.card);
+                },
+                content() {
+                    if (!trigger.card.storage) {
+                        trigger.card.storage = {};
+                    }
+                    trigger.card.storage.yuexiao_yingyu = true;
+                },
+            },
+            //根据思召剑和谋韩当的弓骑修改
+            block: {
+                mod: {
+                    cardEnabled(card, player) {
+                        let evt = get.event();
+                        if (evt.name != "chooseToUse") {
+                            evt = evt.getParent("chooseToUse");
+                        }
+                        if (!evt?.respondTo || !evt.respondTo[1]?.storage?.yuexiao_yingyu) {
+                            return;
+                        }
+                        const color1 = get.color(card),
+                            color2 = get.color(evt.respondTo[1]),
+                            hs = player.getCards("h"),
+                            cards = [card];
+                        if (color1 === "unsure") {
+                            return;
+                        }
+                        if (Array.isArray(card.cards)) {
+                            cards.addArray(card.cards);
+                        }
+                        if (color1 != color2 || !cards.containsSome(...hs)) {
+                            return false;
+                        } //
+                    },
+                },
+                charlotte: true,
+            },
+        },
     },
     "alina_moying": {
         trigger: {
