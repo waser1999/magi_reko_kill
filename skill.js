@@ -3773,9 +3773,11 @@ const skills = {
         enable: ["chooseToUse", "chooseToRespond"],
         filterCard: true,
         selectCard: 2,
-        position: "hs",
+        position: "hes",
         audio: "ext:魔法纪录/audio/skill:2",
         derivation: ["new_rewusheng", "olpaoxiao"],
+        group: ["yuexiao_yingyu_effect", "yuexiao_yingyu_mark"],
+        global: ["yuexiao_yingyu_block"],
         viewAs: { name: "sha" },
         prompt: "将两张牌当杀使用或打出",
         viewAsFilter(player) {
