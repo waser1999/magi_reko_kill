@@ -22,6 +22,7 @@ const translates = {
     "test_tube_skill": "毒剂试管",
     "special_week": "特别周",
     "special_week_info": "锁定技，你计算与其他角色的距离-1。",
+
     "sayaka_qiangyin": "强音",
     "sayaka_qiangyin_info": "出牌阶段限一次，你可以弃置两张手牌并选择一名已经受伤的角色。你与其各回复1点体力并各获得【不屈】直到你的下一回合开始时。",
     "madoka_xieli": "协力",
@@ -102,7 +103,7 @@ const translates = {
     "kanagi_nvpu": "女仆",
     "kanagi_nvpu_info": "锁定技，【女仆装】的效果对你无效。",
     "rera_nuanxin": "暖心",
-    "rera_nuanxin_info": "当有角色进入濒死状态时，或你将牌交给、赠予一名其他角色后，你可以令该角色摸一张牌。",
+    "rera_nuanxin_info": "当有角色进入濒死状态时，或你将牌交给、赠予一名角色后，你可以令该角色摸2张牌。",
     "hinano_huawu": "化武",
     "hinano_huawu_info": "锁定技，当你未装备武器时，你视为装备【毒剂试管】。",
     "hinano_duji": "毒剂",
@@ -123,7 +124,7 @@ const translates = {
     "yuna_xuehen_info": "出牌阶段限两次，你可以移去一张“仇”并选择一名角色，你对其造成1点伤害并令其摸两张牌。若为你，则防止此伤害。",
     "yuna_xuehen_backup": "雪恨",
     "yuna_liuli": "流离",
-    "yuna_liuli_info": "当你成为目标数大于1的伤害类锦囊牌的目标后，你可以将目标转变为其他角色。若如此做，你发动一次【仇海】。",
+    "yuna_liuli_info": "当你成为目标数大于1的伤害类牌的目标后，你可以将目标转变为其他角色。若如此做，你发动一次【仇海】。",
     "yuna_xuemeng": "血盟",
     "yuna_xuemeng_info": "主角技。游戏开始时，若场上有神盟或玛吉斯角色，你将【雪恨】修改为：出牌阶段限四次。",
     "masara_cisha": "刺杀",
@@ -178,6 +179,8 @@ const translates = {
     "lena_huashen_info": "游戏开始时，你随机获得三张未加入游戏的武将牌，选一张置于你面前并声明该武将牌的一项技能。回合开始时或回合结束时，你可以选择一项：①弃置至多两张未展示的化身牌并重新获得等量化身牌；②更换所展示的化身牌或技能。（你不可声明限定技、觉醒技、隐匿技、使命技、主公技等特殊技能）。",
     "lena_xinsheng": "新生",
     "lena_xinsheng_info": "当你受到1点伤害后，你可以获得一张新的化身牌。",
+    "seika_huzhu": "互助",
+    "seika_huzhu_info": "限定技，出牌阶段，你可以与一名其他角色各摸三张牌，然后若你体力值为全场最少，你回复1点体力。若你与︎此角色有已发动的限定技，则你选择其中一个限定技，此回合结束后视为该限定技未发动过。",
 }
 
 export default translates;

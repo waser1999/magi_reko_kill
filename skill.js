@@ -2090,6 +2090,24 @@ const skills = {
     "rera_nuanxin": {
         inherit: "xinfu_jiyuan",
         audio: "ext:魔法纪录/audio/skill:2",
+        filter(event, player, triggername, target) {
+            if (!target.isIn()) {
+                return false;
+            }
+            if (event.name === "dying") {
+                return true;
+            }
+            if (event.giver !== player) {
+                return false;
+            }
+            if (event.name === "gain") {
+                return event.getg(target).length > 0;
+            }
+            return game.hasPlayer(current => current != player && event.getg(current).length > 0);
+        },
+        async content(event, trigger, player) {
+            event.targets[0].draw(2);
+        },
         group: ["rera_nuanxin_gift"],
         subSkill: {
             gift: {
@@ -2101,7 +2119,7 @@ const skills = {
                     return get.attitude(player, target) > 0;
                 },
                 content(event, trigger, player) {
-                    trigger.target.draw();
+                    trigger.target.draw(2);
                 },
             }
         }
@@ -2675,8 +2693,8 @@ const skills = {
         trigger: { target: "useCardToTarget" },
         forced: true,
         filter(event, player) {
-            // get.tag()判断是伤害类锦囊牌
-            return get.type(event.card) == "trick" && get.tag(event.card, "damage") && event.targets.length > 1 && event.player.isIn();
+            // get.tag()判断是伤害类牌
+            return get.tag(event.card, "damage") && event.targets.length > 1 && event.player.isIn();
         },
         preHidden: true,
         async content(event, trigger, player) {
@@ -4840,6 +4858,76 @@ const skills = {
             lib.skill.lena_huashen.addHuashens(player, 1);
         },
         ai: { combo: "lena_huashen" },
+    },
+    "seika_huzhu": {
+        skillAnimation: true,
+        animationColor: "gray",
+        unique: true,
+        enable: "phaseUse",
+        audio: "ext:魔法纪录/audio/skill:2",
+        limited: true,
+        filterTarget: lib.filter.notMe,
+        async content(event, trigger, player) {
+            player.awakenSkill("seika_huzhu");
+            let target = event.target;
+            await game.asyncDraw([target, player], 3);
+            if (player.isMinHp(true) && player.isDamaged()) {
+                await player.recover();
+            }
+
+            var list = [];
+            var skills = target.getOriginalSkills();
+            var playerSkills = player.getOriginalSkills();
+            skills.addArray(playerSkills);
+
+            for (var i = 0; i < skills.length; i++) {
+                if (lib.skill[skills[i]].limited
+                    && (target.awakenedSkills.includes(skills[i]) || player.awakenedSkills.includes(skills[i]))
+                ) {
+                    list.push(skills[i]);
+                }
+            }
+
+            if (list.length == 1) {
+                player.storage.seika_huzhu_restore = list[0];
+                player.addTempSkill("seika_huzhu_restore");
+            } else if (list.length > 1) {
+                const result = await player.chooseControl(list).set("prompt", "选择一个限定技在回合结束后重置之").forResult();
+                if (playerSkills.includes(result.control)) {
+                    player.storage.seika_huzhu_restore = result.control;
+                    player.addTempSkill("seika_huzhu_restore");
+                } else {
+                    target.storage.seika_huzhu_restore = result.control;
+                    target.addTempSkill("seika_huzhu_restore");
+                }
+            }
+        },
+        subSkill: {
+            restore: {
+                trigger: { global: "phaseEnd" },
+                forced: true,
+                popup: false,
+                charlotte: true,
+                onremove: true,
+                content() {
+                    player.restoreSkill(player.storage.seika_huzhu_restore);
+                },
+            },
+        },
+        ai: {
+            order: 4,
+            result: {
+                target(player, target) {
+                    var skills = target.getOriginalSkills();
+                    for (var i = 0; i < skills.length; i++) {
+                        if (lib.skill[skills[i]].limited && target.awakenedSkills.includes(skills[i])) {
+                            return 8;
+                        }
+                    }
+                    return 4;
+                },
+            },
+        },
     },
 };
 export default skills;
