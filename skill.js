@@ -2451,7 +2451,7 @@ const skills = {
             next.judge2 = function (result) {
                 return result.bool;
             };
-            if (get.mode() != "guozhan" && !player.hasSkillTag("rejudge")) {
+            if (!player.hasSkillTag("rejudge")) {
                 next.set("callback", function () {
                     if (get.position(card, true) == "o") {
                         player.gain(card, "gain2");
