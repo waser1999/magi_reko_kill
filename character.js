@@ -402,7 +402,7 @@ const characters = {
     },
     "hanna": {
         sex: "female",
-        group: "ye",
+        group: "wan",
         hp: 3,
         maxHp: 3,
         hujia: 0,
