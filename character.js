@@ -939,6 +939,7 @@ const characterTitles = {
     nayuta: "文化跃进的气流",
     mikage: "只有现在是坏孩子！",
     sakura: "万年樱之谣",
+    juri: "无限灼热火焰龙击波",
 }
 
 export default characters;

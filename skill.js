@@ -4935,12 +4935,13 @@ const skills = {
         mark: true,
         marktext: "☯",
         selectCard: 2,
+        usable: 1,
         position: "hes",
         group: ["juri_longhuo_draw"],
         intro: {
             markcount: () => 0,
-            content(storage, player) {
-                return "转换技。你可以将两张" + player.storage.juri_longhuo ? "黑色牌当【南蛮入侵】" : "红色牌当【火烧联营】" + "使用。";
+            content(storage) {
+                return "转换技。你可以将两张" + (!storage ? "黑色牌当【南蛮入侵】" : "红色牌当【火烧联营】") + "使用。";
             },
         },
         viewAs(cards, player) {
@@ -5001,7 +5002,7 @@ const skills = {
         async precontent(event, trigger, player) {
             var skill = "juri_longhuo";
             player.logSkill(skill);
-            player.changeZhuanhuanji("juri_longhuo");
+            player.changeZhuanhuanji(skill);
         },
         subSkill: {
             draw: {
