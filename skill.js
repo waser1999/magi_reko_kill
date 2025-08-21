@@ -1065,6 +1065,7 @@ const skills = {
         "_priority": 0,
     },
     "ashley_yuanyu": {
+        audio: "ext:魔法纪录/audio/skill:2",
         trigger: {
             player: "damageBegin4",
         },
