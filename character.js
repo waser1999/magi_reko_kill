@@ -155,16 +155,6 @@ const characters = {
         img: "extension/魔法纪录/image/kaede.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kaede.mp3"],
     },
-    "ma_kaede": {
-        sex: "female",
-        group: "ma",
-        hp: 3,
-        maxHp: 3,
-        hujia: 0,
-        skills: ["kaede_manmiao", "kaede_buyi", "dczhuiyi"],
-        img: "extension/魔法纪录/image/kaede.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/kaede.mp3"],
-    },
     "momoko": {
         sex: "female",
         group: "huan",
@@ -359,16 +349,6 @@ const characters = {
         img: "extension/魔法纪录/image/mifuyu.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/mifuyu.mp3"],
     },
-    "huan_mifuyu": {
-        sex: "female",
-        group: "huan",
-        hp: 3,
-        maxHp: 3,
-        hujia: 0,
-        skills: ["dcwumei", "dczhanmeng"],
-        img: "extension/魔法纪录/image/mifuyu.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/mifuyu.mp3"],
-    },
     "meru": {
         sex: "female",
         group: "huan",
@@ -422,7 +402,7 @@ const characters = {
     },
     "hanna": {
         sex: "female",
-        group: "ma",
+        group: "ye",
         hp: 3,
         maxHp: 3,
         hujia: 0,
@@ -433,16 +413,6 @@ const characters = {
     "kuroe": {
         sex: "female",
         group: "ma",
-        hp: 3,
-        maxHp: 3,
-        hujia: 0,
-        skills: ["qingbei", "dcsuishi"],
-        img: "extension/魔法纪录/image/kuroe.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/kuroe.mp3"],
-    },
-    "huan_kuroe": {
-        sex: "female",
-        group: "huan",
         hp: 3,
         maxHp: 3,
         hujia: 0,
@@ -493,16 +463,6 @@ const characters = {
     "ui": {
         sex: "female",
         group: "ma",
-        hp: 3,
-        maxHp: 3,
-        hujia: 0,
-        skills: ["ui_jinghua", "ui_wangyou", "dckrmingshi"],
-        img: "extension/魔法纪录/image/ui.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/ui.mp3"],
-    },
-    "huan_ui": {
-        sex: "female",
-        group: "huan",
         hp: 3,
         maxHp: 3,
         hujia: 0,
@@ -734,16 +694,6 @@ const characters = {
         img: "extension/魔法纪录/image/nayuta.png",
         dieAudios: ["ext:魔法纪录/audio/die/nayuta.mp3"],
     },
-    "ma_nayuta": {
-        sex: "female",
-        group: "ma",
-        hp: 4,
-        maxHp: 4,
-        hujia: 0,
-        skills: ["nayuta_kanwu", "nayuta_mingsu", "olhongyuan"],
-        img: "extension/魔法纪录/image/nayuta.png",
-        dieAudios: ["ext:魔法纪录/audio/die/nayuta.mp3"],
-    },
     "mikage": {
         sex: "female",
         group: "wan",
@@ -794,7 +744,6 @@ const character_translates = {
     alina: "阿莉娜·格雷",
     lena: "水波玲奈",
     kaede: "秋野枫",
-    "ma_kaede": "秋野枫",
     momoko: "十咎桃子",
     asuka: "龙城明日香",
     yueye: "天音月夜",
@@ -814,7 +763,6 @@ const character_translates = {
     sayaka: "美树沙耶香",
     Kagome: "佐鸟笼目",
     mifuyu: "梓美冬",
-    huan_mifuyu: " 梓美冬",
     meru: "安名梅露",
     kazumi: "和美",
     kushu: "入名库什",
@@ -822,14 +770,12 @@ const character_translates = {
     ayame: "三栗菖蒲",
     hanna: "更纱帆奈",
     kuroe: "黑江",
-    huan_kuroe: "黑江",
     "dp_iroha": "DP环彩羽",
     "dp_iroha_prefix": "DP",
     kanae: "雪野加奈惠",
     name: "小名",
     mitama: "八云御魂",
     ui: "环忧",
-    huan_ui: "环忧",
     nagisa: "百江渚",
     kanagi: "和泉十七夜",
     suzune: "天乃铃音",
@@ -855,7 +801,6 @@ const character_translates = {
     shizuka: "时女静香",
     himena: "蓝家姬奈",
     nayuta: "里见那由他",
-    ma_nayuta: "里见那由他",
     mikage: "八云御影",
     sakura: "柊樱子",
     juri: "大庭树里",
@@ -993,11 +938,7 @@ const characterTitles = {
 }
 
 const characterReplaces = {
-    kaede: ["kaede", "ma_kaede"],
-    mifuyu: ["mifuyu", "huan_mifuyu"],
-    kuroe: ["kuroe", "huan_kuroe"],
-    ui: ["ui", "huan_ui"],
-    nayuta: ["nayuta", "ma_nayuta"],
+
 };
 
 export default characters;
