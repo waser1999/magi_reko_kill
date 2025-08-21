@@ -3948,13 +3948,10 @@ const skills = {
             return event.targets && event.targets.includes(player);
         },
         frequent: true,
-        content() {
-            player.judge(card => 1).callback = lib.skill.himena_zhiquan.callback;
-        },
-        callback() {
-            if (typeof card.number == "number") {
-                player.addToExpansion(card, "gain2").gaintag.add("himena_zhiquan");
-            }
+        async content(event, trigger, player) {
+            let card = get.cards();
+            await player.showCards(card, get.translation(player) + "的【执权】结果为");
+            player.addToExpansion(card).gaintag.add("himena_zhiquan");
             if (player.getExpansions("himena_zhiquan").some(current => current.number == get.number(card))) {
                 player.useSkill("himena_shanji");
             }
@@ -4929,6 +4926,157 @@ const skills = {
                     return 4;
                 },
             },
+        },
+    },
+    "juri_longhuo": {
+        enable: "phaseUse",
+        zhuanhuanji: true,
+        locked: false,
+        mark: true,
+        marktext: "☯",
+        selectCard: 2,
+        position: "hes",
+        group: ["juri_longhuo_draw"],
+        intro: {
+            markcount: () => 0,
+            content(storage, player) {
+                return "转换技。你可以将两张" + player.storage.juri_longhuo ? "黑色牌当【南蛮入侵】" : "红色牌当【火烧联营】" + "使用。";
+            },
+        },
+        viewAs(cards, player) {
+            var name = player.storage.juri_longhuo ? "huoshaolianying" : "nanman";
+            return { name: name };
+        },
+        check(card) {
+            var player = _status.event.player;
+            var name = player.storage.juri_longhuo ? "huoshaolianying" : "nanman";
+            var targets = game.filterPlayer(function (current) {
+                return player.canUse(name, current);
+            });
+
+            var num = 0;
+            for (let i = 0; i < targets.length; i++) {
+                let eff = get.sgn(get.effect(targets[i], { name: name }, player, player));
+                if (targets[i].hp == 1) {
+                    eff *= 1.5;
+                }
+                num += eff;
+            }
+            if (!player.needsToDiscard(-1)) {
+                if (targets.length >= 7) {
+                    if (num < 2) {
+                        return 0;
+                    }
+                } else if (targets.length >= 5) {
+                    if (num < 1.5) {
+                        return 0;
+                    }
+                }
+            }
+            return 8 - get.value(card);
+        },
+        filterCard(card, player) {
+            if (ui.selected.cards.length) {
+                return get.color(card) == get.color(ui.selected.cards[0]);
+            }
+
+            let storageColor = player.storage.juri_longhuo ? "red" : "black";
+            const cards = player.getCards("hes").filter(card => get.color(card) == storageColor);
+            for (let i = 0; i < cards.length; i++) {
+                if (card != cards[i]) {
+                    if (get.color(card) == get.color(cards[i])) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+        prompt() {
+            var storage = _status.event.player.storage.juri_longhuo;
+            if (!storage) {
+                return "将两张黑色牌当【南蛮入侵】使用";
+            }
+            return "将两张红色牌当【火烧连营】使用";
+        },
+        async precontent(event, trigger, player) {
+            var skill = "juri_longhuo";
+            player.logSkill(skill);
+            player.changeZhuanhuanji("juri_longhuo");
+        },
+        subSkill: {
+            draw: {
+                trigger: { source: "damageEnd" },
+                usable: 3,
+                forced: true,
+                content() {
+                    player.draw();
+                },
+            },
+        },
+        ai: {
+            threaten: 1.6,
+        },
+    },
+    "juri_fenyan": {
+        trigger: { player: "useCardToPlayered" },
+        forced: true,
+        group: ["juri_fenyan_nanman", "juri_fenyan_fire"],
+        filter(event, player) {
+            return get.type(event.card, "trick") && get.tag(event.card, "damage") && event.targets.length > 1 && event.isFirstTarget;
+        },
+        preHidden: true,
+        async content(event, trigger, player) {
+            const result = await player.chooseTarget("请选择“焚炎”额外发动的目标")
+                .set("ai", target => {
+                    return -get.attitude(player, target);
+                }).forResult();
+
+            if (result.bool) {
+                const target = result.targets[0];
+                player.line(target, "green");
+                const evt = trigger.getParent();
+                evt.targets.push(target);
+            }
+        },
+        subSkill: {
+            nanman: {
+                trigger: { target: "useCardToBefore" },
+                forced: true,
+                priority: 15,
+                filter(event, player) {
+                    return event.card.name == "nanman";
+                },
+                content() {
+                    trigger.cancel();
+                },
+            },
+            fire: {
+                trigger: { source: "damageBegin" },
+                forced: true,
+                filter(event) {
+                    return event.hasNature("fire");
+                },
+                content() {
+                    trigger.num++;
+                },
+                ai: {
+                    effect: {
+                        player(card, player, target) {
+                            if (card.name == "sha") {
+                                if (game.hasNature(card, "fire")) {
+                                    return 2;
+                                }
+                                if (player.hasSkill("zhuque_skill")) {
+                                    return 1.9;
+                                }
+                            }
+                            if (get.tag(card, "fireDamage")) {
+                                return 2;
+                            }
+                        },
+                    },
+                },
+            }
         },
     },
 };

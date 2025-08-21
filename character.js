@@ -719,6 +719,16 @@ const characters = {
         img: "extension/魔法纪录/image/sakura.png",
         dieAudios: ["ext:魔法纪录/audio/die/sakura.mp3"],
     },
+    "juri": {
+        sex: "female",
+        group: "wan",
+        hp: 4,
+        maxHp: 4,
+        hujia: 0,
+        skills: ["juri_fenyan", "juri_longhuo"],
+        img: "extension/魔法纪录/image/juri.png",
+        dieAudios: ["ext:魔法纪录/audio/die/juri.mp3"],
+    }
 }
 
 const character_translates = {
@@ -798,6 +808,7 @@ const character_translates = {
     nayuta: "里见那由他",
     mikage: "八云御影",
     sakura: "柊樱子",
+    juri: "大庭树里",
 }
 
 const perfectPairs = {
@@ -853,6 +864,8 @@ const perfectPairs = {
     nayuta: ["toka", "mikage"],
     mikage: ["nayuta", "mitama"],
     sakura: ["nemu", "ryo", "toka", "ui"],
+    yuna: ["juri"],
+    juri: ["yuna"],
 }
 
 const characterTitles = {
