@@ -5067,5 +5067,105 @@ const skills = {
         mark: true,
         intro: { content: "当前传承的技能：$" },
     },
+    "ao_qulong": {
+        enable: "phaseUse",
+        usable: 1,
+        filterTarget(card, player, target) {
+            return target.countCards("h");
+        },
+        selectTarget: 2,
+        complexTarget: true,
+        multitarget: true,
+        async content(event, trigger, player) {
+            const { targets: [target1, target2], } = event;
+            const result = await target1.chooseToCompare(target2).forResult();
+
+            let bool1 = target1 != result.winner, bool2 = target2 != result.winner;
+            let card1 = result.player, card2 = result.target;
+            let num = Math.abs(card1.number - card2.number);
+            if (num <= 5) {
+                bool1 = true;
+                bool2 = true;
+            }
+
+            if (bool1) {
+                player.line(target1, "green");
+                await target1.damage(player, "fire");
+            }
+            if (bool2) {
+                player.line(target2, "green");
+                await target2.damage(player, "fire");
+            }
+        },
+        ai: {
+            order: 6,
+            result: {
+                target: -1,
+            },
+            combo: "ao_fuhu",
+        },
+    },
+    "ao_fuhu": {
+        trigger: { player: "phaseEnd" },
+        group: ["ao_fuhu_cancel"],
+        filter(event, player) {
+            return player.getHistory("sourceDamage").reduce((sum, evt) => sum + evt.num, 0) > 1;
+        },
+        forced: true,
+        mark: true,
+        marktext: "附",
+        intro: {
+            name: "附",
+            content: "当前谣数：#",
+        },
+        content() {
+            player.addMark("ao_fuhu", 1);
+        },
+        subSkill: {
+            "cancel": {
+                trigger: { global: "useCardToPlayered" },
+                filter(event, player) {
+                    if (event.getParent().triggeredTargets3.length > 1) {
+                        return false;
+                    }
+                    if (get.type(event.card) != "trick") {
+                        return false;
+                    }
+                    if (get.info(event.card).multitarget) {
+                        return false;
+                    }
+                    if (event.targets.length < 2) {
+                        return false;
+                    }
+                    if (player.countMark("ao_fuhu") == 0) {
+                        return false;
+                    }
+                    return true;
+                },
+                direct: true,
+                content() {
+                    "step 0";
+                    player.chooseTarget(get.prompt("ao_fuhu"), [1, trigger.targets.length], function (card, player, target) {
+                        return _status.event.targets.includes(target);
+                    })
+                        .set("ai", function (target) {
+                            var trigger = _status.event.getTrigger();
+                            if (game.phaseNumber > game.players.length * 2 && trigger.targets.length >= game.players.length - 1 && !trigger.excluded.includes(target)) {
+                                return -get.effect(target, trigger.card, trigger.player, _status.event.player);
+                            }
+                            return -1;
+                        })
+                        .set("targets", trigger.targets);
+                    "step 1";
+                    if (result.bool) {
+                        player.logSkill("ao_fuhu", result.targets);
+                        trigger.getParent().excluded.addArray(result.targets);
+                        player.removeMark("ao_fuhu", 1);
+                        game.delay();
+                    }
+                },
+            },
+        }
+    }
 };
 export default skills;

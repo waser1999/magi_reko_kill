@@ -724,7 +724,17 @@ const characters = {
         skills: ["juri_fenyan", "juri_longhuo"],
         img: "extension/魔法纪录/image/juri.png",
         dieAudios: ["ext:魔法纪录/audio/die/juri.mp3"],
-    }
+    },
+    "ao": {
+        sex: "female",
+        group: "wan",
+        hp: 3,
+        maxHp: 3,
+        hujia: 0,
+        skills: ["ao_qulong", "ao_fuhu", "oljieming"],
+        img: "extension/魔法纪录/image/ao.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/ao.mp3"],
+    },
 }
 
 const character_translates = {
@@ -805,6 +815,7 @@ const character_translates = {
     mikage: "八云御影",
     sakura: "柊樱子",
     juri: "大庭树里",
+    ao: "笠音青",
 }
 
 const perfectPairs = {
@@ -860,8 +871,9 @@ const perfectPairs = {
     nayuta: ["toka", "mikage"],
     mikage: ["nayuta", "mitama"],
     sakura: ["nemu", "ryo", "toka", "ui"],
-    yuna: ["juri"],
-    juri: ["yuna"],
+    yuna: ["juri", "ao"],
+    juri: ["yuna", "ao"],
+    ao: ["yuna", "juri"],
 }
 
 const characterTitles = {
@@ -936,6 +948,7 @@ const characterTitles = {
     mikage: "只有现在是坏孩子！",
     sakura: "万年樱之谣",
     juri: "无限灼热火焰龙击波",
+    ao: "超必·音速之刃No.Ⅵ",
 }
 
 const characterReplaces = {
