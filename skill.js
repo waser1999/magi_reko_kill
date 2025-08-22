@@ -5116,7 +5116,7 @@ const skills = {
         marktext: "附",
         intro: {
             name: "附",
-            content: "当前谣数：#",
+            content: "当前附标记数：#",
         },
         content() {
             player.addMark("ao_fuhu", 1);
@@ -5150,10 +5150,7 @@ const skills = {
                     })
                         .set("ai", function (target) {
                             var trigger = _status.event.getTrigger();
-                            if (game.phaseNumber > game.players.length * 2 && trigger.targets.length >= game.players.length - 1 && !trigger.excluded.includes(target)) {
-                                return -get.effect(target, trigger.card, trigger.player, _status.event.player);
-                            }
-                            return -1;
+                            return -get.effect(target, trigger.card, trigger.player, _status.event.player);
                         })
                         .set("targets", trigger.targets);
                     "step 1";
