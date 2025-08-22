@@ -624,7 +624,7 @@ const skills = {
         "_priority": 0,
     },
     "oriko_yuzhi": {
-        group: ["oriko_yuzhi_1", "oriko_yuzhi_2", "oriko_yuzhi_use"],
+        group: ["oriko_yuzhi_add", "oriko_yuzhi_lose", "oriko_yuzhi_use"],
         mark: true,
         marktext: "视",
         intro: {
@@ -633,7 +633,7 @@ const skills = {
             markcount: "expansion",
         },
         subSkill: {
-            "1": {
+            "add": {
                 trigger: {
                     global: "phaseBegin",
                 },
@@ -648,7 +648,7 @@ const skills = {
                 sourceSkill: "oriko_yuzhi",
                 "_priority": 0,
             },
-            "2": {
+            "lose": {
                 trigger: {
                     global: "dieAfter",
                 },
@@ -1175,7 +1175,7 @@ const skills = {
                     return !target.hasSkill("tsuruno_qiangyun");
                 })
                 .set("ai", function (target) {
-                    if (target.name == "toka") return true;
+                    if (target.hasSkill("xinleiji") && get.attitude(_status.event.player, target) < 0) return true;
                     return get.attitude(_status.event.player, target) > 0;
                 })
                 .forResult();
@@ -2659,10 +2659,18 @@ const skills = {
                         order: 10,
                         result: {
                             target(player, target) {
-                                if (get.attitude(player, target) < 0 && target.hp == 1) return -3;
-                                if (player == target && player.countCards("h") <= 1) {
-                                    return 2;
+                                if (get.attitude(player, target) < 0 && target.hp == 1) {
+                                    if (!target.hasSkill("buqu")) return 0;
+                                    if (target.countCards("h") > target.maxHp) return 0;
+                                    return -3;
                                 }
+                                if (get.attitude(player, target) > 0) {
+                                    if (player == target && player.countCards("h") <= 1 && player.hp > 1) {
+                                        return 2;
+                                    }
+                                    if (target.hp >= 3 && target.countCards("h") <= 1) return 1;
+                                }
+                                return 0;
                             },
                         },
                     },
@@ -2677,9 +2685,7 @@ const skills = {
             var card = lib.skill.yuna_xuehen_backup.card;
             player.loseToDiscardpile(card);
             "step 1";
-            if (target != player) {
-                target.damage();
-            }
+            target.damage();
             target.draw(2);
         },
         ai: {
@@ -3295,111 +3301,6 @@ const skills = {
         preHidden: true,
         filter(event, player) {
             return player.countCards("hes", { color: "red" }) > 0;
-        },
-        content() {
-            "step 0";
-            player
-                .chooseCard(get.translation(trigger.player) + "的" + (trigger.judgestr || "") + "判定为" + get.translation(trigger.player.judging[0]) + "，" + get.prompt("nayuta_kanwu"), "hes", function (card) {
-                    var player = _status.event.player;
-                    var mod2 = game.checkMod(card, player, "unchanged", "cardEnabled2", player);
-                    if (mod2 != "unchanged") {
-                        return mod2;
-                    }
-                    var mod = game.checkMod(card, player, "unchanged", "cardRespondable", player);
-                    if (mod != "unchanged") {
-                        return mod;
-                    }
-                    return get.color(card) == "red";
-                })
-                .set("ai", function (card) {
-                    var trigger = _status.event.getTrigger();
-                    var player = _status.event.player;
-                    var judging = _status.event.judging;
-                    var result = trigger.judge(card) - trigger.judge(judging);
-                    var attitude = get.attitude(player, trigger.player);
-                    if (attitude == 0 || result == 0) {
-                        return 0;
-                    }
-                    if (attitude > 0) {
-                        return result - get.value(card) / 2;
-                    } else {
-                        return -result - get.value(card) / 2;
-                    }
-                })
-                .set("judging", trigger.player.judging[0])
-                .setHiddenSkill("nayuta_kanwu");
-            "step 1";
-            if (result.bool) {
-                player.respond(result.cards, "nayuta_kanwu", "highlight", "noOrdering");
-            } else {
-                event.finish();
-            }
-            "step 2";
-            if (result.bool) {
-                if (trigger.player.judging[0].clone) {
-                    trigger.player.judging[0].clone.classList.remove("thrownhighlight");
-                    game.broadcast(function (card) {
-                        if (card.clone) {
-                            card.clone.classList.remove("thrownhighlight");
-                        }
-                    }, trigger.player.judging[0]);
-                    game.addVideo("deletenode", player, get.cardsInfo([trigger.player.judging[0].clone]));
-                }
-                game.cardsDiscard(trigger.player.judging[0]);
-                trigger.player.judging[0] = result.cards[0];
-                trigger.orderingCards.addArray(result.cards);
-                game.log(trigger.player, "的判定牌改为", result.cards[0]);
-                game.delay(2);
-            }
-        },
-        ai: {
-            rejudge: true,
-            tag: {
-                rejudge: 1,
-            },
-        },
-    },
-    "nayuta_mingsu": {
-        trigger: {
-            player: ["loseAfter", "useCard", "respond"],
-            global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
-        },
-        filter(event, player) {
-            if (player == _status.currentPhase) {
-                return false;
-            }
-            if (event.name == "useCard" || event.name == "respond") {
-                return (
-                    get.color(event.card, false) == "red" &&
-                    player.hasHistory("lose", function (evt) {
-                        return evt.getParent() == event && evt.hs && evt.hs.length > 0;
-                    })
-                );
-            }
-            var evt = event.getl(player);
-            if (!evt || !evt.es || !evt.es.length) {
-                return false;
-            }
-            for (var i of evt.es) {
-                if (get.color(i, player) == "red") {
-                    return true;
-                }
-            }
-            return false;
-        },
-        frequent: true,
-        preHidden: true,
-        content() {
-            player.draw();
-        },
-    },
-    "nayuta_kanwu": {
-        audio: "huanshi",
-        trigger: { global: "judge" },
-        direct: true,
-        preHidden: true,
-        filter(event, player) {
-            return player.countCards("hes") > 0;
         },
         content() {
             "step 0";
@@ -4975,7 +4876,7 @@ const skills = {
                     }
                 }
             }
-            return 8 - get.value(card);
+            return 6 - get.value(card);
         },
         filterCard(card, player) {
             if (ui.selected.cards.length) {
@@ -5017,6 +4918,7 @@ const skills = {
         },
         ai: {
             threaten: 1.6,
+            order: 9,
         },
     },
     "juri_fenyan": {
@@ -5080,6 +4982,90 @@ const skills = {
                 },
             }
         },
+    },
+    "suzune_chuancheng": {
+        audio: "tuogu",
+        trigger: { global: "die" },
+        filter(event, player) {
+            return (
+                event.player.getStockSkills().filter(function (skill) {
+                    var info = get.info(skill);
+                    return info && !info.juexingji && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.limited && !info.dutySkill;
+                }).length > 0
+            );
+        },
+        logTarget: "player",
+        check(event, player) {
+            var list = event.player.getStockSkills().filter(function (skill) {
+                var info = get.info(skill);
+                return info && !info.juexingji && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.limited && !info.dutySkill;
+            });
+            var negSkill = list.some(function (skill) {
+                return get.skillRank(skill, "inout") <= 0;
+            });
+            if (!player.storage.suzune_chuancheng) {
+                if (negSkill) {
+                    return false;
+                }
+                return true;
+            }
+            list.sort(function (a, b) {
+                return get.skillRank(b, "inout") - get.skillRank(a, "inout");
+            })[0];
+            return get.skillRank(list[0], "inout") >= get.skillRank(player.storage.suzune_chuancheng, "inout");
+        },
+        content() {
+            "step 0";
+            var list = trigger.player.getStockSkills().filter(function (skill) {
+                var info = get.info(skill);
+                return info && !info.juexingji && !info.hiddenSkill && !info.zhuSkill && !info.charlotte && !info.limited && !info.dutySkill;
+            });
+            if (list.length == 1) {
+                event._result = { control: list[0] };
+            } else {
+                player.chooseControl(list)
+                    .set("prompt", "获得一个技能")
+                    .set("forceDie", true)
+                    .set("ai", function () {
+                        var listx = list
+                            .map(function (skill) {
+                                return [skill, get.skillRank(skill, "inout")];
+                            })
+                            .sort(function (a, b) {
+                                return b[1] - a[1];
+                            })
+                            .slice(0, 2);
+                        var listx2 = [0];
+                        if (Math.abs(listx[0][1] - listx[1][1]) <= 0.5 && Math.sign(listx[0][1]) == Math.sign(listx[1][1])) {
+                            listx2.push(1);
+                        }
+                        return listx[listx2.randomGet()][0];
+                    });
+            }
+            "step 1";
+            if (player.storage.suzune_chuancheng) {
+                player.removeSkill(player.storage.suzune_chuancheng);
+            }
+            player.storage.suzune_chuancheng = result.control;
+            player.markSkill("suzune_chuancheng");
+            player.addSkills(result.control);
+            game.broadcastAll(function (skill) {
+                var list = [skill];
+                game.expandSkills(list);
+                for (var i of list) {
+                    var info = lib.skill[i];
+                    if (!info) {
+                        continue;
+                    }
+                    if (!info.audioname2) {
+                        info.audioname2 = {};
+                    }
+                    info.audioname2.caoshuang = "tuogu";
+                }
+            }, result.control);
+        },
+        mark: true,
+        intro: { content: "当前传承的技能：$" },
     },
 };
 export default skills;

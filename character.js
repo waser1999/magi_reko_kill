@@ -497,7 +497,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["retuogu", "shanzhuan"],
+        skills: ["suzune_chuancheng", "shanzhuan"],
         img: "extension/魔法纪录/image/suzune.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/suzune.mp3"]
     },
@@ -636,8 +636,8 @@ const characters = {
         isZhugong: true,
         sex: "female",
         group: "wan",
-        hp: 3,
-        maxHp: 3,
+        hp: 4,
+        maxHp: 4,
         hujia: 0,
         skills: ["yuna_chouhai", "yuna_xuehen", "yuna_liuli", "yuna_xuemeng"],
         img: "extension/魔法纪录/image/yuna.png",
@@ -672,6 +672,7 @@ const characters = {
         skills: ["shizuka_xueji", "komari_xueshang"],
         img: "extension/魔法纪录/image/shizuka.png",
         dieAudios: ["ext:魔法纪录/audio/die/shizuka.mp3"],
+        clans: ["时女一族"],
     },
     "himena": {
         isZhugong: true,
