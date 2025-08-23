@@ -3023,7 +3023,7 @@ const skills = {
     "tokime_shinv": {
         clanSkill: true,
         forced: true,
-        trigger: { player: ["phaseJieshuBefore"] },
+        trigger: { global: ["phaseJieshuBefore"] },
         filter(event, player) {
             let num = game.countPlayer(function (current) {
                 return (current == player || current.hasClan("时女一族"));
