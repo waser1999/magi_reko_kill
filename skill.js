@@ -3020,6 +3020,29 @@ const skills = {
         inherit: "umi_lunhui",
         round: 1,
     },
+    "tokime_shinv": {
+        clanSkill: true,
+        forced: true,
+        trigger: { player: ["phaseJieshuBefore"] },
+        filter(event, player) {
+            let num = game.countPlayer(function (current) {
+                return (current == player || current.hasClan("时女一族"));
+            });
+
+            if (player.getRoundHistory("useSkill", evt => evt.skill == player.getSkills()[0]).length) {
+                return player.getRoundHistory("useSkill", evt => evt.skill == "tokime_shinv").length < num;
+            }
+            return false;
+        },
+        async content(event, trigger, player) {
+            let skill = player.getSkills()[0];
+            var info = get.info(skill);
+            if (info.round && player.storage[skill + "_roundcount"]) {
+                player.storage[skill + "_roundcount"]--;
+                game.log(player, "重置了技能", skill);
+            }
+        }
+    },
     "iroha_dimeng": {
         audio: "ext:魔法纪录/audio/skill:2",
         enable: "phaseUse",

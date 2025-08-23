@@ -669,7 +669,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["shizuka_xueji", "komari_xueshang"],
+        skills: ["shizuka_xueji", "komari_xueshang", "tokime_shinv"],
         img: "extension/魔法纪录/image/shizuka.png",
         dieAudios: ["ext:魔法纪录/audio/die/shizuka.mp3"],
         clans: ["时女一族"],
