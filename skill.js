@@ -1962,38 +1962,41 @@ const skills = {
         },
     },
     "kaede_buyi": {
-        trigger: { global: "dying" },
+        trigger: { global: "phaseUseBefore" },
         filter(event, player) {
-            return event.player.countCards("h") > 0;
+            return event.player.isIn() && player.countCards("hes") > 0 && player != event.player;
         },
-        check(event, player) {
-            return get.attitude(player, event.player) > 0;
+        preHidden: true,
+        async cost(event, trigger, player) {
+            event.result = await player.chooseToDiscard(get.prompt2("kaede_buyi"), "hes").set("ai", card => {
+                if (get.attitude(player, trigger.player) <= 0) return -1;
+                return 7 - get.value(card);
+            }).forResult();
         },
-        content() {
-            "step 0";
-            if (player == trigger.player) {
-                player.chooseCard("h", true).set("ai", function (card) {
-                    if (get.type(card) != "basic") {
-                        return 100 - get.value(card);
-                    }
-                    return 0;
-                });
-            } else {
-                player.choosePlayerCard("h", trigger.player, true);
-            }
-            "step 1";
-            var card = result.cards[0],
-                target = trigger.player;
-            player.showCards(card, get.translation(player) + "对" + (player == target ? "自己" : get.translation(target)) + "发动了【补益】");
-            if (get.type(card, null, target) != "basic") {
-                player.useCard({ name: "tao", isCard: true }, target, false);
-                target.discard(card);
-                if (target.countCards("h") == 1) {
-                    target.draw();
+        async content(event, trigger, player) {
+            let target = trigger.player;
+            target.addTempSkill("kaede_buyi_du", "phaseUseBegin");
+            let du_cards = await target.getCards("h", card => get.name(card) == "du");
+            target.discard(du_cards);
+            player.useCard({ name: "jiu", isCard: true }, target, false);
+        },
+        subSkill: {
+            du: {
+                trigger: {
+                    player: "loseHpBefore",
+                },
+                filter(event, player) {
+                    return event.type == "du";
+                },
+                async content(event, trigger, player) {
+                    trigger.cancel();
                 }
             }
         },
-        logTarget: "player",
+        ai: {
+            threaten: 2,
+            expose: 0.3,
+        },
     },
     "kanagi_nvpu": {
         trigger: {
@@ -2846,13 +2849,6 @@ const skills = {
         forced: true,
         logTarget: "target",
         async content(event, trigger, player) {
-            const next = player.judge(function (card) {
-                return get.type(card) == "equip" ? 6 : -6;
-            });
-            next.judge2 = function (result) {
-                return result.bool;
-            };
-            const { result } = await next;
             if (trigger.getParent().addCount !== false) {
                 trigger.getParent().addCount = false;
                 var stat = player.getStat();
@@ -2860,22 +2856,8 @@ const skills = {
                     stat.card.sha--;
                 }
             }
-            if (result.bool === true) {
-                var map = trigger.customArgs;
-                var id = trigger.target.playerid;
-                if (!map[id]) {
-                    map[id] = {};
-                }
-                if (typeof map[id].extraDamage != "number") {
-                    map[id].extraDamage = 0;
-                }
-                map[id].extraDamage += trigger.target.hp - 1;
-            } else if (result.bool === false && get.type(result.card) != "basic") {
-                await player.loseHp();
-                await player.gain(result.card);
-            }
         },
-        group: "asumi_zhuilie_sha",
+        group: ["asumi_zhuilie_sha", "asumi_zhuilie_damage"],
         subSkill: {
             sha: {
                 silent: true,
@@ -2890,6 +2872,25 @@ const skills = {
                     trigger.target.markSkill("qinggang2");
                 },
             },
+            damage: {
+                trigger: { source: "damageBegin" },
+                forced: true,
+                filter(event, player) {
+                    return event.card && event.card.name == "sha";
+                },
+                async content(event, trigger, player) {
+                    const result = await player.judge(function (card) {
+                        return get.type(card) == "equip" ? 6 : -6;
+                    }).forResult();
+
+                    if (result.bool) {
+                        trigger.num = trigger.player.hp;
+                    } else if (result.bool === false && get.type(result.card) != "basic") {
+                        await player.loseHp();
+                        await player.gain(result.card);
+                    }
+                },
+            }
         },
     },
     "asumi_zhuilie2": {
