@@ -894,7 +894,7 @@ const skills = {
         "_priority": 0,
     },
     "homura_yeyin": {
-        trigger: { player: "phaseZhunbeiBegin" },
+        trigger: { player: "phaseZhunbeiBefore" },
         frequent: true,
         async content(event, trigger, player) {
             let n = await player.chooseBool("是否失去1点体力额外观看2张牌？")
