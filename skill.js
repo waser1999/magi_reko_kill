@@ -893,6 +893,32 @@ const skills = {
         },
         "_priority": 0,
     },
+    "homura_yeyin": {
+        trigger: { player: "phaseZhunbeiBegin" },
+        frequent: true,
+        async content(event, trigger, player) {
+            let n = await player.chooseBool("是否失去1点体力额外观看2张牌？")
+                .set('ai', function () {
+                    return (player.hp >= 3) ? true : false;
+                })
+                .forResult();
+
+            if (n.bool) {
+                player.loseHp();
+            }
+            const result = await player
+                .chooseToGuanxing(n.bool ? 5 : 3)
+                .set("prompt", "业因：点击或拖动将牌移动到牌堆顶或牌堆底")
+                .forResult();
+
+            if (!result.bool || !result.moved[0].length) {
+                player.skip("phaseDiscard");
+            }
+        },
+        ai: {
+            guanxing: true,
+        },
+    },
     "homura_shiting": {
         audio: "ext:魔法纪录/audio/skill:2",
         mod: {

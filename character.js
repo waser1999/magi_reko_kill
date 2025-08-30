@@ -212,7 +212,7 @@ const characters = {
         hp: 3,
         maxHp: 4,
         hujia: 0,
-        skills: ["reguanxing", "homura_juwu", "homura_shiting"],
+        skills: ["homura_yeyin", "homura_juwu", "homura_shiting"],
         img: "extension/魔法纪录/image/homura.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/homura.mp3"],
     },
