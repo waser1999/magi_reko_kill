@@ -99,7 +99,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["rexingshang", "fangzhu", "sbwushuang", "yachiyo_gujun"],
+        skills: ["rexingshang", "yachiyo_zhishui", "yachiyo_jueyu", "yachiyo_gujun"],
         img: "extension/魔法纪录/image/yachiyo.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/yachiyo.mp3"],
         isZhugong: true
@@ -486,7 +486,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["reshuishi", "kanagi_duxin", "kanagi_nvpu", "kanagi_dongyou"],
+        skills: ["kanagi_huishi", "kanagi_duxin", "kanagi_nvpu", "kanagi_dongyou"],
         img: "extension/魔法纪录/image/kanagi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kanagi.mp3"],
         isZhugong: true
@@ -587,7 +587,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["asumi_zhuilie", "asumi_yinhu"],
+        skills: ["asumi_zhuilie"],
         img: "extension/魔法纪录/image/asumi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/asumi.mp3"],
     },
