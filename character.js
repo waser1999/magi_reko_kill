@@ -17,7 +17,7 @@ const characters = {
         hp: 4,
         maxHp: 4,
         hujia: 0,
-        skills: ["kirika_shensu", "ganglie", "shebian"],
+        skills: ["kirika_shensu", "kirika_renya", "shebian"],
         img: "extension/魔法纪录/image/kirika.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/kirika.mp3"],
     },
