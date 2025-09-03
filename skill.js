@@ -568,6 +568,7 @@ const skills = {
         "_priority": 1,
     },
     "madoka_liegong": {
+        audio: "ext:魔法纪录/audio/skill:2",
         mod: {
             cardnature(card, player) {
                 if (!player.getVEquip(1) && get.name(card, player) == "sha") {
@@ -801,6 +802,7 @@ const skills = {
         "_priority": 0,
     },
     "madoka_yingbian": {
+        audio: "ext:魔法纪录/audio/skill:2",
         trigger: {
             player: ["chooseToRespondBefore", "chooseToUseBefore"],
         },
@@ -1591,10 +1593,12 @@ const skills = {
         "_priority": 0,
     },
     "homura2_jihuo": {
+        audio: "ext:魔法纪录/audio/skill:2",
         group: ["homura2_jihuo_discard", "homura2_jihuo_judge"],
         subfrequent: ["judge"],
         subSkill: {
             discard: {
+                audio: "homura2_jihuo",
                 trigger: {
                     global: "loseAfter",
                 },
@@ -1648,6 +1652,7 @@ const skills = {
                 "_priority": 0,
             },
             judge: {
+                audio: "homura2_jihuo",
                 trigger: {
                     global: "cardsDiscardAfter",
                 },
@@ -1684,6 +1689,7 @@ const skills = {
         "_priority": 0,
     },
     "homura_juwu": {
+        audio: "ext:魔法纪录/audio/skill:2",
         trigger: { player: "phaseZhunbeiBegin" },
         frequent: true,
         content() {
@@ -3356,6 +3362,7 @@ const skills = {
 
     // 小名
     "name_dengtai": {
+        audio: "ext:魔法纪录/audio/skill:2",
         unique: true,
         preHidden: true,
         trigger: {
