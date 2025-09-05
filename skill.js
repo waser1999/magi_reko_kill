@@ -3135,56 +3135,33 @@ const skills = {
 		filter(event, player) {
 			return player.getExpansions("yuna_chouhai").length > 0;
 		},
-		chooseButton: {
-			dialog(event, player) {
-				return ui.create.dialog("雪恨", player.getExpansions("yuna_chouhai"), "hidden");
-			},
-			backup(links, player) {
-				return {
-					filterTarget: true,
-					filterCard() {
-						return false;
-					},
-					selectCard: -1,
-					card: links[0],
-					delay: false,
-					content: lib.skill.yuna_xuehen.contentx,
-					ai: {
-						order: 10,
-						result: {
-							target(player, target) {
-								if (get.attitude(player, target) < 0 && target.hp == 1) {
-									if (!target.hasSkill("buqu")) return 0;
-									if (target.countCards("h") > target.maxHp) return 0;
-									return -3;
-								}
-								if (get.attitude(player, target) > 0) {
-									if (target.hp >= 3 && target.countCards("h") <= 1) return 2;
-								}
-								return 0;
-							},
-						},
-					},
-				};
-			},
-			prompt() {
-				return "请选择〖雪恨〗的目标";
-			},
-		},
-		contentx() {
-			"step 0";
-			var card = lib.skill.yuna_xuehen_backup.card;
-			player.loseToDiscardpile(card);
-			"step 1";
-			target.damage();
-			target.draw(2);
+		filterTarget: true,
+		async content(event, trigger, player) {
+			const target = event.targets[0];
+			const cards = player.getExpansions("yuna_chouhai");
+			const num = Math.ceil(cards.length / 2);
+
+			const discardCards = cards.slice(0, num);
+			await player.discard(discardCards);
+			await target.damage();
+			target.draw(num);
 		},
 		ai: {
-			order: 1,
-			combo: "yuna_chouhai",
+			order: 10,
 			result: {
-				player: 1,
-			},
+				target(player, target) {
+					const cards = player.getExpansions("yuna_chouhai");
+					if (get.attitude(player, target) < 0 && cards.length < 4) {
+						if (target.hasSkill("buqu")) return 0;
+						if (target.countCards("h") > target.maxHp) return -1;
+						return -3;
+					}
+					if (get.attitude(player, target) > 0 && cards.length >= 4) {
+						if (target.hp >= 3 && target.countCards("h") <= 1) return 2;
+						return 1;
+					}
+				},
+			}
 		},
 	},
 	"yuna_liuli": {
