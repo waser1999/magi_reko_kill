@@ -923,6 +923,63 @@ const skills = {
 		},
 		"_priority": 0,
 	},
+	"iroha_huanyu": {
+		trigger: { player: "damageBegin4" },
+		filter(event, player) {
+			return event.source
+		},
+		forced: true,
+		logTarget: "source",
+		async content(event, trigger, player) {
+			const target = trigger.source;
+			if (target.countCards("h") > player.countCards("h")) {
+				const {
+					result: { bool },
+				} = await target
+					.chooseToDiscard("环羽：弃置一张牌，或令对" + get.translation(player) + "造成的伤害-1", "he")
+					.set("ai", card => {
+						if (get.event("goon")) {
+							return 0;
+						}
+						return 6 - get.value(card);
+					})
+					.set("goon", get.damageEffect(player, target, target) <= 0);
+				if (!bool) {
+					trigger.num--;
+				}
+			} else {
+				await player.draw();
+			}
+		},
+		ai: {
+			effect: {
+				target(card, player, target, current) {
+					if (get.tag(card, "damage") && target != player) {
+						if (_status.event.name == "iroha_huanyu") {
+							return;
+						}
+						if (get.attitude(player, target) > 0 && current < 0) {
+							return "zeroplayertarget";
+						}
+						var bs = player.getCards("h");
+						bs.remove(card);
+						if (card.cards) {
+							bs.removeArray(card.cards);
+						} else {
+							bs.removeArray(ui.selected.cards);
+						}
+						if (bs.length > target.countCards("h")) {
+							if (bs.some(bsi => get.value(bsi) < 7)) {
+								return [1, 0, 1, -0.5];
+							}
+							return [1, 0, 0.3, 0];
+						}
+						return [1, 0, 1, -0.5];
+					}
+				},
+			},
+		},
+	},
 	"ani_lieying": {
 		group: "ani_lieying2",
 		locked: true,
