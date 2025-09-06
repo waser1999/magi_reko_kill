@@ -324,13 +324,14 @@ const skills = {
 				player.line(result.targets, "green");
 			}
 
+			player.storage.madoka_gongxi_3 = name;
+			player.addTempSkill("madoka_gongxi_3");
+			player.markSkill("madoka_gongxi_3");
+
 			player.storage.madoka_gongxi_4 = color;
 			player.addTempSkill("madoka_gongxi_4",{player:"dieAfter"});
 			player.markSkill("madoka_gongxi_4");
 
-			player.storage.madoka_gongxi_3 = name;
-			player.addTempSkill("madoka_gongxi_3");
-			player.markSkill("madoka_gongxi_3");
 		},
 		
 		ai: {
@@ -373,11 +374,11 @@ const skills = {
 		charlotte: true,
 		forced: true,
 		mark: true,
+		trigger: { global: "phaseEnd" },
 		marktext:"袭",
 		onremove: true,
 		content() {
 			player.removeSkill("madoka_gongxi_2");
-			delete player.storage.madoka_gongxi_2;
 		},
 		mod: {
 			cardEnabled2(card, player) {
@@ -397,20 +398,25 @@ const skills = {
 		charlotte: true,
 		forced: true,
 		mark: true,
+		trigger: { source: "damageBegin1",global: "phaseEnd" },
 		marktext:"弓",
-		trigger: { source: "damageBegin1" },
-		audio: false,
 		onremove: true,
-		filter: function (event, player) {
-			return event.card && event.card.name == player.storage.madoka_gongxi_3;
+		filter(event, player, name) {
+			if (name == "damageBegin1") {
+            	return event.card && event.card.name == player.storage.madoka_gongxi_3;
+        	}
+        	return name == "phaseEnd"; 
 		},
 		content() {
-			trigger.num++;
+			if (event.triggername == "damageBegin1"){
+				trigger.num++;
+			}
+			player.removeSkill("madoka_gongxi_3");
 		},
 		intro: {
 			name:"弓袭",
 			content(name2) {
-				return "本回合使用【" + get.translation(name2) + "】伤害+1";
+				return "本回合使用【" + get.translation(name2) + "】第一次造成伤害+1";
 			},
 		},
 	},
