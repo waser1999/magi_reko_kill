@@ -284,20 +284,12 @@ const skills = {
 	},
 
 	// 鹿目圆
-	"madoka_gongxi": {
+	"madoka_pomo": {
 		enable: "phaseUse",
 		usable: 1,
-		group: ["madoka_gongxi_2", "madoka_gongxi_3", "madoka_gongxi_4"],
+		group: ["madoka_pomo_2", "madoka_pomo_3", "madoka_pomo_4"],
 		async content(event, trigger, player) {
 			await player.draw(2);
-
-			let ynck = await player.chooseBool("是否弃置1张手牌？")
-				.set("ai", function () {
-					return true;
-				}).forResult();
-			if (!ynck.bool) {
-				return;
-			}
 
 			let card = await player.chooseToDiscard("he", true).set("ai", card => {
 				let player = get.event("player");
@@ -317,33 +309,43 @@ const skills = {
 
 			if (result.bool && result.targets.length) {
 				for (let target of result.targets) {
-					target.storage.madoka_gongxi_2 = color;
-					target.addTempSkill("madoka_gongxi_2");
-					target.markSkill("madoka_gongxi_2");
+					target.storage.madoka_pomo_2 = color;
+					target.addTempSkill("madoka_pomo_2");
+					target.markSkill("madoka_pomo_2");
 				}
 				player.line(result.targets, "green");
 			}
 
-			player.storage.madoka_gongxi_3 = name;
-			player.addTempSkill("madoka_gongxi_3");
-			player.markSkill("madoka_gongxi_3");
+			player.storage.madoka_pomo_3 = color;
+			player.addTempSkill("madoka_pomo_3");
+			player.markSkill("madoka_pomo_3");
 
-			player.storage.madoka_gongxi_4 = color;
-			player.addTempSkill("madoka_gongxi_4", { player: "dieAfter" });
-			player.markSkill("madoka_gongxi_4");
+			player.storage.madoka_pomo_4 = color;
+			player.addTempSkill("madoka_pomo_4", { player: "dieAfter" });
+			player.markSkill("madoka_pomo_4");
 
 		},
 
 		ai: {
 			order: 9,
 			directHit_ai: true,
+			result: {
+				player(player) {
+					return 6;
+				},
+			},
+			effect: {
+				player(card, player, target) {
+					if (get.tag(card, 'damage') && get.color(card) == player.storage.madoka_pomo_3) return [1, 1];
+				}
+			},
 			skillTagFilter(player, tag, arg) {
-				if (tag !== "directHit_ai" || !arg.target.hasSkill("madoka_gongxi_2")) {
+				if (tag !== "directHit_ai" || !arg.target.hasSkill("madoka_pomo_2")) {
 					return false;
 				}
 				if (arg.card.name == "sha") {
 					return (
-						arg.target.storage.madoka_gongxi_2 == "red" &&
+						arg.target.storage.madoka_pomo_2 == "red" &&
 						(!arg.target.hasSkillTag(
 							"freeShan",
 							false,
@@ -366,22 +368,22 @@ const skills = {
 							}))
 					);
 				}
-				return arg.target.storage.madoka_gongxi_2 == "black";
+				return arg.target.storage.madoka_pomo_2 == "black";
 			},
 		},
 	},
-	"madoka_gongxi_2": {
+	"madoka_pomo_2": {
 		charlotte: true,
 		forced: true,
 		mark: true,
 		marktext: "袭",
 		onremove: true,
 		content() {
-			player.removeSkill("madoka_gongxi_2");
+			player.removeSkill("madoka_pomo_2");
 		},
 		mod: {
 			cardEnabled2(card, player) {
-				if (get.color(card) == player.storage.madoka_gongxi_2 && get.position(card) == "h") {
+				if (get.color(card) == player.storage.madoka_pomo_2 && get.position(card) == "h") {
 					return false;
 				}
 			},
@@ -393,7 +395,7 @@ const skills = {
 			},
 		},
 	},
-	"madoka_gongxi_3": {
+	"madoka_pomo_3": {
 		charlotte: true,
 		forced: true,
 		mark: true,
@@ -403,7 +405,7 @@ const skills = {
 		onremove: true,
 		filter(event, player, name) {
 			if (name == "damageBegin1") {
-				return event.card && event.card.name == player.storage.madoka_gongxi_3;
+				return event.card && get.color(event.card) == player.storage.madoka_pomo_3;
 			}
 			return name == "phaseEnd";
 		},
@@ -411,16 +413,16 @@ const skills = {
 			if (event.triggername == "damageBegin1") {
 				trigger.num++;
 			}
-			player.removeSkill("madoka_gongxi_3");
+			player.removeSkill("madoka_pomo_3");
 		},
 		intro: {
 			name: "弓袭",
-			content(name2) {
-				return "本回合使用【" + get.translation(name2) + "】第一次造成伤害+1";
+			content(color) {
+				return "本回合使用" + get.translation(color) + "颜色牌第一次造成伤害+1";
 			},
 		},
 	},
-	"madoka_gongxi_4": {
+	"madoka_pomo_4": {
 		charlotte: true,
 		mark: true,
 		marktext: "变",
@@ -432,12 +434,12 @@ const skills = {
 			},
 		},
 	},
-	"madoka_gongbian": {
+	"madoka_lingyue": {
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
 		logTarget: "source",
-		group: ["madoka_gongbian_Range"],
+		group: ["madoka_lingyue_Range"],
 		filter(event, player, name) {
 			if (event.responded) return false;
 			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
@@ -445,7 +447,7 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			let judge = await player.judge(card => {
-				if (player.storage.madoka_gongxi_4 && get.color(card) == player.storage.madoka_gongxi_4) return 2;
+				if (player.storage.madoka_pomo_4 && get.color(card) == player.storage.madoka_pomo_4) return 2;
 				return -1;
 			}).forResult();
 

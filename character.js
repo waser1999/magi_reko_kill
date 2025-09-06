@@ -6,7 +6,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 3,
 		maxHp: 3,
-		skills: ["madoka_gongxi", "madoka_gongbian", "madoka_yuanhuan"],
+		skills: ["madoka_pomo", "madoka_lingyue", "madoka_yuanhuan"],
 		img: "extension/魔法纪录/image/madoka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/madoka.mp3"],
 		isZhugong: true
