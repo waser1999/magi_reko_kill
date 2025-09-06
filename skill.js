@@ -284,10 +284,10 @@ const skills = {
 	},
 
 	// 鹿目圆
-	"madoka_gongxi":{
+	"madoka_gongxi": {
 		enable: "phaseUse",
 		usable: 1,
-		group: ["madoka_gongxi_2","madoka_gongxi_3","madoka_gongxi_4"],
+		group: ["madoka_gongxi_2", "madoka_gongxi_3", "madoka_gongxi_4"],
 		async content(event, trigger, player) {
 			await player.draw(2);
 
@@ -310,7 +310,7 @@ const skills = {
 			const color = get.color(card, get.position(card) == "h" ? player : false);
 
 			const result = await player
-				.chooseTarget("请选择至多两名角色", [1, 2],true)
+				.chooseTarget("请选择至多两名角色", [1, 2], true)
 				.set("ai", function (target) {
 					return -get.attitude(_status.event.player, target);
 				}).forResult();
@@ -329,11 +329,11 @@ const skills = {
 			player.markSkill("madoka_gongxi_3");
 
 			player.storage.madoka_gongxi_4 = color;
-			player.addTempSkill("madoka_gongxi_4",{player:"dieAfter"});
+			player.addTempSkill("madoka_gongxi_4", { player: "dieAfter" });
 			player.markSkill("madoka_gongxi_4");
 
 		},
-		
+
 		ai: {
 			order: 9,
 			directHit_ai: true,
@@ -374,8 +374,7 @@ const skills = {
 		charlotte: true,
 		forced: true,
 		mark: true,
-		trigger: { global: "phaseEnd" },
-		marktext:"袭",
+		marktext: "袭",
 		onremove: true,
 		content() {
 			player.removeSkill("madoka_gongxi_2");
@@ -388,7 +387,7 @@ const skills = {
 			},
 		},
 		intro: {
-			name:"弓袭",
+			name: "弓袭",
 			content(color) {
 				return "不能使用或打出" + get.translation(color) + "的手牌";
 			},
@@ -398,23 +397,24 @@ const skills = {
 		charlotte: true,
 		forced: true,
 		mark: true,
-		trigger: { source: "damageBegin1",global: "phaseEnd" },
-		marktext:"弓",
+		marktext: "弓",
+		trigger: { source: "damageBegin1" },
+		audio: false,
 		onremove: true,
 		filter(event, player, name) {
 			if (name == "damageBegin1") {
-            	return event.card && event.card.name == player.storage.madoka_gongxi_3;
-        	}
-        	return name == "phaseEnd"; 
+				return event.card && event.card.name == player.storage.madoka_gongxi_3;
+			}
+			return name == "phaseEnd";
 		},
 		content() {
-			if (event.triggername == "damageBegin1"){
+			if (event.triggername == "damageBegin1") {
 				trigger.num++;
 			}
 			player.removeSkill("madoka_gongxi_3");
 		},
 		intro: {
-			name:"弓袭",
+			name: "弓袭",
 			content(name2) {
 				return "本回合使用【" + get.translation(name2) + "】第一次造成伤害+1";
 			},
@@ -423,38 +423,38 @@ const skills = {
 	"madoka_gongxi_4": {
 		charlotte: true,
 		mark: true,
-		marktext:"变",
+		marktext: "变",
 		onremove: true,
 		intro: {
-			name:"弓袭",
+			name: "弓袭",
 			content(color) {
-				return "【弓变】判定为"+get.translation(color)+"时视为使用或打出一张【闪】";
+				return "【弓变】判定为" + get.translation(color) + "时视为使用或打出一张【闪】";
 			},
 		},
 	},
 	"madoka_gongbian": {
- 	 	trigger: {
- 	 	 	player: ["chooseToRespondBefore", "chooseToUseBefore"],
- 	 	},
+		trigger: {
+			player: ["chooseToRespondBefore", "chooseToUseBefore"],
+		},
 		logTarget: "source",
 		group: ["madoka_gongbian_Range"],
- 	 	filter(event, player, name) {
- 	 	 	if (event.responded) return false;
- 	 	 	if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
- 	 	 	return true;
- 	 	},
- 	 	async content(event, trigger, player) {
- 	 	 	let judge = await player.judge(card => {
- 	 	 	 	if (player.storage.madoka_gongxi_4 && get.color(card) == player.storage.madoka_gongxi_4) return 2;
- 	 	 	 	return -1;
- 	 	 	}).forResult();
+		filter(event, player, name) {
+			if (event.responded) return false;
+			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
+			return true;
+		},
+		async content(event, trigger, player) {
+			let judge = await player.judge(card => {
+				if (player.storage.madoka_gongxi_4 && get.color(card) == player.storage.madoka_gongxi_4) return 2;
+				return -1;
+			}).forResult();
 
- 	 	 	if (judge.bool) {
- 	 	 	 	trigger.untrigger();
- 	 	 	 	trigger.set("responded", true);
- 	 	 	 	trigger.result = { bool: true, card: { name: "shan", isCard: true } };
- 	 	 	} else {
- 	 	 	 	player.gain(judge.card);
+			if (judge.bool) {
+				trigger.untrigger();
+				trigger.set("responded", true);
+				trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+			} else {
+				player.gain(judge.card);
 
 				if (!game.hasPlayer(current => current.countDiscardableCards(player, "ej"))) {
 					return;
@@ -477,11 +477,11 @@ const skills = {
 				if (result?.bool && result?.targets?.length) {
 					await player.discardPlayerCard(result.targets[0], "ej", true);
 				}
- 	 	 	}
- 	 	},
- 	 	ai: {
- 	 	 	respondShan: true,
- 	 	 	freeShan: true,
+			}
+		},
+		ai: {
+			respondShan: true,
+			freeShan: true,
 		},
 		subSkill: {
 			"Range": {
@@ -494,293 +494,293 @@ const skills = {
 		},
 	},
 	"madoka_yuanhuan": {
- 	 	group: ["madoka_yuanhuan1","madoka_yuanhuan_Range"],
- 	 	zhuSkill: true,
- 	 	filter(event, player) {
- 	 	 	if (!player.hasZhuSkill("madoka_yuanhuan") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
- 	 	 	return !event.madoka_yuanhuan && (event.type != "phase" || !player.hasSkill("madoka_yuanhuan3"));
- 	 	},
- 	 	enable: ["chooseToUse", "chooseToRespond"],
- 	 	viewAs: {
- 	 	 	name: "sha",
- 	 	},
- 	 	filterCard() {
- 	 	 	return false;
- 	 	},
- 	 	selectCard: -1,
- 	 	ai: {
- 	 	 	order() {
- 	 	 	 	return get.order({ name: "sha" }) + 0.3;
- 	 	 	},
- 	 	 	respondSha: true,
- 	 	 	skillTagFilter(player) {
- 	 	 	 	if (!player.hasZhuSkill("madoka_yuanhuan") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
- 	 	 	},
- 	 	 	yingbian(card, player, targets, viewer) {
- 	 	 	 	if (get.attitude(viewer, player) <= 0) return 0;
- 	 	 	 	var base = 0,
- 	 	 	 	 	hit = false;
- 	 	 	 	if (get.cardtag(card, "yingbian_hit")) {
- 	 	 	 	 	hit = true;
- 	 	 	 	 	if (
- 	 	 	 	 	 	targets.some(target => {
- 	 	 	 	 	 	 	return (
- 	 	 	 	 	 	 	 	target.mayHaveShan(
- 	 	 	 	 	 	 	 	 	viewer,
- 	 	 	 	 	 	 	 	 	"use",
- 	 	 	 	 	 	 	 	 	target.getCards("h", i => {
- 	 	 	 	 	 	 	 	 	 	return i.hasGaintag("sha_notshan");
- 	 	 	 	 	 	 	 	 	})
- 	 	 	 	 	 	 	 	) &&
- 	 	 	 	 	 	 	 	get.attitude(viewer, target) < 0 &&
- 	 	 	 	 	 	 	 	get.damageEffect(target, player, viewer, get.natureList(card)) > 0
- 	 	 	 	 	 	 	);
- 	 	 	 	 	 	})
- 	 	 	 	 	)
- 	 	 	 	 	 	base += 5;
- 	 	 	 	}
- 	 	 	 	if (get.cardtag(card, "yingbian_add")) {
- 	 	 	 	 	if (
- 	 	 	 	 	 	game.hasPlayer(function (current) {
- 	 	 	 	 	 	 	return !targets.includes(current) && lib.filter.targetEnabled2(card, player, current) && get.effect(current, card, player, player) > 0;
- 	 	 	 	 	 	})
- 	 	 	 	 	)
- 	 	 	 	 	 	base += 5;
- 	 	 	 	}
- 	 	 	 	if (get.cardtag(card, "yingbian_damage")) {
- 	 	 	 	 	if (
- 	 	 	 	 	 	targets.some(target => {
- 	 	 	 	 	 	 	return (
- 	 	 	 	 	 	 	 	get.attitude(player, target) < 0 &&
- 	 	 	 	 	 	 	 	(hit ||
- 	 	 	 	 	 	 	 	 	!target.mayHaveShan(
- 	 	 	 	 	 	 	 	 	 	viewer,
- 	 	 	 	 	 	 	 	 	 	"use",
- 	 	 	 	 	 	 	 	 	 	target.getCards("h", i => {
- 	 	 	 	 	 	 	 	 	 	 	return i.hasGaintag("sha_notshan");
- 	 	 	 	 	 	 	 	 	 	})
- 	 	 	 	 	 	 	 	 	) ||
- 	 	 	 	 	 	 	 	 	player.hasSkillTag(
- 	 	 	 	 	 	 	 	 	 	"directHit_ai",
- 	 	 	 	 	 	 	 	 	 	true,
- 	 	 	 	 	 	 	 	 	 	{
- 	 	 	 	 	 	 	 	 	 	 	target: target,
- 	 	 	 	 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	 	 	 	 	},
- 	 	 	 	 	 	 	 	 	 	true
- 	 	 	 	 	 	 	 	 	)) &&
- 	 	 	 	 	 	 	 	!target.hasSkillTag("filterDamage", null, {
- 	 	 	 	 	 	 	 	 	player: player,
- 	 	 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	 	 	 	jiu: true,
- 	 	 	 	 	 	 	 	})
- 	 	 	 	 	 	 	);
- 	 	 	 	 	 	})
- 	 	 	 	 	)
- 	 	 	 	 	 	base += 5;
- 	 	 	 	}
- 	 	 	 	return base;
- 	 	 	},
- 	 	 	canLink(player, target, card) {
- 	 	 	 	if (!target.isLinked() && !player.hasSkill("wutiesuolian_skill")) return false;
- 	 	 	 	if (player.hasSkill("jueqing") || player.hasSkill("gangzhi") || target.hasSkill("gangzhi")) return false;
- 	 	 	 	let obj = {};
- 	 	 	 	if (get.attitude(player, target) > 0 && get.attitude(target, player) > 0) {
- 	 	 	 	 	if (
- 	 	 	 	 	 	(player.hasSkill("jiu") ||
- 	 	 	 	 	 	 	player.hasSkillTag("damageBonus", true, {
- 	 	 	 	 	 	 	 	target: target,
- 	 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	 	})) &&
- 	 	 	 	 	 	!target.hasSkillTag("filterDamage", null, {
- 	 	 	 	 	 	 	player: player,
- 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	 	jiu: player.hasSkill("jiu"),
- 	 	 	 	 	 	})
- 	 	 	 	 	)
- 	 	 	 	 	 	obj.num = 2;
- 	 	 	 	 	if (target.hp > obj.num) obj.odds = 1;
- 	 	 	 	}
- 	 	 	 	if (!obj.odds)
- 	 	 	 	 	obj.odds =
- 	 	 	 	 	 	1 -
- 	 	 	 	 	 	target.mayHaveShan(
- 	 	 	 	 	 	 	player,
- 	 	 	 	 	 	 	"use",
- 	 	 	 	 	 	 	target.getCards("h", i => {
- 	 	 	 	 	 	 	 	return i.hasGaintag("sha_notshan");
- 	 	 	 	 	 	 	}),
- 	 	 	 	 	 	 	"odds"
- 	 	 	 	 	 	);
- 	 	 	 	return obj;
- 	 	 	},
- 	 	 	basic: {
- 	 	 	 	useful: [5, 3, 1],
- 	 	 	 	value: [5, 3, 1],
- 	 	 	},
- 	 	 	result: {
- 	 	 	 	target(player, target, card, isLink) {
- 	 	 	 	 	let eff = -1.5,
- 	 	 	 	 	 	odds = 1.35,
- 	 	 	 	 	 	num = 1;
- 	 	 	 	 	if (isLink) {
- 	 	 	 	 	 	eff = isLink.eff || -2;
- 	 	 	 	 	 	odds = isLink.odds || 0.65;
- 	 	 	 	 	 	num = isLink.num || 1;
- 	 	 	 	 	 	if (
- 	 	 	 	 	 	 	num > 1 &&
- 	 	 	 	 	 	 	target.hasSkillTag("filterDamage", null, {
- 	 	 	 	 	 	 	 	player: player,
- 	 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	 	 	jiu: player.hasSkill("jiu"),
- 	 	 	 	 	 	 	})
- 	 	 	 	 	 	)
- 	 	 	 	 	 	 	num = 1;
- 	 	 	 	 	 	return odds * eff * num;
- 	 	 	 	 	}
- 	 	 	 	 	if (
- 	 	 	 	 	 	player.hasSkill("jiu") ||
- 	 	 	 	 	 	player.hasSkillTag("damageBonus", true, {
- 	 	 	 	 	 	 	target: target,
- 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	})
- 	 	 	 	 	) {
- 	 	 	 	 	 	if (
- 	 	 	 	 	 	 	target.hasSkillTag("filterDamage", null, {
- 	 	 	 	 	 	 	 	player: player,
- 	 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	 	 	jiu: player.hasSkill("jiu"),
- 	 	 	 	 	 	 	})
- 	 	 	 	 	 	)
- 	 	 	 	 	 	 	eff = -0.5;
- 	 	 	 	 	 	else {
- 	 	 	 	 	 	 	num = 2;
- 	 	 	 	 	 	 	if (get.attitude(player, target) > 0) eff = -7;
- 	 	 	 	 	 	 	else eff = -4;
- 	 	 	 	 	 	}
- 	 	 	 	 	}
- 	 	 	 	 	if (
- 	 	 	 	 	 	!player.hasSkillTag(
- 	 	 	 	 	 	 	"directHit_ai",
- 	 	 	 	 	 	 	true,
- 	 	 	 	 	 	 	{
- 	 	 	 	 	 	 	 	target: target,
- 	 	 	 	 	 	 	 	card: card,
- 	 	 	 	 	 	 	},
- 	 	 	 	 	 	 	true
- 	 	 	 	 	 	)
- 	 	 	 	 	)
- 	 	 	 	 	 	odds -=
- 	 	 	 	 	 	 	0.7 *
- 	 	 	 	 	 	 	target.mayHaveShan(
- 	 	 	 	 	 	 	 	player,
- 	 	 	 	 	 	 	 	"use",
- 	 	 	 	 	 	 	 	target.getCards("h", i => {
- 	 	 	 	 	 	 	 	 	return i.hasGaintag("sha_notshan");
- 	 	 	 	 	 	 	 	}),
- 	 	 	 	 	 	 	 	"odds"
- 	 	 	 	 	 	 	);
- 	 	 	 	 	_status.event.putTempCache("sha_result", "eff", {
- 	 	 	 	 	 	bool: target.hp > num && get.attitude(player, target) > 0,
- 	 	 	 	 	 	card: ai.getCacheKey(card, true),
- 	 	 	 	 	 	eff: eff,
- 	 	 	 	 	 	odds: odds,
- 	 	 	 	 	});
- 	 	 	 	 	return odds * eff;
- 	 	 	 	},
- 	 	 	},
- 	 	 	tag: {
- 	 	 	 	respond: 1,
- 	 	 	 	respondShan: 1,
- 	 	 	 	damage(card) {
- 	 	 	 	 	if (game.hasNature(card, "poison")) return;
- 	 	 	 	 	return 1;
- 	 	 	 	},
- 	 	 	 	natureDamage(card) {
- 	 	 	 	 	if (game.hasNature(card, "linked")) return 1;
- 	 	 	 	},
- 	 	 	 	fireDamage(card, nature) {
- 	 	 	 	 	if (game.hasNature(card, "fire")) return 1;
- 	 	 	 	},
- 	 	 	 	thunderDamage(card, nature) {
- 	 	 	 	 	if (game.hasNature(card, "thunder")) return 1;
- 	 	 	 	},
- 	 	 	 	poisonDamage(card, nature) {
- 	 	 	 	 	if (game.hasNature(card, "poison")) return 1;
- 	 	 	 	},
- 	 	 	},
- 	 	},
- 	 	"_priority": 0,
- 	},
- 	"madoka_yuanhuan1": {
- 	 	trigger: {
- 	 	 	player: ["useCardBegin", "respondBegin"],
- 	 	},
- 	 	logTarget: "targets",
- 	 	sourceSkill: "madoka_yuanhuan",
- 	 	filter(event, player) {
- 	 	 	return event.skill == "madoka_yuanhuan";
- 	 	},
- 	 	forced: true,
- 	 	async content(event, trigger, player) {
- 	 	 	delete trigger.skill;
- 	 	 	trigger.getParent().set("madoka_yuanhuan", true);
- 	 	 	while (true) {
- 	 	 	 	if (event.current == undefined) event.current = player.next;
- 	 	 	 	if (event.current == player) {
- 	 	 	 	 	player.addTempSkill("madoka_yuanhuan3");
- 	 	 	 	 	trigger.cancel();
- 	 	 	 	 	trigger.getParent().goto(0);
- 	 	 	 	 	return;
- 	 	 	 	} else if (event.current.group == "Law_of_Cycles") {
- 	 	 	 	 	const chooseToRespondEvent = event.current.chooseToRespond("是否替" + get.translation(player) + "打出一张杀？", { name: "sha" });
- 	 	 	 	 	chooseToRespondEvent.set("ai", () => {
- 	 	 	 	 	 	const event = _status.event;
- 	 	 	 	 	 	return get.attitude(event.player, event.source) - 2;
- 	 	 	 	 	});
- 	 	 	 	 	chooseToRespondEvent.set("source", player);
- 	 	 	 	 	chooseToRespondEvent.set("madoka_yuanhuan", true);
- 	 	 	 	 	chooseToRespondEvent.set("skillwarn", "替" + get.translation(player) + "打出一张杀");
- 	 	 	 	 	chooseToRespondEvent.noOrdering = true;
- 	 	 	 	 	chooseToRespondEvent.autochoose = lib.filter.autoRespondSha;
- 	 	 	 	 	const { bool = false, card = null, cards } = await chooseToRespondEvent.forResult();
- 	 	 	 	 	if (bool) {
- 	 	 	 	 	 	trigger.card = card;
- 	 	 	 	 	 	trigger.cards = cards;
- 	 	 	 	 	 	trigger.throw = false;
- 	 	 	 	 	 	if (typeof event.current.ai.shown == "number" && event.current.ai.shown < 0.95) {
- 	 	 	 	 	 	 	event.current.ai.shown += 0.3;
- 	 	 	 	 	 	 	if (event.current.ai.shown > 0.95) event.current.ai.shown = 0.95;
- 	 	 	 	 	 	}
- 	 	 	 	 	 	return;
- 	 	 	 	 	} else event.current = event.current.next;
- 	 	 	 	} else event.current = event.current.next;
- 	 	 		 	}
- 	 	},
- 	 	"_priority": 0,
- 	},
- 	"madoka_yuanhuan3": {
- 	 	trigger: {
- 	 	 	global: ["useCardAfter", "useSkillAfter", "phaseAfter"],
- 	 	},
- 	 	silent: true,
- 	 	charlotte: true,
- 	 	sourceSkill: "madoka_yuanhuan",
- 	 	filter(event) {
- 	 	 	return event.skill != "madoka_yuanhuan";
- 	 	},
- 	 	async content(event, trigger, player) {
- 	 	 	player.removeSkill("madoka_yuanhuan3");
- 	 	},
- 	 	forced: true,
- 	 	popup: false,
- 	 	"_priority": 1,
- 	},
+		group: ["madoka_yuanhuan1", "madoka_yuanhuan_Range"],
+		zhuSkill: true,
+		filter(event, player) {
+			if (!player.hasZhuSkill("madoka_yuanhuan") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
+			return !event.madoka_yuanhuan && (event.type != "phase" || !player.hasSkill("madoka_yuanhuan3"));
+		},
+		enable: ["chooseToUse", "chooseToRespond"],
+		viewAs: {
+			name: "sha",
+		},
+		filterCard() {
+			return false;
+		},
+		selectCard: -1,
+		ai: {
+			order() {
+				return get.order({ name: "sha" }) + 0.3;
+			},
+			respondSha: true,
+			skillTagFilter(player) {
+				if (!player.hasZhuSkill("madoka_yuanhuan") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
+			},
+			yingbian(card, player, targets, viewer) {
+				if (get.attitude(viewer, player) <= 0) return 0;
+				var base = 0,
+					hit = false;
+				if (get.cardtag(card, "yingbian_hit")) {
+					hit = true;
+					if (
+						targets.some(target => {
+							return (
+								target.mayHaveShan(
+									viewer,
+									"use",
+									target.getCards("h", i => {
+										return i.hasGaintag("sha_notshan");
+									})
+								) &&
+								get.attitude(viewer, target) < 0 &&
+								get.damageEffect(target, player, viewer, get.natureList(card)) > 0
+							);
+						})
+					)
+						base += 5;
+				}
+				if (get.cardtag(card, "yingbian_add")) {
+					if (
+						game.hasPlayer(function (current) {
+							return !targets.includes(current) && lib.filter.targetEnabled2(card, player, current) && get.effect(current, card, player, player) > 0;
+						})
+					)
+						base += 5;
+				}
+				if (get.cardtag(card, "yingbian_damage")) {
+					if (
+						targets.some(target => {
+							return (
+								get.attitude(player, target) < 0 &&
+								(hit ||
+									!target.mayHaveShan(
+										viewer,
+										"use",
+										target.getCards("h", i => {
+											return i.hasGaintag("sha_notshan");
+										})
+									) ||
+									player.hasSkillTag(
+										"directHit_ai",
+										true,
+										{
+											target: target,
+											card: card,
+										},
+										true
+									)) &&
+								!target.hasSkillTag("filterDamage", null, {
+									player: player,
+									card: card,
+									jiu: true,
+								})
+							);
+						})
+					)
+						base += 5;
+				}
+				return base;
+			},
+			canLink(player, target, card) {
+				if (!target.isLinked() && !player.hasSkill("wutiesuolian_skill")) return false;
+				if (player.hasSkill("jueqing") || player.hasSkill("gangzhi") || target.hasSkill("gangzhi")) return false;
+				let obj = {};
+				if (get.attitude(player, target) > 0 && get.attitude(target, player) > 0) {
+					if (
+						(player.hasSkill("jiu") ||
+							player.hasSkillTag("damageBonus", true, {
+								target: target,
+								card: card,
+							})) &&
+						!target.hasSkillTag("filterDamage", null, {
+							player: player,
+							card: card,
+							jiu: player.hasSkill("jiu"),
+						})
+					)
+						obj.num = 2;
+					if (target.hp > obj.num) obj.odds = 1;
+				}
+				if (!obj.odds)
+					obj.odds =
+						1 -
+						target.mayHaveShan(
+							player,
+							"use",
+							target.getCards("h", i => {
+								return i.hasGaintag("sha_notshan");
+							}),
+							"odds"
+						);
+				return obj;
+			},
+			basic: {
+				useful: [5, 3, 1],
+				value: [5, 3, 1],
+			},
+			result: {
+				target(player, target, card, isLink) {
+					let eff = -1.5,
+						odds = 1.35,
+						num = 1;
+					if (isLink) {
+						eff = isLink.eff || -2;
+						odds = isLink.odds || 0.65;
+						num = isLink.num || 1;
+						if (
+							num > 1 &&
+							target.hasSkillTag("filterDamage", null, {
+								player: player,
+								card: card,
+								jiu: player.hasSkill("jiu"),
+							})
+						)
+							num = 1;
+						return odds * eff * num;
+					}
+					if (
+						player.hasSkill("jiu") ||
+						player.hasSkillTag("damageBonus", true, {
+							target: target,
+							card: card,
+						})
+					) {
+						if (
+							target.hasSkillTag("filterDamage", null, {
+								player: player,
+								card: card,
+								jiu: player.hasSkill("jiu"),
+							})
+						)
+							eff = -0.5;
+						else {
+							num = 2;
+							if (get.attitude(player, target) > 0) eff = -7;
+							else eff = -4;
+						}
+					}
+					if (
+						!player.hasSkillTag(
+							"directHit_ai",
+							true,
+							{
+								target: target,
+								card: card,
+							},
+							true
+						)
+					)
+						odds -=
+							0.7 *
+							target.mayHaveShan(
+								player,
+								"use",
+								target.getCards("h", i => {
+									return i.hasGaintag("sha_notshan");
+								}),
+								"odds"
+							);
+					_status.event.putTempCache("sha_result", "eff", {
+						bool: target.hp > num && get.attitude(player, target) > 0,
+						card: ai.getCacheKey(card, true),
+						eff: eff,
+						odds: odds,
+					});
+					return odds * eff;
+				},
+			},
+			tag: {
+				respond: 1,
+				respondShan: 1,
+				damage(card) {
+					if (game.hasNature(card, "poison")) return;
+					return 1;
+				},
+				natureDamage(card) {
+					if (game.hasNature(card, "linked")) return 1;
+				},
+				fireDamage(card, nature) {
+					if (game.hasNature(card, "fire")) return 1;
+				},
+				thunderDamage(card, nature) {
+					if (game.hasNature(card, "thunder")) return 1;
+				},
+				poisonDamage(card, nature) {
+					if (game.hasNature(card, "poison")) return 1;
+				},
+			},
+		},
+		"_priority": 0,
+	},
+	"madoka_yuanhuan1": {
+		trigger: {
+			player: ["useCardBegin", "respondBegin"],
+		},
+		logTarget: "targets",
+		sourceSkill: "madoka_yuanhuan",
+		filter(event, player) {
+			return event.skill == "madoka_yuanhuan";
+		},
+		forced: true,
+		async content(event, trigger, player) {
+			delete trigger.skill;
+			trigger.getParent().set("madoka_yuanhuan", true);
+			while (true) {
+				if (event.current == undefined) event.current = player.next;
+				if (event.current == player) {
+					player.addTempSkill("madoka_yuanhuan3");
+					trigger.cancel();
+					trigger.getParent().goto(0);
+					return;
+				} else if (event.current.group == "Law_of_Cycles") {
+					const chooseToRespondEvent = event.current.chooseToRespond("是否替" + get.translation(player) + "打出一张杀？", { name: "sha" });
+					chooseToRespondEvent.set("ai", () => {
+						const event = _status.event;
+						return get.attitude(event.player, event.source) - 2;
+					});
+					chooseToRespondEvent.set("source", player);
+					chooseToRespondEvent.set("madoka_yuanhuan", true);
+					chooseToRespondEvent.set("skillwarn", "替" + get.translation(player) + "打出一张杀");
+					chooseToRespondEvent.noOrdering = true;
+					chooseToRespondEvent.autochoose = lib.filter.autoRespondSha;
+					const { bool = false, card = null, cards } = await chooseToRespondEvent.forResult();
+					if (bool) {
+						trigger.card = card;
+						trigger.cards = cards;
+						trigger.throw = false;
+						if (typeof event.current.ai.shown == "number" && event.current.ai.shown < 0.95) {
+							event.current.ai.shown += 0.3;
+							if (event.current.ai.shown > 0.95) event.current.ai.shown = 0.95;
+						}
+						return;
+					} else event.current = event.current.next;
+				} else event.current = event.current.next;
+			}
+		},
+		"_priority": 0,
+	},
+	"madoka_yuanhuan3": {
+		trigger: {
+			global: ["useCardAfter", "useSkillAfter", "phaseAfter"],
+		},
+		silent: true,
+		charlotte: true,
+		sourceSkill: "madoka_yuanhuan",
+		filter(event) {
+			return event.skill != "madoka_yuanhuan";
+		},
+		async content(event, trigger, player) {
+			player.removeSkill("madoka_yuanhuan3");
+		},
+		forced: true,
+		popup: false,
+		"_priority": 1,
+	},
 
 	// 环彩羽
-	"iroha_ximeng": {
+	"iroha_shukun": {
 		enable: "phaseUse",
-    	usable: 1,
+		usable: 1,
 		async content(event, trigger, player) {
 			await player.draw(3);
 
@@ -803,11 +803,11 @@ const skills = {
 			}
 		}
 	},
-	"iroha_xixie":{
+	"iroha_dimeng": {
 		enable: "phaseUse",
 		usable: 1,
 		filter(event, player) {
-			return game.hasPlayer(current => lib.skill.iroha_xixie.filterTarget(null, player, current));
+			return game.hasPlayer(current => lib.skill.iroha_dimeng.filterTarget(null, player, current));
 		},
 		selectTarget: 2,
 		complexTarget: true,
@@ -835,8 +835,8 @@ const skills = {
 		multiline: true,
 		content() {
 			targets[0].swapHandcards(targets[1]);
-			player.addTempSkill("iroha_xixie_discard", "phaseUseAfter");
-			player.markAuto("iroha_xixie_discard", [targets]);
+			player.addTempSkill("iroha_dimeng_discard", "phaseUseAfter");
+			player.markAuto("iroha_dimeng_discard", [targets]);
 		},
 		ai: {
 			threaten: 4.5,
@@ -872,7 +872,7 @@ const skills = {
 					return player.countCards("he") > 0;
 				},
 				async content(event, trigger, player) {
-					for (let targets of player.getStorage("iroha_xixie_discard")) {
+					for (let targets of player.getStorage("iroha_dimeng_discard")) {
 						if (targets.length < 2) {
 							continue;
 						}
@@ -884,28 +884,28 @@ const skills = {
 							for (var i = 0; i < cards.length; i++) {
 								sum += get.number(cards[i]);
 								if (sum > num) {
-									await player.chooseToDiscard("he", "请选择弃置牌直到点数和大于"+ num, 1,true)
-									.set("selectCard", function() {
-										var dnum = 0;
-										for (var i = 0; i < ui.selected.cards.length; i++) {
-											dnum += get.number(ui.selected.cards[i]);
-										}
-										if (dnum > num) {
-											return ui.selected.cards.length;
-										}
-										return ui.selected.cards.length + 2;
-									})
+									await player.chooseToDiscard("he", "请选择弃置牌直到点数和大于" + num, 1, true)
+										.set("selectCard", function () {
+											var dnum = 0;
+											for (var i = 0; i < ui.selected.cards.length; i++) {
+												dnum += get.number(ui.selected.cards[i]);
+											}
+											if (dnum > num) {
+												return ui.selected.cards.length;
+											}
+											return ui.selected.cards.length + 2;
+										})
 									return;
 								}
 							}
-							await player.chooseToDiscard("he",true,cards.length);
+							await player.chooseToDiscard("he", true, cards.length);
 						}
 					}
 				},
 			},
 		},
 	},
-	"iroha_xiwang": {
+	"iroha_huanyu": {
 		trigger: { player: "damageBegin4" },
 		filter(event, player) {
 			return event.source
@@ -914,11 +914,11 @@ const skills = {
 		logTarget: "source",
 		async content(event, trigger, player) {
 			const target = trigger.source;
-			if (target.countCards("h") > player.countCards("h")){
+			if (target.countCards("h") > player.countCards("h")) {
 				const {
 					result: { bool },
 				} = await target
-					.chooseToDiscard("希望：弃置一张牌，或令对" + get.translation(player) + "造成的伤害-1","he")
+					.chooseToDiscard("名士：弃置一张牌，或令对" + get.translation(player) + "造成的伤害-1", "he")
 					.set("ai", card => {
 						if (get.event("goon")) {
 							return 0;
@@ -929,7 +929,7 @@ const skills = {
 				if (!bool) {
 					trigger.num--;
 				}
-			}else{
+			} else {
 				await player.draw();
 			}
 		},
@@ -937,7 +937,7 @@ const skills = {
 			effect: {
 				target(card, player, target, current) {
 					if (get.tag(card, "damage") && target != player) {
-						if (_status.event.name == "iroha_xiwang") {
+						if (_status.event.name == "iroha_huanyu") {
 							return;
 						}
 						if (get.attitude(player, target) > 0 && current < 0) {
@@ -963,65 +963,65 @@ const skills = {
 		},
 	},
 	"iroha_xiyuan": {
- 	 	zhuSkill: true,
- 	 	trigger: {
- 	 	 	player: ["chooseToRespondBefore", "chooseToUseBefore"],
- 	 	},
- 	 	filter(event, player) {
- 	 	 	if (event.responded) return false;
- 	 	 	if (player.storage.yuanjiuing) return false;
- 	 	 	if (!player.hasZhuSkill("iroha_xiyuan")) return false;
- 	 	 	if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
- 	 	 	return game.hasPlayer(current => current != player && current.group == "Kamihama_Magia_Union");
- 	 	},
- 	 	check(event, player) {
- 	 	 	if (get.damageEffect(player, event.player, player) >= 0) return false;
- 	 	 	return true;
- 	 	},
- 	 	async content(event, trigger, player) {
- 	 	 	while (true) {
- 	 	 	 	let bool;
- 	 	 	 	if (!event.current) event.current = player.next;
- 	 	 	 	if (event.current == player) return;
- 	 	 	 	else if (event.current.group == "Kamihama_Magia_Union") {
- 	 	 	 	 	if ((event.current == game.me && !_status.auto) || get.attitude(event.current, player) > 2 || event.current.isOnline()) {
- 	 	 	 	 	 	player.storage.yuanjiuing = true;
- 	 	 	 	 	 	const next = event.current.chooseToRespond("是否替" + get.translation(player) + "打出一张闪？", { name: "shan" });
- 	 	 	 	 	 	next.set("ai", () => {
- 	 	 	 	 	 	 	const event = _status.event;
- 	 	 	 	 	 	 	return get.attitude(event.player, event.source) - 2;
- 	 	 	 	 	 	});
- 	 	 	 	 	 	next.set("skillwarn", "替" + get.translation(player) + "打出一张闪");
- 	 	 	 	 	 	next.autochoose = lib.filter.autoRespondShan;
- 	 	 	 	 	 	next.set("source", player);
- 	 	 	 	 	 	bool = await next.forResultBool();
- 	 	 	 	 	}
- 	 	 	 	}
- 	 	 	 	player.storage.yuanjiuing = false;
- 	 	 	 	if (bool) {
- 	 	 	 	 	trigger.result = { bool: true, card: { name: "shan", isCard: true } };
- 	 	 	 	 	trigger.responded = true;
- 	 	 	 	 	trigger.animate = false;
- 	 	 	 	 	if (typeof event.current.ai.shown == "number" && event.current.ai.shown < 0.95) {
- 	 	 	 	 	 	event.current.ai.shown += 0.3;
- 	 	 	 	 	 	if (event.current.ai.shown > 0.95) event.current.ai.shown = 0.95;
- 	 	 	 	 	}
- 	 	 	 	 	return;
- 	 	 	 	} else {
- 	 	 	 	 	event.current = event.current.next;
- 	 	 	 	}
- 	 	 	}
- 	 	},
- 	 	ai: {
- 	 	 	respondShan: true,
- 	 	 	skillTagFilter(player) {
- 	 	 	 	if (player.storage.yuanjiuing) return false;
- 	 	 	 	if (!player.hasZhuSkill("iroha_xiyuan")) return false;
- 	 	 	 	return game.hasPlayer(current => current != player && current.group == "Kamihama_Magia_Union");
- 	 	 	},
- 	 	},
- 	 	"_priority": 0,
- 	},
+		zhuSkill: true,
+		trigger: {
+			player: ["chooseToRespondBefore", "chooseToUseBefore"],
+		},
+		filter(event, player) {
+			if (event.responded) return false;
+			if (player.storage.yuanjiuing) return false;
+			if (!player.hasZhuSkill("iroha_xiyuan")) return false;
+			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
+			return game.hasPlayer(current => current != player && current.group == "Kamihama_Magia_Union");
+		},
+		check(event, player) {
+			if (get.damageEffect(player, event.player, player) >= 0) return false;
+			return true;
+		},
+		async content(event, trigger, player) {
+			while (true) {
+				let bool;
+				if (!event.current) event.current = player.next;
+				if (event.current == player) return;
+				else if (event.current.group == "Kamihama_Magia_Union") {
+					if ((event.current == game.me && !_status.auto) || get.attitude(event.current, player) > 2 || event.current.isOnline()) {
+						player.storage.yuanjiuing = true;
+						const next = event.current.chooseToRespond("是否替" + get.translation(player) + "打出一张闪？", { name: "shan" });
+						next.set("ai", () => {
+							const event = _status.event;
+							return get.attitude(event.player, event.source) - 2;
+						});
+						next.set("skillwarn", "替" + get.translation(player) + "打出一张闪");
+						next.autochoose = lib.filter.autoRespondShan;
+						next.set("source", player);
+						bool = await next.forResultBool();
+					}
+				}
+				player.storage.yuanjiuing = false;
+				if (bool) {
+					trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+					trigger.responded = true;
+					trigger.animate = false;
+					if (typeof event.current.ai.shown == "number" && event.current.ai.shown < 0.95) {
+						event.current.ai.shown += 0.3;
+						if (event.current.ai.shown > 0.95) event.current.ai.shown = 0.95;
+					}
+					return;
+				} else {
+					event.current = event.current.next;
+				}
+			}
+		},
+		ai: {
+			respondShan: true,
+			skillTagFilter(player) {
+				if (player.storage.yuanjiuing) return false;
+				if (!player.hasZhuSkill("iroha_xiyuan")) return false;
+				return game.hasPlayer(current => current != player && current.group == "Kamihama_Magia_Union");
+			},
+		},
+		"_priority": 0,
+	},
 	"ani_lieying": {
 		group: "ani_lieying2",
 		locked: true,
@@ -3172,7 +3172,8 @@ const skills = {
 						return -3;
 					}
 					if (get.attitude(player, target) > 0 && cards.length >= 4) {
-						if (target.hp >= 3 && target.countCards("h") <= 1) return 2;
+						if (target.hp >= 3 && target.countCards("h") <= 1) return 3;
+						if (target.hp == 1) return 0;
 						return 1;
 					}
 				},
