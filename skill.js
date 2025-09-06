@@ -912,7 +912,7 @@ const skills = {
 				const {
 					result: { bool },
 				} = await target
-					.chooseToDiscard("名士：弃置一张牌，或令对" + get.translation(player) + "造成的伤害-1","he")
+					.chooseToDiscard("希望：弃置一张牌，或令对" + get.translation(player) + "造成的伤害-1","he")
 					.set("ai", card => {
 						if (get.event("goon")) {
 							return 0;
