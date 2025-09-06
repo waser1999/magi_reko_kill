@@ -6,7 +6,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 3,
 		maxHp: 3,
-		skills: ["madoka_liegong", "madoka_yingbian", "madoka_xieli"],
+		skills: ["madoka_gongxi", "madoka_gongbian", "madoka_yuanhuan"],
 		img: "extension/魔法纪录/image/madoka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/madoka.mp3"],
 		isZhugong: true
@@ -99,9 +99,10 @@ const characters = {
 	"iroha": {//环彩羽
 		sex: "female",
 		group: "Kamihama_Magia_Union",
-		hp: 3,
-		maxHp: 3,
-		skills: ["olhaoshi", "iroha_dimeng", "dckrmingshi", "iroha_yuanjiu"],
+		hp: 4,
+		maxHp: 4,
+		//skills: ["olhaoshi", "iroha_dimeng", "dckrmingshi", "iroha_yuanjiu"],
+		skills: ["iroha_ximeng", "iroha_xixie", "iroha_xiwang", "iroha_xiyuan"],
 		img: "extension/魔法纪录/image/iroha.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
 		isZhugong: true,
