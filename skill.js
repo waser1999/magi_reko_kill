@@ -287,7 +287,6 @@ const skills = {
 	"madoka_pomo": {
 		enable: "phaseUse",
 		usable: 1,
-		group: ["madoka_pomo_2", "madoka_pomo_3", "madoka_pomo_4"],
 		async content(event, trigger, player) {
 			await player.draw(2);
 
@@ -317,7 +316,7 @@ const skills = {
 			}
 
 			player.storage.madoka_pomo_3 = color;
-			player.addTempSkill("madoka_pomo_3");
+			player.addTempSkill("madoka_pomo_3", "phaseUseAfter");
 			player.markSkill("madoka_pomo_3");
 
 			player.storage.madoka_pomo_4 = color;
@@ -376,7 +375,7 @@ const skills = {
 		charlotte: true,
 		forced: true,
 		mark: true,
-		marktext: "袭",
+		marktext: "破",
 		onremove: true,
 		content() {
 			player.removeSkill("madoka_pomo_2");
@@ -389,7 +388,7 @@ const skills = {
 			},
 		},
 		intro: {
-			name: "弓袭",
+			name: "破魔",
 			content(color) {
 				return "不能使用或打出" + get.translation(color) + "的手牌";
 			},
@@ -399,24 +398,20 @@ const skills = {
 		charlotte: true,
 		forced: true,
 		mark: true,
-		marktext: "弓",
+		marktext: "破",
 		trigger: { source: "damageBegin1" },
 		audio: false,
 		onremove: true,
-		filter(event, player, name) {
-			if (name == "damageBegin1") {
-				return event.card && get.color(event.card) == player.storage.madoka_pomo_3;
-			}
-			return name == "phaseEnd";
+		usable: 1,
+		filter(event, player) {
+			if (_status.currentPhase != player) return false;
+			return event.card && get.color(event.card) == player.storage.madoka_pomo_3;
 		},
 		content() {
-			if (event.triggername == "damageBegin1") {
-				trigger.num++;
-			}
-			player.removeSkill("madoka_pomo_3");
+			trigger.num++;
 		},
 		intro: {
-			name: "弓袭",
+			name: "破魔",
 			content(color) {
 				return "本回合使用" + get.translation(color) + "颜色牌第一次造成伤害+1";
 			},
@@ -425,12 +420,12 @@ const skills = {
 	"madoka_pomo_4": {
 		charlotte: true,
 		mark: true,
-		marktext: "变",
+		marktext: "灵",
 		onremove: true,
 		intro: {
-			name: "弓袭",
+			name: "灵跃",
 			content(color) {
-				return "【弓变】判定为" + get.translation(color) + "时视为使用或打出一张【闪】";
+				return "判定为" + get.translation(color) + "时视为使用或打出一张【闪】";
 			},
 		},
 	},
