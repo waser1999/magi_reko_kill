@@ -4478,6 +4478,227 @@ const skills = {
 		},
 	},
 
+	//八云御魂
+	"mitama_yuhun": {
+		enable: "phaseUse",
+		filter(event, player) {
+			return !player.hasSkill("mitama_yuhun_clear");
+		},
+		selectTarget() {
+			return [1, 4];
+		},
+		filterTarget: true,
+		check(card) {
+			var player = _status.event.player;
+			if (
+				game.countPlayer(function (current) {
+					return get.attitude(player, current) > 0;
+				}) >= 1
+			) {
+				return 1;
+			}
+			return 0;
+		},
+		multitarget: true,
+		multiline: true,
+		content() {
+			"step 0";
+			game.log(get.translation(player) + "发动了【御魂】");
+			event.skills = lib.skill.mitama_yuhun.derivation.randomGets(4);
+			player.addTempSkill("mitama_yuhun_clear", { player: "phaseBegin" });
+			event.targets.sortBySeat();
+			event.num = 0;
+			"step 1";
+			event.target = targets[num];
+			event.num++;
+			event.target
+				.chooseControl(event.skills, "cancel2")
+				.set(
+					"choiceList",
+					event.skills.map(function (i) {
+						return '<div class="skill">【' + get.translation(lib.translate[i + "_ab"] || get.translation(i).slice(0, 2)) + "】</div><div>" + get.skillInfoTranslation(i, player) + "</div>";
+					})
+				)
+				.set("displayIndex", false)
+				.set("prompt", "选择获得一个技能");
+			"step 2";
+			var skill = result.control;
+			if (skill != "cancel2") {
+				event.skills.remove(skill);
+				target.addAdditionalSkills("mitama_yuhun_" + player.playerid, skill, true);
+			}
+			if (event.num < event.targets.length) {
+				event.goto(1);
+			}
+			if (target != game.me && !target.isOnline2()) {
+				game.delayx();
+			}
+		},
+		ai: {
+			threaten: 3,
+			order: 10,
+			result: {
+				target: 1,
+			},
+		},
+		derivation: ["releiji", "kirika_shensu", "reyingzi", "remingce", "xinzhiyan", "nhyinbing", "nhhuoqi", "nhguizhu", "tsuruno_qiangyun", "iroha_huanyu", "nayuta_kanwu", "nhyanzheng"],
+		subSkill: {
+			clear: {
+				onremove(player) {
+					game.countPlayer(function (current) {
+						current.removeAdditionalSkills("mitama_yuhun_" + player.playerid);
+					});
+				},
+			},
+		},
+	},
+	"mitama_tiaozheng": {
+		trigger: { player: "phaseJieshuBegin" },
+		direct: true,
+		filter(event, player) {
+			return player.hasSkill("mitama_yuhun_clear");
+		},
+		content() {
+			"step 0";
+			event.list1 = [];
+			event.list2 = [];
+			event.addIndex = 0;
+			var choices = [];
+			game.countPlayer(function (current) {
+				if (current.additionalSkills["mitama_yuhun_" + player.playerid]) {
+					event.list1.push(current);
+				} else {
+					event.list2.push(current);
+				}
+			});
+			event.list1.sortBySeat();
+			if (event.list1.length) {
+				choices.push("令" + get.translation(event.list1) + (event.list1.length > 1 ? "各" : "") + "摸一张牌");
+			} else {
+				event.addIndex++;
+			}
+			event.list2.sortBySeat();
+			if (event.list2.length) {
+				choices.push("令" + get.translation(event.list2) + (event.list2.length > 1 ? "各" : "") + "弃置一张手牌");
+			}
+			player.chooseControl("cancel2")
+				.set("choiceList", choices)
+				.set("prompt", get.prompt("mitama_tiaozheng"))
+				.set("", function () {
+					var evt = _status.event.getParent();
+					if (
+						evt.list2.filter(function (current) {
+							return get.attitude(player, current) <= 0 && !current.hasSkillTag("noh");
+						}).length -
+						evt.list1.length >
+						1
+					) {
+						return 1 - evt.addIndex;
+					}
+					if (evt.list2.length > evt.list1.length) return 1;
+					return 0;
+				});
+			"step 1";
+			if (result.control != "cancel2") {
+				if (result.index + event.addIndex == 0) {
+					player.logSkill("mitama_tiaozheng", event.list1);
+					game.asyncDraw(event.list1);
+				} else {
+					player.logSkill("mitama_tiaozheng", event.list2);
+					for (var i of event.list2) {
+						i.chooseToDiscard("h", true);
+					}
+					event.finish();
+				}
+			} else {
+				event.finish();
+			}
+			"step 2";
+			game.delayx();
+		},
+		ai: {
+			combo: "mitama_yuhun",
+		},
+	},
+	mitama_chuanshu: {
+		trigger: { global: "dying" },
+		limited: true,
+		skillAnimation: true,
+		animationColor: "water",
+		filter(event, player) {
+			return event.player.hp <= 0 && event.player != player;
+		},
+		check(event, player) {
+			return get.attitude(player, event.player) > 0;
+		},
+		logTarget: "player",
+		content() {
+			"step 0";
+			trigger.player.chooseControl(lib.skill.mitama_yuhun.derivation).set("prompt", "" + get.translation(trigger.player) + "获得一项技能");
+			goon = true;
+			if (!goon) {
+				event.finish();
+			}
+			"step 1";
+			trigger.player.addSkills(result.control);
+			trigger.player.recover(1 - trigger.player.hp);
+			trigger.player.draw(2);
+			trigger.player.storage.mitama_chuanshu2 = player;
+			trigger.player.addSkill("mitama_chuanshu2");
+			player.awakenSkill(event.name);
+		},
+	},
+	mitama_chuanshu2: {
+		mark: "character",
+		intro: {
+			content: "当你造成或受到一次伤害后，$摸一张牌",
+		},
+		nopop: true,
+		trigger: {
+			source: "damageEnd",
+			player: "damageEnd",
+		},
+		forced: true,
+		popup: false,
+		sourceSkill: "mitama_chuanshu",
+		filter(event, player) {
+			return player.storage.mitama_chuanshu2 && player.storage.mitama_chuanshu2.isIn() && event.num > 0;
+		},
+		content() {
+			"step 0";
+			game.delayx();
+			"step 1";
+			var target = player.storage.mitama_chuanshu2;
+			player.line(target, "green");
+			target.draw();
+			game.delay();
+		},
+		onremove: true,
+		group: "mitama_chuanshu3",
+	},
+	mitama_chuanshu3: {
+		trigger: {
+			player: "dieBegin",
+		},
+		silent: true,
+		onremove: true,
+		sourceSkill: "mitama_chuanshu",
+		filter(event, player) {
+			return player.storage.mitama_chuanshu2 && player.storage.mitama_chuanshu2.isIn();
+		},
+		content() {
+			"step 0";
+			game.delayx();
+			"step 1";
+			var target = player.storage.mitama_chuanshu2;
+			player.line(target, "green");
+			target.restoreSkill("mitama_chuanshu");
+			target.update();
+		},
+		forced: true,
+		popup: false,
+	},
+
 	// 八云御影
 	"mikage_yuying": {
 		mod: {

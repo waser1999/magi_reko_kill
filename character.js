@@ -201,10 +201,10 @@ const characters = {
 	},
 	"mitama": {//八云御魂
 		sex: "female",
-		group: "Kamihama_Magia_Union",
+		group: "Magia_Others",
 		hp: 3,
 		maxHp: 3,
-		skills: ["gongxiu", "jinghe", "ns_chuanshu"],
+		skills: ["mitama_yuhun", "mitama_tiaozheng", "mitama_chuanshu"],
 		img: "extension/魔法纪录/image/mitama.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mitama.mp3"],
 	},
