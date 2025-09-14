@@ -285,6 +285,7 @@ const skills = {
 
 	// 鹿目圆
 	"madoka_pomo": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		enable: "phaseUse",
 		usable: 1,
 		async content(event, trigger, player) {
@@ -430,6 +431,7 @@ const skills = {
 		},
 	},
 	"madoka_lingyue": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
