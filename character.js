@@ -6,7 +6,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 3,
 		maxHp: 3,
-		skills: ["madoka_liegong", "madoka_yingbian", "madoka_xieli"],
+		skills: ["madoka_pomo", "madoka_lingyue", "madoka_yuanhuan"],
 		img: "extension/魔法纪录/image/madoka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/madoka.mp3"],
 		isZhugong: true
@@ -200,10 +200,10 @@ const characters = {
 	},
 	"mitama": {//八云御魂
 		sex: "female",
-		group: "Kamihama_Magia_Union",
+		group: "Magia_Others",
 		hp: 3,
 		maxHp: 3,
-		skills: ["gongxiu", "jinghe", "ns_chuanshu"],
+		skills: ["mitama_yuhun", "mitama_tiaozheng", "mitama_chuanshu"],
 		img: "extension/魔法纪录/image/mitama.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mitama.mp3"],
 	},

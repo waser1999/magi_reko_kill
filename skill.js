@@ -284,12 +284,218 @@ const skills = {
 	},
 
 	// 鹿目圆
-	"madoka_xieli": {
-		group: ["madoka_xieli1"],
+	"madoka_pomo": {
+		enable: "phaseUse",
+		usable: 1,
+		async content(event, trigger, player) {
+			await player.draw(2);
+
+			let card = await player.chooseToDiscard("he", true).set("ai", card => {
+				let player = get.event("player");
+				if (get.color(card, player)) {
+					return 7 - get.value(card, player);
+				}
+				return 4 - get.value(card, player);
+			}).forResult();
+			const name = card.cards[0].name;
+			const color = get.color(card, get.position(card) == "h" ? player : false);
+
+			const result = await player
+				.chooseTarget("请选择至多两名角色", [1, 2], true)
+				.set("ai", function (target) {
+					return -get.attitude(_status.event.player, target);
+				}).forResult();
+
+			if (result.bool && result.targets.length) {
+				for (let target of result.targets) {
+					target.storage.madoka_pomo_2 = color;
+					target.addTempSkill("madoka_pomo_2");
+					target.markSkill("madoka_pomo_2");
+				}
+				player.line(result.targets, "green");
+			}
+
+			player.storage.madoka_pomo_3 = color;
+			player.addTempSkill("madoka_pomo_3", "phaseUseAfter");
+			player.markSkill("madoka_pomo_3");
+
+			player.storage.madoka_pomo_4 = color;
+			player.addTempSkill("madoka_pomo_4", { player: "dieAfter" });
+			player.markSkill("madoka_pomo_4");
+
+		},
+
+		ai: {
+			order: 9,
+			directHit_ai: true,
+			result: {
+				player(player) {
+					return 6;
+				},
+			},
+			effect: {
+				player(card, player, target) {
+					if (get.tag(card, 'damage') && get.color(card) == player.storage.madoka_pomo_3) return [1, 1];
+				}
+			},
+			skillTagFilter(player, tag, arg) {
+				if (tag !== "directHit_ai" || !arg.target.hasSkill("madoka_pomo_2")) {
+					return false;
+				}
+				if (arg.card.name == "sha") {
+					return (
+						arg.target.storage.madoka_pomo_2 == "red" &&
+						(!arg.target.hasSkillTag(
+							"freeShan",
+							false,
+							{
+								player: player,
+								card: arg.card,
+								type: "use",
+							},
+							true
+						) ||
+							player.hasSkillTag("unequip", false, {
+								name: arg.card ? arg.card.name : null,
+								target: arg.target,
+								card: arg.card,
+							}) ||
+							player.hasSkillTag("unequip_ai", false, {
+								name: arg.card ? arg.card.name : null,
+								target: arg.target,
+								card: arg.card,
+							}))
+					);
+				}
+				return arg.target.storage.madoka_pomo_2 == "black";
+			},
+		},
+	},
+	"madoka_pomo_2": {
+		charlotte: true,
+		forced: true,
+		mark: true,
+		marktext: "破",
+		onremove: true,
+		content() {
+			player.removeSkill("madoka_pomo_2");
+		},
+		mod: {
+			cardEnabled2(card, player) {
+				if (get.color(card) == player.storage.madoka_pomo_2 && get.position(card) == "h") {
+					return false;
+				}
+			},
+		},
+		intro: {
+			name: "破魔",
+			content(color) {
+				return "不能使用或打出" + get.translation(color) + "的手牌";
+			},
+		},
+	},
+	"madoka_pomo_3": {
+		charlotte: true,
+		forced: true,
+		mark: true,
+		marktext: "破",
+		trigger: { source: "damageBegin1" },
+		audio: false,
+		onremove: true,
+		usable: 1,
+		filter(event, player) {
+			if (_status.currentPhase != player) return false;
+			return event.card && get.color(event.card) == player.storage.madoka_pomo_3;
+		},
+		content() {
+			trigger.num++;
+		},
+		intro: {
+			name: "破魔",
+			content(color) {
+				return "本回合使用" + get.translation(color) + "颜色牌第一次造成伤害+1";
+			},
+		},
+	},
+	"madoka_pomo_4": {
+		charlotte: true,
+		mark: true,
+		marktext: "灵",
+		onremove: true,
+		intro: {
+			name: "灵跃",
+			content(color) {
+				return "判定为" + get.translation(color) + "时视为使用或打出一张【闪】";
+			},
+		},
+	},
+	"madoka_lingyue": {
+		trigger: {
+			player: ["chooseToRespondBefore", "chooseToUseBefore"],
+		},
+		logTarget: "source",
+		group: ["madoka_lingyue_Range"],
+		filter(event, player, name) {
+			if (event.responded) return false;
+			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
+			return true;
+		},
+		async content(event, trigger, player) {
+			let judge = await player.judge(card => {
+				if (player.storage.madoka_pomo_4 && get.color(card) == player.storage.madoka_pomo_4) return 2;
+				return -1;
+			}).forResult();
+
+			if (judge.bool) {
+				trigger.untrigger();
+				trigger.set("responded", true);
+				trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+			} else {
+				player.gain(judge.card);
+
+				if (!game.hasPlayer(current => current.countDiscardableCards(player, "ej"))) {
+					return;
+				}
+				const { result } = await player
+					.chooseTarget("是否弃置场上的一张牌？", (card, player, target) => {
+						return target.countDiscardableCards(player, "ej");
+					})
+					.set("ai", target => {
+						const player = get.player();
+						const att = get.attitude(player, target);
+						if (att > 0 && (target.countCards("j") > 0 || target.countCards("e", card => get.value(card, target) < 0))) {
+							return 2;
+						}
+						if (att < 0 && target.countCards("e") > 0 && !target.hasSkillTag("noe")) {
+							return -1;
+						}
+						return 0;
+					});
+				if (result?.bool && result?.targets?.length) {
+					await player.discardPlayerCard(result.targets[0], "ej", true);
+				}
+			}
+		},
+		ai: {
+			respondShan: true,
+			freeShan: true,
+		},
+		subSkill: {
+			"Range": {
+				mod: {
+					attackFrom(from, to, distance) {
+						return distance - from.hp;
+					},
+				},
+			}
+		},
+	},
+	"madoka_yuanhuan": {
+		group: ["madoka_yuanhuan1", "madoka_yuanhuan_Range"],
 		zhuSkill: true,
 		filter(event, player) {
-			if (!player.hasZhuSkill("madoka_xieli") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
-			return !event.madoka_xieli && (event.type != "phase" || !player.hasSkill("madoka_xieli3"));
+			if (!player.hasZhuSkill("madoka_yuanhuan") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
+			return !event.madoka_yuanhuan && (event.type != "phase" || !player.hasSkill("madoka_yuanhuan3"));
 		},
 		enable: ["chooseToUse", "chooseToRespond"],
 		viewAs: {
@@ -305,7 +511,7 @@ const skills = {
 			},
 			respondSha: true,
 			skillTagFilter(player) {
-				if (!player.hasZhuSkill("madoka_xieli") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
+				if (!player.hasZhuSkill("madoka_yuanhuan") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
 			},
 			yingbian(card, player, targets, viewer) {
 				if (get.attitude(viewer, player) <= 0) return 0;
@@ -503,23 +709,23 @@ const skills = {
 		},
 		"_priority": 0,
 	},
-	"madoka_xieli1": {
+	"madoka_yuanhuan1": {
 		trigger: {
 			player: ["useCardBegin", "respondBegin"],
 		},
 		logTarget: "targets",
-		sourceSkill: "madoka_xieli",
+		sourceSkill: "madoka_yuanhuan",
 		filter(event, player) {
-			return event.skill == "madoka_xieli";
+			return event.skill == "madoka_yuanhuan";
 		},
 		forced: true,
 		async content(event, trigger, player) {
 			delete trigger.skill;
-			trigger.getParent().set("madoka_xieli", true);
+			trigger.getParent().set("madoka_yuanhuan", true);
 			while (true) {
 				if (event.current == undefined) event.current = player.next;
 				if (event.current == player) {
-					player.addTempSkill("madoka_xieli3");
+					player.addTempSkill("madoka_yuanhuan3");
 					trigger.cancel();
 					trigger.getParent().goto(0);
 					return;
@@ -530,7 +736,7 @@ const skills = {
 						return get.attitude(event.player, event.source) - 2;
 					});
 					chooseToRespondEvent.set("source", player);
-					chooseToRespondEvent.set("madoka_xieli", true);
+					chooseToRespondEvent.set("madoka_yuanhuan", true);
 					chooseToRespondEvent.set("skillwarn", "替" + get.translation(player) + "打出一张杀");
 					chooseToRespondEvent.noOrdering = true;
 					chooseToRespondEvent.autochoose = lib.filter.autoRespondSha;
@@ -550,316 +756,22 @@ const skills = {
 		},
 		"_priority": 0,
 	},
-	"madoka_xieli3": {
+	"madoka_yuanhuan3": {
 		trigger: {
 			global: ["useCardAfter", "useSkillAfter", "phaseAfter"],
 		},
 		silent: true,
 		charlotte: true,
-		sourceSkill: "madoka_xieli",
+		sourceSkill: "madoka_yuanhuan",
 		filter(event) {
-			return event.skill != "madoka_xieli";
+			return event.skill != "madoka_yuanhuan";
 		},
 		async content(event, trigger, player) {
-			player.removeSkill("madoka_xieli3");
+			player.removeSkill("madoka_yuanhuan3");
 		},
 		forced: true,
 		popup: false,
 		"_priority": 1,
-	},
-	"madoka_liegong": {
-		audio: "ext:魔法纪录/audio/skill:2",
-		mod: {
-			cardnature(card, player) {
-				if (!player.getVEquip(1) && get.name(card, player) == "sha") {
-					return false;
-				}
-			},
-		},
-		trigger: {
-			player: "useCardToPlayered",
-		},
-		filter(event, player) {
-			return !event.getParent()._madoka_liegong_player && event.targets.length == 1 && event.card.name == "sha" && player.getStorage("madoka_liegong").length > 0;
-		},
-		prompt2(event, player) {
-			let str = "",
-				storage = player.getStorage("madoka_liegong");
-			if (storage.length > 1) {
-				str += "亮出牌堆顶的" + get.cnNumber(storage.length - 1) + "张牌并增加伤害；且";
-			}
-			str += "令" + get.translation(event.target) + "不能使用花色为";
-			for (let i = 0; i < storage.length; i++) {
-				str += get.translation(storage[i]);
-			}
-			str += "的牌响应" + get.translation(event.card);
-			return str;
-		},
-		logTarget: "target",
-		locked: false,
-		check(event, player) {
-			const target = event.target;
-			if (get.attitude(player, target) > 0) {
-				return false;
-			}
-			if (
-				target.hasSkillTag("filterDamage", null, {
-					player: player,
-					card: event.card,
-				})
-			) {
-				return false;
-			}
-			const storage = player.getStorage("madoka_liegong");
-			if (storage.length >= 4) {
-				return true;
-			}
-			if (storage.length < 3) {
-				return false;
-			}
-			if (target.hasShan()) {
-				return storage.includes("heart") && storage.includes("diamond");
-			}
-			return true;
-		},
-		async content(event, trigger, player) {
-			const storage = player.getStorage("madoka_liegong").slice(0);
-			const num = storage.length - 1;
-			const evt = trigger.getParent();
-			if (num > 0) {
-				if (typeof evt.baseDamage != "number") {
-					evt.baseDamage = 1;
-				}
-				const cards = get.cards(num);
-				let no_repeat_cards = [];
-				await game.cardsGotoOrdering(cards);
-				await player.showCards(cards.slice(0), get.translation(player) + "发动了【烈弓】");
-				while (cards.length > 0) {
-					const card = cards.pop();
-					if (storage.includes(get.suit(card, false)) && !no_repeat_cards.includes(get.suit(card, false))) {
-						no_repeat_cards.add(card.suit);
-					}
-					//ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
-				}
-				evt.baseDamage += no_repeat_cards.length;
-				//game.updateRoundNumber();
-			}
-			evt._madoka_liegong_player = player;
-			player.addTempSkill("madoka_liegong_clear");
-			const target = trigger.target;
-			target.addTempSkill("madoka_liegong_block");
-			if (!target.storage.madoka_liegong_block) {
-				target.storage.madoka_liegong_block = [];
-			}
-			target.storage.madoka_liegong_block.push([evt.card, storage]);
-			lib.skill.madoka_liegong.updateBlocker(target);
-		},
-		updateBlocker(player) {
-			const list = [],
-				storage = player.storage.madoka_liegong_block;
-			if (storage?.length) {
-				for (const i of storage) {
-					list.addArray(i[1]);
-				}
-			}
-			player.storage.madoka_liegong_blocker = list;
-		},
-		ai: {
-			threaten: 3.5,
-			"directHit_ai": true,
-			skillTagFilter(player, tag, arg) {
-				if (arg?.card?.name == "sha") {
-					const storage = player.getStorage("madoka_liegong");
-					if (storage.length < 3 || !storage.includes("heart") || !storage.includes("diamond")) {
-						return false;
-					}
-					const target = arg.target;
-					if (target.hasSkill("bagua_skill") || target.hasSkill("bazhen") || target.hasSkill("rw_bagua_skill")) {
-						return false;
-					}
-					return true;
-				}
-				return false;
-			},
-		},
-		intro: {
-			content: "已记录花色：$",
-			onunmark: true,
-		},
-		group: "madoka_liegong_count",
-		subSkill: {
-			clear: {
-				trigger: {
-					player: "useCardAfter",
-				},
-				forced: true,
-				charlotte: true,
-				popup: false,
-				filter(event, player) {
-					return event._madoka_liegong_player == player;
-				},
-				content() {
-					player.unmarkSkill("madoka_liegong");
-					player.removeTip("madoka_liegong");
-				},
-				sub: true,
-				sourceSkill: "madoka_liegong",
-				"_priority": 0,
-			},
-			block: {
-				mod: {
-					cardEnabled(card, player) {
-						if (!player.storage.madoka_liegong_blocker) {
-							return;
-						}
-						const suit = get.suit(card);
-						if (suit == "none") {
-							return;
-						}
-						let evt = _status.event;
-						if (evt.name != "chooseToUse") {
-							evt = evt.getParent("chooseToUse");
-						}
-						if (!evt || !evt.respondTo || evt.respondTo[1].name != "sha") {
-							return;
-						}
-						if (player.storage.madoka_liegong_blocker.includes(suit)) {
-							return false;
-						}
-					},
-				},
-				trigger: {
-					player: ["damageBefore", "damageCancelled", "damageZero"],
-					target: ["shaMiss", "useCardToExcluded", "useCardToEnd"],
-					global: ["useCardEnd"],
-				},
-				forced: true,
-				firstDo: true,
-				charlotte: true,
-				popup: false,
-				onremove(player) {
-					delete player.storage.madoka_liegong_block;
-					delete player.storage.madoka_liegong_blocker;
-				},
-				filter(event, player) {
-					const evt = event.getParent("useCard", true, true);
-					if (evt && evt.effectedCount < evt.effectCount) {
-						return false;
-					}
-					if (!event.card || !player.storage.madoka_liegong_block) {
-						return false;
-					}
-					return player.storage.madoka_liegong_block.some(i => i[0] == event.card);
-				},
-				content() {
-					const storage = player.storage.madoka_liegong_block;
-					for (let i = 0; i < storage.length; i++) {
-						if (storage[i][0] == trigger.card) {
-							storage.splice(i--, 1);
-						}
-					}
-					if (!storage.length) {
-						player.removeSkill(event.name);
-					} else {
-						lib.skill.madoka_liegong.updateBlocker(player);
-					}
-				},
-				sub: true,
-				sourceSkill: "madoka_liegong",
-				"_priority": 0,
-			},
-			count: {
-				trigger: {
-					player: "useCard",
-					target: "useCardToTargeted",
-				},
-				forced: true,
-				locked: false,
-				popup: false,
-				filter(event, player, name) {
-					if (name != "useCard" && player == event.player) {
-						return false;
-					}
-					const suit = get.suit(event.card);
-					if (!lib.suit.includes(suit)) {
-						return false;
-					}
-					if (player.storage.madoka_liegong?.includes(suit)) {
-						return false;
-					}
-					return true;
-				},
-				content() {
-					player.markAuto("madoka_liegong", [get.suit(trigger.card)]);
-					player.storage.madoka_liegong.sort((a, b) => lib.suit.indexOf(b) - lib.suit.indexOf(a));
-					player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
-				},
-				sub: true,
-				sourceSkill: "madoka_liegong",
-				"_priority": 0,
-			},
-		},
-		"_priority": 0,
-	},
-	"madoka_yingbian": {
-		audio: "ext:魔法纪录/audio/skill:2",
-		trigger: {
-			player: ["chooseToRespondBefore", "chooseToUseBefore"],
-		},
-		filter(event, player, name) {
-			if (event.responded) return false;
-			if (!player.storage.madoka_liegong || player.storage.madoka_liegong.length == 0) return false;
-			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
-			return true;
-		},
-		async content(event, trigger, player) {
-			let result = await player.judge(card => {
-				if (player.storage.madoka_liegong?.includes(get.suit(card))) return 2;
-				return -1;
-			}).forResult();
-
-			if (result.bool) {
-				trigger.untrigger();
-				trigger.set("responded", true);
-				trigger.result = { bool: true, card: { name: "shan", isCard: true } };
-
-				player.unmarkAuto("madoka_liegong", [get.suit(result.card)]);
-				player.addTip("madoka_liegong", get.translation("madoka_liegong") + player.getStorage("madoka_liegong").reduce((str, suit) => str + get.translation(suit), ""));
-			} else {
-				player.gain(result.card);
-			}
-		},
-		ai: {
-			respondShan: true,
-			freeShan: true,
-			skillTagFilter(player) {
-				if (!player.getStorage("madoka_liegong")) {
-					return false;
-				}
-				return true;
-			},
-			effect: {
-				target(card, player, target, current) {
-					if (get.tag(card, "respondShan") && current < 0) {
-						return 0.6;
-					}
-				},
-			},
-			order: 4,
-			useful: -1,
-			value: -1,
-		},
-		"_priority": 0,
-	},
-	"madoka_dengshen": {
-		trigger: {
-			source: "damageBefore",
-		},
-		forced: true,
-		async content(event, trigger, player) {
-			trigger.cancel();
-			trigger.player.loseMaxHp(trigger.num);
-		},
 	},
 
 	// 环彩羽
@@ -1082,6 +994,142 @@ const skills = {
 				},
 			},
 		},
+	},
+	"iroha_huanyu": {
+		trigger: { player: "damageBegin4" },
+		filter(event, player) {
+			return event.source
+		},
+		forced: true,
+		logTarget: "source",
+		async content(event, trigger, player) {
+			const target = trigger.source;
+			if (target.countCards("h") > player.countCards("h")) {
+				const {
+					result: { bool },
+				} = await target
+					.chooseToDiscard("名士：弃置一张牌，或令对" + get.translation(player) + "造成的伤害-1", "he")
+					.set("ai", card => {
+						if (get.event("goon")) {
+							return 0;
+						}
+						return 6 - get.value(card);
+					})
+					.set("goon", get.damageEffect(player, target, target) <= 0);
+				if (!bool) {
+					trigger.num--;
+				}
+			} else {
+				await player.draw();
+			}
+		},
+		ai: {
+			effect: {
+				target(card, player, target, current) {
+					if (get.tag(card, "damage") && target != player) {
+						if (_status.event.name == "iroha_huanyu") {
+							return;
+						}
+						if (get.attitude(player, target) > 0 && current < 0) {
+							return "zeroplayertarget";
+						}
+						var bs = player.getCards("h");
+						bs.remove(card);
+						if (card.cards) {
+							bs.removeArray(card.cards);
+						} else {
+							bs.removeArray(ui.selected.cards);
+						}
+						if (bs.length > target.countCards("h")) {
+							if (bs.some(bsi => get.value(bsi) < 7)) {
+								return [1, 0, 1, -0.5];
+							}
+							return [1, 0, 0.3, 0];
+						}
+						return [1, 0, 1, -0.5];
+					}
+				},
+			},
+		},
+	},
+	"iroha_xiyuan": {
+		zhuSkill: true,
+		trigger: {
+			player: ["chooseToRespondBefore", "chooseToUseBefore"],
+		},
+		filter(event, player) {
+			if (event.responded) return false;
+			if (player.storage.yuanjiuing) return false;
+			if (!player.hasZhuSkill("iroha_xiyuan")) return false;
+			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
+			return game.hasPlayer(current => current != player && current.group == "Kamihama_Magia_Union");
+		},
+		check(event, player) {
+			if (get.damageEffect(player, event.player, player) >= 0) return false;
+			return true;
+		},
+		async content(event, trigger, player) {
+			while (true) {
+				let bool;
+				if (!event.current) event.current = player.next;
+				if (event.current == player) return;
+				else if (event.current.group == "Kamihama_Magia_Union") {
+					if ((event.current == game.me && !_status.auto) || get.attitude(event.current, player) > 2 || event.current.isOnline()) {
+						player.storage.yuanjiuing = true;
+						const next = event.current.chooseToRespond("是否替" + get.translation(player) + "打出一张闪？", { name: "shan" });
+						next.set("ai", () => {
+							const event = _status.event;
+							return get.attitude(event.player, event.source) - 2;
+						});
+						next.set("skillwarn", "替" + get.translation(player) + "打出一张闪");
+						next.autochoose = lib.filter.autoRespondShan;
+						next.set("source", player);
+						bool = await next.forResultBool();
+					}
+				}
+				player.storage.yuanjiuing = false;
+				if (bool) {
+					trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+					trigger.responded = true;
+					trigger.animate = false;
+					if (typeof event.current.ai.shown == "number" && event.current.ai.shown < 0.95) {
+						event.current.ai.shown += 0.3;
+						if (event.current.ai.shown > 0.95) event.current.ai.shown = 0.95;
+					}
+					return;
+				} else {
+					event.current = event.current.next;
+				}
+			}
+		},
+		ai: {
+			respondShan: true,
+			skillTagFilter(player) {
+				if (player.storage.yuanjiuing) return false;
+				if (!player.hasZhuSkill("iroha_xiyuan")) return false;
+				return game.hasPlayer(current => current != player && current.group == "Kamihama_Magia_Union");
+			},
+		},
+		"_priority": 0,
+	},
+	"ani_lieying": {
+		group: "ani_lieying2",
+		locked: true,
+		"_priority": 0,
+	},
+	"ani_lieying2": {
+		forced: true,
+		equipSkill: true,
+		noHidden: true,
+		inherit: "kuroe_kill_skill",
+		sourceSkill: "ani_lieying",
+		filter(event, player) {
+			if (!player.hasEmptySlot(1)) {
+				return false;
+			}
+			return true;
+		},
+		"_priority": 0,
 	},
 
 	// 美国织莉子
@@ -3214,7 +3262,8 @@ const skills = {
 						return -3;
 					}
 					if (get.attitude(player, target) > 0 && cards.length >= 4) {
-						if (target.hp >= 3 && target.countCards("h") <= 1) return 2;
+						if (target.hp >= 3 && target.countCards("h") <= 1) return 3;
+						if (target.hp == 1) return 0;
 						return 1;
 					}
 				},
@@ -4520,6 +4569,227 @@ const skills = {
 				}
 			}
 		},
+	},
+
+	//八云御魂
+	"mitama_yuhun": {
+		enable: "phaseUse",
+		filter(event, player) {
+			return !player.hasSkill("mitama_yuhun_clear");
+		},
+		selectTarget() {
+			return [1, 4];
+		},
+		filterTarget: true,
+		check(card) {
+			var player = _status.event.player;
+			if (
+				game.countPlayer(function (current) {
+					return get.attitude(player, current) > 0;
+				}) >= 1
+			) {
+				return 1;
+			}
+			return 0;
+		},
+		multitarget: true,
+		multiline: true,
+		content() {
+			"step 0";
+			game.log(get.translation(player) + "发动了【御魂】");
+			event.skills = lib.skill.mitama_yuhun.derivation.randomGets(4);
+			player.addTempSkill("mitama_yuhun_clear", { player: "phaseBegin" });
+			event.targets.sortBySeat();
+			event.num = 0;
+			"step 1";
+			event.target = targets[num];
+			event.num++;
+			event.target
+				.chooseControl(event.skills, "cancel2")
+				.set(
+					"choiceList",
+					event.skills.map(function (i) {
+						return '<div class="skill">【' + get.translation(lib.translate[i + "_ab"] || get.translation(i).slice(0, 2)) + "】</div><div>" + get.skillInfoTranslation(i, player) + "</div>";
+					})
+				)
+				.set("displayIndex", false)
+				.set("prompt", "选择获得一个技能");
+			"step 2";
+			var skill = result.control;
+			if (skill != "cancel2") {
+				event.skills.remove(skill);
+				target.addAdditionalSkills("mitama_yuhun_" + player.playerid, skill, true);
+			}
+			if (event.num < event.targets.length) {
+				event.goto(1);
+			}
+			if (target != game.me && !target.isOnline2()) {
+				game.delayx();
+			}
+		},
+		ai: {
+			threaten: 3,
+			order: 10,
+			result: {
+				target: 1,
+			},
+		},
+		derivation: ["releiji", "kirika_shensu", "reyingzi", "remingce", "xinzhiyan", "nhyinbing", "nhhuoqi", "nhguizhu", "tsuruno_qiangyun", "iroha_huanyu", "nayuta_kanwu", "nhyanzheng"],
+		subSkill: {
+			clear: {
+				onremove(player) {
+					game.countPlayer(function (current) {
+						current.removeAdditionalSkills("mitama_yuhun_" + player.playerid);
+					});
+				},
+			},
+		},
+	},
+	"mitama_tiaozheng": {
+		trigger: { player: "phaseJieshuBegin" },
+		direct: true,
+		filter(event, player) {
+			return player.hasSkill("mitama_yuhun_clear");
+		},
+		content() {
+			"step 0";
+			event.list1 = [];
+			event.list2 = [];
+			event.addIndex = 0;
+			var choices = [];
+			game.countPlayer(function (current) {
+				if (current.additionalSkills["mitama_yuhun_" + player.playerid]) {
+					event.list1.push(current);
+				} else {
+					event.list2.push(current);
+				}
+			});
+			event.list1.sortBySeat();
+			if (event.list1.length) {
+				choices.push("令" + get.translation(event.list1) + (event.list1.length > 1 ? "各" : "") + "摸一张牌");
+			} else {
+				event.addIndex++;
+			}
+			event.list2.sortBySeat();
+			if (event.list2.length) {
+				choices.push("令" + get.translation(event.list2) + (event.list2.length > 1 ? "各" : "") + "弃置一张手牌");
+			}
+			player.chooseControl("cancel2")
+				.set("choiceList", choices)
+				.set("prompt", get.prompt("mitama_tiaozheng"))
+				.set("", function () {
+					var evt = _status.event.getParent();
+					if (
+						evt.list2.filter(function (current) {
+							return get.attitude(player, current) <= 0 && !current.hasSkillTag("noh");
+						}).length -
+						evt.list1.length >
+						1
+					) {
+						return 1 - evt.addIndex;
+					}
+					if (evt.list2.length > evt.list1.length) return 1;
+					return 0;
+				});
+			"step 1";
+			if (result.control != "cancel2") {
+				if (result.index + event.addIndex == 0) {
+					player.logSkill("mitama_tiaozheng", event.list1);
+					game.asyncDraw(event.list1);
+				} else {
+					player.logSkill("mitama_tiaozheng", event.list2);
+					for (var i of event.list2) {
+						i.chooseToDiscard("h", true);
+					}
+					event.finish();
+				}
+			} else {
+				event.finish();
+			}
+			"step 2";
+			game.delayx();
+		},
+		ai: {
+			combo: "mitama_yuhun",
+		},
+	},
+	mitama_chuanshu: {
+		trigger: { global: "dying" },
+		limited: true,
+		skillAnimation: true,
+		animationColor: "water",
+		filter(event, player) {
+			return event.player.hp <= 0 && event.player != player;
+		},
+		check(event, player) {
+			return get.attitude(player, event.player) > 0;
+		},
+		logTarget: "player",
+		content() {
+			"step 0";
+			trigger.player.chooseControl(lib.skill.mitama_yuhun.derivation).set("prompt", "" + get.translation(trigger.player) + "获得一项技能");
+			goon = true;
+			if (!goon) {
+				event.finish();
+			}
+			"step 1";
+			trigger.player.addSkills(result.control);
+			trigger.player.recover(1 - trigger.player.hp);
+			trigger.player.draw(2);
+			trigger.player.storage.mitama_chuanshu2 = player;
+			trigger.player.addSkill("mitama_chuanshu2");
+			player.awakenSkill(event.name);
+		},
+	},
+	mitama_chuanshu2: {
+		mark: "character",
+		intro: {
+			content: "当你造成或受到一次伤害后，$摸一张牌",
+		},
+		nopop: true,
+		trigger: {
+			source: "damageEnd",
+			player: "damageEnd",
+		},
+		forced: true,
+		popup: false,
+		sourceSkill: "mitama_chuanshu",
+		filter(event, player) {
+			return player.storage.mitama_chuanshu2 && player.storage.mitama_chuanshu2.isIn() && event.num > 0;
+		},
+		content() {
+			"step 0";
+			game.delayx();
+			"step 1";
+			var target = player.storage.mitama_chuanshu2;
+			player.line(target, "green");
+			target.draw();
+			game.delay();
+		},
+		onremove: true,
+		group: "mitama_chuanshu3",
+	},
+	mitama_chuanshu3: {
+		trigger: {
+			player: "dieBegin",
+		},
+		silent: true,
+		onremove: true,
+		sourceSkill: "mitama_chuanshu",
+		filter(event, player) {
+			return player.storage.mitama_chuanshu2 && player.storage.mitama_chuanshu2.isIn();
+		},
+		content() {
+			"step 0";
+			game.delayx();
+			"step 1";
+			var target = player.storage.mitama_chuanshu2;
+			player.line(target, "green");
+			target.restoreSkill("mitama_chuanshu");
+			target.update();
+		},
+		forced: true,
+		popup: false,
 	},
 
 	// 八云御影
