@@ -494,6 +494,7 @@ const skills = {
 	},
 	"madoka_yuanhuan": {
 		group: ["madoka_yuanhuan1", "madoka_yuanhuan_Range"],
+		forbid: ["guozhan"],
 		zhuSkill: true,
 		filter(event, player) {
 			if (!player.hasZhuSkill("madoka_yuanhuan") || !game.hasPlayer(current => current != player && current.group == "Law_of_Cycles")) return false;
@@ -779,6 +780,7 @@ const skills = {
 	// 环彩羽
 	"iroha_yuanjiu": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
@@ -1056,6 +1058,7 @@ const skills = {
 	},
 	"iroha_xiyuan": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
@@ -1267,6 +1270,7 @@ const skills = {
 	},
 	"oriko_xianzhong": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		trigger: {
 			global: "damage",
 		},
@@ -1500,6 +1504,7 @@ const skills = {
 	},
 	"yachiyo_gujun": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		trigger: {
 			global: "dying",
 		},
@@ -1529,6 +1534,7 @@ const skills = {
 	// 玛吉斯
 	"magius_jiefang": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		global: "magius_jiefang2",
 		"_priority": 0,
 	},
@@ -1588,6 +1594,7 @@ const skills = {
 	},
 	"magius_zhishang": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		locked: true,
 		forced: true,
 		filter(event, player) {
@@ -2208,6 +2215,7 @@ const skills = {
 		},
 		forced: true,
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		async content(event, trigger, player) {
 			player.addToExpansion(get.cards(), "draw").gaintag.add("qixing");
 		},
@@ -2239,6 +2247,7 @@ const skills = {
 	// 爱生眩
 	"mabayu_jingxiang": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		trigger: {
 			player: "phaseBegin",
 		},
@@ -2628,6 +2637,7 @@ const skills = {
 			target: "taoBegin",
 		},
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		forced: true,
 		filter(event, player) {
 			if (player == event.player) return false;
@@ -3299,6 +3309,7 @@ const skills = {
 	},
 	"yuna_xuemeng": {
 		zhuSkill: true,
+		forbid: ["guozhan"],
 		forced: true,
 		trigger: {
 			global: ["gameStart"],
