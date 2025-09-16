@@ -244,6 +244,150 @@ const skills = {
 	},
 
 	// 美树沙耶香
+	"sayaka_kuangzou": {
+		trigger: { global: "damageEnd" },
+		filter(event, player) {
+			return get.distance(player, event.player) <= 1 && event.num > 0;
+		},
+		getIndex: event => event.num,
+		preHidden: true,
+		async content(event, trigger, player) {
+			const num = event.index || 1;
+			debugger;
+			const f1 = trigger.source == player || player == _status.currentPhase;
+			for (let i = 0; i < num; i++) {
+				if (!f1 || player.isHealthy()) {
+					await player.draw();
+				} else {
+					let choice;
+					if (
+						player.isDamaged() &&
+						get.recoverEffect(player) > 0 &&
+						player.countCards("hs", function (card) {
+							return card.name == "sha" && player.hasValueTarget(card);
+						}) >= player.getCardUsable("sha")
+					) {
+						choice = "回复1点体力";
+					} else {
+						choice = "摸一张牌";
+					}
+
+					// 让玩家选择摸牌或回血
+					const next = player.chooseControl(["摸一张牌", "回复1点体力"])
+						.set("prompt", `狂奏：请选择一项`)
+						.set("choice", choice)
+						.set("ai", function () {
+							return _status.event.choice;
+						});
+
+					const control = await next.forResultControl();
+
+					if (control == "摸一张牌") {
+						await player.draw();
+					} else if (control == "回复1点体力") {
+						await player.recover();
+					}
+				}
+			}
+		},
+	},
+	"sayaka_yuehun": {
+		enable: "phaseUse",
+		usable: 1,
+		async content(event, trigger, player) {
+			const num1 = game.countPlayer(function (current) {
+				return player != current && get.distance(player, current) <= 1;
+			});
+			const num2 = game.countPlayer(function (current) {
+				return player != current && get.distance(player, current) > 1;
+			});
+
+			const result = await player.chooseControl("选项一", "选项二")
+				.set("prompt", "乐魂：请选择一项")
+				.set("choiceList", [
+					"摸" + num1 + "张牌，然后可以弃置手牌视为使用【酒】",
+					"摸" + num2 + "张牌，然后可以弃置手牌选角色拉近距离"
+				])
+				.set("choice", num1 >= num2 ? "选项一" : "选项二")
+				.set("ai", function () {
+					return _status.event.choice;
+				})
+				.forResultControl();
+
+			if (result == "选项一") {
+				player.draw(num1);
+				const result = await player.chooseToDiscard(1, "h", "可以弃置手牌视为使用【酒】", false)
+					.set("ai", function (card) {
+						return skills.duexcept_ai(player.getUseValue({ name: "jiu" }) - get.value(card), card, player);
+					})
+					.forResult();
+				if (result.bool) {
+					player.useCard({ name: "jiu" }, player, false)
+				};
+			} else {
+				player.draw(num2);
+				const result = await player.chooseCardTarget({
+					prompt: "可以弃置手牌选角色拉近距离",
+					filterTarget(card, player, target) {
+						return player != target;
+					},
+					position: "h",
+					selectCard: 1,
+					selectTarget: 1,
+					goon: game.hasPlayer(function (current) {
+						return current != player && get.distance(player, current) > 1 && get.attitude(player, current) < 0;
+					}),
+					ai1(card) {
+						if (!_status.event.goon)
+							return 0;
+						return skills.duexcept_ai(11 - get.value(card), card, player);
+					},
+					ai2(target) {
+						if (!_status.event.goon)
+							return 0;
+						const att = get.attitude(player, target)
+						return ((get.distance(player, target) > 1) && (att < 0)) ? -(att + get.effect(target, { name: "sha" }, player, player)) : 0;
+					}
+				})
+					.forResult();
+
+				if (result.bool) {
+					player.discard(result.cards);
+					var target = result.targets[0];
+
+					player.storage.sayaka_yuehun_2 = target;
+					player.addTempSkill("sayaka_yuehun_2");
+				};
+			}
+		},
+		ai: {
+			order: 10,
+			expose: 0.2,
+			threaten: 2,
+			result: {
+				player() {
+					return 1;
+				}
+			}
+		},
+		subSkill: {
+			2: {
+				mod: {
+					globalFrom(from, to) {
+						if (to == from.storage.sayaka_yuehun_2) {
+							return -Infinity;
+						}
+					},
+				},
+				charlotte: true,
+				mark: "character",
+				intro: {
+					content: "你与$的距离视为1直到回合结束",
+				},
+				onremove: true,
+			}
+		}
+	},
 	"sayaka_qiangyin": {
 		inherit: "jieyin",
 		filterTarget(card, player, target) {
