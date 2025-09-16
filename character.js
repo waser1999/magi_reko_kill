@@ -25,7 +25,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 4,
 		maxHp: 4,
-		skills: ["xinkuanggu", "gzyinghun", "sayaka_qiangyin"],
+		skills: ["sayaka_kuangzou", "sayaka_yuehun", "sayaka_qiangyin"],
 		img: "extension/魔法纪录/image/sayaka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/sayaka.mp3"],
 	},
@@ -99,10 +99,16 @@ const characters = {
 	"iroha": {//环彩羽
 		sex: "female",
 		group: "Kamihama_Magia_Union",
+<<<<<<< Updated upstream
 		hp: 4,
 		maxHp: 4,
 		//skills: ["olhaoshi", "iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
 		skills: ["iroha_shukun", "iroha_dimeng", "iroha_huanyu", "iroha_xiyuan"],
+=======
+		hp: 3,
+		maxHp: 3,
+		skills: ["iroha_shukun", "iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
+>>>>>>> Stashed changes
 		img: "extension/魔法纪录/image/iroha.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
 		isZhugong: true,
@@ -131,7 +137,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 4,
 		maxHp: 4,
-		skills: ["sana_touming", "xinjushou", "xinjiewei"],
+		skills: ["sana_dunwei", "sana_touming", "sana_duntu"],
 		img: "extension/魔法纪录/image/sana.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/sana.mp3"],
 	},
@@ -140,7 +146,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 4,
 		maxHp: 4,
-		skills: ["repojun", "reyicong"],
+		skills: ["felicia_chuiji", "felicia_yongbing"],
 		img: "extension/魔法纪录/image/felicia.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/felicia.mp3"],
 	},
