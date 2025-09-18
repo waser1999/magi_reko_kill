@@ -43,7 +43,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 4,
 		maxHp: 4,
-		skills: ["oltuntian", "jixi", "reguhuo"],
+		skills: ["kyoko_shengxu", "kyoko_xiqiang", "kyoko_xuanhuo"],
 		img: "extension/魔法纪录/image/kyoko.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/kyoko.mp3"],
 	},
@@ -99,16 +99,9 @@ const characters = {
 	"iroha": {//环彩羽
 		sex: "female",
 		group: "Kamihama_Magia_Union",
-<<<<<<< Updated upstream
-		hp: 4,
-		maxHp: 4,
-		//skills: ["olhaoshi", "iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
-		skills: ["iroha_shukun", "iroha_dimeng", "iroha_huanyu", "iroha_xiyuan"],
-=======
 		hp: 3,
 		maxHp: 3,
 		skills: ["iroha_shukun", "iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
->>>>>>> Stashed changes
 		img: "extension/魔法纪录/image/iroha.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
 		isZhugong: true,
