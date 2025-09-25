@@ -34,7 +34,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 4,
 		maxHp: 4,
-		skills: ["reyingzi", "mami_duanbian", "mami_tiro_finale"],
+		skills: ["mami_duanbian", "mami_zhongmu"],
 		img: "extension/魔法纪录/image/mami.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mami.mp3"],
 	},
@@ -111,7 +111,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 4,
 		maxHp: 4,
-		skills: ["rexingshang", "yachiyo_zhishui", "yachiyo_jueyu", "yachiyo_gujun"],
+		skills: ["yachiyo_zhishui", "yachiyo_jueyu", "yachiyo_xiji", "yachiyo_gujun"],
 		img: "extension/魔法纪录/image/yachiyo.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/yachiyo.mp3"],
 		isZhugong: true
