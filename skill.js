@@ -403,7 +403,7 @@ const skills = {
 				switch (button.link) {
 					case 0:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 0;
 						return player.hasValueTarget("shunshou", false) ? player.getUseValue("shunshou", false) : 0;
 					case 1:
 						if (card)
@@ -411,7 +411,7 @@ const skills = {
 						return player.hasValueTarget("yiyi", false) ? player.getUseValue("yiyi", false) + 20 : 0;
 					case 2:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 						return player.hasValueTarget("dz_mantianguohai", false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 					default:
 						return 1;
@@ -637,7 +637,7 @@ const skills = {
 				switch (button.link) {
 					case 0:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 0;
 						return player.hasValueTarget("shunshou", false) ? player.getUseValue("shunshou", false) : 0;
 					case 1:
 						if (card)
@@ -645,7 +645,7 @@ const skills = {
 						return player.hasValueTarget("yiyi", false) ? player.getUseValue("yiyi", false) + 20 : 0;
 					case 2:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 						return player.hasValueTarget("dz_mantianguohai", false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 					default:
 						return 1;
@@ -1255,7 +1255,6 @@ const skills = {
 		},
 	},
 	"madoka_lingyue": {
-		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
@@ -1266,62 +1265,50 @@ const skills = {
 			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
 			return true;
 		},
-		"madoka_lingyue": {
-			trigger: {
-				player: ["chooseToRespondBefore", "chooseToUseBefore"],
-			},
-			logTarget: "source",
-			group: ["madoka_lingyue_Range"],
-			filter(event, player, name) {
-				if (event.responded) return false;
-				if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
-				return true;
-			},
-			async content(event, trigger, player) {
-				let judge = await player.judge(card => {
-					if (player.storage.madoka_pomo_4 && get.color(card) == player.storage.madoka_pomo_4) return 2;
-					return -1;
-				}).forResult();
+		async content(event, trigger, player) {
+			let judge = await player.judge(card => {
+				if (player.storage.madoka_pomo_4 && get.color(card) == player.storage.madoka_pomo_4) return 2;
+				return -1;
+			}).forResult();
 
-				if (judge.bool) {
-					trigger.untrigger();
-					trigger.set("responded", true);
-					trigger.result = { bool: true, card: { name: "shan", isCard: true } };
-				} else {
-					await player.gain(judge.card);
+			if (judge.bool) {
+				trigger.untrigger();
+				trigger.set("responded", true);
+				trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+			} else {
+				await player.gain(judge.card);
 
-					if (!game.hasPlayer(current => current.countDiscardableCards(player, "ej"))) {
-						return;
-					}
-					const { result } = await player
-						.chooseTarget("是否弃置场上的一张牌？", (card, player, target) => {
-							return target.countDiscardableCards(player, "ej");
-						})
-						.set("ai", target => {
-							const att = get.attitude(player, target);
-							if (att > 0 && (target.countCards("j") > 0 || target.countCards("e", card => get.value(card, target) < 0) > 0)) {
-								return 10 + att;
-							}
-							if (att < 0) {
-								if (target.countCards("e") > 0 && (target.countCards("e", card => get.value(card, target) < 0) != target.countCards("e")) && !target.hasSkillTag("noe"))
-									return -att;
-								return 0;
-							}
-							return 0;
-						});
-					if (result?.bool && result?.targets?.length) {
-						const enemy = result.targets[0];
-						await player.discardPlayerCard(enemy, "ej", true)
-							.set("ai", button => {
-								const card = button.link;
-								if (get.attitude(player, enemy) > 0 && get.position(card) == "j")
-									return 20 + get.value(card);
-								if (get.attitude(player, enemy) > 0 && get.position(card) == "e")
-									return -get.value(card);
-								return get.value(card);
-							});
-					}
+				if (!game.hasPlayer(current => current.countDiscardableCards(player, "ej"))) {
+					return;
 				}
+				const { result } = await player
+					.chooseTarget("是否弃置场上的一张牌？", (card, player, target) => {
+						return target.countDiscardableCards(player, "ej");
+					})
+					.set("ai", target => {
+						const att = get.attitude(player, target);
+						if (att > 0 && (target.countCards("j") > 0 || target.countCards("e", card => get.value(card, target) < 0) > 0)) {
+							return 10 + att;
+						}
+						if (att < 0) {
+							if (target.countCards("e") > 0 && (target.countCards("e", card => get.value(card, target) < 0) != target.countCards("e")) && !target.hasSkillTag("noe"))
+								return -att;
+							return 0;
+						}
+						return 0;
+					});
+				if (result?.bool && result?.targets?.length) {
+					const enemy = result.targets[0];
+					await player.discardPlayerCard(enemy, "ej", true)
+						.set("ai", button => {
+							const card = button.link;
+							if (get.attitude(player, enemy) > 0 && get.position(card) == "j")
+								return 20 + get.value(card);
+							if (get.attitude(player, enemy) > 0 && get.position(card) == "e")
+								return -get.value(card);
+							return get.value(card);
+						});
+					}
 			}
 		},
 		ai: {
