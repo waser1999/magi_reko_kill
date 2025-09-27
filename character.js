@@ -61,7 +61,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 3,
 		maxHp: 3,
-		skills: ["nzry_chenglve", "nzry_cunmu", "nzry_shicai", "mabayu_jingxiang"],
+		skills: ["nzry_chenglve", "nzry_cunmu", "nzry_shicai"],
 		img: "extension/魔法纪录/image/mabayu.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mabayu.mp3"],
 		isZhugong: true

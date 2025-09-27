@@ -403,7 +403,7 @@ const skills = {
 				switch (button.link) {
 					case 0:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 0;
 						return player.hasValueTarget("shunshou", false) ? player.getUseValue("shunshou", false) : 0;
 					case 1:
 						if (card)
@@ -411,7 +411,7 @@ const skills = {
 						return player.hasValueTarget("yiyi", false) ? player.getUseValue("yiyi", false) + 20 : 0;
 					case 2:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 						return player.hasValueTarget("dz_mantianguohai", false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 					default:
 						return 1;
@@ -637,7 +637,7 @@ const skills = {
 				switch (button.link) {
 					case 0:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "shunshou" }, card), false) ? player.getUseValue("shunshou", false) : 0;
 						return player.hasValueTarget("shunshou", false) ? player.getUseValue("shunshou", false) : 0;
 					case 1:
 						if (card)
@@ -645,7 +645,7 @@ const skills = {
 						return player.hasValueTarget("yiyi", false) ? player.getUseValue("yiyi", false) + 20 : 0;
 					case 2:
 						if (card)
-							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 20;
+							return player.hasValueTarget(get.autoViewAs({ name: "dz_mantianguohai" }, card), false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 						return player.hasValueTarget("dz_mantianguohai", false) ? player.getUseValue("dz_mantianguohai", false) : 0;
 					default:
 						return 1;
@@ -725,16 +725,17 @@ const skills = {
 				},
 				filterCard: () => false,
 				selectCard: -1,
-				async content(event, trigger, player) {
+				viewAs: { name: "shunshou", },
+				async precontent(event, trigger, player) {
 					player.addTempSkill("kyoko_xiqiang_3_used", "phaseUseEnd");
 					player.markAuto("kyoko_xiqiang_3_used", [0]);
 
 					await player.discard(lib.skill.kyoko_xiqiang_3_backup.card);
-					await player.useCard({
-						name: "shunshou",
-						isCard: true,
-					}, event.target
-					)
+					// await player.useCard({
+					// 	name: "shunshou",
+					// 	isCard: true,
+					// }, event.target
+					// )
 				},
 				ai: {
 					order: 10,
@@ -751,16 +752,13 @@ const skills = {
 				},
 				filterCard: () => false,
 				selectCard: -1,
-				async content(event, trigger, player) {
+				selectTarget: [1, 3],
+				viewAs: { name: "yiyi", },
+				async precontent(event, trigger, player) {
 					player.addTempSkill("kyoko_xiqiang_3_used", "phaseUseEnd");
 					player.markAuto("kyoko_xiqiang_3_used", [1]);
 
 					await player.discard(lib.skill.kyoko_xiqiang_3_backup.card);
-					await player.useCard({
-						name: "yiyi",
-						isCard: true,
-					}, event.target
-					)
 				},
 				ai: {
 					order: 10,
@@ -781,16 +779,12 @@ const skills = {
 				filterCard: () => false,
 				selectTarget: [1, 2],
 				selectCard: -1,
-				async content(event, trigger, player) {
+				viewAs: { name: "dz_mantianguohai", },
+				async precontent(event, trigger, player) {
 					player.addTempSkill("kyoko_xiqiang_3_used", "phaseUseEnd");
 					player.markAuto("kyoko_xiqiang_3_used", [2]);
 
 					await player.discard(lib.skill.kyoko_xiqiang_3_backup.card);
-					await player.useCard({
-						name: "dz_mantianguohai",
-						isCard: true,
-					}, event.target
-					)
 				},
 				ai: {
 					order: 10,
@@ -806,10 +800,6 @@ const skills = {
 	"kyoko_xuanhuo": {
 		limited: true,
 		enable: "phaseUse",
-		init(player, skill) {
-			player.markSkillCharacter("kyoko_xuanhuo", player);
-		},
-		mark: "character",
 		filter(event, player) {
 			return player.getExpansions("kyoko_shengxu").length > 0;
 		},
