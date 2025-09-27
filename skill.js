@@ -1266,61 +1266,49 @@ const skills = {
 			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
 			return true;
 		},
-		"madoka_lingyue": {
-			trigger: {
-				player: ["chooseToRespondBefore", "chooseToUseBefore"],
-			},
-			logTarget: "source",
-			group: ["madoka_lingyue_Range"],
-			filter(event, player, name) {
-				if (event.responded) return false;
-				if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
-				return true;
-			},
-			async content(event, trigger, player) {
-				let judge = await player.judge(card => {
-					if (player.storage.madoka_pomo_4 && get.color(card) == player.storage.madoka_pomo_4) return 2;
-					return -1;
-				}).forResult();
+		async content(event, trigger, player) {
+			let judge = await player.judge(card => {
+				if (player.storage.madoka_pomo_4 && get.color(card) == player.storage.madoka_pomo_4) return 2;
+				return -1;
+			}).forResult();
 
-				if (judge.bool) {
-					trigger.untrigger();
-					trigger.set("responded", true);
-					trigger.result = { bool: true, card: { name: "shan", isCard: true } };
-				} else {
-					await player.gain(judge.card);
+			if (judge.bool) {
+				trigger.untrigger();
+				trigger.set("responded", true);
+				trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+			} else {
+				await player.gain(judge.card);
 
-					if (!game.hasPlayer(current => current.countDiscardableCards(player, "ej"))) {
-						return;
-					}
-					const { result } = await player
-						.chooseTarget("是否弃置场上的一张牌？", (card, player, target) => {
-							return target.countDiscardableCards(player, "ej");
-						})
-						.set("ai", target => {
-							const att = get.attitude(player, target);
-							if (att > 0 && (target.countCards("j") > 0 || target.countCards("e", card => get.value(card, target) < 0) > 0)) {
-								return 10 + att;
-							}
-							if (att < 0) {
-								if (target.countCards("e") > 0 && (target.countCards("e", card => get.value(card, target) < 0) != target.countCards("e")) && !target.hasSkillTag("noe"))
-									return -att;
-								return 0;
-							}
+				if (!game.hasPlayer(current => current.countDiscardableCards(player, "ej"))) {
+					return;
+				}
+				const { result } = await player
+					.chooseTarget("是否弃置场上的一张牌？", (card, player, target) => {
+						return target.countDiscardableCards(player, "ej");
+					})
+					.set("ai", target => {
+						const att = get.attitude(player, target);
+						if (att > 0 && (target.countCards("j") > 0 || target.countCards("e", card => get.value(card, target) < 0) > 0)) {
+							return 10 + att;
+						}
+						if (att < 0) {
+							if (target.countCards("e") > 0 && (target.countCards("e", card => get.value(card, target) < 0) != target.countCards("e")) && !target.hasSkillTag("noe"))
+								return -att;
 							return 0;
+						}
+						return 0;
+					});
+				if (result?.bool && result?.targets?.length) {
+					const enemy = result.targets[0];
+					await player.discardPlayerCard(enemy, "ej", true)
+						.set("ai", button => {
+							const card = button.link;
+							if (get.attitude(player, enemy) > 0 && get.position(card) == "j")
+								return 20 + get.value(card);
+							if (get.attitude(player, enemy) > 0 && get.position(card) == "e")
+								return -get.value(card);
+							return get.value(card);
 						});
-					if (result?.bool && result?.targets?.length) {
-						const enemy = result.targets[0];
-						await player.discardPlayerCard(enemy, "ej", true)
-							.set("ai", button => {
-								const card = button.link;
-								if (get.attitude(player, enemy) > 0 && get.position(card) == "j")
-									return 20 + get.value(card);
-								if (get.attitude(player, enemy) > 0 && get.position(card) == "e")
-									return -get.value(card);
-								return get.value(card);
-							});
-					}
 				}
 			}
 		},
