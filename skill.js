@@ -1245,6 +1245,7 @@ const skills = {
 		},
 	},
 	"madoka_lingyue": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
@@ -1298,7 +1299,7 @@ const skills = {
 								return -get.value(card);
 							return get.value(card);
 						});
-					}
+				}
 			}
 		},
 		ai: {
@@ -1856,26 +1857,48 @@ const skills = {
 			return true;
 		},
 		async content(event, trigger, player) {
-			await player.draw(3);
-
-			if (player.countCards("h") <= 5) {
-				return;
+			while (true) {
+				let bool;
+				if (!event.current) event.current = player.next;
+				if (event.current == player) return;
+				else if (event.current.group == "Kamihama_Magia_Union") {
+					if ((event.current == game.me && !_status.auto) || get.attitude(event.current, player) > 2 || event.current.isOnline()) {
+						player.storage.yuanjiuing = true;
+						const next = event.current.chooseToRespond("是否替" + get.translation(player) + "打出一张闪？", { name: "shan" });
+						next.set("ai", () => {
+							const event = _status.event;
+							return get.attitude(event.player, event.source) - 2;
+						});
+						next.set("skillwarn", "替" + get.translation(player) + "打出一张闪");
+						next.autochoose = lib.filter.autoRespondShan;
+						next.set("source", player);
+						bool = await next.forResultBool();
+					}
+				}
+				player.storage.yuanjiuing = false;
+				if (bool) {
+					trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+					trigger.responded = true;
+					trigger.animate = false;
+					if (typeof event.current.ai.shown == "number" && event.current.ai.shown < 0.95) {
+						event.current.ai.shown += 0.3;
+						if (event.current.ai.shown > 0.95) event.current.ai.shown = 0.95;
+					}
+					return;
+				} else {
+					event.current = event.current.next;
+				}
 			}
-			const { result } = await player.chooseCardTarget({
-				selectCard: Math.floor(player.countCards("h") / 2),
-				filterTarget(card, player, target) {
-					return target.isMinHandcard();
-				},
-				prompt: "将一半的手牌交给场上手牌数最少的一名角色",
-				forced: true,
-				ai2(target) {
-					return get.attitude(_status.event.player, target);
-				},
-			});
-			if (result.targets && result.targets[0]) {
-				await player.give(result.cards, result.targets[0]);
-			}
-		}
+		},
+		ai: {
+			respondShan: true,
+			skillTagFilter(player) {
+				if (player.storage.yuanjiuing) return false;
+				if (!player.hasZhuSkill("iroha_xiyuan")) return false;
+				return game.hasPlayer(current => current != player && current.group == "Kamihama_Magia_Union");
+			},
+		},
+		"_priority": 0,
 	},
 
 	// 美国织莉子
