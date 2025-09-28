@@ -3924,6 +3924,16 @@ const skills = {
 	},
 
 	// 由比鹤乃
+	"tsuruno_tuanluan": {
+		inherit: "drlt_huairou",
+		async content(event, trigger, player) {
+			let equip_type = get.subtype(event.cards[0]);
+			player.recast(event.cards);
+
+			if (player.isDisabled(equip_type)) player.enableEquip(equip_type);
+			delete player.getStat().skill.drlt_jueyan;
+		},
+	},
 	"tsuruno_qiangyun": {
 		audio: "ext:魔法纪录/audio/skill:2",
 		group: ["tsuruno_qiangyun_link", "tsuruno_qiangyun_delay", "tsuruno_qiangyun_turnOver"],

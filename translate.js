@@ -78,6 +78,8 @@ const translates = {
 	"yachiyo_gujun_info": "主角技，每名角色的回合限一次，当神盟角色濒死状态结束后，其可以令你回复一点体力。",
 
 	// 由比鹤乃
+	"tsuruno_tuanluan": "团栾",
+	"tsuruno_tuanluan_info": "出牌阶段，你可以重铸装备牌，若如此做，【决堰】视为未发动过。若此装备对应的装备区被废除，恢复该装备栏。",
 	"tsuruno_qiangyun": "强运",
 	"tsuruno_qiangyun_info": "锁定技，当你横置时，取消之；当你翻面后，你翻回正面朝上。你不能成为延时类锦囊的目标。",
 	"tsuruno_jizhi": "急智",
