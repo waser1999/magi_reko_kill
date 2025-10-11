@@ -382,7 +382,7 @@ const translates = {
 
 	// 山田正一郎
 	"yamata_feixiang": "飞翔",
-	"yamata_feixiang_info": "出牌阶段限一次，你可以进行一次判定。若判定结果为红色，则你摸X张牌；若为黑色，则你可以选择至多X名其他角色获得技能【催眠】。",
+	"yamata_feixiang_info": "出牌阶段限一次，你可以进行一次判定。若判定结果为黑色，则你摸X张牌；若为红色，则你可以选择至多X名其他角色获得技能【催眠】。",
 	"yamata_mofa": "魔法",
 	"yamata_mofa_info": "锁定技，当你即将受到属性伤害时，取消之。",
 	"yamata_cuimian": "催眠",
