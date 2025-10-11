@@ -7448,6 +7448,117 @@ const skills = {
 				},
 			},
 		}
-	}
+	},
+
+	// 山田正一郎
+	"yamata_feixiang": {
+		enable: "phaseUse",
+		usable: 1,
+		derivation: ["yamata_cuimian"],
+		ai: {
+			order: 10,
+			result: { player: 1 },
+			threaten: 3.2,
+		},
+		async content(event, trigger, player) {
+			const result = await player.judge(card => {
+				if (get.color(card) == "black") {
+					return 0;
+				}
+				return 2;
+			}).forResult();
+			const color = get.color(result.card);
+
+			switch (color) {
+				case "black":
+					player.draw(player.maxHp);
+					break;
+				case "red":
+					const resultTarget = player.chooseTarget("请选择【催眠】的目标", [1, player.maxHp], function (card, player, target) {
+						return target != player && !target.hasSkill("yamata_cuimian");
+					})
+						.set("ai", function (target) {
+							var player = _status.event.player;
+							var att = -get.attitude(player, target),
+								attx = att * 2;
+							if (att <= 0 || target.hasSkill("xinfu_pdgyingshi")) {
+								return 0;
+							}
+							if (target.hasJudge("lebu")) {
+								attx -= att;
+							}
+							if (target.hasJudge("bingliang")) {
+								attx -= att;
+							}
+							return attx / Math.max(2.25, Math.sqrt(target.countCards("h") + 1));
+						}).forResult();
+					const targets = resultTarget.targets;
+					player.line(targets, "green");
+					game.log(targets, "获得了", "#y“催眠”", "效果");
+					for (var i of targets) {
+						i.addSkill("yamata_cuimian");
+					}
+					break;
+			}
+		}
+	},
+	"yamata_cuimian": {
+		trigger: { player: "phaseZhunbeiBegin" },
+		audio: false,
+		forced: true,
+		charlotte: true,
+		async content(event, trigger, player) {
+			player.removeSkill("yamata_cuimian");
+			const result = await player.judge().forResult();
+			const color = get.color(result.card);
+			switch (color) {
+				case "red":
+					player.skip("phaseDraw");
+					break;
+				case "black":
+					player.skip("phaseUse");
+					player.skip("phaseDiscard");
+					break;
+				default:
+					break;
+			}
+		},
+		mark: true,
+		intro: {
+			content: "准备阶段时进行判定，结果为红则跳过摸牌阶段，为黑则跳过出牌阶段和弃牌阶段",
+		},
+		ai: {
+			order: 7,
+			result: {
+				player: 1,
+			},
+		},
+	},
+	"yamata_mofa": {
+		trigger: { player: "damageBegin4" },
+		filter(event, player) {
+			if (event.nature) {
+				return true;
+			}
+		},
+		forced: true,
+		content() {
+			trigger.cancel();
+		},
+		ai: {
+			nofire: true,
+			nodamage: true,
+			effect: {
+				target: function (card, player, target, current) {
+					if (get.tag(card, "damage") && !card.nature) {
+						return [1, -1];
+					}
+					if (get.tag(card, "natureDamage")) {
+						return "zeroplayertarget";
+					}
+				},
+			},
+		},
+	},
 };
 export default skills;
