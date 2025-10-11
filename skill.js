@@ -7474,7 +7474,7 @@ const skills = {
 					player.draw(player.maxHp);
 					break;
 				case "red":
-					const resultTarget = player.chooseTarget("请选择【催眠】的目标", [1, player.maxHp], function (card, player, target) {
+					const resultTarget = await player.chooseTarget("请选择【催眠】的目标", true, [1, player.maxHp], function (card, player, target) {
 						return target != player && !target.hasSkill("yamata_cuimian");
 					})
 						.set("ai", function (target) {
@@ -7547,14 +7547,14 @@ const skills = {
 		},
 		ai: {
 			nofire: true,
-			nodamage: true,
+			nothunder: true,
 			effect: {
 				target: function (card, player, target, current) {
-					if (get.tag(card, "damage") && !card.nature) {
-						return [1, -1];
-					}
 					if (get.tag(card, "natureDamage")) {
 						return "zeroplayertarget";
+					}
+					if (card.name == "tiesuo") {
+						return 0.01;
 					}
 				},
 			},
