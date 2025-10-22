@@ -663,7 +663,7 @@ const characters = {
 		img: "extension/魔法纪录/image/suzune.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/suzune.mp3"]
 	},
-	"yamata": {
+	"yamata": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
 		hp: 4,

@@ -999,6 +999,7 @@ const skills = {
 		async content(event, trigger, player) {
 			const result = await player.chooseCardTarget({
 				prompt: "弃置两张手牌并选择一名已受伤角色，你与其各回复一点体力。然后你们获得【无畏】",
+				forced: true,
 				filterTarget(card, player, target) {
 					return player != target && target.isDamaged();
 				},
@@ -1663,7 +1664,7 @@ const skills = {
 	"iroha_dimeng": {
 		trigger: {
 			player: "gainAfter",
-			global: "loseAsyncAfter",
+			global: "loseAsyncAfter"
 		},
 		check(event, player) {
 			const n1 = player.countCards("h")
@@ -1684,7 +1685,7 @@ const skills = {
 			})
 		},
 		filter(event, player) {
-			return event.getParent(2).name != "iroha_dimeng" && player.countCards("h") >= player.hp && player.countCards("h") > 0;
+			return event.getg(player).length != 0 && event.getParent(2).name != "iroha_dimeng" && player.countCards("h") >= player.hp && player.countCards("h") > 0;
 		},
 		async content(event, trigger, player) {
 
@@ -1771,7 +1772,7 @@ const skills = {
 				const f2 = target1.isDamaged()
 				if (f1 || f2) {
 					const result = await player.chooseTarget("缔盟：请选择要回复体力的角色", 1, false, function (card, player, target) {
-						return target == player || target == target1;
+						return (target == player || target == target1) && target.isDamaged();
 					}).set("ai", function (target) {
 						const att = get.attitude(player, target);
 						return att + ((att >= 0 && target.hp == 1) ? 3 : 0)
