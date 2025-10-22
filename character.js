@@ -663,6 +663,15 @@ const characters = {
 		img: "extension/魔法纪录/image/suzune.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/suzune.mp3"]
 	},
+	"yamata": {
+		sex: "male",
+		group: "Magia_Others",
+		hp: 4,
+		maxHp: 4,
+		skills: ["yamata_feixiang", "yamata_mofa"],
+		img: "extension/魔法纪录/image/yamata.png",
+		dieAudios: ["ext:魔法纪录/audio/die/yamata.mp3"]
+	}
 }
 
 const character_translates = {
@@ -746,6 +755,7 @@ const character_translates = {
 	kazumi: "和美",
 	dArc: "贞德",
 	suzune: "天乃铃音",
+	yamata: "山田正一郎",
 };
 
 const perfectPairs = {
@@ -879,6 +889,7 @@ const characterTitles = {
 	kazumi: "外缘极限", //和美
 	dArc: "La Lumière", //贞德
 	suzune: "燃椿之焰", //天乃铃音
+	yamata: "超级科学回旋", //山田
 };
 
 const characterReplaces = {
