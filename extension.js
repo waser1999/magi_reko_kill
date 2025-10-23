@@ -16,12 +16,12 @@ export default function () {
 			lib.translate.madoka4 = "魔法纪录其它势力";
 			lib.translate.madoka5 = "魔圆其它角色";
 			lib.characterSort['mode_extension_魔法纪录'] = {
-			"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "mabayu", "homura2", "ulti_madoka", "devil_homura"],
-			"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "mitama", "Kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "hanna", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
-			"madoka3": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
-			"madoka4": ["yuna", "ao", "juri", "shizuka", "nayuta", "mikage"],
-			"madoka5": ["kirika", "oriko", "yuma", "name", "asumi", "kazumi", "dArc", "suzune"]
-		}
+				"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "mabayu", "homura2", "ulti_madoka", "devil_homura"],
+				"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "mitama", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "hanna", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
+				"madoka3": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
+				"madoka4": ["yuna", "ao", "juri", "shizuka", "nayuta", "mikage"],
+				"madoka5": ["kirika", "oriko", "yuma", "name", "asumi", "kazumi", "dArc", "suzune"]
+			}
 		}, prepare: function () {
 
 		}, precontent: function () {
