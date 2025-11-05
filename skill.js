@@ -2669,60 +2669,52 @@ const skills = {
 		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { player: "phaseZhunbeiBegin" },
 		frequent: true,
-		content() {
-			"step 0";
+		async content(event, trigger, player) {
 			event.cards = [];
-			"step 1";
-			var next = player.judge(function (card) {
-				var color = get.color(card);
-				var evt = _status.event.getParent("homura_juwu");
-				if (evt) {
+			while(true){
+				var next = player.judge(card => {
+					var color = get.color(card);
+					var evt = _status.event.getParent("homura_juwu");
 					if (!evt.color) {
 						evt.color = color;
-					} else if (evt.color != color) {
+						return 1;
+					}
+					if (evt && evt.color != color) {
 						return -1;
 					}
-				}
-				return 1;
-			});
-			next.judge2 = function (result) {
-				return result.bool;
-			};
-			if (!player.hasSkillTag("rejudge")) {
-				next.set("callback", function () {
-					if (get.position(card, true) == "o") {
-						player.gain(card, "gain2");
-					}
+					return 1;
 				});
-			} else {
-				next.set("callback", function () {
-					event.getParent().orderingCards.remove(card);
-				});
-			}
-			"step 2";
-			if (result.judge > 0) {
-				event.cards.push(result.card);
-				player.chooseBool("是否再次发动【聚武】？").set("frequentSkill", "homura_juwu");
-			} else {
-				for (var i = 0; i < event.cards.length; i++) {
-					if (get.position(event.cards[i], true) != "o") {
-						event.cards.splice(i, 1);
-						i--;
-					}
+
+				next.judge2 = result => result.bool;
+
+				if (get.mode() != "guozhan" && !player.hasSkillTag("rejudge")) {
+					next.set("callback", function () {
+						if (get.position(card, true) == "o") {
+							player.gain(card, "gain2");
+						}
+					});
+				} else {
+					next.set("callback", function () {
+						event.getParent().orderingCards.remove(card);
+					});
 				}
-				if (event.cards.length) {
-					player.gain(event.cards, "gain2");
+
+				let result = await next.forResult();
+
+				if (result?.bool && result?.card) {
+					event.cards.push(result.card);
+					result = await player.chooseBool("是否再次发动【聚武】？").set("frequentSkill", "homura_juwu").forResult();
+					if (!result?.bool) {
+							break;
+						}
+				} else {
+					break;
 				}
-				event.finish();
+
 			}
-			"step 3";
-			if (result.bool) {
-				event.goto(1);
-			} else {
-				if (event.cards.length) {
-					player.gain(event.cards, "gain2");
-				}
-			}
+		},
+		ai: {
+			threaten : 3.5
 		},
 	},
 
@@ -4150,7 +4142,7 @@ const skills = {
 			const n = event.cards.length
 			await player.draw(n - 1);
 
-			player.addTempSkill("tsuruno_yanzhan_temp");
+			player.addTempSkill("tsuruno_yanzhan_temp","phaseUseAfter");
 			player.addMark("tsuruno_yanzhan_temp", n, false);
 		},
 		ai: {
@@ -4160,9 +4152,10 @@ const skills = {
 			},
 			threaten: 2.5,
 		},
-		subSkill: {
+		subSkill: { 
 			temp: {
 				charlotte: true,
+				onremove: true,
 				intro: { content: "本回合使用【杀】的次数上限+#" },
 				mod: {
 					cardUsable(card, player, num) {
@@ -4198,18 +4191,15 @@ const skills = {
 				return event.card == next.card;
 			}).then(() => {
 				if (!player.hasHistory("sourceDamage", evt => evt.card == trigger.card)) {
-					return player.chooseControl(["弃对方1张牌", "摸1张牌"])
-						.set("filterControl", control => {
-							if (control == "弃对方1张牌") {
-								return player.storage.tsuruno_yanwu.countDiscardableCards(player, "he") > 0;
-							}
-							return true
-						})
-						.set("ai", () => {
-							if (!(get.event("controls").includes("弃对方1张牌")) || get.attitude(player, player.storage.tsuruno_yanwu) >= 0 || player.countCards("h") <= player.maxHp)
-								return "摸1张牌";
-							return "弃对方1张牌";
-						}).forResult();
+					let control = ["弃对方1张牌", "摸1张牌"]
+					if (player.storage.tsuruno_yanwu.countDiscardableCards(player, "he") > 0)
+						control.remove("弃对方1张牌"); 
+					return player.chooseControl(control)
+					.set("ai", () => {
+						if (!(get.event("controls").includes("弃对方1张牌")) || get.attitude(player, player.storage.tsuruno_yanwu) >= 0 || player.countCards("h") <= player.maxHp)
+							return "摸1张牌";
+						return "弃对方1张牌";
+					}).forResult();
 				}
 			}).then(() => {
 				if (result.control == "摸1张牌") {
