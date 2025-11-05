@@ -207,14 +207,14 @@ const characters = {
 		img: "extension/魔法纪录/image/mitama.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mitama.mp3"],
 	},
-	"Kagome": {//佐鸟笼目
+	"kagome": {//佐鸟笼目
 		sex: "female",
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
 		skills: ["hsdianmo", "hszaibi"],
-		img: "extension/魔法纪录/image/Kagome.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/Kagome.mp3"]
+		img: "extension/魔法纪录/image/kagome.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/kagome.mp3"]
 	},
 	"kanae": {//雪野加奈惠
 		sex: "female",
@@ -663,14 +663,14 @@ const characters = {
 		img: "extension/魔法纪录/image/suzune.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/suzune.mp3"]
 	},
-	"yamata": {//山田正一郎
+	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
 		hp: 4,
 		maxHp: 4,
-		skills: ["yamata_feixiang", "yamata_mofa"],
-		img: "extension/魔法纪录/image/yamata.png",
-		dieAudios: ["ext:魔法纪录/audio/die/yamata.mp3"]
+		skills: ["yamada_feixiang", "yamada_mofa"],
+		img: "extension/魔法纪录/image/yamada.png",
+		dieAudios: ["ext:魔法纪录/audio/die/yamada.mp3"]
 	}
 }
 
@@ -705,7 +705,7 @@ const character_translates = {
 	ui: "环忧",
 	kanagi: "和泉十七夜",
 	mitama: "八云御魂",
-	Kagome: "佐鸟笼目",
+	kagome: "佐鸟笼目",
 	kanae: "雪野加奈惠",
 	ashley: "阿什莉·泰勒",
 	hinano: "都雏乃",
@@ -755,7 +755,7 @@ const character_translates = {
 	kazumi: "和美",
 	dArc: "贞德",
 	suzune: "天乃铃音",
-	yamata: "山田正一郎",
+	yamada: "山田正一郎",
 };
 
 const perfectPairs = {
@@ -839,7 +839,7 @@ const characterTitles = {
 	ui: "希望之光", //环忧
 	kanagi: "断罪的光芒", //和泉十七夜
 	mitama: "绝对自坏演舞", //八云御魂
-	Kagome: "幻想之树", //佐鸟笼目
+	kagome: "幻想之树", //佐鸟笼目
 	kanae: "无思考", //雪野加奈惠
 	ashley: "Ocean Tick Hurricane", //阿什莉·泰勒
 	hinano: "狂怒原子", //都雏乃
@@ -889,7 +889,7 @@ const characterTitles = {
 	kazumi: "外缘极限", //和美
 	dArc: "La Lumière", //贞德
 	suzune: "燃椿之焰", //天乃铃音
-	yamata: "超级科学回旋", //山田
+	yamada: "超级科学回旋", //山田
 };
 
 const characterReplaces = {

@@ -1013,16 +1013,16 @@ const skills = {
 					return get.attitude(player, target)
 				}
 			})
-			.forResult();
+				.forResult();
 
-			
+
 			if (result.bool) {
 				player.discard(result.cards);
 				const target = result.targets[0];
 
 				player.recover();
 				target.recover();
-			
+
 				player.addTempSkill("sayaka_wuwei", { player: "phaseBeginStart" })
 				player.storage.sayaka_wuwei = target;
 
@@ -1049,7 +1049,7 @@ const skills = {
 	"sayaka_wuwei": {
 		trigger: { player: "damageBegin" },
 		frequent: true,
-		onremove(player){
+		onremove(player) {
 			player.storage.sayaka_wuwei?.removeSkill("sayaka_wuwei");
 			delete player.storage.sayaka_wuwei;
 		},
@@ -1059,13 +1059,13 @@ const skills = {
 		async content(event, trigger, player) {
 			const card = get.cards(1)[0];
 			await game.cardsGotoOrdering(card);
-			
+
 			await player.showCards(card, get.translation(player) + "发动了【无畏】");
-			
+
 			const xiezouCards = player.getExpansions('sayaka_xiezou');
-			
+
 			if (xiezouCards.length != 0) {
-			
+
 				if (xiezouCards.some(xiezouCard => get.suit(card) == get.suit(xiezouCard))) {
 					player.gain(card, 'gain2');
 				} else {
@@ -1150,7 +1150,7 @@ const skills = {
 					attackRange -= info.distance.attackFrom
 					if (card == player.getEquip('equip1'))
 						return num + (attackRange - 1) * 3
-					if (get.subtype(card) == 'equip1'){
+					if (get.subtype(card) == 'equip1') {
 						const weapon = player.getEquip('equip1')
 						const attackRange2 = weapon ? (get.info(weapon)?.distance?.attackFrom ? get.info(weapon).distance.attackFrom : 1) : 1
 						if (attackRange >= attackRange2)
@@ -1166,7 +1166,7 @@ const skills = {
 					attackRange -= info.distance.attackFrom
 					if (card == player.getEquip('equip1'))
 						return num + (attackRange - 1) * 3
-					if (get.subtype(card) == 'equip1'){
+					if (get.subtype(card) == 'equip1') {
 						const weapon = player.getEquip('equip1')
 						const attackRange2 = weapon ? (get.info(weapon)?.distance?.attackFrom ? get.info(weapon).distance.attackFrom : 1) : 1
 						if (attackRange >= attackRange2)
@@ -1212,7 +1212,7 @@ const skills = {
 				return arg.target.storage.madoka_pomo_2.includes("red") && arg.target.storage.madoka_pomo_2.includes("black");
 			},
 		},
-		subSkill:{
+		subSkill: {
 			2: {
 				charlotte: true,
 				forced: true,
@@ -1321,11 +1321,11 @@ const skills = {
 					})
 					.set("ai", target => {
 						const att = get.attitude(player, target);
-						if (att > 0 && (target.countCards("j") > 0 || target.countCards("e",  card => get.value(card, target) < 0) > 0)) {
+						if (att > 0 && (target.countCards("j") > 0 || target.countCards("e", card => get.value(card, target) < 0) > 0)) {
 							return 10 + att;
 						}
-						if (att < 0){
-							if (target.countCards("e") > 0 && (target.countCards("e", card => get.value(card, target) < 0) != target.countCards("e"))  && !target.hasSkillTag("noe"))
+						if (att < 0) {
+							if (target.countCards("e") > 0 && (target.countCards("e", card => get.value(card, target) < 0) != target.countCards("e")) && !target.hasSkillTag("noe"))
 								return -att;
 							return 0;
 						}
@@ -1334,14 +1334,14 @@ const skills = {
 				if (result?.bool && result?.targets?.length) {
 					const enemy = result.targets[0];
 					await player.discardPlayerCard(enemy, "ej", true)
-							.set("ai", button => {
-								const card = button.link;
-								if (get.attitude(player, enemy) > 0 && get.position(card) == "j")
-									return 20 + get.value(card);
-								if (get.attitude(player, enemy) > 0 && get.position(card) == "e")
-									return -get.value(card);
-								return get.value(card);
-							});
+						.set("ai", button => {
+							const card = button.link;
+							if (get.attitude(player, enemy) > 0 && get.position(card) == "j")
+								return 20 + get.value(card);
+							if (get.attitude(player, enemy) > 0 && get.position(card) == "e")
+								return -get.value(card);
+							return get.value(card);
+						});
 				}
 			}
 		},
@@ -1655,7 +1655,7 @@ const skills = {
 			order: 9,
 			threaten: 2,
 			result: {
-				player(player){
+				player(player) {
 					return 1;
 				}
 			}
@@ -1668,15 +1668,15 @@ const skills = {
 		},
 		check(event, player) {
 			const n1 = player.countCards("h")
-			return game.hasPlayer(function (target){
+			return game.hasPlayer(function (target) {
 				if (player == target) return false;
-				if (get.attitude(player, target) > 0){
+				if (get.attitude(player, target) > 0) {
 					const n01 = player.countCards("h", card => get.value(card, target) >= 0)
 					if (n01 == 0) return false;
 					if ((n1 >= player.hp + 3 && _status.currentPhase == player) || _status.currentPhase == target)
 						return true;
 					const n02 = target.countCards("h")
-					if (n1 > n02 && ((n1+n02) % 2 == 0) && ((n1 - n02) / 2 <= n01))
+					if (n1 > n02 && ((n1 + n02) % 2 == 0) && ((n1 - n02) / 2 <= n01))
 						return true;
 				} else {
 					return player.hasCard("h", card => get.value(card, player) <= 0 && get.value(card, target) <= 0)
@@ -1693,41 +1693,41 @@ const skills = {
 			const n2 = player.isDamaged()
 
 			const result1 = await player
-			.chooseTarget("缔盟：请选择要交给手牌的角色", 1, true, function (card, player, target) {
-				return player != target;
-			}).set("ai", function (target) {
-				const n02 = target.countCards("h")
-				if (get.attitude(player, target) > 0){
-					const n01 = player.countCards("h", card => get.value(card, target) >= 0)
-					const f0 = n01 > 0
-					const f1 = (n1 >= player.hp + 3 && _status.currentPhase == player) || _status.currentPhase == target
-					const f2 = n1 > n02 && (n1 + n02) % 2 == 0 && (n1 - n02) / 2 <= Math.min(n01, player.hp)
-					if (f0 && (f1 || f2)) {
-						let value = Math.abs(get.attitude(player, target));
-						if (f2) {
-							value += 3;
-							if (n2 || target.isDamaged()) {
-								value += 7;
-								if (target.isDamaged() && target.hp == 1)
-									value += 8;
+				.chooseTarget("缔盟：请选择要交给手牌的角色", 1, true, function (card, player, target) {
+					return player != target;
+				}).set("ai", function (target) {
+					const n02 = target.countCards("h")
+					if (get.attitude(player, target) > 0) {
+						const n01 = player.countCards("h", card => get.value(card, target) >= 0)
+						const f0 = n01 > 0
+						const f1 = (n1 >= player.hp + 3 && _status.currentPhase == player) || _status.currentPhase == target
+						const f2 = n1 > n02 && (n1 + n02) % 2 == 0 && (n1 - n02) / 2 <= Math.min(n01, player.hp)
+						if (f0 && (f1 || f2)) {
+							let value = Math.abs(get.attitude(player, target));
+							if (f2) {
+								value += 3;
+								if (n2 || target.isDamaged()) {
+									value += 7;
+									if (target.isDamaged() && target.hp == 1)
+										value += 8;
+								}
 							}
+							return value;
 						}
-						return value;
-					}
-				} else {
-					const n01 = player.countCards("h", card => get.value(card, player) <= 0 && get.value(card, target) <= 0)
-					if (n01 > 0) {
-						let value = Math.abs(get.attitude(player, target));
-						if (n1 > n02 && (n1 + n02) % 2 == 0 && (n1 - n02) / 2 <= Math.min(n01, player.hp)) {
-							value += 3;
-							if (n2)
-								value += 10;
+					} else {
+						const n01 = player.countCards("h", card => get.value(card, player) <= 0 && get.value(card, target) <= 0)
+						if (n01 > 0) {
+							let value = Math.abs(get.attitude(player, target));
+							if (n1 > n02 && (n1 + n02) % 2 == 0 && (n1 - n02) / 2 <= Math.min(n01, player.hp)) {
+								value += 3;
+								if (n2)
+									value += 10;
+							}
+							return value;
 						}
-						return value;
 					}
-				}
-				return 0;
-			}).forResult();
+					return 0;
+				}).forResult();
 
 			if (!result1.bool) return;
 
@@ -1743,23 +1743,23 @@ const skills = {
 
 			const nsub = (n1 - n4) / 2
 			const ncheck = n1 > n4 && (n1 + n4) % 2 == 0 && (nsub <= Math.min((att > 0 ? n01 : n02), player.hp))
-			
+
 
 			const result2 = await player.chooseCard("h", "缔盟：请选择要交给" + get.translation(target1) + "的至多" + get.cnNumber(player.hp) + "张手牌", true, [1, Math.min(player.hp, player.countCards("h"))])
-			.set("ai", function (card) {
-				if ((ncheck && ui.selected.cards.length == nsub) || (!ncheck && att > 0 && ui.selected.cards.length == (n1 - player.hp + 1)))
-					return -1
-				if (att > 0){
-					if (n3 && n30)
-						return get.value(card, target1)
-					return 1 / get.value(card, target1)
-				} else {
-					if (get.value(card, player) > 0)
+				.set("ai", function (card) {
+					if ((ncheck && ui.selected.cards.length == nsub) || (!ncheck && att > 0 && ui.selected.cards.length == (n1 - player.hp + 1)))
 						return -1
-					return -get.value(card, target1)
-				}
-			})
-			.forResult();
+					if (att > 0) {
+						if (n3 && n30)
+							return get.value(card, target1)
+						return 1 / get.value(card, target1)
+					} else {
+						if (get.value(card, player) > 0)
+							return -1
+						return -get.value(card, target1)
+					}
+				})
+				.forResult();
 
 			if (!result2.bool) return;
 
@@ -2482,7 +2482,7 @@ const skills = {
 		frequent: true,
 		async content(event, trigger, player) {
 			const ck = await player.chooseBool("是否失去1点体力额外观看2张牌？")
-				.set('ai',function(){
+				.set('ai', function () {
 					if (player.countCards("h", card => card.name == "du") >= player.hp || (player.countCards("h") - 1) >= 2 * player.hp || player.hasJudge("lebu"))
 						return false;
 					return (player.hp >= 3) ? true : false;
@@ -2498,36 +2498,36 @@ const skills = {
 			game.cardsGotoOrdering(cards);
 
 			const result = await player.chooseToMove(prompt, true)
-				.set("list",[["牌堆顶",cards],["牌堆底",cards2]])
-				.set("prompt","业因：若你将牌都置于牌堆底，则你跳过弃牌阶段")
+				.set("list", [["牌堆顶", cards], ["牌堆底", cards2]])
+				.set("prompt", "业因：若你将牌都置于牌堆底，则你跳过弃牌阶段")
 				.set("processAI", function (list) {
 					const cards = list[0][1].slice(0);
-					
+
 					const poisonCards = cards.filter(card => card.name == 'du');
 					const nonPoisonCards = cards.filter(card => card.name != 'du');
-					
+
 					const redCards = nonPoisonCards.filter(card => get.color(card) == 'red');
 					const blackCards = nonPoisonCards.filter(card => get.color(card) == 'black');
 
 					if (player.countCards("h", card => card.name == "du") >= player.hp || (player.countCards("h") - 1) >= 2 * player.hp || player.hasJudge("lebu")) {
-						return [[],redCards.concat(blackCards.concat(poisonCards))]
+						return [[], redCards.concat(blackCards.concat(poisonCards))]
 					}
-					
+
 					const redValue = redCards.reduce((sum, card) => sum + get.value(card), 0);
 					const blackValue = blackCards.reduce((sum, card) => sum + get.value(card), 0);
 
 					const cards1 = redValue >= blackValue ? redCards : blackCards;
 					const cards1Value = redValue >= blackValue ? redValue : blackValue;
 					const cards2 = redValue >= blackValue ? blackCards : redCards;
-					
+
 					if ((cards1.length <= 1 && cards1Value <= 7)) {
-						return [[],cards1.concat(cards2.concat(poisonCards))];
+						return [[], cards1.concat(cards2.concat(poisonCards))];
 					}
 					return [cards1, cards2.concat(poisonCards)];
 				})
 				.forResult();
 
-			if(result?.bool){
+			if (result?.bool) {
 				let top = result.moved[0];
 				let bottom = result.moved[1];
 
@@ -2543,7 +2543,7 @@ const skills = {
 			}
 		},
 		ai: {
-			threaten : 3.5
+			threaten: 3.5
 		}
 	},
 	"homura_shiting": {
@@ -7446,10 +7446,10 @@ const skills = {
 	},
 
 	// 山田正一郎
-	"yamata_feixiang": {
+	"yamada_feixiang": {
 		enable: "phaseUse",
 		usable: 1,
-		derivation: ["yamata_cuimian"],
+		derivation: ["yamada_cuimian"],
 		ai: {
 			order: 10,
 			result: { player: 1 },
@@ -7470,7 +7470,7 @@ const skills = {
 					break;
 				case "red":
 					const resultTarget = await player.chooseTarget("请选择【催眠】的目标", true, [1, player.maxHp], function (card, player, target) {
-						return target != player && !target.hasSkill("yamata_cuimian");
+						return target != player && !target.hasSkill("yamada_cuimian");
 					})
 						.set("ai", function (target) {
 							var player = _status.event.player;
@@ -7491,19 +7491,19 @@ const skills = {
 					player.line(targets, "green");
 					game.log(targets, "获得了", "#y“催眠”", "效果");
 					for (var i of targets) {
-						i.addSkill("yamata_cuimian");
+						i.addSkill("yamada_cuimian");
 					}
 					break;
 			}
 		}
 	},
-	"yamata_cuimian": {
+	"yamada_cuimian": {
 		trigger: { player: "phaseZhunbeiBegin" },
 		audio: false,
 		forced: true,
 		charlotte: true,
 		async content(event, trigger, player) {
-			player.removeSkill("yamata_cuimian");
+			player.removeSkill("yamada_cuimian");
 			const result = await player.judge().forResult();
 			const color = get.color(result.card);
 			switch (color) {
@@ -7529,7 +7529,7 @@ const skills = {
 			},
 		},
 	},
-	"yamata_mofa": {
+	"yamada_mofa": {
 		trigger: { player: "damageBegin4" },
 		filter(event, player) {
 			if (event.nature) {
