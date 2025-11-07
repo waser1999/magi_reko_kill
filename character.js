@@ -20,6 +20,15 @@ const characters = {
 		img: "extension/魔法纪录/image/homura.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/homura.mp3"],
 	},
+	"homura_ribbon": {//缎带焰
+		sex: "female",
+		group: "Law_of_Cycles",
+		hp: 3,
+		maxHp: 3,
+		skills: ["homura_lunzhuan", "homura_chongyuan"],
+		img: "extension/魔法纪录/image/homura_ribbon.png",
+		dieAudios: ["ext:魔法纪录/audio/die/homura_ribbon.mp3"],
+	},
 	"sayaka": {//美树沙耶香
 		sex: "female",
 		group: "Law_of_Cycles",
@@ -66,14 +75,14 @@ const characters = {
 		dieAudios: ["ext:魔法纪录/audio/die/mabayu.mp3"],
 		isZhugong: true
 	},
-	"homura2": {//麻花焰
+	"homura_glasses": {//麻花焰
 		sex: "female",
 		group: "Law_of_Cycles",
 		hp: 3,
 		maxHp: 3,
-		skills: ["homura2_jihuo", "homura2_juhuo", "homura2_liandan"],
-		img: "extension/魔法纪录/image/homura2.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/homura2.mp3"],
+		skills: ["homura_glasses_jihuo", "homura_glasses_juhuo", "homura_glasses_liandan"],
+		img: "extension/魔法纪录/image/homura_glasses.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/homura_glasses.mp3"],
 	},
 	"ulti_madoka": {//神鹿目圆
 		sex: "female",
@@ -566,7 +575,7 @@ const characters = {
 		group: "Magia_Others",
 		hp: 4,
 		maxHp: 4,
-		skills: ["shizuka_xueji", "komari_xueshang", "tokime_shinv"],
+		skills: ["shizuka_xueji", "shizuka_xueshang", "tokime_shinv"],
 		img: "extension/魔法纪录/image/shizuka.png",
 		dieAudios: ["ext:魔法纪录/audio/die/shizuka.mp3"],
 		clans: ["时女一族"],
@@ -690,7 +699,8 @@ const character_translates = {
 	kyoko: "佐仓杏子",
 	nagisa: "百江渚",
 	mabayu: "爱生眩",
-	homura2: "麻花焰",
+	homura_glasses: "麻花焰",
+	homura_ribbon: "缎带焰",
 	"ulti_madoka": "神鹿目圆",
 	"devil_homura": "魔晓美焰",
 	iroha: "环彩羽",
@@ -759,16 +769,17 @@ const character_translates = {
 };
 
 const perfectPairs = {
-	madoka: ["homura", "mami", "sayaka", "homura2", "ulti_madoka", "devil_homura"],
-	homura: ["madoka", "homura2", "ulti_madoka", "kyoko", "mabayu", "devil_homura"],
-	sayaka: ["madoka", "kyoko", "homura2", "mami"],
-	mami: ["kyoko", "mabayu", "homura2", "madoka", "sayaka", "nagisa"],
-	kyoko: ["mami", "homura", "homura2", "sayaka", "yuma"],
+	madoka: ["homura", "mami", "sayaka", "homura_glasses", "ulti_madoka", "devil_homura"],
+	homura: ["madoka", "homura_glasses", "ulti_madoka", "kyoko", "mabayu", "devil_homura", "homura_ribbon"],
+	homura_ribbon: ["madoka", "homura", "homura_glasses", "ulti_madoka", "kyoko", "mabayu", "devil_homura"],
+	sayaka: ["madoka", "kyoko", "homura_glasses", "mami"],
+	mami: ["kyoko", "mabayu", "homura_glasses", "madoka", "sayaka", "nagisa"],
+	kyoko: ["mami", "homura", "homura_glasses", "sayaka", "yuma"],
 	nagisa: ["mami"],
-	mabayu: ["mami", "homura", "homura2"],
-	homura2: ["madoka", "mami", "sayaka", "homura", "devil_homura"],
+	mabayu: ["mami", "homura", "homura_glasses"],
+	homura_glasses: ["madoka", "mami", "sayaka", "homura", "devil_homura", "homura_ribbon"],
 	ulti_madoka: ["sayaka", "homura", "madoka", "devil_homura"],
-	devil_homura: ["homura", "homura2", "ulti_madoka", "madoka"],
+	devil_homura: ["homura", "homura_glasses", "ulti_madoka", "madoka"],
 	iroha: ["yachiyo", "felicia", "sana", "kuroe", "ui", "dp_iroha"],
 	yachiyo: ["iroha", "tsuruno", "momoko", "mifuyu", "meru", "kanae"],
 	tsuruno: ["felicia", "yachiyo"],
@@ -819,12 +830,13 @@ const perfectPairs = {
 const characterTitles = {
 	madoka: "魔法之雨", //鹿目圆
 	homura: "导弹集中轰炸", //晓美焰
+	homura_ribbon: "黑色魔法压制",//缎带焰
 	sayaka: "无畏极强音", //美树沙耶香
 	mami: "终幕射击", //巴麻美
 	kyoko: "盟神抉枪", //佐仓杏子
 	nagisa: "魔法肥皂泡", //百江渚
 	mabayu: "空洞人偶", //爱生眩
-	homura2: "时间停止攻击", //麻花焰
+	homura_glasses: "时间停止攻击", //麻花焰
 	ulti_madoka: "已经没必要再绝望了！", //神鹿目圆
 	devil_homura: "棒针的连续穿刺", //魔晓美焰
 	iroha: "未来之路", //环彩羽
