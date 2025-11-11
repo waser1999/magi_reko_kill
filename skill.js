@@ -3074,8 +3074,13 @@ const skills = {
 				return get.attitude(_status.event.player, target) > 0;
 			}).forResult();
 
+			if (!targets.bool) {
+				return;
+			}
+
 			let target = targets.targets[0];
 			await target.skip("phaseDiscard");
+			player.line(target, "green");
 			game.log(player, "发动了技能【重圆】，令", target, "跳过弃牌阶段");
 		},
 		subSkill: {
