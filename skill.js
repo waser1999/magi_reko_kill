@@ -265,7 +265,6 @@ const skills = {
 			player: ["loseAfter", "recoverAfter"],
 			global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
 		},
-		usable: 3,
 		frequent: true,
 		preHidden: true,
 		filter(event, player) {

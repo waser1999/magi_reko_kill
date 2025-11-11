@@ -490,8 +490,8 @@ const characters = {
 	"saint_mami": {//圣巴麻美
 		sex: "female",
 		group: "Magius_Wing",
-		hp: 4,
-		maxHp: 4,
+		hp: 5,
+		maxHp: 5,
 		skills: ["saint_mami_zhongye", "saint_mami_xiaoyan"],
 		img: "extension/魔法纪录/image/saint_mami.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/saint_mami.mp3"],
