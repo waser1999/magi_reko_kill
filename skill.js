@@ -287,14 +287,18 @@ const skills = {
 			var evt = event.getl(player);
 			return evt && evt.cards2 && evt.cards2.length > 0;
 		},
+		// 技能发动次数修改器
+		getIndex(event, player) {
+			return event.name == "recover" ? event.num : event.getl(player).cards.length;
+		},
 		async content(event, trigger, player) {
-			const num = trigger.name == "recover" ? trigger.num : trigger.getl(player).cards.length;
-			for (let i = 0; i < num; i++) {
-				const next = player.judge(function (card) {
-					return 1;
-				});
-				next.set("callback", lib.skill.kyoko_shengxu.callback);
-			}
+			// const num = trigger.name == "recover" ? trigger.num : trigger.getl(player).cards.length;
+			// for (let i = 0; i < num; i++) {
+			const next = player.judge(function (card) {
+				return 1;
+			});
+			next.set("callback", lib.skill.kyoko_shengxu.callback);
+			// }
 		},
 		async callback(event, trigger, player) {
 			const card = event.judgeResult.card || trigger.card;
@@ -392,7 +396,7 @@ const skills = {
 			check(button) {
 				const player = _status.event.player
 				if (typeof button.link == "object") {
-					if (player.hasSkill("kyoko_xuanhuo")) {
+					if (player.hasSkill("kyoko_xunshen")) {
 						if (button.link.name == "sha")
 							return Math.max(95 - get.value(button.link), 0.01);
 						return Math.max(100 - get.value(button.link), 0.01);
@@ -793,7 +797,7 @@ const skills = {
 			},
 		},
 	},
-	"kyoko_xuanhuo": {
+	"kyoko_xunshen": {
 		limited: true,
 		enable: "phaseUse",
 		filter(event, player) {
@@ -806,7 +810,7 @@ const skills = {
 			await player.gain(player.getExpansions("kyoko_shengxu"), "gain2")
 			await player.removeSkill("kyoko_shengxu");
 			await player.draw(num);
-			player.addTempSkill("kyoko_xuanhuo_2");
+			player.addTempSkill("kyoko_xunshen_2");
 		},
 		ai: {
 			threaten: 4.5,
@@ -2868,27 +2872,27 @@ const skills = {
 		mark: true,
 		marktext: "弹",
 	},
-	"homura_glasses_juhuo": {
+	"homura_glasses_baopo": {
 		enable: "chooseToUse",
 		hiddenCard(player, name) {
 			return name == "huogong" && player.hasCard(card => {
-				return !player.storage.homura_glasses_juhuo_used?.includes(get.suit(card));
+				return !player.storage.homura_glasses_baopo_used?.includes(get.suit(card));
 			}, "he");
 		},
 		filterCard(card, player) {
-			return !player.storage.homura_glasses_juhuo_used?.includes(get.suit(card));
+			return !player.storage.homura_glasses_baopo_used?.includes(get.suit(card));
 		},
 		viewAs: { name: "huogong" },
 		viewAsFilter(player) {
 			return player.hasCard(card => {
-				return !player.storage.homura_glasses_juhuo_used?.includes(get.suit(card));
+				return !player.storage.homura_glasses_baopo_used?.includes(get.suit(card));
 			}, "he");
 		},
 		position: "he",
 		prompt: "将一张牌当火攻使用",
 		async precontent(event, trigger, player) {
-			player.addTempSkill("homura_glasses_juhuo_used", "phaseAfter");
-			player.markAuto("homura_glasses_juhuo_used", get.suit(event.result.cards[0]));
+			player.addTempSkill("homura_glasses_baopo_used", "phaseAfter");
+			player.markAuto("homura_glasses_baopo_used", get.suit(event.result.cards[0]));
 		},
 		check(card) {
 			const player = get.player();
@@ -2901,7 +2905,7 @@ const skills = {
 			order: 7.9,
 			fireAttack: true,
 		},
-		group: "homura_glasses_juhuo_effect",
+		group: "homura_glasses_baopo_effect",
 		subSkill: {
 			used: {
 				charlotte: true,
@@ -3354,7 +3358,7 @@ const skills = {
 					return !target.hasSkill("tsuruno_qiangyun");
 				})
 				.set("ai", function (target) {
-					if (target.hasSkill("xinleiji") && get.attitude(_status.event.player, target) < 0) return true;
+					if (target.hasSkill("toka_jiquan") && get.attitude(_status.event.player, target) < 0) return true;
 					return get.attitude(_status.event.player, target) > 0;
 				})
 				.forResult();
@@ -5656,6 +5660,43 @@ const skills = {
 			expose: 0.3,
 		},
 	},
+	"masara_wuying": {
+		preHidden: true,
+		trigger: { global: "phaseEnd" },
+		frequent: true,
+		filter(event, player) {
+			return game.hasPlayer2(function (current) {
+				return current.getStat("kill") > 0;
+			});
+		},
+		prompt(event, player) {
+			var num = game.countPlayer2(function (current) {
+				return (current.getStat("kill") || 0) * (current == player ? 3 : 1);
+			});
+			return get.prompt("qiluan") + "（可摸" + get.cnNumber(num) + "张牌）";
+		},
+		async content(event, trigger, player) {
+			await player.draw(game.countPlayer2(function (current) {
+				return (current.getStat("kill") || 0) * (current == player ? 3 : 1);
+			}));
+			if (player == trigger.player) {
+				player.draw(player.countCards("h") ? 1 : 2);
+			}
+		},
+		subSkill: {
+			draw: {
+				audio: "qiluan2",
+				trigger: { global: "dieAfter" },
+				frequent: true,
+				filter(event, player) {
+					return /*get.mode()!='guozhan'&&*/ player != event.source;
+				},
+				content() {
+					player.draw();
+				},
+			},
+		},
+	},
 
 	// 神名浅海
 	"asumi_zhuilie": {
@@ -6068,7 +6109,6 @@ const skills = {
 			threaten: 3,
 		},
 	},
-
 	"mami_zhongmu": {
 		enable: "phaseUse",
 		usable: 1,
@@ -6130,15 +6170,17 @@ const skills = {
 			},
 		},
 	},
-	"saint_mami_tiro_finale": {
+
+	// 圣巴麻美
+	"saint_mami_zhongye": {
 		audio: "ext:魔法纪录/audio/skill:2",
 		enable: "phaseUse",
 		viewAs: { name: "wanjian" },
 		filterCard(card, player) {
-			if (!player.storage.saint_mami_tiro_finale) {
+			if (!player.storage.saint_mami_zhongye) {
 				return true;
 			}
-			return !player.storage.saint_mami_tiro_finale.includes(get.suit(card));
+			return !player.storage.saint_mami_zhongye.includes(get.suit(card));
 		},
 		position: "hs",
 		selectCard: 2,
@@ -6173,35 +6215,35 @@ const skills = {
 				order: 8.9,
 			},
 		},
-		group: ["saint_mami_tiro_finale_count", "saint_mami_tiro_finale_reset", "saint_mami_tiro_finale_respond", "saint_mami_tiro_finale_damage", "saint_mami_tiro_finale_draw"],
+		group: ["saint_mami_zhongye_count", "saint_mami_zhongye_reset", "saint_mami_zhongye_respond", "saint_mami_zhongye_damage", "saint_mami_zhongye_draw"],
 		subSkill: {
 			reset: {
 				trigger: { player: "phaseAfter" },
 				silent: true,
 				async content(event, trigger, player) {
-					delete player.storage.saint_mami_tiro_finale;
-					delete player.storage.saint_mami_tiro_finale2;
+					delete player.storage.saint_mami_zhongye;
+					delete player.storage.saint_mami_zhongye2;
 				},
 			},
 			count: {
 				trigger: { player: "useCard" },
 				silent: true,
 				filter(event) {
-					return event.skill == "saint_mami_tiro_finale";
+					return event.skill == "saint_mami_zhongye";
 				},
 				async content(event, trigger, player) {
-					player.storage.saint_mami_tiro_finale2 = trigger.card;
-					if (!player.storage.saint_mami_tiro_finale) {
-						player.storage.saint_mami_tiro_finale = [];
+					player.storage.saint_mami_zhongye2 = trigger.card;
+					if (!player.storage.saint_mami_zhongye) {
+						player.storage.saint_mami_zhongye = [];
 					}
-					player.storage.saint_mami_tiro_finale.addArray(trigger.cards.map(c => get.suit(c)));
+					player.storage.saint_mami_zhongye.addArray(trigger.cards.map(c => get.suit(c)));
 				},
 			},
 			respond: {
 				trigger: { global: "respond" },
 				silent: true,
 				filter(event) {
-					return event.getParent(2).skill == "saint_mami_tiro_finale";
+					return event.getParent(2).skill == "saint_mami_zhongye";
 				},
 				async content(event, trigger, player) {
 					await trigger.player.draw();
@@ -6213,10 +6255,10 @@ const skills = {
 				silent: true,
 				popup: false,
 				filter(event, player) {
-					return player.storage.saint_mami_tiro_finale2 && event.card == player.storage.saint_mami_tiro_finale2;
+					return player.storage.saint_mami_zhongye2 && event.card == player.storage.saint_mami_zhongye2;
 				},
 				async content(event, trigger, player) {
-					delete player.storage.saint_mami_tiro_finale2;
+					delete player.storage.saint_mami_zhongye2;
 				},
 			},
 			draw: {
@@ -6225,11 +6267,74 @@ const skills = {
 				silent: true,
 				popup: false,
 				filter(event, player) {
-					return player.storage.saint_mami_tiro_finale2 && event.card == player.storage.saint_mami_tiro_finale2;
+					return player.storage.saint_mami_zhongye2 && event.card == player.storage.saint_mami_zhongye2;
 				},
 				async content(event, trigger, player) {
 					await player.draw(trigger.targets.length);
-					delete player.storage.saint_mami_tiro_finale2;
+					delete player.storage.saint_mami_zhongye2;
+				},
+			},
+		},
+	},
+	"saint_mami_xiaoyan": {
+		trigger: {
+			global: "roundStart"
+		},
+		filter(event, player) {
+			if (!game.hasPlayer(current => current != player)) {
+				return false;
+			}
+			if (player.storage.saint_mami_xiaoyan == true) {
+				player.storage.saint_mami_xiaoyan = false;
+				return false;
+			}
+			return true;
+		},
+		forced: true,
+		group: ["saint_mami_xiaoyan_mark"],
+		async content(event, trigger, player) {
+			player.loseHp();
+			let targets = game.filterPlayer(current => current != player).sortBySeat();
+			player.line(targets);
+			for (const target of targets) {
+				await target.damage("fire");
+			}
+			targets = targets.filter(i => i.isIn());
+			if (targets.length) {
+				for (const target of targets) {
+					if (!target.countCards("he")) {
+						continue;
+					}
+					const {
+						result: { bool },
+					} = await target
+						.chooseToGive("he", player)
+						.set("prompt", "是否交给" + get.translation(player) + "一张牌" + (target.isDamaged() ? "并回复1点体力" : "") + "？")
+						.set("ai", card => {
+							const target = get.event("player"),
+								player = get.event("target");
+							const att = get.attitude(target, player);
+							if (get.recoverEffect(target, target, target) <= 0) {
+								if (att <= 0) {
+									return -get.value(card);
+								}
+								return 0;
+							}
+							return 7 - get.value(card);
+						})
+						.set("target", player);
+					if (bool) {
+						await target.recover();
+					}
+				}
+			}
+		},
+		subSkill: {
+			mark: {
+				trigger: { global: "dieAfter" },
+				silent: true,
+				async content(event, trigger, player) {
+					player.storage.saint_mami_xiaoyan = true;
 				},
 			},
 		},
@@ -8712,6 +8817,270 @@ const skills = {
 						return 0.01;
 					}
 				},
+			},
+		},
+	},
+
+	// 里见灯花
+	"toka_jiquan": {
+		trigger: { player: "judgeEnd" },
+		group: ["toka_jiquan_judge"],
+		direct: true,
+		filter(event, player) {
+			return ["spade", "club"].includes(event.result.suit) && !player.hasSkill("toka_jiquan_blocker");
+		},
+		async content(event, trigger, player) {
+			player.addTempSkill("toka_jiquan_blocker", ["phaseZhunbeiBefore", "phaseJudgeBefore", "phaseDrawBefore", "phaseUseBefore", "phaseDiscardBefore", "phaseJieshuBefore", "phaseBefore"]);
+			event.num = 1 + ["club", "spade"].indexOf(trigger.result.suit);
+			event.logged = false;
+			if (event.num == 1 && player.isDamaged()) {
+				event.logged = true;
+				player.logSkill("toka_jiquan");
+				player.recover();
+			}
+			const result = await player.chooseTarget("极权：是否对一名角色造成" + event.num + "点雷电伤害？")
+				.set("ai", target => {
+					const player = _status.event.player;
+					let eff = get.damageEffect(target, player, target, "thunder");
+					if (
+						get.event("num") > 1 &&
+						!target.hasSkillTag("filterDamage", null, {
+							player: player,
+							card: null,
+							nature: "thunder",
+						})
+					) {
+						if (eff > 0) {
+							eff -= 25;
+						} else if (eff < 0) {
+							eff *= 2;
+						}
+					}
+					return eff * get.attitude(player, target);
+				})
+				.set("num", event.num).forResult();
+			if (result.bool && result.targets && result.targets.length) {
+				if (!event.logged) {
+					player.logSkill("toka_jiquan", result.targets);
+				} else {
+					player.line(result.targets, "thunder");
+				}
+				result.targets[0].damage(event.num, "thunder");
+			}
+		},
+		subSkill: {
+			blocker: { charlotte: true },
+			judge: {
+				trigger: { player: ["useCardAfter", "respondAfter"] },
+				filter(event, player) {
+					return get.type(event.card) == "basic" && !player.hasSkill("toka_jiquan_blocker");
+				},
+				judgeCheck(card, bool) {
+					var suit = get.suit(card);
+					if (suit == "spade") {
+						if (bool && get.number(card) > 1 && get.number(card) < 10) {
+							return 5;
+						}
+						return 4;
+					}
+					if (suit == "club") {
+						return 2;
+					}
+					return 0;
+				},
+				content() {
+					player.judge(lib.skill.toka_jiquan.judgeCheck).judge2 = function (result) {
+						return result.bool ? true : false;
+					};
+				},
+				ai: {
+					useShan: true,
+					effect: {
+						target_use(card, player, target, current) {
+							let name;
+							if (typeof card == "object") {
+								if (card.viewAs) {
+									name = card.viewAs;
+								} else {
+									name = get.name(card);
+								}
+							}
+							if (
+								get.tag(card, "respondShan") &&
+								!player.hasSkillTag(
+									"directHit_ai",
+									true,
+									{
+										target: target,
+										card: card,
+									},
+									true
+								)
+							) {
+								let club = 0,
+									spade = 0;
+								if (
+									game.hasPlayer(function (current) {
+										return get.attitude(target, current) < 0 && get.damageEffect(current, target, target, "thunder") > 0;
+									})
+								) {
+									club = 2;
+									spade = 4;
+								}
+								if (!target.isHealthy()) {
+									club += 2;
+								}
+								if (!club && !spade) {
+									return 1;
+								}
+								if (name === "sha") {
+									if (!target.mayHaveShan(player, "use")) {
+										return;
+									}
+								} else if (!target.mayHaveShan(player)) {
+									return 1 - 0.1 * Math.min(5, target.countCards("hs"));
+								}
+								if (!target.hasSkillTag("rejudge")) {
+									return [1, (club + spade) / 4];
+								}
+								let pos = player == target || player.hasSkillTag("viewHandcard", null, target, true) ? "hes" : "e",
+									better = club > spade ? "club" : "spade",
+									max = 0;
+								target.hasCard(function (cardx) {
+									if (get.suit(cardx) == better) {
+										max = 2;
+										return true;
+									}
+									if (spade && get.color(cardx) == "black") {
+										max = 1;
+									}
+								}, pos);
+								if (max == 2) {
+									return [1, Math.max(club, spade)];
+								}
+								if (max == 1) {
+									return [1, Math.min(club, spade)];
+								}
+								if (pos == "e") {
+									return [1, Math.min((Math.max(1, target.countCards("hs")) * (club + spade)) / 4, Math.max(club, spade))];
+								}
+								return [1, (club + spade) / 4];
+							}
+						},
+						target(card, player, target) {
+							if (name == "lebu" || name == "bingliang") {
+								return [target.hasSkillTag("rejudge") ? 0.4 : 1, 2, target.hasSkillTag("rejudge") ? 0.4 : 1, 0];
+							}
+						},
+					},
+				},
+			},
+		},
+	},
+	"toka_zhisuan": {
+		mod: {
+			aiOrder(player, card, num) {
+				if (num > 0 && get.itemtype(card) == "card" && get.color(card) == "black" && get.type(card) == "equip") {
+					num * 1.35;
+				}
+			},
+			aiValue(player, card, num) {
+				if (num > 0 && get.itemtype(card) == "card" && get.color(card) == "black") {
+					return num * 1.15;
+				}
+			},
+			aiUseful(player, card, num) {
+				if (num > 0 && get.itemtype(card) == "card" && get.color(card) == "black") {
+					return num * 1.35;
+				}
+			},
+		},
+		locked: false,
+		trigger: { global: "judge" },
+		filter(event, player) {
+			return player.countCards("hes", { color: "black" }) > 0;
+		},
+		direct: true,
+		content() {
+			"step 0";
+			player
+				.chooseCard(get.translation(trigger.player) + "的" + (trigger.judgestr || "") + "判定为" + get.translation(trigger.player.judging[0]) + "，" + get.prompt("toka_zhisuan"), "hes", function (card) {
+					if (get.color(card) != "black") {
+						return false;
+					}
+					var player = _status.event.player;
+					var mod2 = game.checkMod(card, player, "unchanged", "cardEnabled2", player);
+					if (mod2 != "unchanged") {
+						return mod2;
+					}
+					var mod = game.checkMod(card, player, "unchanged", "cardRespondable", player);
+					if (mod != "unchanged") {
+						return mod;
+					}
+					return true;
+				})
+				.set("ai", function (card) {
+					var trigger = _status.event.getTrigger();
+					var player = _status.event.player;
+					var judging = _status.event.judging;
+					var result = trigger.judge(card) - trigger.judge(judging);
+					var attitude = get.attitude(player, trigger.player);
+					if (attitude == 0 || result == 0) {
+						if (trigger.player != player) {
+							return 0;
+						}
+						if (
+							game.hasPlayer(function (current) {
+								return get.attitude(player, current) < 0;
+							})
+						) {
+							var checkx = lib.skill.toka_jiquan_judge.judgeCheck(card, true) - lib.skill.toka_jiquan_judge.judgeCheck(judging);
+							if (checkx > 0) {
+								return checkx;
+							}
+						}
+						return 0;
+					}
+					let val = get.value(card);
+					if (get.subtype(card) == "equip2") {
+						val /= 2;
+					} else {
+						val /= 7;
+					}
+					if (attitude == 0 || result == 0) {
+						return 0;
+					}
+					if (attitude > 0) {
+						return result - val;
+					}
+					return -result - val;
+				})
+				.set("judging", trigger.player.judging[0]);
+			"step 1";
+			if (result.bool) {
+				player.respond(result.cards, "highlight", "toka_zhisuan", "noOrdering");
+			} else {
+				event.finish();
+			}
+			"step 2";
+			if (result.bool) {
+				player.$gain2(trigger.player.judging[0]);
+				player.gain(trigger.player.judging[0]);
+				var card = result.cards[0];
+				if (get.suit(card) == "spade" && get.number(card) > 1 && get.number(card) < 10) {
+					player.draw("nodelay");
+				}
+				trigger.player.judging[0] = result.cards[0];
+				trigger.orderingCards.addArray(result.cards);
+				game.log(trigger.player, "的判定牌改为", result.cards[0]);
+			}
+			"step 3";
+			game.delay(2);
+		},
+		ai: {
+			rejudge: true,
+			tag: {
+				rejudge: 1,
 			},
 		},
 	},
