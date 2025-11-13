@@ -202,7 +202,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 4,
 		maxHp: 4,
-		skills: ["kanagi_huishi", "kanagi_duxin", "kanagi_dongyou"],
+		skills: ["kanagi_yinshi", "kanagi_duxin", "kanagi_dongyou"],
 		img: "extension/魔法纪录/image/kanagi.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/kanagi.mp3"],
 		isZhugong: true
