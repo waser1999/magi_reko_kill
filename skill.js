@@ -2483,7 +2483,11 @@ const skills = {
 	// 晓美焰
 	"homura_yeyin": {
 		trigger: { player: "phaseZhunbeiBegin" },
-		frequent: true,
+		frequent(event, player) {
+			return !game.hasPlayer(function (current) {
+				return current.name == "ui"
+			});
+		},
 		async content(event, trigger, player) {
 			const ck = await player.chooseBool("是否失去1点体力额外观看2张牌？")
 				.set('ai', function () {
@@ -3410,14 +3414,14 @@ const skills = {
 					return event.result && event.result.color == "black" && player.countMark("ui_jinghua_used") < game.countPlayer()
 				},
 				check(event, player) {
-					return event.result.judge * get.attitude(player, event.player) <= 0
+					return event.result.judge * get.attitude(player, event.player) < 0
 				},
 				frequent: true,
 				async cost(event, trigger, player) {
 					event.result = await player.chooseBool(
 						"净化：是否中止" + get.translation(trigger.player) + "的判定，并获得【" + get.translation(trigger.result) + "】？"
 					).set("ai", () => {
-						return trigger.result.judge * get.attitude(player, trigger.player) <= 0
+						return trigger.result.judge * get.attitude(player, trigger.player) < 0
 					}).forResult();
 				},
 				async content(event, trigger, player) {
@@ -5301,10 +5305,10 @@ const skills = {
 			while (event.bool) {
 				const result = await player.judge(function (result) {
 					const evt = _status.event.getParent("kanagi_yinshi");
-					if (evt?.checks?.some(item => JSON.stringify(item) == JSON.stringify([get.color(result), get.number(result)]))) {
-						return 1
+					if (evt?.checks?.some(subArray => subArray[0] == get.color(result) && subArray[1] == get.number(result))) {
+						return 0
 					}
-					return 2
+					return 1
 				}).set("judge2", result => result.bool ? true : false).set("callback", lib.skill.kanagi_yinshi.callback).forResult();
 
 				if (!result) {
@@ -5396,7 +5400,7 @@ const skills = {
 
 			const str1 = f1 ? "弃置一枚【颖】标记，翻开牌堆顶五张牌并选择获得牌" : "无法选择"
 			const str2 = f2 ? "观看一名其他角色手牌并弃置其中一张牌" : "无法选择"
-			const str3 = f3 ? "背水：失去3点体力上限" : "无法选择"
+			const str3 = f3 ? "背水：失去四点体力上限" : "无法选择"
 
 			let choice
 			const aif2 = game.hasPlayer(function (target) {
