@@ -5302,9 +5302,9 @@ const skills = {
 				const result = await player.judge(function (result) {
 					const evt = _status.event.getParent("kanagi_yinshi");
 					if (evt?.checks?.some(item => JSON.stringify(item) == JSON.stringify([get.color(result), get.number(result)]))) {
-						return 0
+						return 1
 					}
-					return 1
+					return 2
 				}).set("judge2", result => result.bool ? true : false).set("callback", lib.skill.kanagi_yinshi.callback).forResult();
 
 				if (!result) {
