@@ -3363,9 +3363,9 @@ const skills = {
 		async content(event, trigger, player) {
 			player.line(trigger.player);
 			await trigger.player.judge(function (card) {
-				if (get.attitude(player, trigger.player) > 0 && get.color(card) == "red")
+				if (get.color(card) == "red")
 					return 2
-				if (get.attitude(player, trigger.player) <= 0 && get.color(card) == "black")
+				if (get.color(card) == "black")
 					return 1
 				return 0
 			}).set("callback", lib.skill.ui_jinghua.callback);
@@ -3501,7 +3501,7 @@ const skills = {
 				target.addAdditionalSkills("ui_jieyou_" + player.playerid, "tsuruno_qiangyun", true);
 				target.addSkill("ui_jieyou_mark");
 				if (target.countCards("j"))
-					await player.discard(target.getCards("j"));
+					await target.discard(target.getCards("j"));
 				if (target.isLinked()) 
 					await target.link(false);
 				if (target.isTurnedOver()) 
