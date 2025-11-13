@@ -668,7 +668,7 @@ const characters = {
 		group: "Magia_Others",
 		hp: 4,
 		maxHp: 4,
-		skills: ["suzune_chuancheng", "shanzhuan"],
+		skills: ["suzune_chuancheng", "suzune_zhuanlu"],
 		img: "extension/魔法纪录/image/suzune.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/suzune.mp3"]
 	},

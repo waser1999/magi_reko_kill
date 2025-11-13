@@ -3103,7 +3103,6 @@ const skills = {
 	"nemu_zhiyao": {
 		audio: "ext:魔法纪录/audio/skill:2",
 		forced: true,
-		charlotte: true,
 		trigger: {
 			player: ["damageEnd", "loseHpEnd"],
 		},
@@ -8618,6 +8617,62 @@ const skills = {
 		},
 		mark: true,
 		intro: { content: "当前传承的技能：$" },
+		group: ["suzune_chuancheng2"],
+	},
+	"suzune_chuancheng2": {
+		trigger: { global: "die" },
+		forced: true,
+		async content(event, trigger, player) {
+			player.gainMaxHp();
+			player.recover();
+		}
+	},
+	"suzune_zhuanlu": {
+		trigger: { source: "damageSource" },
+		audio: 2,
+		direct: true,
+		filter(event, player) {
+			return player != event.player && !event.player.isDisabledJudge() && event.player.countCards("he") && !event.player.countCards("j", card => get.type(card.viewAs || card.name) == "delay");
+		},
+		content() {
+			"step 0";
+			player.choosePlayerCard(trigger.player, "he", get.prompt("suzune_zhuanlu", trigger.player)).set("ai", function (card) {
+				if (get.attitude(_status.event.player, _status.event.target) >= 0) {
+					return 0;
+				}
+				return get.buttonValue(card);
+			});
+			"step 1";
+			if (result.bool) {
+				player.logSkill("suzune_zhuanlu", trigger.player);
+				var card = result.cards[0];
+				trigger.player.$throw(card);
+				game.delayx();
+				if (get.type(card, null, false) == "delay") {
+					trigger.player.addJudge(card);
+				} else {
+					trigger.player.addJudge({ name: get.color(card, false) == "red" ? "lebu" : "bingliang" }, result.cards);
+				}
+			}
+		},
+		group: "suzune_zhuanlu_draw",
+		subfrequent: ["draw"],
+		subSkill: {
+			draw: {
+				audio: "suzune_zhuanlu",
+				trigger: { player: "phaseEnd" },
+				prompt(links, player) {
+					return "是否发动【专戮】将牌补齐至体力上限并弃" + player.getHistory("useSkill", evt => evt.skill == "suzune_zhuanlu").length + "张牌？";
+				},
+				check(event, player) {
+					return player.maxHp - player.countCards("h") >= player.getHistory("useSkill", evt => evt.skill == "suzune_zhuanlu").length;
+				},
+				async content(event, trigger, player) {
+					await player.drawTo(player.maxHp);
+					await player.chooseToDiscard(player.getHistory("useSkill", evt => evt.skill == "suzune_zhuanlu").length, true);
+				},
+			},
+		},
 	},
 
 	// 笠音青
