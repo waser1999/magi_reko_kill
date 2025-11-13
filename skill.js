@@ -2034,7 +2034,7 @@ const skills = {
 	},
 	"oriko_jiangsha2": {
 		trigger: {
-			global: "phaseJieshuBegin",
+			global: "phaseDiscardAfter",
 		},
 		forced: true,
 		filter(event, player) {
@@ -2046,6 +2046,7 @@ const skills = {
 			if (result.bool) {
 				player.addToExpansion(result.cards, player, "giveAuto").gaintag.add("oriko_yuzhi");
 			}
+			player.draw();
 		},
 		"_priority": 0,
 	},
