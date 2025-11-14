@@ -9138,7 +9138,7 @@ const skills = {
 			player.awakenSkill("seika_huzhu");
 			let target = event.target;
 			await game.asyncDraw([target, player], 3);
-			if (player.isMinHp(true) && player.isDamaged()) {
+			if (player.isMinHp() && player.isDamaged()) {
 				await player.recover();
 			}
 
