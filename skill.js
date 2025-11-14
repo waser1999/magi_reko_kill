@@ -6347,6 +6347,7 @@ const skills = {
 		preHidden: true,
 		trigger: { global: "phaseEnd" },
 		frequent: true,
+		group: "masara_wuying_biyue",
 		filter(event, player) {
 			return game.hasPlayer2(function (current) {
 				return current.getStat("kill") > 0;
@@ -6356,7 +6357,7 @@ const skills = {
 			var num = game.countPlayer2(function (current) {
 				return (current.getStat("kill") || 0) * (current == player ? 3 : 1);
 			});
-			return get.prompt("qiluan") + "（可摸" + get.cnNumber(num) + "张牌）";
+			return get.prompt("masara_wuying") + "（可摸" + get.cnNumber(num) + "张牌）";
 		},
 		async content(event, trigger, player) {
 			await player.draw(game.countPlayer2(function (current) {
@@ -6368,7 +6369,6 @@ const skills = {
 		},
 		subSkill: {
 			draw: {
-				audio: "qiluan2",
 				trigger: { global: "dieAfter" },
 				frequent: true,
 				filter(event, player) {
@@ -6378,6 +6378,13 @@ const skills = {
 					player.draw();
 				},
 			},
+			biyue: {
+				trigger: { player: "phaseJieshuBegin" },
+				frequent: true,
+				content() {
+					player.draw(player.countCards("h") ? 1 : 2);
+				},
+			}
 		},
 	},
 
