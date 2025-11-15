@@ -4553,7 +4553,6 @@ const skills = {
 			return false;
 		},
 		async content(event, trigger, player) {
-			player.awakenSkill(event.name);
 			player.storage.nagisa_beiji = true;
 			await player.discard(player.getCards("hej"));
 			await player.link(false);
@@ -4573,6 +4572,7 @@ const skills = {
 						await player.addTempSkill("nagisa_beiji2_2", { player : "dieAfter" })
 				}
 			}
+			player.awakenSkill(event.name)
 		},
 		ai: {
 			order: 1,
@@ -4607,7 +4607,7 @@ const skills = {
 				},
 				forced: true,
 				filter(event, player) {
-					return event.name == "loseHp" && event.type == "du" && event.getParent(6).name == "nagisa_beiji"
+					return event.name == "loseHp" && event.type == "du" && event.getParent("nagisa_beiji", true)
 				},
 				logTarget(event, player) {
 					return event[event.name == "loseHp" ? "player" : "target"];
