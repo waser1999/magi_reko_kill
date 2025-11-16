@@ -8861,6 +8861,7 @@ const skills = {
 			await player.gainMaxHp();
 		},
 		ai: {
+			pretao: true,
 			order(item, player) {
 				if (player.countCards("h") <= Math.ceil(player.maxHp / 2))
 					return 8;
@@ -8957,7 +8958,7 @@ const skills = {
 			await lib.skill.lena_bianzhuang.bianshen(player, 2, "lena_nizong2")
 		},
 		ai: {
-			order: 1,
+			order: 10,
 			save: true,
 			skillTagFilter(player, tag, target) {
 				if (player != target) {
