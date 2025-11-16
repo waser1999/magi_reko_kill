@@ -8954,7 +8954,7 @@ const skills = {
 			return true
 		},
 		async content(event, trigger, player) {
-			if (event.getParent("damage"))
+			if (event.getParent(5).name == "damage")
 				player.storage.lena_nizong100 = true
 			else
 				delete player.storage.lena_nizong100
