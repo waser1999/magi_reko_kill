@@ -8852,17 +8852,17 @@ const skills = {
 		enable: "phaseUse",
 		usable: 1,
 		filter(event, player) {
-			return player.countCards("he", card => lib.filter.cardDiscardable(card, player)) >= 2
+			return player.countCards("he", card => lib.filter.cardDiscardable(card, player)) >= Math.ceil(player.maxHp / 2)
 		},
 		async content(event, trigger, player) {
-			await player.chooseToDiscard("稚傲：请弃置两张牌", 2, true, "he")
+			await player.chooseToDiscard("稚傲：请弃置" + get.cnNumber(Math.ceil(player.maxHp / 2)) + "张牌", Math.ceil(player.maxHp / 2), true, "he")
 				.set("ai", card => skills.duexcept_ai(100 - get.value(card), card, player))
 				.forResult();
 			await player.gainMaxHp();
 		},
 		ai: {
 			order(item, player) {
-				if (player.countCards("h") <= 2)
+				if (player.countCards("h") <= Math.ceil(player.maxHp / 2))
 					return 8;
 				return 10;
 			},

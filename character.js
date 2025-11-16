@@ -155,7 +155,7 @@ const characters = {
 	"lena": {//水波玲奈
 		sex: "female",
 		group: "Kamihama_Magia_Union",
-		hp: 3,
+		hp: 2,
 		maxHp: 3,
 		skills: ["lena_bianzhuang", "lena_nizong","lena_zhiao"],
 		img: "extension/魔法纪录/image/lena.jpg",
