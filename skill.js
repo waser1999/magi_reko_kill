@@ -8841,8 +8841,8 @@ const skills = {
 		trigger: { player: "damageEnd" },
 		forced: true,
 		filter(event, player) {
-			const f = player.storage.lena_nizong2
-			delete player.storage.lena_nizong2
+			const f = player.storage.lena_nizong100
+			delete player.storage.lena_nizong100
 			return !f && player.name == "lena"
 		},
 		async content(event, trigger, player) {
@@ -8955,9 +8955,9 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			if (event.getParent("damage", true))
-				player.storage.lena_nizong2 = true
+				player.storage.lena_nizong100 = true
 			else
-				delete player.storage.lena_nizong2
+				delete player.storage.lena_nizong100
 			await lib.skill.lena_bianzhuang.bianshen(player, 2, "lena_nizong2")
 		},
 		ai: {
