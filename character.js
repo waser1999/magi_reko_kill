@@ -157,9 +157,19 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["lena_huashen", "lena_xinsheng"],
+		skills: ["lena_bianzhuang", "lena_nizong","lena_zhiao"],
 		img: "extension/魔法纪录/image/lena.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
+	},
+	"lena2": {//水波玲奈.变装
+		sex: "female",
+		group: "Kamihama_Magia_Union",
+		hp: 1,
+		maxHp: 1,
+		skills: ["lena_bianzhuang2", "lena_nizong2","lena_zhiao2"],
+		img: "extension/魔法纪录/image/lena.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
+		isUnseen: true,
 	},
 	"momoko": {//十咎桃子
 		sex: "female",
@@ -709,6 +719,7 @@ const character_translates = {
 	sana: "二叶莎奈",
 	felicia: "深月菲莉西亚",
 	lena: "水波玲奈",
+	lena2: "水波玲奈.变装",
 	momoko: "十咎桃子",
 	kaede: "秋野枫",
 	asuka: "龙城明日香",
@@ -845,6 +856,7 @@ const characterTitles = {
 	sana: "酷刑牢笼", //二叶莎奈
 	felicia: "超级大大锤", //深月菲莉西亚
 	lena: "无尽海神", //水波玲奈
+	lena2: "无尽海神", //水波玲奈
 	momoko: "宇宙之刃", //十咎桃子
 	kaede: "大地审判", //秋野枫
 	asuka: "龙真螺旋咆击", //龙城明日香

@@ -1,4 +1,5 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
+import character from "./character.js"; //水波使用
 
 const skills = {
 	/**
@@ -3425,14 +3426,14 @@ const skills = {
 					return event.result && event.result.color == "black" && player.countMark("ui_jinghua_used") < game.countPlayer()
 				},
 				check(event, player) {
-					return event.result.judge * get.attitude(player, event.player) < 0
+					return event.result.judge * get.attitude(player, event.player) <= 0 && !(event.result.judge == 0 && get.attitude(player, event.player) > 0)
 				},
 				frequent: true,
 				async cost(event, trigger, player) {
 					event.result = await player.chooseBool(
 						"净化：是否中止" + get.translation(trigger.player) + "的判定，并获得【" + get.translation(trigger.result) + "】？"
 					).set("ai", () => {
-						return trigger.result.judge * get.attitude(player, trigger.player) < 0
+						return trigger.result.judge * get.attitude(player, trigger.player) <= 0 && !(trigger.result.judge == 0 && get.attitude(player, trigger.player) > 0)
 					}).forResult();
 				},
 				async content(event, trigger, player) {
@@ -4148,6 +4149,7 @@ const skills = {
 			target.addMark("iroha2_huzi_used");
 			player.addSkill("iroha2_jimie")
 		},
+		derivation: ["iroha2_jimie"],
 	},
 	"iroha2_jimie": {
 		trigger: {
@@ -4162,7 +4164,7 @@ const skills = {
 			targets.sortBySeat()
 			player.line(targets)
 			for (const target of targets)
-				target.addTempSkill("iroha2_jimie_baiban", "phaseAfter")
+				target.addTempSkill("iroha2_jimie_baiban")
 
 			await player.draw(targets.length)
 		},
@@ -4720,7 +4722,7 @@ const skills = {
 				choice = "选项二"
 
 			const str = get.translation(target)
-			const str1 = "令" + str + "摸一张牌" + ((!f1) ? "(本回合已使用过)" : "")
+			const str1 = "令" + str + "摸两张牌" + ((!f1) ? "(本回合已使用过)" : "")
 			const str2 = ((target.countCards("he") > 0) ? ("令" + str + "交你一张非【毒】牌") : "无法选择") + ((!f20) ? "(本回合已使用过)" : "")
 			const control2 = await player.chooseControl(control)
 				.set("prompt", "甜噬：请选择一项或取消")
@@ -7954,7 +7956,7 @@ const skills = {
 	//八云御魂
 	"mitama_yuhun": {
 		trigger: {
-			player: "phaseBegin"
+			player : "phaseBegin"
 		},
 		filter(event, player) {
 			return !player.hasSkill("mitama_yuhun_clear");
@@ -7977,7 +7979,7 @@ const skills = {
 					return get.attitude(player, target)
 				})
 				.forResult();
-
+			
 			event.result = {
 				bool: result.bool,
 				cost_data: result.targets
@@ -7991,7 +7993,7 @@ const skills = {
 			game.log(get.translation(player) + "发动了【御魂】");
 			event.skills = lib.skill.mitama_yuhun.derivation.randomGets(targets.length);
 			player.addTempSkill("mitama_yuhun_clear", { player: "phaseBeginStart" });
-
+			
 			for (let i = 0; i < targets.length; i++) {
 				const target = targets[i];
 				const result = await target.chooseControl(event.skills, true)
@@ -8004,13 +8006,13 @@ const skills = {
 					.set("displayIndex", false)
 					.set("prompt", "御魂：选择获得一个技能")
 					.forResult();
-
+					
 				const skill = result.control;
 				event.skills.remove(skill);
 				target.addAdditionalSkills("mitama_yuhun_" + player.playerid, skill, true);
 				target.addSkill("mitama_yuhun_mark");
 				target.markAuto("mitama_yuhun_mark", skill);
-
+				
 				if (target != game.me && !target.isOnline2()) {
 					game.delayx();
 				}
@@ -8027,8 +8029,8 @@ const skills = {
 				target: 1,
 			},
 		},
-		derivation: ["releiji", "kirika_shensu", "reyingzi", "remingce", "xinzhiyan", "nhyinbing", "nhhuoqi", "nhguizhu", "tsuruno_qiangyun", "iroha_huanyu", "nayuta_kanwu", "nhyanzheng"],
-		//derivation: ["releiji", "reyingzi", "remingce", "xinzhiyan", "nhyinbing", "nhhuoqi", "nhguizhu", "tsuruno_qiangyun", "iroha_huanyu", "nhyanzheng"],
+		//derivation: ["releiji", "kirika_shensu", "reyingzi", "remingce", "xinzhiyan", "nhyinbing", "nhhuoqi", "nhguizhu", "tsuruno_qiangyun", "iroha_huanyu", "nayuta_kanwu", "nhyanzheng"],
+		derivation: ["releiji", "reyingzi", "remingce", "xinzhiyan", "nhyinbing", "nhhuoqi", "nhguizhu", "tsuruno_qiangyun", "iroha_huanyu", "nhyanzheng"],
 		subSkill: {
 			clear: {
 				charlotte: true,
@@ -8045,9 +8047,9 @@ const skills = {
 				nopop: true,
 				charlotte: true,
 				onremove: true,
-				intro: {
-					content(storage) {
-						return "得到调整屋技能【" + get.translation(storage) + "】：" + get.skillInfoTranslation(storage)
+				intro:{
+					content(storage){
+						return "得到调整屋技能【" + get.translation(storage)  + "】：" + get.skillInfoTranslation(storage)
 					}
 				}
 			},
@@ -8059,7 +8061,7 @@ const skills = {
 		async cost(event, trigger, player) {
 			event.list1 = [];
 			event.list2 = [];
-
+			
 			game.countPlayer(function (current) {
 				if (current.additionalSkills["mitama_yuhun_" + player.playerid]) {
 					event.list1.push(current);
@@ -8067,7 +8069,7 @@ const skills = {
 					event.list2.push(current);
 				}
 			});
-
+			
 			const ck = player.storage.mitama_tiaozheng == true
 			let str1 = "无法选择", str2 = "无法选择", str3 = "无法选择"
 			let choice = []
@@ -8080,7 +8082,7 @@ const skills = {
 				str1 = "令" + get.translation(event.list1) + (event.list1.length > 1 ? "各" : "") + "摸1张牌(若其没有手牌改为摸2张牌)";
 				choice.push("选项一")
 			}
-
+			
 			if (f2) {
 				event.list2.sortBySeat();
 				str2 = "令" + get.translation(event.list2) + (event.list2.length > 1 ? "各" : "") + "弃置1张手牌(之后目标若没有手牌你摸2张牌)"
@@ -8092,7 +8094,7 @@ const skills = {
 				choice.push("背水")
 			}
 			choice.push("cancel2")
-
+			
 			let n1 = 0, n2 = 0, n3 = -1
 			for (let i of event.list1) {
 				const att = get.attitude(player, i) >= 0 ? 1 : -1
@@ -8131,7 +8133,7 @@ const skills = {
 					aichoice = "选项一"
 				if (max == n3 && f3)
 					aichoice = "背水"
-			}
+			} 
 			const result = await player.chooseControl(choice)
 				.set("prompt", "调整：请选择一项")
 				.set("choiceList", [
@@ -8142,7 +8144,7 @@ const skills = {
 					return _status.event.choice;
 				})
 				.forResultControl();
-
+			
 			event.result = {
 				bool: result != "cancel2",
 				cost_data: result,
@@ -8151,7 +8153,7 @@ const skills = {
 		async content(event, trigger, player) {
 			event.list1 = [];
 			event.list2 = [];
-
+			
 			game.countPlayer(function (current) {
 				if (current.additionalSkills["mitama_yuhun_" + player.playerid]) {
 					event.list1.push(current);
@@ -8163,21 +8165,23 @@ const skills = {
 			event.list1.sortBySeat();
 			event.list2.sortBySeat();
 			const result = event.cost_data
-			if (result == "选项三")
+			if (result == "背水")
 				await player.chooseToDiscard("h", true).set("prompt", "调整：弃一张手牌").set("ai", card => skills.duexcept_ai(100 - get.value(card), card, player))
-			if (result == "选项一" || result == "选项三")
+			if (result == "选项一" || result == "背水") {
 				player.line(event.list1, "green");
-			for (let i of event.list1) {
-				if (i.countCards("h") == 0)
-					await i.draw(2)
-				await i.draw(1)
+				for (let i of event.list1) {
+					if (i.countCards("h") == 0)
+						await i.draw(2)
+					await i.draw(1)
+				}
 			}
-			if (result == "选项二" || result == "选项三")
+			if (result == "选项二" || result == "背水") {
 				player.line(event.list2);
-			for (let i of event.list2) {
-				await i.chooseToDiscard("h", true).set("prompt", "调整：弃一张手牌").set("ai", card => skills.duexcept_ai(100 - get.value(card), card, player))
-				if (i.countCards("h") == 0)
-					await player.draw(2)
+				for (let i of event.list2) {
+					await i.chooseToDiscard("h", true).set("prompt", "调整：弃一张手牌").set("ai", card => skills.duexcept_ai(100 - get.value(card), card, player))
+					if (i.countCards("h") == 0)
+						await player.draw(2)
+				}
 			}
 		},
 		ai: {
@@ -8199,17 +8203,17 @@ const skills = {
 			player.awakenSkill(event.name)
 			const skills = lib.skill.mitama_yuhun.derivation.randomGets(4)
 			const result = await trigger.player.chooseControl(skills, true)
-				.set(
-					"choiceList",
-					skills.map(function (skill) {
-						return '<div class="skill">【' + get.translation(lib.translate[skill + "_ab"] || get.translation(skill).slice(0, 2)) + "】</div><div>" + get.skillInfoTranslation(skill, player) + "</div>";
-					})
-				)
-				.set("displayIndex", false)
-				.set("prompt", "传术：选择获得一项技能")
-				.forResultControl();
-
-			trigger.player.addTempSkill(result, { player: "dieAfter" });
+					.set(
+						"choiceList",
+						skills.map(function (skill) {
+							return '<div class="skill">【' + get.translation(lib.translate[skill + "_ab"] || get.translation(skill).slice(0, 2)) + "】</div><div>" + get.skillInfoTranslation(skill, player) + "</div>";
+						})
+					)
+					.set("displayIndex", false)
+					.set("prompt", "传术：选择获得一项技能")
+					.forResultControl();
+			
+			trigger.player.addTempSkill(result, { player : "dieAfter" });
 			trigger.player.storage.mitama_chuanshu = result
 			await trigger.player.addSkill(result.control);
 			await trigger.player.recoverTo(1);
@@ -8232,7 +8236,7 @@ const skills = {
 			},
 		},
 	},
-	"mitama_shuhun": {
+	"mitama_shuhun":{
 		trigger: { player: "damageEnd", source: "damageEnd" },
 		filter(event, player) {
 			return event.num > 0
@@ -8249,11 +8253,11 @@ const skills = {
 			return player.storage.mitama_shuhun && player.storage.mitama_shuhun.isIn() && event.num > 0;
 		},
 		intro: {
-			content(storage, player) {
+			content(storage, player){
 				const storage2 = player.storage.mitama_chuanshu
 				if (player.name != "mitama")
-					return "①你造成或受到伤害后，八云御魂摸一张牌。②你死亡后，八云御魂重置技能【传术】。③获得传术技能【" + get.translation(storage2) + "】：" + get.skillInfoTranslation(storage2)
-				return "①你造成或受到伤害后，摸一张牌。②你死亡后，可令一名角色失去所有手牌。③获得传术技能【" + get.translation(storage2) + "】：" + get.skillInfoTranslation(storage2)
+					return "①你造成或受到伤害后，八云御魂摸一张牌。②你死亡后，八云御魂重置技能【传术】。③获得传术技能【" + get.translation(storage2)  + "】：" + get.skillInfoTranslation(storage2)
+				return "①你造成或受到伤害后，摸一张牌。②你死亡后，可令一名角色失去所有手牌。③获得传术技能【" + get.translation(storage2)  + "】：" + get.skillInfoTranslation(storage2)
 			}
 		},
 		async content(event, trigger, player) {
@@ -8285,7 +8289,7 @@ const skills = {
 							.set("filterTarget", (card, player, target) => {
 								return target != player && target.countCards("h") != 0
 							})
-							.set("ai", function (target) {
+							.set("ai", function(target) { 
 								if (get.attitude(player, target) >= 0)
 									return -1
 								return target.countCards("h")
@@ -8717,412 +8721,320 @@ const skills = {
 	},
 
 	// 水波玲奈
-	"lena_huashen": {
-		unique: true,
-		audio: "ext:魔法纪录/audio/skill:2",
-		trigger: {
-			global: "phaseBefore",
-			player: ["enterGame", "phaseBegin", "phaseEnd"],
+	"lena_bianzhuang":{
+		enable: "phaseUse",
+		usable: 1,
+		filter(event, player) {
+			return game.hasPlayer(function(target) {
+				return target.countCards("h") < target.maxHp && player.hasCard(card => lib.filter.cardDiscardable(card, player), "he")
+			}) || (player.countCards("h") == player.maxHp && player.hasCard(card => lib.filter.cardDiscardable(card, player), "h"))
 		},
-		filter(event, player, name) {
-			if (event.name != "phase") {
-				return true;
+		async bianshen(player, ck, skill) {
+			if (ck == 1) {
+				player.storage.lena_maxHp = player.maxHp
+				player.storage.lena_Hp = player.hp
+				if (player.name2 && get.character(player.name2)[3].includes(skill)) {
+					await player.reinitCharacter(player.name2, "lena2");
+				} else {
+					await player.reinitCharacter(player.name1, "lena2");
+				}
+				if (player.maxHp > 1)
+					await player.loseMaxHp(player.maxHp - 1)
+				if (player.hp < 1)
+					await player.recoverTo(1)
+			} 
+			if (ck == 2) {
+				if (player.name2 && get.character(player.name2)[3].includes(skill)) {
+					await player.reinitCharacter(player.name2, "lena");
+				} else {
+					await player.reinitCharacter(player.name1, "lena");
+				}
+				const m = player.storage.lena_maxHp
+				if (player.maxHp != m) {
+					if (player.maxHp < m)
+						await player.gainMaxHp(m - player.maxHp)
+					if (player.maxHp > m)
+						await player.loseMaxHp(player.maxHp - m)
+				}
+				const n = player.storage.lena_Hp
+				if (player.hp < n)
+					await player.recoverTo(n)
+				delete player.storage.lena_maxHp
+				delete player.storage.lena_Hp
 			}
-			if (name == "phaseBefore") {
-				return game.phaseNumber == 0;
-			}
-			return player.storage.lena_huashen?.character?.length > 0;
-		},
-		async cost(event, trigger, player) {
-			if (trigger.name !== "phase" || event.triggername === "phaseBefore") {
-				event.result = { bool: true, cost_data: ["替换当前化身"] };
-				return;
-			}
-			const prompt = "###" + get.prompt(event.skill) + '###<div class="text center">替换当前化身牌或制衡至多两张其他化身牌</div>';
-			const result = await player
-				.chooseControl("替换当前化身", "制衡其他化身", "cancel2")
-				.set("ai", () => {
-					const { player, cond } = get.event();
-					let skills = player.storage.lena_huashen.character.map(i => get.character(i).skills).flat();
-					skills.randomSort();
-					skills.sort((a, b) => get.skillRank(b, cond) - get.skillRank(a, cond));
-					if (skills[0] === player.storage.lena_huashen.current2 || get.skillRank(skills[0], cond) < 1) {
-						return "制衡其他化身";
-					}
-					return "替换当前化身";
-				})
-				.set("cond", event.triggername)
-				.set("prompt", prompt)
-				.forResult();
-			const control = result.control;
-			event.result = { bool: typeof control === "string" && control !== "cancel2", cost_data: control };
 		},
 		async content(event, trigger, player) {
-			let choice = event.cost_data;
-			if (Array.isArray(choice)) {
-				lib.skill.lena_huashen.addHuashens(player, 3);
-				[choice] = choice;
-			}
-			_status.noclearcountdown = true;
-			const id = lib.status.videoId++,
-				prompt = choice === "替换当前化身" ? "化身：请选择你要更换的武将牌" : "化身：选择制衡至多两张武将牌";
-			const cards = player.storage.lena_huashen.character;
-			if (player.isOnline2()) {
-				player.send(
-					(cards, prompt, id) => {
-						const dialog = ui.create.dialog(prompt, [cards, lib.skill.lena_huashen.$createButton]);
-						dialog.videoId = id;
-					},
-					cards,
-					prompt,
-					id
-				);
-			}
-			const dialog = ui.create.dialog(prompt, [cards, lib.skill.lena_huashen.$createButton]);
-			dialog.videoId = id;
-			if (!event.isMine()) {
-				dialog.style.display = "none";
-			}
-			if (choice === "替换当前化身") {
-				const buttons = dialog.content.querySelector(".buttons");
-				const array = dialog.buttons.filter(item => !item.classList.contains("nodisplay") && item.style.display !== "none");
-				const choosed = player.storage.lena_huashen.choosed;
-				const groups = array
-					.map(i => get.character(i.link).group)
-					.unique()
-					.sort((a, b) => {
-						const getNum = g => (lib.group.includes(g) ? lib.group.indexOf(g) : lib.group.length);
-						return getNum(a) - getNum(b);
-					});
-				if (choosed.length > 0 || groups.length > 1) {
-					dialog.style.bottom = (parseInt(dialog.style.top || "0", 10) + get.is.phoneLayout() ? 230 : 220) + "px";
-					dialog.addPagination({
-						data: array,
-						totalPageCount: groups.length + Math.sign(choosed.length),
-						container: dialog.content,
-						insertAfter: buttons,
-						onPageChange(state) {
-							const { pageNumber, data, pageElement } = state;
-							const { groups, choosed } = pageElement;
-							data.forEach(item => {
-								item.classList[
-									(() => {
-										const name = item.link,
-											goon = choosed.length > 0;
-										if (goon && pageNumber === 1) {
-											return choosed.includes(name);
-										}
-										const group = get.character(name).group;
-										return groups.indexOf(group) + (1 + goon) === pageNumber;
-									})()
-										? "remove"
-										: "add"
-								]("nodisplay");
-							});
-							ui.update();
-						},
-						pageLimitForCN: ["←", "→"],
-						pageNumberForCN: (choosed.length > 0 ? ["常用"] : []).concat(
-							groups.map(i => {
-								const isChineseChar = char => {
-									const regex = /[\u4e00-\u9fff\u3400-\u4dbf\ud840-\ud86f\udc00-\udfff\ud870-\ud87f\udc00-\udfff\ud880-\ud88f\udc00-\udfff\ud890-\ud8af\udc00-\udfff\ud8b0-\ud8bf\udc00-\udfff\ud8c0-\ud8df\udc00-\udfff\ud8e0-\ud8ff\udc00-\udfff\ud900-\ud91f\udc00-\udfff\ud920-\ud93f\udc00-\udfff\ud940-\ud97f\udc00-\udfff\ud980-\ud9bf\udc00-\udfff\ud9c0-\ud9ff\udc00-\udfff]/u;
-									return regex.test(char);
-								}; //友情提醒：regex为基本汉字区间到扩展G区的Unicode范围的正则表达式，非加密/混淆
-								const str = get.plainText(lib.translate[i + "2"] || lib.translate[i] || "无");
-								return isChineseChar(str.slice(0, 1)) ? str.slice(0, 1) : str;
-							})
-						),
-						changePageEvent: "click",
-						pageElement: {
-							groups: groups,
-							choosed: choosed,
-						},
-					});
-				}
-			}
-			const finish = () => {
-				if (player.isOnline2()) {
-					player.send("closeDialog", id);
-				}
-				dialog.close();
-				delete _status.noclearcountdown;
-				if (!_status.noclearcountdown) {
-					game.stopCountChoose();
-				}
-			};
-			while (true) {
-				const next = player.chooseButton(true).set("dialog", id);
-				if (choice === "制衡其他化身") {
-					next.set("selectButton", [1, 2]);
-					next.set("filterButton", button => button.link !== get.event().current);
-					next.set("current", player.storage.lena_huashen.current);
-				} else {
-					next.set("ai", button => {
-						const { player, cond } = get.event();
-						let skills = player.storage.lena_huashen.character.map(i => get.character(i).skills).flat();
-						skills.randomSort();
-						skills.sort((a, b) => get.skillRank(b, cond) - get.skillRank(a, cond));
-						return player.storage.lena_huashen.map[button.link].includes(skills[0]) ? 2.5 : 1 + Math.random();
-					});
-					next.set("cond", event.triggername);
-				}
-				const result = await next.forResult();
-				if (choice === "制衡其他化身") {
-					finish();
-					lib.skill.lena_huashen.removeHuashen(player, result.links);
-					lib.skill.lena_huashen.addHuashens(player, result.links.length);
-					return;
-				} else {
-					const card = result.links[0];
-					const func = function (card, id) {
-						const dialog = get.idDialog(id);
-						if (dialog) {
-							//禁止翻页
-							const paginationInstance = dialog.paginationMap?.get(dialog.content.querySelector(".buttons"));
-							if (paginationInstance?.state) {
-								paginationInstance.state.pageRefuseChanged = true;
-							}
-							for (let i = 0; i < dialog.buttons.length; i++) {
-								if (dialog.buttons[i].link == card) {
-									dialog.buttons[i].classList.add("selectedx");
-								} else {
-									dialog.buttons[i].classList.add("unselectable");
-								}
-							}
-						}
-					};
-					if (player.isOnline2()) {
-						player.send(func, card, id);
-					} else if (event.isMine()) {
-						func(card, id);
-					}
-					const result2 = await player
-						.chooseControl(player.storage.lena_huashen.map[card], "返回")
-						.set("ai", () => {
-							const { player, cond, controls } = get.event();
-							let skills = controls.slice();
-							skills.randomSort();
-							skills.sort((a, b) => get.skillRank(b, cond) - get.skillRank(a, cond));
-							return skills[0];
-						})
-						.set("cond", event.triggername)
-						.forResult();
-					const control = result2.control;
-					if (control === "返回") {
-						const func2 = function (card, id) {
-							const dialog = get.idDialog(id);
-							if (dialog) {
-								//允许翻页
-								const paginationInstance = dialog.paginationMap?.get(dialog.content.querySelector(".buttons"));
-								if (paginationInstance?.state) {
-									paginationInstance.state.pageRefuseChanged = false;
-								}
-								for (let i = 0; i < dialog.buttons.length; i++) {
-									dialog.buttons[i].classList.remove("selectedx");
-									dialog.buttons[i].classList.remove("unselectable");
-								}
-							}
-						};
-						if (player.isOnline2()) {
-							player.send(func2, card, id);
-						} else if (event.isMine()) {
-							func2(card, id);
-						}
+			const f1 = game.hasPlayer(target => target.countCards("h") < target.maxHp && player.hasCard(card => lib.filter.cardDiscardable(card, player), "he"))
+			const f2 = player.countCards("h") == player.maxHp && player.hasCard(card => lib.filter.cardDiscardable(card, player), "h")
+			const result = await player.chooseCardTarget({
+				prompt: "变装：弃置一张牌，令一名角色把手牌补到体力上限。若弃置红牌，你可以变身。",
+				filterCard(card, player) {
+					if (!ui.selected.targets.length) {
+						const f01 = f1
+						const f02 = f2 && get.position(card) == "h"
+						return f01 || f02
 					} else {
-						finish();
-						player.storage.lena_huashen.choosed.add(card);
-						if (player.storage.lena_huashen.current != card) {
-							const old = player.storage.lena_huashen.current;
-							player.storage.lena_huashen.current = card;
-							game.broadcastAll(
-								(player, character, old) => {
-									player.tempname.remove(old);
-									player.tempname.add(character);
-								},
-								player,
-								card,
-								old
-							);
-						}
-						player.storage.lena_huashen.current2 = control;
-						if (!player.additionalSkills.lena_huashen?.includes(control)) {
-							player.flashAvatar("lena_huashen", card);
-							player.syncStorage("lena_huashen");
-							player.updateMarks("lena_huashen");
-							await player.addAdditionalSkills("lena_huashen", control);
-						}
-						return;
-					}
-				}
-			}
-		},
-		init(player, skill) {
-			if (!player.storage[skill]) {
-				player.storage[skill] = {
-					character: [],
-					choosed: [],
-					map: {},
-				};
-			}
-		},
-		banned: ["lisu", "sp_xiahoudun", "xushao", "jsrg_xushao", "zhoutai", "old_zhoutai", "shixie", "xin_zhoutai", "dc_shixie", "old_shixie"],
-		bannedType: ["Charlotte", "主公技", "觉醒技", "限定技", "隐匿技", "使命技"],
-		addHuashen(player) {
-			if (!player.storage.lena_huashen) {
-				return;
-			}
-			if (!_status.characterlist) {
-				game.initCharactertList();
-			}
-			_status.characterlist.randomSort();
-			for (let i = 0; i < _status.characterlist.length; i++) {
-				let name = _status.characterlist[i];
-				if (name.indexOf("zuoci") != -1 || name.indexOf("key_") == 0 || name.indexOf("sp_key_") == 0 || get.is.double(name) || lib.skill.lena_huashen.banned.includes(name) || player.storage.lena_huashen.character.includes(name)) {
-					continue;
-				}
-				let skills = lib.character[name][3].filter(skill => {
-					const categories = get.skillCategoriesOf(skill, player);
-					return !categories.some(type => lib.skill.lena_huashen.bannedType.includes(type));
-				});
-				if (skills.length) {
-					player.storage.lena_huashen.character.push(name);
-					player.storage.lena_huashen.map[name] = skills;
-					_status.characterlist.remove(name);
-					return name;
-				}
-			}
-		},
-		addHuashens(player, num) {
-			var list = [];
-			for (var i = 0; i < num; i++) {
-				var name = lib.skill.lena_huashen.addHuashen(player);
-				if (name) {
-					list.push(name);
-				}
-			}
-			if (list.length) {
-				player.syncStorage("lena_huashen");
-				player.updateMarks("lena_huashen");
-				game.log(player, "获得了", get.cnNumber(list.length) + "张", "#g化身");
-				lib.skill.lena_huashen.drawCharacter(player, list);
-			}
-		},
-		removeHuashen(player, links) {
-			player.storage.lena_huashen.character.removeArray(links);
-			_status.characterlist.addArray(links);
-			game.log(player, "移去了", get.cnNumber(links.length) + "张", "#g化身");
-		},
-		drawCharacter(player, list) {
-			game.broadcastAll(
-				function (player, list) {
-					if (player.isUnderControl(true)) {
-						var cards = [];
-						for (var i = 0; i < list.length; i++) {
-							var cardname = "huashen_card_" + list[i];
-							lib.card[cardname] = {
-								fullimage: true,
-								image: "character:" + list[i],
-							};
-							lib.translate[cardname] = get.rawName2(list[i]);
-							cards.push(game.createCard(cardname, "", ""));
-						}
-						player.$draw(cards, "nobroadcast");
+						if (player == ui.selected.targets[0] && f2)
+							return get.position(card) == "h"
+						return true
 					}
 				},
-				player,
-				list
-			);
-		},
-		$createButton(item, type, position, noclick, node) {
-			node = ui.create.buttonPresets.character(item, "character", position, noclick);
-			const info = lib.character[item];
-			const skills = info[3].filter(function (skill) {
-				const categories = get.skillCategoriesOf(skill, get.player());
-				return !categories.some(type => lib.skill.lena_huashen.bannedType.includes(type));
-			});
-			if (skills.length) {
-				const skillstr = skills.map(i => `[${get.translation(i)}]`).join("<br>");
-				const skillnode = ui.create.caption(`<div class="text" data-nature=${get.groupnature(info[1], "raw")}m style="font-family: ${lib.config.name_font || "xinwei"},xinwei">${skillstr}</div>`, node);
-				skillnode.style.left = "2px";
-				skillnode.style.bottom = "2px";
-			}
-			node._customintro = function (uiintro, evt) {
-				const character = node.link,
-					characterInfo = get.character(node.link);
-				let capt = get.translation(character);
-				if (characterInfo) {
-					capt += `&nbsp;&nbsp;${get.translation(characterInfo.sex)}`;
-					let charactergroup;
-					const charactergroups = get.is.double(character, true);
-					if (charactergroups) {
-						charactergroup = charactergroups.map(i => get.translation(i)).join("/");
-					} else {
-						charactergroup = get.translation(characterInfo.group);
+				filterTarget(card, player, target) {
+					const f01 = f1 && target.countCards("h") < target.maxHp
+					const f02 = f2 && target == player
+					return f01 || f02
+				},
+				forced: true,
+				position: "he",
+				selectCard: 1,
+				selectTarget: 1,
+				ai1(card) {
+					if (get.color(card) == "red")
+						return skills.duexcept_ai(100 - get.value(card), card, player)
+					return skills.duexcept_ai(96 - get.value(card), card, player)
+				},
+				ai2(target) {
+					const att = get.attitude(player, target)
+					if (att >= 0) {
+						if (player == target && ui.selected.cards[0].color == "red")
+							return att + 0.1
+						return att + target.countCards("h") - target.maxHp + (player == target ? 1 : 0)
 					}
-					capt += `&nbsp;&nbsp;${charactergroup}`;
+					return att
 				}
-				uiintro.add(capt);
+			}).forResult();
 
-				if (lib.characterTitle[node.link]) {
-					uiintro.addText(get.colorspan(lib.characterTitle[node.link]));
+			if (!result.bool) return false
+
+			if (result.cards[0])
+				await player.discard(result.cards[0])
+			if (result.targets[0]) {
+				player.line(result.targets[0]);
+				await result.targets[0].draw(result.targets[0].maxHp - result.targets[0].countCards("h"))
+			}
+
+			if (get.color(result.cards[0]) == "red" && player.name == "lena") {
+				const change = await player.chooseBool("变身：是否变身为变装形态？")
+					.set("ai", () => true)
+					.forResult();
+
+				if (change.bool) {
+					await lib.skill.lena_bianzhuang.bianshen(player, 1, "lena_bianzhuang")
 				}
-				for (let i = 0; i < skills.length; i++) {
-					if (lib.translate[skills[i] + "_info"]) {
-						let translation = lib.translate[skills[i] + "_ab"] || get.translation(skills[i]).slice(0, 2);
-						if (lib.skill[skills[i]] && lib.skill[skills[i]].nobracket) {
-							uiintro.add('<div><div class="skilln">' + get.translation(skills[i]) + "</div><div>" + get.skillInfoTranslation(skills[i]) + "</div></div>");
-						} else {
-							uiintro.add('<div><div class="skill">【' + translation + "】</div><div>" + get.skillInfoTranslation(skills[i]) + "</div></div>");
-						}
-						if (lib.translate[skills[i] + "_append"]) {
-							uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + "_append"] + "</div>");
-						}
-					}
-				}
-			};
-			return node;
+			}
 		},
-		mark: true,
-		intro: {
-			onunmark(storage, player) {
-				_status.characterlist.addArray(storage.character);
-				storage.character = [];
-				const name = player.name ? player.name : player.name1;
-			},
-			mark(dialog, storage, player) {
-				if (storage && storage.current) {
-					dialog.addSmall([[storage.current], (item, type, position, noclick, node) => lib.skill.lena_huashen.$createButton(item, type, position, noclick, node)]);
+		ai: {
+			order: 9,
+			result: {
+				player(player) {
+					if (game.hasPlayer(function(target) {
+						return get.attitude(player, target) > 0 && target.countCards("h") < target.maxHp && player.hasCard(card => lib.filter.cardDiscardable(card, player), "he")
+					}) || (player.countCards("h") == player.maxHp && player.hasCard(card => lib.filter.cardDiscardable(card, player), "h")))
+						return 1
+					return -1
 				}
-				if (storage && storage.current2) {
-					dialog.add('<div><div class="skill">【' + get.translation(lib.translate[storage.current2 + "_ab"] || get.translation(storage.current2).slice(0, 2)) + "】</div><div>" + get.skillInfoTranslation(storage.current2, player) + "</div></div>");
-				}
-				if (storage && storage.character.length) {
-					if (player.isUnderControl(true)) {
-						dialog.addSmall([storage.character, (item, type, position, noclick, node) => lib.skill.lena_huashen.$createButton(item, type, position, noclick, node)]);
-					} else {
-						dialog.addText("共有" + get.cnNumber(storage.character.length) + "张“化身”");
-					}
-				} else {
-					return "没有化身";
-				}
-			},
-			content(storage, player) {
-				return "共有" + get.cnNumber(storage.character.length) + "张“化身”";
-			},
-			markcount(storage, player) {
-				if (storage && storage.character) {
-					return storage.character.length;
-				}
-				return 0;
 			},
 		},
 	},
-	"lena_xinsheng": {
-		inherit: "xinsheng",
-		async content(event, trigger, player) {
-			lib.skill.lena_huashen.addHuashens(player, 1);
+	"lena_nizong":{
+		audio: 2,
+		trigger: { player: "damageEnd" },
+		forced: true,
+		filter(event, player) {
+			const f = player.storage.lena_nizong2
+			delete player.storage.lena_nizong2
+			return !f && player.name == "lena"
 		},
-		ai: { combo: "lena_huashen" },
+		async content(event, trigger, player) {
+			await lib.skill.lena_bianzhuang.bianshen(player, 1, "lena_nizong")
+		},
+	},
+	"lena_zhiao":{
+		audio: 2,
+		enable: "phaseUse",
+		usable: 1,
+		filter(event, player) {
+			return player.countCards("he", card => lib.filter.cardDiscardable(card, player)) >= 2
+		},
+		async content(event, trigger, player) {
+			await player.chooseToDiscard("稚傲：请弃置两张牌", 2, true, "he")
+				.set("ai", card => skills.duexcept_ai(100 - get.value(card), card, player))
+				.forResult();
+			await player.gainMaxHp();
+		},
+		ai: {
+			order(item, player) {
+				if (player.countCards("h") <= 2)
+					return 8;
+				return 10;
+			},
+			result: {
+				player(player) {
+					return 1
+				}
+			},
+		},
+	},
+	"lena_bianzhuang2":{
+		//Infinity_Aqua:["momoko","kaede"],
+		Infinity_Aqua:["momoko","kaede","ren","ao"],
+		onremove(player, skill) {
+			player.removeSkill(player.getStorage("lena_bianzhuang2"))
+			delete player.storage.lena_bianzhuang2
+		},
+		unique: true,
+		frequent: true,
+		async init(player, skill) {
+			const players = game.filterPlayer(current => {
+				if (current == player) return false
+				const name = current.name;
+				return character[name] && name != "lena" && name != "lena2" && !lib.skill.lena_bianzhuang2.Infinity_Aqua.includes(name)
+			});
+
+			const playerName = players.map(player => player.name)
+			const allname = [...playerName, ...lib.skill.lena_bianzhuang2.Infinity_Aqua].randomSort()
+
+			let total = [];
+			for (let i = 0; i < allname.length; i++) {
+				const skills = get.character(allname[i], 3).filter(skill => {
+						const ckskill = lib.skill[skill]
+						return ckskill && !ckskill.charlotte && !ckskill.limited && !ckskill.juexingji && !ckskill.forced && !ckskill.zhuSkill && !ckskill.unique
+				})
+				if (skills.length > 0) {
+					for (let j of skills)
+						total.push([allname[i], j])
+					if (skills.length > 32)
+						break
+				}
+			}
+
+			total.randomSort()
+			const total2 = total.slice(0, 4)
+			const characters = total2.map(item => item[0])
+			const skills = total2.map(item => item[1])
+
+			const result = await player
+				.chooseControl(skills)
+				.set("dialog", ["变装：请选择一个技能获得", [characters, "character"]])
+				.forResultControl();
+			
+			await player.addTempSkill(result, {player : "dieAfter"});
+			player.markAuto("lena_bianzhuang2", result)
+
+			if (player.storage.lena_maxHp > player.countCards("h")) 
+				await player.draw(player.storage.lena_maxHp - player.countCards("h"))
+
+		},
+		content() {},
+		mark: true,
+		marktext: "水",
+		intro:{
+			content(storage, player) {
+				const hp = player.storage.lena_Hp
+				const maxHp = player.storage.lena_maxHp
+				if (!storage)
+					return "【水波玲奈】体力/体力上限为" + hp + "/" + maxHp
+				return "【水波玲奈】体力/体力上限为" + hp + "/" + maxHp + "，变装技能为【" + get.translation(storage) + "】：" + get.skillInfoTranslation(storage)
+			},
+		},
+		mod:{
+			maxHandcardBase(player, num) {
+				if (player.storage.lena_maxHp) {
+					return player.storage.lena_maxHp + num;
+				}
+			},
+		}
+    },
+	"lena_nizong2":{
+		enable: "chooseToUse",
+		filter(event, player) {
+			return event.type == "dying" && player == event.dying;
+		},
+		check(event, player) {
+			return true
+		},
+		async content(event, trigger, player) {
+			if (event.getParent("damage", true))
+				player.storage.lena_nizong2 = true
+			else
+				delete player.storage.lena_nizong2
+			await lib.skill.lena_bianzhuang.bianshen(player, 2, "lena_nizong2")
+		},
+		ai: {
+			order: 1,
+			save: true,
+			skillTagFilter(player, tag, target) {
+				if (player != target) {
+					return false;
+				}
+			},
+			result: {
+				player() {
+					return 1;
+				},
+			},
+		},
+	},
+	"lena_zhiao2":{
+		enable: "phaseUse",
+		usable: 1,
+		filter(event, player) {
+			return game.hasPlayer(function(target) {
+				return target != player && player.inRange(target)
+			}) && player.hasCard(card => lib.filter.cardDiscardable(card, player), "h")
+		},
+		async content(event, trigger, player) {
+			const ck = player.hasHistory('useSkill', evt => evt.skill == "lena_bianzhuang")
+			const result = await player.chooseCardTarget({
+				prompt: "稚傲：弃置一张手牌，对攻击范围内的一名角色造成1点伤害。若弃置黑牌，你可以变身。",
+				filterTarget(card, player, target) {
+					return target != player && player.inRange(target)
+				},
+				forced: true,
+				position: "h",
+				selectCard: 1,
+				selectTarget: 1,
+				ai1(card) {
+					if (get.color(card) == "black" && !ck)
+						return skills.duexcept_ai(100 - get.value(card), card, player)
+					return skills.duexcept_ai(96 - get.value(card), card, player);
+				},
+				ai2(target) {
+					return -get.attitude(player, target)
+				}
+			}).forResult();
+
+			if (!result.bool) return false
+
+			if (result.cards[0])
+				await player.discard(result.cards[0]);
+			if (result.targets[0]) {
+				player.line(result.targets[0]);
+				await result.targets[0].damage()
+			}
+
+			if (get.color(result.cards[0]) == "black" && player.name == "lena2") {
+				const change = await player.chooseBool("变身：是否变身为水波玲奈？")
+					.set("ai", () => !ck)
+					.forResult();
+
+				if (change.bool) {
+					await lib.skill.lena_bianzhuang.bianshen(player, 2, "lena_zhiao2")
+				}
+			}
+		},
+		ai: {
+			order: 8,
+			result: {
+				player(player) {
+					if (game.hasPlayer(function(target) {
+						return target != player && player.inRange(target) && get.attitude(player, target) < 0
+					}))
+						return 1;
+					return -1
+				},
+			},
+		},
 	},
 
 	// 桑水清佳
