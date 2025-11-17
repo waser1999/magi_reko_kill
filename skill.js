@@ -1251,7 +1251,7 @@ const skills = {
 			},
 			3: {
 				charlotte: true,
-				forced: true,
+				silent: true,
 				mark: true,
 				marktext: "破",
 				trigger: { source: "damageBegin1" },
@@ -1670,6 +1670,7 @@ const skills = {
 			const n1 = player.countCards("h")
 			return game.hasPlayer(function (target) {
 				if (player == target) return false;
+				if (target.hasSkill("iroha_dimeng_aicount") && target.storage.iroha_dimeng_aicount >= 5) return false;
 				if (get.attitude(player, target) > 0) {
 					const n01 = player.countCards("h", card => get.value(card, target) >= 0)
 					if (n01 == 0) return false;
@@ -1696,6 +1697,7 @@ const skills = {
 				.chooseTarget("缔盟：请选择要交给手牌的角色", 1, true, function (card, player, target) {
 					return player != target;
 				}).set("ai", function (target) {
+					if (target.hasSkill("iroha_dimeng_aicount") && target.storage.iroha_dimeng_aicount >= 5) return 0
 					const n02 = target.countCards("h")
 					if (get.attitude(player, target) > 0) {
 						const n01 = player.countCards("h", card => get.value(card, target) >= 0)
@@ -1733,6 +1735,8 @@ const skills = {
 
 			const target1 = result1.targets[0];
 
+			target1.addTempSkill("iroha_dimeng_aicount")
+			target1.storage.iroha_dimeng_aicount++
 			const n3 = target1.isDamaged()
 			const n30 = target1.hp <= 1
 			const n4 = target1.countCards("h")
@@ -1784,6 +1788,16 @@ const skills = {
 					await result.targets[0].recover(1);
 				}
 			}
+		},
+		subSkill: {
+			aicount: {
+				silent: true,
+				charlotte: true,
+				onremove: true,
+				init(player) {
+					player.storage.iroha_dimeng_aicount = 0
+				}
+			},
 		},
 		ai: {
 			threaten: 4.5,
@@ -3665,8 +3679,7 @@ const skills = {
 		subSkill: {
 			2: {
 				trigger: { global: "phaseEnd" },
-				forced: true,
-				popup: false,
+				silent: true,
 				charlotte: true,
 				sourceSkill: "felicia_chuiji",
 				filter(event, player) {
@@ -3701,9 +3714,6 @@ const skills = {
 				locked: false,
 				logTarget: "player",
 				preHidden: true,
-				check(event, player) {
-					return get.attitude(player, event.player) < 0;
-				},
 				async content(event, trigger, player) {
 					trigger.num++;
 				},
@@ -4262,8 +4272,7 @@ const skills = {
 		subSkill: {
 			2: {
 				charlotte: true,
-				forced: true,
-				nopop: true,
+				silent: true,
 				onremove: true,
 				mark: true,
 				marktext: "影",
@@ -4284,8 +4293,7 @@ const skills = {
 			},
 			mark: {
 				charlotte: true,
-				forced: true,
-				nopop: true,
+				silent: true,
 				trigger: { source: "damageSource" },
 				onremove: true,
 				filter(event, player) {
@@ -4297,8 +4305,7 @@ const skills = {
 			},
 			mark2: {
 				charlotte: true,
-				forced: true,
-				nopop: true,
+				silent: true,
 				trigger: { player: "phaseAfter" },
 				onremove: true,
 				filter(event, player) {
@@ -4311,8 +4318,7 @@ const skills = {
 			},
 			mark3: {
 				charlotte: true,
-				forced: true,
-				nopop: true,
+				silent: true,
 				trigger: { player: "phaseBegin" },
 				onremove: true,
 				async content(event, trigger, player) {
@@ -4333,7 +4339,7 @@ const skills = {
 			},
 			dis: {
 				charlotte: true,
-				forced: true,
+				silent: true,
 				onremove: true,
 				mark: true,
 				marktext: "影",
@@ -4516,7 +4522,7 @@ const skills = {
 					player: "phaseUseBegin"
 				},
 				charlotte: true,
-				forced: true,
+				silent: true,
 				async content(event, trigger, player) {
 					player.addTempSkill("nagisa_tianlao_use", "phaseUseAfter");
 				}
@@ -4618,7 +4624,7 @@ const skills = {
 				trigger: {
 					player: "loseHpBegin",
 				},
-				forced: true,
+				silent: true,
 				filter(event, player) {
 					return event.name == "loseHp" && event.type == "du" && event.getParent("nagisa_beiji", true)
 				},
@@ -5139,10 +5145,9 @@ const skills = {
 			used: {
 				trigger: { player: "phaseDrawBegin" },
 				charlotte: true,
-				forced: true,
+				silent: true,
 				onremove: true,
 				mark: true,
-				nopop: true,
 				marktext: "祛",
 				intro: {
 					content(storage) {
@@ -5163,10 +5168,9 @@ const skills = {
 			used2: {
 				trigger: { player: "phaseDrawBegin" },
 				charlotte: true,
-				forced: true,
 				onremove: true,
 				mark: true,
-				nopop: true,
+				silent: true,
 				marktext: "蓄",
 				intro: {
 					content(storage) {
@@ -8246,7 +8250,6 @@ const skills = {
 		},
 		getIndex: event => event.num,
 		forced: true,
-		nopop: true,
 		preHidden: true,
 		mark: "character",
 		filter(event, player) {
@@ -8269,7 +8272,6 @@ const skills = {
 				trigger: {
 					player: "die",
 				},
-				silent: true,
 				onremove: true,
 				forceDie: true,
 				sourceSkill: "mitama_chuanshu",

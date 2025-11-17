@@ -89,7 +89,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 4,
 		maxHp: 4,
-		skills: ["twshelie", "sbliegong", "madoka_xieli"],
+		skills: ["twshelie", "sbliegong"],
 		img: "extension/魔法纪录/image/ulti_madoka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ulti_madoka.mp3"],
 		isZhugong: true,
