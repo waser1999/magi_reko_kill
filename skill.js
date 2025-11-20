@@ -2543,48 +2543,37 @@ const skills = {
 		trigger: { player: "phaseZhunbeiBegin" },
 		frequent: true,
 		async content(event, trigger, player) {
-			event.cards = [];
-			while (true) {
-				var next = player.judge(card => {
-					var color = get.color(card);
-					var evt = _status.event.getParent("homura_juwu");
-					if (!evt.color) {
-						evt.color = color;
-						return 1;
+			event.bool = true
+			event.color = null
+
+			while(event.bool){
+				let next = await player.judge(card => {
+					const color = get.color(card);
+					if (event.color == null || event.color == color) {
+						if (event.color == null)
+							event.color = color
+						return 1
 					}
-					if (evt && evt.color != color) {
-						return -1;
-					}
-					return 1;
-				});
+					return 0
+				}).set("judge2", result => result.bool ? true : false).set("callback", lib.skill.homura_juwu.callback).forResult();
 
-				next.judge2 = result => result.bool;
-
-				if (!player.hasSkillTag("rejudge")) {
-					next.set("callback", function () {
-						if (get.position(card, true) == "o") {
-							player.gain(card, "gain2");
-						}
-					});
-				} else {
-					next.set("callback", function () {
-						event.getParent().orderingCards.remove(card);
-					});
-				}
-
-				let result = await next.forResult();
-
-				if (result?.bool && result?.card) {
-					event.cards.push(result.card);
-					result = await player.chooseBool("是否再次发动【聚武】？").set("frequentSkill", "homura_juwu").forResult();
-					if (!result?.bool) {
-						break;
-					}
-				} else {
-					break;
-				}
+				if (!next)
+					event.bool = false
 
 			}
+		},
+		async callback(event, trigger, player) {
+			const evt = event.getParent();
+			const evt2 = event.getParent(2);
+			await player.gain(event.card, "gain2")
+
+			if (evt.result.bool) {
+				const result = await player.chooseBool("是否再次发动【聚武】？")
+					.set("frequentSkill", "homura_juwu")
+					.forResult();
+				evt2.bool = result.bool
+			} else
+				evt2.bool = false
 		},
 		ai: {
 			threaten: 3.5
@@ -8908,6 +8897,7 @@ const skills = {
 	"lena_bianzhuang2":{
 		//Infinity_Aqua:["momoko","kaede"],
 		Infinity_Aqua:["momoko","kaede","ren","ao"],
+		Lena_Except:["lena","lena2","ulti_madoka","devil_homura","sakura","ai","yamada"],
 		onremove(player, skill) {
 			player.removeSkill(player.getStorage("lena_bianzhuang2"))
 			delete player.storage.lena_bianzhuang2
@@ -8918,7 +8908,7 @@ const skills = {
 			const players = game.filterPlayer(current => {
 				if (current == player) return false
 				const name = current.name;
-				return character[name] && name != "lena" && name != "lena2" && !lib.skill.lena_bianzhuang2.Infinity_Aqua.includes(name)
+				return character[name] && !lib.skill.lena_bianzhuang2.Lena_Except.includes(name) && !lib.skill.lena_bianzhuang2.Infinity_Aqua.includes(name)
 			});
 
 			const playerName = players.map(player => player.name)
