@@ -930,7 +930,7 @@ const skills = {
 			const result = await player.chooseCardTarget({
 				prompt: "弃置两张手牌并选择一名角色，你与其各回复一点体力。然后你们和有“协奏”牌的角色获得【无畏】",
 				filterTarget(card, player, target) {
-					return player != target && target.isDamaged();
+					return player != target
 				},
 				forced: true,
 				position: "h",
@@ -3641,8 +3641,8 @@ const skills = {
 				audio: "felicia_chuiji",
 				trigger: { source: "damageBegin1" },
 				filter(event, player) {
-					var target = event.player;
-					return event.card && event.card.name == "sha" && player.countCards("h") >= target.countCards("h");
+					const target = event.player;
+					return event.card && event.card.name == "sha" && event.getParent("sha", true)?.targets?.includes(target) && player.countCards("h") >= target.countCards("h");
 				},
 				forced: true,
 				logTarget: "player",
@@ -4320,6 +4320,9 @@ const skills = {
 						return lib.skill.mabayu_jingying_dis.mod.aiOrder.apply(this, arguments);
 					},
 				},
+				ai: {
+					pretao: true,
+				}
 			}
 		}
 	},
@@ -6851,7 +6854,6 @@ const skills = {
 		trigger: { global: ["useCard"] },
 		forced: true,
 		filter(event, player) {
-			debugger
 			return event.player != player && event.card.name == "wuxie" && ((event.respondTo && event.respondTo[1].name == "wanjian" ) || (event.getParent("phaseJudge", true)?.card?.name == "lebu"))
 		},
 		async content(event, trigger, player) {
@@ -9891,6 +9893,514 @@ const skills = {
 				rejudge: 1,
 			},
 		},
+	},
+	"blue_haijing":{
+		trigger: {
+			global: "phaseBefore",
+			player: "enterGame",
+		},
+		forced: true,
+		filter(event, player) {
+			return event.name != "phase" || game.phaseNumber == 0
+		},
+		async content(event, trigger, player) {
+			let cards = [];
+			for (let i = 0; i < 8; i++)
+				cards.push(game.createCard2("icesha", "spade", 8, "ice"))
+
+			const next = player.addToExpansion(cards, "gain2");
+			next.gaintag.add("blue_haijing");
+			await next;
+
+			let cards2 = [];
+			for (let i = 0; i < 8; i++)
+				cards2.push(game.createCard2("icesha", "spade", 8, "ice"))
+
+			game.broadcastAll(function () {
+				lib.inpile.add("icesha");
+			});
+
+			game.cardsGotoPile(cards2, () => {
+				return ui.cardPile.childNodes[get.rand(0, ui.cardPile.childNodes.length - 1)];
+			});
+		},
+		marktext: "海",
+		intro: {
+			content: "expansion",
+			markcount: "expansion",
+		},
+		group: ["blue_haijing_lose"],
+		subSkill: {
+			lose: {
+				trigger: { 
+					player: "loseAfter",
+					global: ["cardsDiscardAfter", "loseAsyncAfter", "equipAfter"],
+				},
+				forced: true,
+				filter(event, player) {
+					const filter = card => !(card.name == "sha" && card.nature == "ice")
+					if (event.name != "cardsDiscard") {
+						return event.getd(player, "cards2").filter(filter).length > 0;
+					} else {
+						if (event.cards.filterInD("d").filter(filter).length <= 0) {
+							return false;
+						}
+						const evt = event.getParent();
+						if (evt.name != "orderingDiscard") {
+							return false;
+						}
+						const evtx = evt.relatedEvent || evt.getParent();
+						if (evtx.player != player) {
+							return false;
+						}
+						return player.hasHistory("lose", evtxx => {
+							return evtx == (evtxx.relatedEvent || evtxx.getParent());
+						});
+					}
+				},
+				async content(event, trigger, player) {
+					let cards;
+					if (trigger.name != "cardsDiscard") {
+						cards = trigger.getd(player, "cards2");
+					} else {
+						cards = trigger.cards.filterInD("d");
+					}
+					cards = cards.filter(card => !(card.name == "sha" && card.nature == "ice"))
+					if (cards.length) {
+						game.cardsGotoSpecial(cards);
+						game.log(cards, "被移出了游戏");
+
+						let cards2 = [];
+						for (let i = 0; i < cards.length; i++)
+							cards2.push(game.createCard2("icesha", "spade", 8, "ice"))
+
+						game.cardsGotoPile(cards2, () => {
+							return ui.cardPile.childNodes[get.rand(0, ui.cardPile.childNodes.length - 1)];
+						});
+					}
+				}
+			},
+		}
+	},
+	"blue_bingjie":{
+		trigger: {
+			global: "damageBegin2",
+		},
+		filter(event, player, name) {
+			return event.card?.name == "sha" && event.card.nature == "ice" && event.player != player && player.getExpansions("blue_haijing")?.length && !player.hasSkill("blue_bingjie_public")
+		},
+		init(player) {
+			player.storage.blue_bingyuan_x = 0
+		},
+		async cost(event, trigger, player) {
+			const target = trigger.player
+			const str = get.translation(target)
+			event.result = await player.chooseBool("冰结：是否移除一个【海晶】标记，弃置" + str + "最多两张牌或对" + str + "造成一点冰属性伤害？"
+				).set("ai", () => {
+					const f1 = get.attitude(player, target) < 0
+					const f10 = get.attitude(player, target) == 0
+					const f2 = get.damageEffect(target, player, player, "ice") > 0
+					const f3 = target.getCards("he").length > 0
+					return (f1 && (f2 || f3)) || (f10 && f3)
+				}).forResult();
+		},
+		async content(event, trigger, player) {
+			player.storage.blue_bingyuan_x++
+			player.addTempSkill("blue_bingjie_public")
+
+			const card = player.getExpansions("blue_haijing")[0]
+			await player.discard(card)
+			if (player.getExpansions("blue_haijing").length == 0)
+				player.useSkill("blue_bingyuan")
+
+			const target = trigger.player
+			const str = get.translation(trigger.player)
+			const f1 = target.getCards("he").length > 0
+			//const f2 = true
+
+			let str1 = "弃置" + str + "最多两张牌", str2 = "对" + str + "造成一点冰属性伤害"
+			let choice = ["选项一", "选项二"]
+			if (!f1) {
+				choice.remove("选项一")
+				str1 = "无法选择"
+			}
+
+			let aichoice
+			if (get.damageEffect(target, player, player, "ice") > 0)
+				aichoice = "选项二"
+			else
+				aichoice = "选项一"
+
+			const result = await player.chooseControl(choice)
+				.set("prompt", "冰结：请选择一个选项")
+				.set("choiceList", [
+					str1, str2
+				])
+				.set("choice", aichoice)
+				.set("ai", function () {
+					return _status.event.choice;
+				})
+				.forResultControl();
+
+			player.line(target)
+			if (result == "选项一") 
+				await player.discardPlayerCard(target, true, "he", [1, 2])
+			if (result == "选项二") 
+				await target.damage("ice")
+		},
+		group: ["blue_bingjie_2","blue_bingjie_3","blue_bingjie_gain"],
+		subSkill: {
+			public: {
+				charlotte: true,
+				onremove: true,
+				nopop: true,
+			},
+			2:{
+				trigger: { global: "useCard1" },
+				filter(event, player) {
+					return event.card.name == "sha" && !game.hasNature(event.card) && player.getExpansions("blue_haijing")?.length && !player.hasSkill("blue_bingjie_public")
+				},
+				init(player) {
+					player.storage.blue_bingyuan_y = 0
+				},
+				async cost(event, trigger, player) {
+					const target = trigger.player
+					const str = get.translation(target)
+					event.result = await player.chooseBool("冰结：是否移除一个【海晶】标记，使" + str + "的普通【杀】视为冰属性【杀】？"
+						).set("ai", () => {
+							const rplayer = trigger.target
+							if (!rplayer?.length)
+								return true
+							let damageff = 0
+							const card = {name: "sha", isCard: true}
+							const card2 = {name: "sha", nature: "ice", isCard: true}
+							for (let i = 0; i < rplayer.length; i++) {
+								const eff = get.effect(rplayer, card, target, player)
+								const eff2 = get.effect(rplayer, card2, target, player)
+								damageff += (eff - eff2)
+							}
+							return damageff > 0
+						}).forResult();
+				},
+				async content(event, trigger, player) {
+					player.storage.blue_bingyuan_y++
+					player.addTempSkill("blue_bingjie_public")
+
+					const card = player.getExpansions("blue_haijing")[0]
+					await player.discard(card)
+					if (player.getExpansions("blue_haijing").length == 0)
+						player.useSkill("blue_bingyuan")
+
+					game.setNature(trigger.card, "ice");
+					if (get.itemtype(trigger.card) == "card") {
+						var next = game.createEvent("blue_bingjie_2_clear");
+						next.card = trigger.card;
+						event.next.remove(next);
+						trigger.after.push(next);
+						next.setContent(function () {
+							game.setNature(card, []);
+						});
+					}
+				}
+			},
+			3:{
+				trigger: { player: "damageBegin4" },
+				filter(event, player) {
+					return player.getExpansions("blue_haijing")?.length >= 2 && !player.hasSkill("blue_bingjie_public")
+				},
+				init(player) {
+					player.storage.blue_bingyuan_z = 0
+				},
+				async cost(event, trigger, player) {
+					event.result = await player.chooseBool("冰结：是否移除两个【海晶】标记，使你防止伤害？"
+						).set("ai", () => {
+							return true
+						}).forResult();
+				},
+				async content(event, trigger, player) {
+					player.storage.blue_bingyuan_z++
+					player.addTempSkill("blue_bingjie_public")
+
+					const card = player.getExpansions("blue_haijing").slice(0, 2)
+					await player.discard(card)
+					if (player.getExpansions("blue_haijing").length == 0)
+						player.useSkill("blue_bingyuan")
+
+					trigger.cancel()
+				}
+			},
+			gain: {
+				trigger: {
+					player: "phaseUseBegin",
+				},
+				frequent: true,
+				filter(event, player) {
+					return get.cardPile(function (card) {
+						return get.name(card) == "sha" && card.nature == "ice";
+					});
+				},
+				async content(event, trigger, player) {
+					const card = get.cardPile(function (card) {
+						return get.name(card) == "sha" && card.nature == "ice"
+					});
+					if (card)
+						await player.gain(card, "gain2");
+				}
+			}
+		},
+	},
+	"blue_bingyuan":{
+		skillAnimation: true,
+		juexingji: true,
+		derivation: ["blue_bingjing","blue_donghai"],
+		async content(event, trigger, player) {
+			player.awakenSkill("blue_bingyuan")
+			player.removeSkill("blue_bingjie")
+			player.addSkill("blue_bingjing")
+			player.addSkill("blue_donghai")
+		}
+	},
+	"blue_bingjing":{
+		trigger: { player: "damageBegin4" },
+		filter(event) {
+			return event.hasNature("ice");
+		},
+		persevereSkill: true,
+		frequent: true,
+		content() {
+			trigger.cancel();
+		},
+		ai: {
+			effect: {
+				target(card, player, target, current) {
+					if (get.nature(card) == "ice" && get.tag(card, "damage")) {
+						return "zeroplayertarget";
+					}
+				},
+			},
+		},
+		group: ["blue_bingjing_1"],
+		subSkill: {
+			1:{
+				enable: ["chooseToUse", "chooseToRespond"],
+				persevereSkill: true,
+				filter(event, player) {
+					if (!player.countCards("he", card => card.nature == "ice" && card.name == "sha") || player.hasSkill("blue_bingjing_used")) {
+						return false;
+					}
+					for (let i of lib.inpile) {
+						let type = get.type(i);
+						if ((type == "basic" || type == "trick") && event.filterCard(get.autoViewAs({ name: i }, "unsure"), player, event)) {
+							return true;
+						}
+					}
+					return false;
+				},
+				chooseButton: {
+					dialog(event, player) {
+						let list = [];
+						for (let i = 0; i < lib.inpile.length; i++) {
+							let name = lib.inpile[i];
+							if (name == "sha") {
+								if (event.filterCard(get.autoViewAs({ name }, "unsure"), player, event)) {
+									list.push(["基本", "", "sha"]);
+								}
+								for (let nature of lib.inpile_nature) {
+									if (event.filterCard(get.autoViewAs({ name, nature }, "unsure"), player, event)) {
+										list.push(["基本", "", "sha", nature]);
+									}
+								}
+							} else if (get.type(name) == "trick" && event.filterCard(get.autoViewAs({ name }, "unsure"), player, event)) {
+								list.push(["锦囊", "", name]);
+							} else if (get.type(name) == "basic" && event.filterCard(get.autoViewAs({ name }, "unsure"), player, event)) {
+								list.push(["基本", "", name]);
+							}
+						}
+						return ui.create.dialog("冰晶", [list, "vcard"]);
+					},
+					check(button) {
+						if (_status.event.getParent().type != "phase") {
+							return 1;
+						}
+						let player = _status.event.player;
+						if (["wugu", "zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(button.link[2])) {
+							return 0;
+						}
+						return player.getUseValue({
+							name: button.link[2],
+							nature: button.link[3],
+						});
+					},
+					backup(links, player) {
+						return {
+							filterCard: card => card.nature == "ice" && card.name == "sha",
+							popname: true,
+							check(card) {
+								return 8 - get.value(card);
+							},
+							position: "he",
+							viewAs: { name: links[0][2], nature: links[0][3] },
+							precontent() {
+								player.addTempSkill("blue_bingjing_used");
+							},
+						};
+					},
+					prompt(links, player) {
+						return "将一张冰【杀】当做" + (get.translation(links[0][3]) || "") + get.translation(links[0][2]) + "使用";
+					},
+				},
+				hiddenCard(player, name) {
+					if (!lib.inpile.includes(name)) {
+						return false;
+					}
+					var type = get.type(name);
+					return (type == "basic" || type == "trick") && player.countCards("he", card => card.nature == "ice" && card.name == "sha") && !player.hasSkill("blue_bingjing_used");
+				},
+				ai: {
+					fireAttack: true,
+					respondSha: true,
+					respondShan: true,
+					skillTagFilter(player) {
+						if (!player.countCards("he", card => card.nature == "ice" && card.name == "sha") || player.hasSkill("blue_bingjing_used")) {
+							return false;
+						}
+					},
+					order: 1,
+					result: {
+						player(player) {
+							if (_status.event.dying) {
+								return get.attitude(player, _status.event.dying);
+							}
+							return 1;
+						},
+					},
+				},
+				mod: {
+					aiValue(player, card, num) {
+						if (card.name == "sha" && card.nature == "ice") {
+							return Math.max(num, 8)
+						}
+					},
+				},
+			},
+			used: {
+				charlotte: true,
+				nopop: true,
+			},
+		}
+	},
+	"blue_donghai":{
+		mark: true,
+		marktext: "海",
+		intro :{
+			content: function (storage, player) {
+				let strx = "", stry = "", strz = ""
+				if (player.storage.blue_bingyuan_x > 0)
+					strx = "①所有冰【杀】造成的伤害+" + player.storage.blue_bingyuan_x + ""
+				if (player.storage.blue_bingyuan_y > 0)
+					stry = "②你的回合开始时，获得" + player.storage.blue_bingyuan_y + "张冰【杀】"
+				if (player.storage.blue_bingyuan_z > 0)
+					strz = "③你的回合结束时，摸" + player.storage.blue_bingyuan_z + "张牌"
+				return strx + stry + strz
+			}
+		},
+		trigger: {
+			global: "damageBegin1",
+		},
+		filter(event, player) {
+			return player.storage.blue_bingyuan_x > 0 && event.card?.name == "sha" && event.card.nature == "ice" && event.getParent("sha", true)?.targets?.includes(event.player)
+		},
+		init(player) {
+			if (!player.storage.blue_bingyuan_x)
+				player.storage.blue_bingyuan_x = 0
+		},
+		forced: true,
+		async content(event, trigger, player) {
+			trigger.num += player.storage.blue_bingyuan_x
+		},
+		group: ["blue_donghai_gain","blue_donghai_draw","blue_donghai_die"],
+		subSkill: {
+			gain: {
+				trigger: {
+					player: "phaseBegin",
+				},
+				forced: true,
+				init(player) {
+					if (!player.storage.blue_bingyuan_y)
+						player.storage.blue_bingyuan_y = 0
+				},
+				filter(event, player) {
+					return player.storage.blue_bingyuan_y > 0 && get.cardPile(function (card) {
+						return get.name(card) == "sha" && card.nature == "ice";
+					});
+				},
+				async content(event, trigger, player) {
+					let cards = []
+					for (let i = 0; i < player.storage.blue_bingyuan_y; i++) {
+						const card = get.cardPile(function (card) {
+							return get.name(card) == "sha" && card.nature == "ice" && !cards.includes(card)
+						})
+						if (!card)
+							break
+						cards.push(card)
+					}
+					await player.gain(cards, "gain2")
+				}
+			},
+			draw: {
+				trigger: {
+					player: "phaseEnd",
+				},
+				forced: true,
+				init(player) {
+					if (!player.storage.blue_bingyuan_z)
+						player.storage.blue_bingyuan_z = 0
+				},
+				filter(event, player) {
+					return player.storage.blue_bingyuan_z > 0
+				},
+				async content(event, trigger, player) {
+					await player.draw(player.storage.blue_bingyuan_z)
+				}
+			},
+			die: {
+				forced: true,
+				forceDie: true,
+				trigger: {
+					player: "die",
+				},
+				filter(event, player) {
+					return game.filterPlayer(function (current) {
+						return !current.hasSkill("blue_donghai")
+					}).length > 0
+				},
+				async content(event, trigger, player) {
+					await game.delayx();
+					const target = game.filterPlayer(function (current) {
+						return !current.hasSkill("blue_donghai")
+					}).randomGet()
+
+					player.line(target, "green")
+
+					if (target.storage.blue_bingyuan_x)
+						target.storage.blue_bingyuan_x += player.storage.blue_bingyuan_x
+					else
+						target.storage.blue_bingyuan_x = player.storage.blue_bingyuan_x
+
+					if (target.storage.blue_bingyuan_y)
+						target.storage.blue_bingyuan_y += player.storage.blue_bingyuan_y
+					else
+						target.storage.blue_bingyuan_y = player.storage.blue_bingyuan_y
+
+					if (target.storage.blue_bingyuan_z)
+						target.storage.blue_bingyuan_z += player.storage.blue_bingyuan_z
+					else
+						target.storage.blue_bingyuan_z = player.storage.blue_bingyuan_z
+
+					target.addSkill("blue_donghai")
+				},
+			}
+		}
 	},
 };
 export default skills;

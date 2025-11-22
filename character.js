@@ -690,7 +690,16 @@ const characters = {
 		skills: ["yamada_feixiang", "yamada_mofa"],
 		img: "extension/魔法纪录/image/yamada.png",
 		dieAudios: ["ext:魔法纪录/audio/die/yamada.mp3"]
-	}
+	},
+	"blue": {//蓝蓝
+		sex: "female",
+		group: "Law_of_Cycles",
+		hp: 3,
+		maxHp: 3,
+		skills: ["blue_haijing", "blue_bingjie", "blue_bingyuan"],
+		img: "extension/魔法纪录/image/blue.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/blue.mp3"],
+	},
 }
 
 const character_translates = {
@@ -777,6 +786,7 @@ const character_translates = {
 	dArc: "贞德",
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
+	blue: "蓝蓝",
 };
 
 const perfectPairs = {
@@ -914,6 +924,7 @@ const characterTitles = {
 	dArc: "La Lumière", //贞德
 	suzune: "燃椿之焰", //天乃铃音
 	yamada: "超级科学回旋", //山田
+	blue: "海晶少女",//蓝蓝
 };
 
 const characterReplaces = {
