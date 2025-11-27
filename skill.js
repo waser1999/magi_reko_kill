@@ -5672,7 +5672,7 @@ const skills = {
 		preHidden: true,
 		async cost(event, trigger, player) {
 			const card = get.cardPile(function (card) {
-				return card.nature == 'fire' && get.tag(card, "damage")
+				return get.tag(card, "fireDamage")
 			});
 			if (!card)
 				return false
@@ -5691,7 +5691,7 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			const card = get.cardPile(function (card) {
-				return card.nature == 'fire' && get.tag(card, "damage")
+				return get.tag(card, "fireDamage")
 			});
 			const target = event.cost_data[0]
 			player.line(target)
@@ -5702,7 +5702,7 @@ const skills = {
 				return player.maxHp + num
 			},
 			ignoredHandcard(card, player) {
-				return card.nature == 'fire' && get.tag(card, "damage")
+				return get.tag(card, "fireDamage")
 			},
 		},
 		group: ["tsuruno_yingfa_draw"],
@@ -5750,7 +5750,7 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			const card = get.cardPile(function (card) {
-				return card.nature == 'fire' && get.tag(card, "damage")
+				return get.tag(card, "fireDamage")
 			});
 			if (card) {
 				await player.gain(card, "gain2", "log");
