@@ -796,6 +796,7 @@ const character_translates = {
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
 	blue: "蓝蓝",
+	ceobo: "小刻"
 };
 
 const perfectPairs = {
@@ -934,6 +935,7 @@ const characterTitles = {
 	suzune: "燃椿之焰", //天乃铃音
 	yamada: "超级科学回旋", //山田
 	blue: "海晶少女",//蓝蓝
+	ceobo: "百种兵器",//小刻
 };
 
 const characterReplaces = {
