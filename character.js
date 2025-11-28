@@ -700,6 +700,15 @@ const characters = {
 		img: "extension/魔法纪录/image/blue.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/blue.mp3"],
 	},
+	"ceobo": {//小刻
+		sex: "female",
+		group: "Law_of_Cycles",
+		hp: 3,
+		maxHp: 3,
+		skills: ["ceobo_kuangai", "ceobo_qingmei"],
+		img: "extension/魔法纪录/image/ceobo.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/ceobo.mp3"],
+	},
 }
 
 const character_translates = {

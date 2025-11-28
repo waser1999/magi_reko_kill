@@ -9917,7 +9917,7 @@ const skills = {
 				cards2.push(game.createCard2("icesha", "spade", 8, "ice"))
 
 			game.broadcastAll(function () {
-				lib.inpile.add("icesha");
+				lib.inpile_nature.add("ice")
 			});
 
 			game.cardsGotoPile(cards2, () => {
@@ -9984,7 +9984,7 @@ const skills = {
 	},
 	"blue_bingjie":{
 		trigger: {
-			global: "damageBegin2",
+			global: "damageBegin1",
 		},
 		filter(event, player, name) {
 			return event.card?.name == "sha" && event.card.nature == "ice" && event.player != player && player.getExpansions("blue_haijing")?.length && !player.hasSkill("blue_bingjie_public")
@@ -10071,6 +10071,8 @@ const skills = {
 							const rplayer = trigger.target
 							if (!rplayer?.length)
 								return true
+							if (rplayer.includes(player))
+								return false
 							let damageff = 0
 							const card = {name: "sha", isCard: true}
 							const card2 = {name: "sha", nature: "ice", isCard: true}
@@ -10161,7 +10163,7 @@ const skills = {
 		}
 	},
 	"blue_bingjing":{
-		trigger: { player: "damageBegin4" },
+		trigger: { player: "damageBefore" },
 		filter(event) {
 			return event.hasNature("ice");
 		},
@@ -10305,7 +10307,7 @@ const skills = {
 			}
 		},
 		trigger: {
-			global: "damageBegin1",
+			global: "damageBegin2",
 		},
 		filter(event, player) {
 			return player.storage.blue_bingyuan_x > 0 && event.card?.name == "sha" && event.card.nature == "ice" && event.getParent("sha", true)?.targets?.includes(event.player)
@@ -10398,6 +10400,634 @@ const skills = {
 						target.storage.blue_bingyuan_z = player.storage.blue_bingyuan_z
 
 					target.addSkill("blue_donghai")
+				},
+			}
+		}
+	},
+	"ceobo_kuangai":{
+		enable: "phaseUse",
+		usable: 1,
+		init(player) {
+			player.storage.ceobo_kuangai = 1
+		},
+		mark: true,
+		onremove: true,
+		unique: true,
+		filter(event, player) {
+			switch (player.storage.ceobo_kuangai) {
+				case 0:
+					return player.countCards("h", card => get.nature(card) && get.name(card) == "sha" && lib.filter.cardDiscardable(card, player)) && game.hasPlayer(target => target != player && player.canUse({ name: "sha", nature: "fire" }, target, false))
+				case 1:
+					return player.countCards("h") > 0 && player.countCards("h", card => get.nature(card) && get.name(card) == "sha") <= 5 && game.hasPlayer(target => target != player)
+				case 2:
+					return player.countCards("h") > 0 && game.hasPlayer(target => target != player)
+				case 3:
+					return player.countCards("h", card => get.tag(card, "natureDamage"))
+				case 4:
+					return game.hasPlayer(target => target != player && player.canUse({ name: "sha", nature: "fire" }, target, false))
+				default:
+					return false
+			}
+		},
+		async content(event, trigger, player) {
+			const lv = player.storage.ceobo_kuangai
+			const lvstr = "狂爱Lv" + lv + "："
+
+			let target
+			switch (lv) {
+				case 1:
+				case 2:
+				case 3:
+					const result = await player.chooseTarget(true, lvstr + "请选择一名角色", function(card, player,target) {
+							return target != player || lv == 3
+						})
+						.set("ai", function (target) {
+							return get.attitude(player, target)
+						})
+						.forResult()
+					target = result.targets[0]
+					player.line(target, "green")
+					break
+			}
+
+			let aichoice
+			const handct = player.countCards("h")
+			const nums = [0, 1, 2, 3, 4, 5].slice(0, handct)
+			switch (lv) {
+				case 1:
+					const min = Math.max(0, Math.floor(handct / 3))
+					const max = Math.min(5, Math.floor(handct / 2))
+					aichoice = (Math.floor(Math.random() * (max - min + 1)) + min).toString()
+					break
+				case 2:
+					aichoice = (handct < 8 ? Math.min(handct, 5) : 0).toString()
+					break
+			}
+
+			let choice
+			switch (lv) {
+				case 1:
+				case 2:
+					choice = await target.chooseControl(nums)
+						.set("prompt", lvstr + "请猜测" + get.translation(player) + "持有的属性【杀】数量")
+						.set("choice", aichoice)
+						.set("ai", function () {
+							return _status.event.choice;
+						})
+						.forResultControl();
+					game.log(target, "猜测", player,"手牌中有", parseInt(choice), "张属性【杀】");
+					const handsn = player.getCards("h", card => get.nature(card) && get.name(card) == "sha")
+					if (handsn.length > 0) {
+						await player.showCards(handsn)
+					} else {
+						game.log(player, "手牌中没有属性【杀】");
+					}
+					break
+				case 3:
+					player.showCards(player.getCards("h", card => get.tag(card, "natureDamage")))
+					break
+			}
+
+			//处理对敌人前的逻辑
+			switch (lv) {
+				case 0: 
+					await player.discard(player.getCards("h", card => get.nature(card) && get.name(card) == "sha"))
+					break
+				case 1:
+					const n = Math.abs(parseInt(choice) - player.countCards("h", card => get.nature(card) && get.name(card) == "sha"))
+					if (n != 0) {
+						const aick = game.hasPlayer(function (current) {
+							if (current == player || current == target)
+								return false
+							for (let i of lib.skill.ceobo_kuangai.libnatureaddice()) {
+								const card = { name: "sha", nature: i }
+								if (player.canUse(card, current, false) && get.effect(current, card, player, target) > 0)
+									return true
+							}
+							return false
+						})
+						const discard = await target.chooseToDiscard(lvstr + "请弃置" + get.cnNumber(n) + "张牌，若不弃置则不触发后续", n, "he")
+							.set("goon", aick)
+							.set("ai", card => {
+								if (!_status.event.goon) 
+									return -99
+								return skills.duexcept_ai(8 - get.value(card, target), card, target)
+							})
+							.forResult()
+							if (!discard.bool) {
+								game.log(target, "拒绝弃牌，" + "#g【狂爱】" + "效果失效")
+								return
+							}
+					}
+					break
+				case 2:
+					await target.draw(Math.abs(parseInt(choice) - player.countCards("h", card => get.nature(card) && get.name(card) == "sha")))
+					break
+				case 3:
+					const m = player.countCards("h", card => get.tag(card, "natureDamage"))
+					await player.draw(m)
+					await target.draw(m)
+					break
+			}
+
+			let enemy
+			switch (lv) {
+				case 0 :
+					enemy = await player.chooseTarget(true, lvstr + "请选择一名角色，" + get.translation(player) + "视为对其依次使用火【杀】雷【杀】冰【杀】", function (card, player, current) {
+						if (current == player)
+							return false
+						if (player.canUse({ name: "sha", nature: "fire" }, current, false))
+							return true
+						return false
+					}).set("ai", function (current) {
+						let num = 0
+						for (let i of lib.skill.ceobo_kuangai.libnatureaddice()) {
+							const card = {name: "sha", nature: i}
+							if (player.canUse(card, current, false))
+								num += get.effect(current, card, player, player)
+						}
+						return num
+					}).forResult()
+					break
+				case 1:
+				case 2:
+				case 3:
+					enemy = await target.chooseTarget(lvstr + "请选择一名角色，" + get.translation(player) + "视为对其使用" + get.cnNumber(lv == 3 ? 2 : 1) + "张随机属性【杀】", function (card, player, current) {
+						if (current == player || current == target)
+							return false
+						for (let i of lib.skill.ceobo_kuangai.libnatureaddice())
+							if (player.canUse({ name: "sha", nature: i }, current, false))
+								return true
+						return false
+					})
+					.set("ai", function (current) {
+						let num = 0
+						for (let i of lib.skill.ceobo_kuangai.libnatureaddice()) {
+							const card = {name: "sha", nature: i}
+							if (player.canUse(card, current, false))
+								num += get.effect(current, card, player, target)
+						}
+						return num
+					})
+					.forResult()
+					if (!enemy.bool) {
+						game.log(target, "不选择出【杀】对象，" + "#g【狂爱】" + "效果失效")
+						return
+					}
+					break
+				case 4:
+					enemy = await player.chooseTarget(true, lvstr + "请选择一名角色", function (card, player, current) {
+						if (current == player)
+							return false
+						for (let i of lib.skill.ceobo_kuangai.libnatureaddice())
+							if (player.canUse({ name: "sha", nature: i }, current, false))
+								return true
+						return false
+					}).set("ai", function (current) {
+						let num = 0
+						for (let i of lib.skill.ceobo_kuangai.libnatureaddice()) {
+							const card = {name: "sha", nature: i}
+							if (i == "thunder")
+								if (player.canUse(card, current, false))
+									num += get.effect(current, card, player, player)
+							else
+								if (player.canUse(card, current, false))
+									num += get.effect(current, card, player, player) * 2
+						}
+						return num
+					}).forResult()
+					break
+			}
+
+			const enemy0 = enemy.targets[0];
+			switch (lv) {
+				case 4:
+					if (enemy0.isIn() && player.canUse({ name: "sha", nature: "fire" }, enemy0, false))
+						await player.useCard({ name: "sha", nature: "fire" }, enemy0, false)
+					if (enemy0.isIn() && player.canUse({ name: "sha", nature: "ice" }, enemy0, false))
+						await player.useCard({ name: "sha", nature: "ice" }, enemy0, false)
+				case 0:
+					if (enemy0.isIn() && player.canUse({ name: "sha", nature: "fire" }, enemy0, false))
+						await player.useCard({ name: "sha", nature: "fire" }, enemy0, false)
+					if (enemy0.isIn() && player.canUse({ name: "sha", nature: "thunder" }, enemy0, false))
+						await player.useCard({ name: "sha", nature: "thunder" }, enemy0, false)
+					if (enemy0.isIn() && player.canUse({ name: "sha", nature: "ice" }, enemy0, false))
+						await player.useCard({ name: "sha", nature: "ice" }, enemy0, false)
+					break
+				case 1:
+				case 2:
+				case 3:
+					let nature = lib.skill.ceobo_kuangai.libnatureaddice();
+					for (let i of nature) {
+						if (player.canUse({ name: "sha", nature: i }, enemy0, false)) {
+							if (i == "ice" && lib.skill.ceobo_kuangai.randomnaturebluecheck(player)) {
+								nature = [i]
+								break
+							}
+						} else
+							nature.remove(i)
+					}
+					await player.useCard({ name: "sha", nature: nature.randomGet() }, enemy0, false)
+					if (lv == 3 && enemy0.isIn())
+						await player.useCard({ name: "sha", nature: nature.randomGet() }, enemy0, false)
+					break
+			}
+		},
+		ai:{
+			order: 8,
+			result: {
+				player(player) {
+					switch (player.storage.ceobo_kuangai) {
+						case 0:
+							return lib.skill.ceobo_kuangai.aicheckfunc(game.hasPlayer(function(target){
+								if (target == player || !player.canUse({ name: "sha", nature: "fire" }, target, false))
+									return false
+								let num = 0
+								for (let i of lib.skill.ceobo_kuangai.libnatureaddice()) {
+									const card = {name: "sha", nature: i}
+									if (player.canUse(card, target, false))
+										num += get.effect(target, card, player, player)
+								}
+								return num > 0
+							}))
+						case 1:
+							const friendplayer = game.filterPlayer(function(target){
+								return target != player && get.attitude(player, target) > 0
+							})
+							const n = lib.skill.ceobo_kuangai.aicheckfunc(friendplayer.length > 0 && game.hasPlayer(function(target){
+								if (target == player || friendplayer.includes(target))
+									return false
+								let num = 0
+								for (let i of lib.skill.ceobo_kuangai.libnatureaddice()) {
+									const card = {name: "sha", nature: i}
+									if (player.canUse(card, target, false))
+										num += get.effect(target, card, player, player)
+								}
+								return num > 0
+							}))
+							return n
+						case 2:
+							return lib.skill.ceobo_kuangai.aicheckfunc(game.filterPlayer(function(target){
+								return target != player && get.attitude(player, target) > 0
+							}))
+						case 3:
+							return 1
+						case 4:
+							return lib.skill.ceobo_kuangai.aicheckfunc(game.hasPlayer(function(target){
+								if (target == player || !player.canUse({ name: "sha", nature: "fire" }, target, false))
+									return false
+								let num = 0
+								for (let i of lib.skill.ceobo_kuangai.libnatureaddice()) {
+									const card = {name: "sha", nature: i}
+									if (i == "thunder")
+										if (player.canUse(card, target, false))
+											num += get.effect(target, card, player, player)
+									else
+										if (player.canUse(card, target, false))
+											num += get.effect(target, card, player, player) * 2
+								}
+								return num > 0
+							}))
+						default:
+							return 0
+					}
+				},
+			},
+		},
+		libnatureaddice(){
+			let nature = [...lib.inpile_nature]
+			if (!nature.includes("ice"))
+				nature.push("ice")
+			nature.randomSort()
+			return nature
+		},
+		randomnaturebluecheck(player) {
+			return player.name == "ceobo" && game.hasPlayer2(target => target.name == "blue")
+		},
+		updatestoragekuangai(player, num) {
+			const n = player.storage.ceobo_kuangai
+			if (!n)
+				return 
+			if (typeof num == "number") 
+				player.storage.ceobo_kuangai = num
+			else if ((player.name == "ceobo" && game.hasPlayer(target => target.name == "blue")) || n < 3)
+				player.storage.ceobo_kuangai++
+			if (n != player.storage.ceobo_kuangai)
+				game.log(player, "的【狂爱】等级变为", player.storage.ceobo_kuangai)
+			player.updateMarks()
+		},
+		iceshaspecialdeal(){
+			if (!lib.inpile_nature.includes("ice")) {
+				game.broadcastAll(function () {
+					lib.inpile_nature.add("ice")
+				})
+			}
+		},
+		storagekuangaicheck(storage,...numbers) {
+			return numbers.some(n => n == storage)
+		},
+		aicheckfunc(filter) {
+			return filter ? 1 : 0 
+		},
+		group: ["ceobo_kuangai_add","ceobo_kuangai_update","ceobo_kuangai_sp"],
+		subSkill: {
+			add: {
+				trigger: {
+					global: "damageEnd",
+				},
+				silent: true,
+				filter(event, player) {
+					return event.nature && event.num > 0 && lib.skill.ceobo_kuangai.storagekuangaicheck(player.storage.ceobo_kuangai, 1, 2, 3, 4)
+				},
+				async content(event, trigger, player) {
+					let cardname = [['basic','', 'sha', 'ice']]
+					if (!lib.skill.ceobo_kuangai.randomnaturebluecheck(player))
+						cardname = get.inpileVCardList(info => {
+							return get.tag({ name: info[2], nature: info[3], isCard: true }, "natureDamage")
+						});
+
+					if (!cardname.includes(['basic','', 'sha', 'ice']))
+						cardname.push(['basic','', 'sha', 'ice'])
+
+					let cards = [],ck = false
+					for (let i = 0; i < player.storage.ceobo_kuangai * trigger.num; i++) {
+						const name = cardname.randomGet()
+						cards.push(game.createCard2(name[2], "heart", 8, name[3]))
+						if (name[3] == 'ice')
+							ck = true
+					}
+
+					if (ck)
+						lib.skill.ceobo_kuangai.iceshaspecialdeal()
+
+					if (player.storage.ceobo_kuangai == 3) {
+						game.cardsGotoPile(cards, () => {
+							return ui.cardPile.childNodes[0];
+						});
+						game.log(player, "把", cards, "加入牌堆顶")
+					} else if (player.storage.ceobo_kuangai == 4) {
+						const cards2 = ["cardPile", "discardPile"].map(pos => Array.from(ui[pos].childNodes)).flat()
+						const filter = card => get.suit(card) != "heart"
+						const cardx = cards2.filter(filter).randomGets(4);
+						if (cardx.length) {
+							await game.cardsGotoSpecial(cardx);
+							game.log(player, "把牌堆或弃牌堆的", cardx, "被移出了游戏");
+						}
+						game.cardsGotoPile(cards, () => {
+							return ui.cardPile.childNodes[0];
+						});
+						game.log(player, "把", cards, "加入牌堆顶")
+					} else {
+						game.cardsGotoPile(cards, () => {
+							return ui.cardPile.childNodes[get.rand(0, ui.cardPile.childNodes.length - 1)];
+						});
+
+						game.log(player, "把", cards, "加入牌堆的随机位置")
+					}
+				}
+			},
+			sp: {
+				trigger: {
+					source: "damageSource"
+				},
+				silent: true,
+				filter(event, player) {
+					return player.storage.ceobo_kuangai == Math.ceil(Math.LN10) + Math.floor(Math.SQRT2) && event.nature
+				},
+				async content(event, trigger, player) {
+					await player.recover(trigger.num)
+					await player.draw(trigger.num)
+				}
+			},
+			update: {
+				trigger: { 
+					global: ["loseAfter", "loseAsyncAfter", "cardsDiscardAfter"]
+				},
+				forced: true,
+				filter(event, player) {
+					if (!event.getd()?.someInD("d") && !lib.skill.ceobo_kuangai.storagekuangaicheck(player.storage.ceobo_kuangai, 1, 2))
+						return false
+					let num = 0
+					for (let i of ui.discardPile.childNodes) {
+						if (get.name(i) == "sha" && get.nature(i)) {
+							num++
+							if ((num >= 8 && player.storage.ceobo_kuangai == 1) || (num >= 16 && player.storage.ceobo_kuangai == 2))
+								return true
+						}
+					}
+					return false
+				},
+				async content(event, trigger, player) {
+					let cards = []
+					for (let i of ui.discardPile.childNodes) {
+						if (get.name(i) == "sha" && get.nature(i))
+							cards.push(i)
+					}
+
+					game.cardsGotoPile(cards, () => {
+						return ui.cardPile.childNodes[get.rand(0, ui.cardPile.childNodes.length - 1)];
+					});
+
+					game.log(player, "把弃牌堆的", cards, "加入牌堆的随机位置")
+
+					lib.skill.ceobo_kuangai.updatestoragekuangai(player)
+				}
+			},
+		},
+		derivation: ["ceobo_kuangai_lv2","ceobo_kuangai_lv3"],
+		intro: {
+			content(storage){
+				const lvstr = "你的狂爱等级为" + storage
+				let info = ""
+				if (lib.skill.ceobo_kuangai.storagekuangaicheck(storage, 1, 2)) {
+					let num = 0
+					for (let i of ui.discardPile.childNodes)
+						if (get.name(i) == "sha" && get.nature(i))
+							num++
+					info = ",弃牌堆中有" + num + "张属性【杀】"
+				}
+				return lvstr + info
+			}
+		},
+	},
+	"ceobo_qingmei":{
+		dutySkill: true,
+		forced: true,
+		trigger: {
+			source: "damageSource"
+		},
+		filter(event, player) {
+			return event.nature
+		},
+		async content(event, trigger, player) {
+			let card = game.createCard2("sha", "heart", 8, lib.skill.ceobo_kuangai.randomnaturebluecheck(player) ? "ice" : lib.skill.ceobo_kuangai.libnatureaddice()[0])
+
+			if (card.nature == "ice")
+				lib.skill.ceobo_kuangai.iceshaspecialdeal()
+
+			await player.gain(card, "gain2")
+		},
+		group: ["ceobo_qingmei_achieve", "ceobo_qingmei_fail"],
+		subSkill: {
+			achieve: {
+				trigger: { global: "die" },
+				forced: true,
+				filter(event, player) {
+					return event.getParent("damage", true)?.nature
+				},
+				dutySkill: true,
+				skillAnimation: true,
+				async content(event, trigger, player) {
+					game.log(player, "使命成功")
+					player.awakenSkill("ceobo_qingmei")
+					player.addSkill("ceobo_renqing")
+					lib.skill.ceobo_kuangai.updatestoragekuangai(player)
+					await game.delayx();
+				}
+			},
+			fail: {
+				trigger: { global: "die" },
+				forced: true,
+				filter(event, player) {
+					const evt = event.getParent("damage", true)
+					return evt && !evt.nature && evt.source == player
+				},
+				dutySkill: true,
+				async content(event, trigger, player) {
+					game.log(player, "使命失败")
+					player.awakenSkill("ceobo_qingmei")
+					lib.skill.ceobo_kuangai.updatestoragekuangai(player, 0)
+					await game.delayx();
+				}
+			}
+		},
+		derivation: ["ceobo_kuangai_lv0","ceobo_renqing"]
+	},
+	"ceobo_renqing":{
+		async init(player) {
+			let n = 0
+			let cardsname = get.inpileVCardList(info => {
+				const card = { name: info[2], nature: info[3], isCard: true }
+				return ['火','雷','冰'].some(char => (!lib.skill.ceobo_kuangai.randomnaturebluecheck(player) || info[0] == 'equip') && (get.translation(card).includes(char) || get.cardDescription(card, player).includes(char)))
+			})
+
+			if (lib.skill.ceobo_kuangai.randomnaturebluecheck(player)) {
+				const n = cardsname.length
+				for (let i = 0; i < n + 3; i++)
+					cardsname.push(['basic','', 'sha', 'ice'])
+			} else {
+				if (!cardsname.includes(['basic','', 'sha', 'ice']))
+					cardsname.push(['basic','', 'sha', 'ice'])
+				const old = [...cardsname]
+				for (let i of old)
+					if (i[2] == 'sha' && i[3]) {
+						cardsname.push([i[0], i[1], i[2], i[3]])
+						cardsname.push([i[0], i[1], i[2], i[3]])
+						cardsname.push([i[0], i[1], i[2], i[3]])
+					}
+			}
+			cardsname.randomSort()
+
+			const targets = game.filterPlayer()
+			for (let i = 0; i < targets.length; i++) {
+				const ej = targets[i].getCards("ej")
+				if (ej.length > 0) {
+					n += ej.length
+					await targets[i].discard(ej)
+				}
+			}
+
+			let cards2 = ["cardPile", "discardPile"].map(pos => Array.from(ui[pos].childNodes)).flat()
+			const filter = card => get.type(card) == "equip" && !get.subtypes(card).includes("equip2")
+			const cardx = cards2.filter(filter);
+			cards2 = cards2.filter(card => !filter(card))
+			if (cardx.length) {
+				n += cardx.length
+				await game.cardsGotoSpecial(cardx);
+				game.log(player, "把牌堆或弃牌堆的", cardx, "被移出了游戏");
+			}
+
+			let cardsn = cards2.filter(card => !get.tag(card, "natureDamage"))
+			if (cardsn.length) {
+				cardsn = cardsn.randomGets(Math.floor(Math.random() * cardsn.length) + 1)
+				n += cardsn.length
+				await game.cardsGotoSpecial(cardsn);
+				game.log(player, "随机把牌堆或弃牌堆的", cardsn, "被移出了游戏");
+			}
+
+			if (n > 0 && cardsname.length) {
+				let newcards = [],ck = false
+
+				for (let i = 0; i < n; i++) {
+					const name = cardsname.randomGet()
+					newcards.push(game.createCard2(name[2], "heart", 8, name[3]))
+					if (name[3] == 'ice')
+						ck = true
+				}
+				if (ck)
+					lib.skill.ceobo_kuangai.iceshaspecialdeal()
+
+				game.cardsGotoPile(newcards, () => {
+					return ui.cardPile.childNodes[get.rand(0, ui.cardPile.childNodes.length - 1)];
+				});
+
+				function countElements(x) {
+					const countMap = new Map();
+					
+					for (const item of x) {
+						let key = get.translation(item);
+						countMap.set(key, (countMap.get(key) || 0) + 1);
+					}
+					
+					const result = [];
+					for (const [element, count] of countMap) {
+						result.push([element, count]);
+					}
+					
+					return result;
+				}
+				const logMessages = countElements(newcards).map(([element, count]) => `${count}张${get.translation(element)}`);
+				game.log(player, "把", `#y${logMessages.join('、')}`, "加入牌堆的随机位置");
+			}
+
+		},
+		forced: true,
+		trigger: {
+			source: "damageSource"
+		},
+		filter(event, player) {
+			return event.nature
+		},
+		async content(event, trigger, player) {
+			const targets = game.filterPlayer().sortBySeat()
+			for (let i of targets) {
+				const card = get.cardPile(card => get.tag(card, "natureDamage"))
+				if (card) {
+					await i.gain(card, "gain2")
+					await game.delayx()
+				} else
+					break
+			}
+		},
+		group: ["ceobo_renqing_imm"],
+		subSkill: {
+			imm: {
+				trigger: { player: "damageBefore" },
+				filter(event) {
+					return event.card?.suit == "heart"
+				},
+				forced: true,
+				content() {
+					trigger.cancel();
+				},
+				ai: {
+					effect: {
+						target(card, player, target, current) {
+							if (get.suit(card) == "heart" && get.tag(card, "damage")) {
+								return "zeroplayertarget";
+							}
+						},
+					},
 				},
 			}
 		}
