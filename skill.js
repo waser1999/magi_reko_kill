@@ -2270,31 +2270,18 @@ const skills = {
 				await player.gain(cards, trigger.player, "giveAuto", "bySelf")
 			player.addMark("yachiyo_zhishui", 1)
 
-			player.addSkill("yachiyo_xiji_handmax")
-			player.storage.yachiyo_xiji_handmax += 2
-
 			player.addSkill("yachiyo_xiji_temp")
 		},
 		subSkill: {
-			handmax: {
-				charlotte: true,
-				nopop: true,
-				init(player) {
-					player.storage.yachiyo_xiji_handmax = 0
-				},
-				mark: true,
-				marktext: "希",
-				intro: { content: "手牌上限+#，使用【杀】的次数上限+1" },
-				mod: {
-					maxHandcardBase(player, num) {
-						return player.storage.yachiyo_xiji_handmax + num
-					},
-				},
-			},
 			temp: {
 				charlotte: true,
 				nopop: true,
+				marktext: "希",
+				intro: { content: "手牌上限+2，使用【杀】的次数上限+1" },
 				mod: {
+					maxHandcardBase(player, num) {
+						return num + 2
+					},
 					cardUsable(card, player, num) {
 						if (card.name == "sha") {
 							return num + 1;
@@ -10881,6 +10868,23 @@ const skills = {
 					game.log(player, "使命成功")
 					player.awakenSkill("ceobo_qingmei")
 					player.addSkill("ceobo_renqing")
+					let cardname = get.inpileVCardList()
+			
+					if (!cardname.includes(['basic','', 'sha', 'ice']))
+						cardname.push(['basic','', 'sha', 'ice'])
+
+					let cards = [],ck = false
+					for (let i = 0; i < 4; i++) {
+						const card = cardname.randomGet()
+						cards.push(game.createCard2(card[2], "heart", 8, card[3]))
+						if (card[3] == "ice")
+							ck = true
+					}
+
+					if (ck)
+						lib.skill.ceobo_kuangai.iceshaspecialdeal()
+					await player.gain(cards, "gain2")
+					
 					lib.skill.ceobo_kuangai.updatestoragekuangai(player)
 					await game.delayx();
 				}

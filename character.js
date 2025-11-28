@@ -694,8 +694,8 @@ const characters = {
 	"blue": {//蓝蓝
 		sex: "female",
 		group: "Law_of_Cycles",
-		hp: 3,
-		maxHp: 3,
+		hp: 4,
+		maxHp: 4,
 		skills: ["blue_haijing", "blue_bingjie", "blue_bingyuan"],
 		img: "extension/魔法纪录/image/blue.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/blue.mp3"],
@@ -703,8 +703,8 @@ const characters = {
 	"ceobo": {//小刻
 		sex: "female",
 		group: "Law_of_Cycles",
-		hp: 3,
-		maxHp: 3,
+		hp: 4,
+		maxHp: 4,
 		skills: ["ceobo_kuangai", "ceobo_qingmei"],
 		img: "extension/魔法纪录/image/ceobo.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ceobo.mp3"],
