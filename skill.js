@@ -10928,12 +10928,13 @@ const skills = {
 			}
 			cardsname.randomSort()
 
-			const targets = game.filterPlayer()
+			const targets = game.filterPlayer().sortBySeat()
 			for (let i = 0; i < targets.length; i++) {
-				const ej = targets[i].getCards("ej")
-				if (ej.length > 0) {
-					n += ej.length
-					await targets[i].discard(ej)
+				const cards = targets[i].getCards("ej");
+				if (cards.length > 0) {
+					n += cards.length
+					await targets[i].discard(cards);
+					await game.delayx()
 				}
 			}
 
