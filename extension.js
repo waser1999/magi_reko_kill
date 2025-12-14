@@ -21,7 +21,7 @@ export default function () {
 				"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "mabayu", "homura_glasses", "homura_ribbon", "ulti_madoka", "devil_homura"],
 				"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "mitama", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "hanna", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 				"madoka3": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
-				"madoka4": ["yuna", "ao", "juri", "shizuka", "nayuta", "mikage"],
+				"madoka4": ["yuna", "ao", "juri", "shizuka", "nayuta", "mikage", "sakuya"],
 				"madoka5": ["kirika", "oriko", "yuma", "name", "asumi", "kazumi", "dArc", "suzune"],
 				"madoka6": ["yamada"],
 				"madoka7": ["blue"],

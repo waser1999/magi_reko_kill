@@ -157,7 +157,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 2,
 		maxHp: 3,
-		skills: ["lena_bianzhuang", "lena_nizong","lena_zhiao"],
+		skills: ["lena_bianzhuang", "lena_nizong", "lena_zhiao"],
 		img: "extension/魔法纪录/image/lena.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
 	},
@@ -166,7 +166,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 1,
 		maxHp: 1,
-		skills: ["lena_bianzhuang2", "lena_nizong2","lena_zhiao2"],
+		skills: ["lena_bianzhuang2", "lena_nizong2", "lena_zhiao2"],
 		img: "extension/魔法纪录/image/lena.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
 		isUnseen: true,
@@ -682,6 +682,15 @@ const characters = {
 		img: "extension/魔法纪录/image/suzune.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/suzune.mp3"]
 	},
+	"sakuya": {//铃鹿朔夜
+		sex: "female",
+		group: "Magia_Others",
+		hp: 4,
+		maxHp: 4,
+		skills: ["sakuya_tiaoting", "sakuya_huanzheng"],
+		img: "extension/魔法纪录/image/sakuya.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/sakuya.mp3"],
+	},
 	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
@@ -796,7 +805,8 @@ const character_translates = {
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
 	blue: "蓝蓝",
-	ceobo: "小刻"
+	ceobo: "小刻",
+	sakuya: "铃鹿朔夜",
 };
 
 const perfectPairs = {
@@ -936,6 +946,7 @@ const characterTitles = {
 	yamada: "超级科学回旋", //山田
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
+	sakuya: "辉煌之刃",//铃鹿朔夜
 };
 
 const characterReplaces = {
