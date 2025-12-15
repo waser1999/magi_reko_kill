@@ -9122,14 +9122,14 @@ const skills = {
 		trigger: { global: "damageBefore" },
 		usable: 1,
 		filter(event, player) {
-			return event.source != player;
+			return event.source != player && player.countCards("he");
 		},
 		check(event, player) {
 			return get.attitude(player, event.player) > 0;
 		},
 		async content(event, trigger, player) {
 			const target = trigger.source;
-			const result = await player.chooseToDiscard('he', '调停：弃置一张牌并与' + get.translation(target) + '进行议事', true).forResult();
+			const result = await player.chooseToDiscard('he', '调停：弃置一张牌并与' + get.translation(target) + '进行议事').forResult();
 			if (result.bool) {
 				player.chooseToDebate([player, trigger.source]).set("callback", async event => {
 					const result = event.debateResult;
