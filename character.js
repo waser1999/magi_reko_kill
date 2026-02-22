@@ -62,7 +62,7 @@ const characters = {
 		hp: 3,
 		maxHp: 3,
 		skills: ["nagisa_tianlao", "nagisa_beiji"],
-		img: "extension/魔法纪录/image/nagisa.jpg",
+		img: "extension/魔法纪录/image/nagisa.png",
 		dieAudios: ["ext:魔法纪录/audio/die/nagisa.mp3"]
 	},
 	"mabayu": {//爱生眩
@@ -101,7 +101,7 @@ const characters = {
 		hp: 4,
 		maxHp: 4,
 		skills: ["dcgeyuan", "dcgusuan", "dcjieshu", "bazhen"],
-		img: "extension/魔法纪录/image/devil_homura.jpg",
+		img: "extension/魔法纪录/image/devil_homura.png",
 		dieAudios: ["ext:魔法纪录/audio/die/devil_homura.mp3"],
 		isAiForbidden: true,
 	},
@@ -157,7 +157,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 2,
 		maxHp: 3,
-		skills: ["lena_bianzhuang", "lena_nizong","lena_zhiao"],
+		skills: ["lena_bianzhuang", "lena_nizong", "lena_zhiao"],
 		img: "extension/魔法纪录/image/lena.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
 	},
@@ -166,7 +166,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 1,
 		maxHp: 1,
-		skills: ["lena_bianzhuang2", "lena_nizong2","lena_zhiao2"],
+		skills: ["lena_bianzhuang2", "lena_nizong2", "lena_zhiao2"],
 		img: "extension/魔法纪录/image/lena.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
 		isUnseen: true,
@@ -241,7 +241,7 @@ const characters = {
 		hp: 4,
 		maxHp: 4,
 		skills: ["kaikang", "mashu"],
-		img: "extension/魔法纪录/image/kanae.jpg",
+		img: "extension/魔法纪录/image/kanae.png",
 		dieAudios: ["ext:魔法纪录/audio/die/kanae.mp3"]
 	},
 	"ashley": {//阿什莉·泰勒
