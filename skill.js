@@ -9968,6 +9968,122 @@ const skills = {
 			},
 		},
 	},
+
+	//黑江
+	"kuroe_zhuxing": {
+		audio: "ext:魔法纪录/audio/skill:1",
+		trigger: { player: "gainAfter" },
+		forced: true,
+		filter(event, player) {
+			return event.getParent(2, true)?.name != "kuroe_zhuxing_use";
+		},
+		async content(event, trigger, player) {
+			for (const card of trigger.cards) {
+				const suit = get.suit(card);
+				if (!player.storage.kuroe_zhuxing_suits) {
+					player.storage.kuroe_zhuxing_suits = [];
+				}
+				if (!player.storage.kuroe_zhuxing_suits.includes(suit)) {
+					player.storage.kuroe_zhuxing_suits.push(suit);
+					player.markAuto("kuroe_zhuxing_suits", [suit]);
+				}
+			}
+			player.addTip("kuroe_zhuxing", get.translation("kuroe_zhuxing") + player.getStorage("kuroe_zhuxing_suits").reduce((str, suit) => str + get.translation(suit), ""));
+		},
+
+		group: ["kuroe_zhuxing_use"],
+		subSkill: {
+			use: {
+				enable: "phaseUse",
+				filter(event, player) {
+					return player.storage.kuroe_zhuxing_suits?.length > 0;
+				},
+				async content(event, trigger, player) {
+					const suits = player.storage.kuroe_zhuxing_suits.slice();
+					const result = await player
+						.chooseButton(["逐星：选择要移除的花色", `<div class="text center">花色</div>`, [suits.map(suit => [suit, get.translation(suit)]), "tdnodes"]])
+						.set("selectButton", [1, suits.length])
+						.set("ai", button => {
+							return Math.random();
+						})
+						.forResult();
+					if (!result.bool || !result.links?.length) return;
+					const removedSuits = result.links;
+					for (const s of removedSuits) {
+						player.storage.kuroe_zhuxing_suits.remove(s);
+						player.unmarkAuto("kuroe_zhuxing_suits", [s]);
+					}
+					const cards = [...player.getCards("h"), ...player.getCards("e")].filter(c => removedSuits.includes(get.suit(c)));
+					if (cards.length) await player.discard(cards);
+					player.draw(removedSuits.length + cards.length);
+
+					if (player.storage.kuroe_zhuxing_suits.length == 0) {
+						player.removeTip("kuroe_zhuxing");
+					} else {
+						player.addTip("kuroe_zhuxing", get.translation("kuroe_zhuxing") + player.getStorage("kuroe_zhuxing_suits").reduce((str, suit) => str + get.translation(suit), ""));
+					}
+				},
+				skillTagFilter: player => player.storage.kuroe_zhuxing_suits?.length > 0,
+			},
+		},
+	},
+	"kuroe_baoshen": {
+		audio: "ext:魔法纪录/audio/skill:1",
+		trigger: {
+			player: ["chooseToRespondBefore", "chooseToUseBefore"],
+		},
+		filter(event, player) {
+			if (event.responded) return false;
+			if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
+			return true;
+		},
+		async content(event, trigger, player) {
+			const judge = await player.judge(card => {
+				if (!player.storage.kuroe_zhuxing_suits || player.storage.kuroe_zhuxing_suits.length === 0) {
+					return 1; // 没有记录花色时，获得判定牌
+				}
+				const suit = get.suit(card);
+				if (player.storage.kuroe_zhuxing_suits.includes(suit)) {
+					return 2; // 花色在记录中，视为使用闪
+				}
+				return 1; // 花色不在记录中，获得判定牌
+			}).forResult();
+
+			if (player.storage.kuroe_zhuxing_suits && player.storage.kuroe_zhuxing_suits.includes(get.suit(judge.card))) {
+				// 判定花色在逐星记录中，视为使用闪
+				trigger.untrigger();
+				trigger.set("responded", true);
+				trigger.result = { bool: true, card: { name: "shan", isCard: true } };
+				player.storage.kuroe_zhuxing_suits.remove(get.suit(judge.card));
+				if (player.storage.kuroe_zhuxing_suits.length == 0) {
+					player.removeTip("kuroe_zhuxing");
+				} else {
+					player.addTip("kuroe_zhuxing", get.translation("kuroe_zhuxing") + player.getStorage("kuroe_zhuxing_suits").reduce((str, suit) => str + get.translation(suit), ""));
+				}
+			} else {
+				// 判定花色不在记录中，获得判定牌
+				await player.gain(judge.card, "gain2");
+			}
+		},
+		ai: {
+			respondShan: true,
+			freeShan: true,
+			skillTagFilter(player) {
+				return true;
+			},
+			effect: {
+				target(card, player, target) {
+					if (get.tag(card, "respondShan")) {
+						if (target.storage.kuroe_zhuxing_suits && target.storage.kuroe_zhuxing_suits.length > 0) {
+							return [0.8, 0.8];
+						}
+					}
+				},
+			},
+		},
+	},
+
+	// 自创武将
 	"blue_haijing": {
 		trigger: {
 			global: "phaseBefore",

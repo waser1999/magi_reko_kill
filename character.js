@@ -475,7 +475,7 @@ const characters = {
 		group: "Magius_Wing",
 		hp: 3,
 		maxHp: 3,
-		skills: ["qingbei", "dcsuishi"],
+		skills: ["kuroe_zhuxing", "kuroe_baoshen"],
 		img: "extension/魔法纪录/image/kuroe.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/kuroe.mp3"],
 	},
