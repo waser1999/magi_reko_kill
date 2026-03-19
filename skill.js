@@ -4812,12 +4812,72 @@ const skills = {
 
 	// 常盘七香
 	"nanaka_huaxin": {
-		inherit: "xiaoji",
-		audio: "ext:魔法纪录/audio/skill:2",
-		getIndex(event, player) {
-			const evt = event.getl(player);
-			if (evt && evt.player === player && evt.es && evt.es.length) return 1;
-			return false;
+		audio: "ext:魔法纪录/audio/skill:1",
+		trigger: { player: "phaseZhunbeiBegin" },
+		async content(event, trigger, player) {
+			// 清除之前的类型选择
+			if (player.storage.nanaka_huaxin_types) delete player.storage.nanaka_huaxin_types;
+
+			const typeList = [["basic", "基本牌"], ["trick", "锦囊牌"], ["equip", "装备牌"]];
+			// chooseButton多选格式
+			const result = await player.chooseButton(["华心：选择两种牌的类型", `<div class="text center">牌的类型</div>`, [typeList, "tdnodes"]])
+				.set("selectButton", 2)
+				.set("ai", button => {
+					const type = button.link;
+					if (type === "basic") return 3; // 基本牌最常用
+					if (type === "trick") return 2; // 锦囊牌次之
+					return 1; // 装备牌
+				})
+				.forResult();
+
+			if (!result.bool || !result.links?.length) return;
+			player.storage.nanaka_huaxin_types = result.links;
+
+			player.addTempSkill("nanaka_huaxin_draw", { player: "phaseBegin" });
+			player.addTempSkill("nanaka_huaxin_sha", { player: "phaseBegin" });
+		},
+		subSkill: {
+			draw: {
+				trigger: { player: ["useCard", "respond", "discardAfter"] },
+				filter(event, player) {
+					if (!player.storage.nanaka_huaxin_types) return false;
+
+					const isPhase = player.isPhaseUsing();
+
+					if (event.name === "discardAfter") {
+						// 弃置：回合外弃置
+						if (isPhase) return false;
+						const cards = event.cards.filterInD("d");
+						if (cards.length === 0) return false;
+						return cards.some(card => player.storage.nanaka_huaxin_types.includes(get.type(card)));
+					}
+
+					if (event.name === "useCard") {
+						// 使用：回合内或回合外都可以
+						const cardType = get.type(event.card);
+						return player.storage.nanaka_huaxin_types.includes(cardType);
+					}
+
+					if (event.name === "respond") {
+						// 打出：回合外
+						const cardType = get.type(event.card);
+						return player.storage.nanaka_huaxin_types.includes(cardType);
+					}
+
+					return false;
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					await player.draw(2);
+				},
+			},
+			sha: {
+				mod: {
+					cardUsable(card, player, num) {
+						if (card.name === "sha") return num + 1;
+					},
+				},
+			},
 		},
 	},
 
@@ -4855,6 +4915,7 @@ const skills = {
 			return event.card.name == "sha" && event.getParent().type == "phase" && (!player.storage.asuka_longzhen || !player.storage.asuka_longzhen.includes(get.suit(event.card)));
 		},
 		async content(event, trigger, player) {
+			await player.draw(2);
 			player.markAuto("asuka_longzhen", [get.suit(trigger.card)]);
 			player.addTip("asuka_longzhen", get.translation("asuka_longzhen") + player.getStorage("asuka_longzhen").reduce((str, suit) => str + get.translation(suit), ""));
 		},
