@@ -10023,7 +10023,13 @@ const skills = {
 						player.addTip("kuroe_zhuxing", get.translation("kuroe_zhuxing") + player.getStorage("kuroe_zhuxing_suits").reduce((str, suit) => str + get.translation(suit), ""));
 					}
 				},
-				skillTagFilter: player => player.storage.kuroe_zhuxing_suits?.length > 0,
+				ai: {
+					order: 1,
+					result: {
+						player: 1,
+					},
+					threaten: 1.5,
+				},
 			},
 		},
 	},
