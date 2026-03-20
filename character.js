@@ -158,7 +158,7 @@ const characters = {
 		hp: 2,
 		maxHp: 3,
 		skills: ["lena_bianzhuang", "lena_nizong", "lena_zhiao"],
-		img: "extension/魔法纪录/image/lena.jpg",
+		img: "extension/魔法纪录/image/lena1.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/lena.mp3"],
 	},
 	"lena2": {//水波玲奈.变装

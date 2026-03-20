@@ -1855,9 +1855,9 @@ const skills = {
 					for (let i = 0; i < trigger.num; i++) {
 						const ck = player.hasMark("yachiyo_zhishui")
 						player.addMark("yachiyo_zhishui", 1)
-						if (ck) {
-							await player.draw();
-						}
+						// if (ck) {
+						// 	await player.draw();
+						// }
 					}
 				},
 			}
