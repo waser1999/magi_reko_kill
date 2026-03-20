@@ -550,7 +550,7 @@ const cards = {
 		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
-		skills: ["LightLance_skill", "LightLance_skill2"],
+		skills: ["LightLance_skill1", "LightLance_skill2"],
 		image: "ext:魔法纪录/image/card/LightLance.png",
 		enable: true,
 		selectTarget: -1,

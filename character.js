@@ -967,5 +967,12 @@ const characterReplaces = {
 
 };
 
+// 更改武将原画
+const characterSubstitutes = {
+	dArc: [
+		["final_dArc", ["ext:魔法纪录/image/final_dArc.jpg"]],
+	],
+}
+
 export default characters;
-export { character_translates, perfectPairs, characterTitles, characterReplaces };
+export { character_translates, perfectPairs, characterTitles, characterReplaces, characterSubstitutes };

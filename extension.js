@@ -1,6 +1,6 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 import cards from "./card.js";
-import characters, { character_translates, characterTitles, perfectPairs, characterReplaces } from "./character.js";
+import characters, { character_translates, characterTitles, perfectPairs, characterReplaces, characterSubstitutes } from "./character.js";
 import skills from "./skill.js";
 import equipSkills from "./equipSkill.js";
 import originalSkills from "./originalSkill.js";
@@ -64,6 +64,7 @@ export default function () {
 				perfectPair: { ...perfectPairs },
 				characterTitle: { ...characterTitles },
 				characterReplace: { ...characterReplaces },
+				characterSubstitute: { ...characterSubstitutes },
 				connect: true,
 			},
 			card: {

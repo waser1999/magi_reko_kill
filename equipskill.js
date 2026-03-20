@@ -262,7 +262,7 @@ const equipSkills = {
     "LightLance_skill1": {
         equipSkill: true,
         trigger: {
-            source: "damageBefore",
+            source: "damageAfter",
         },
         filter: function (event, player) {
             return event.player != player && event.player.maxHp > 0 && event.player.isAlive();
@@ -282,7 +282,7 @@ const equipSkills = {
         mod: {
             targetInRange(card, player, target, now) {
                 var type = get.type(card);
-                if (type == 'trick' || type == 'delay' | type == 'sha') return true;
+                if (type == 'trick' || type == 'delay' | type == 'sha') return Infinity;
             },
             canBeDiscarded(card) {
                 if (get.position(card) == 'e' && ['equip1', 'equip2'].includes(get.subtype(card))) return false;

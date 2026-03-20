@@ -9833,10 +9833,13 @@ const skills = {
 			return get.type(event.card) == "basic";
 		},
 		content() {
-			if (player == _status.currentPhase) {
+			if (trigger.card.name == "sha" || trigger.card.name == "tao") {
 				trigger.baseDamage++;
 			} else {
 				player.draw();
+			}
+			if (trigger.card.name == "sha") {
+				player.addTempSkill("retieji");
 			}
 		},
 		mod: {
@@ -9844,54 +9847,6 @@ const skills = {
 				return distance + 1;
 			},
 		},
-	},
-	"dArc_shengnv_tieqi": {
-		audio: 1,
-		trigger: {
-			player: "useCardToPlayered",
-		},
-		check(event, player) {
-			return get.attitude(player, event.target) < 0;
-		},
-		filter(event, player) {
-			return event.card.name == "sha" && event.getParent(2).name == "shiina_feiyan";
-		},
-		logTarget: "target",
-		content() {
-			"step 0";
-			player.judge(function () {
-				return 0;
-			});
-			if (!trigger.target.hasSkill("fengyin")) {
-				trigger.target.addTempSkill("fengyin");
-			}
-			"step 1";
-			var suit = get.suit(result.card);
-			var target = trigger.target;
-			var num = target.countCards("h", "shan");
-			target
-				.chooseToDiscard("请弃置一张" + get.translation(suit) + "牌，否则不能使用闪抵消此杀", "he", function (card) {
-					return get.suit(card) == _status.event.suit;
-				})
-				.set("ai", function (card) {
-					var num = _status.event.num;
-					if (num == 0) {
-						return 0;
-					}
-					if (card.name == "shan") {
-						return num > 1 ? 2 : 0;
-					}
-					return 8 - get.value(card);
-				})
-				.set("num", num)
-				.set("suit", suit);
-			"step 2";
-			if (!result.bool) {
-				trigger.getParent().directHit.add(trigger.target);
-			}
-		},
-		"skill_id": "shiina_retieji",
-		"_priority": 0,
 	},
 	"dArc_shengjian": {
 		audio: "ext:魔法纪录/audio/skill:2",
@@ -10001,6 +9956,42 @@ const skills = {
 			"_priority": 0,
 		}
 	},
+	"dArc_zaihui": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: ["phaseZhunbeiBegin", "phaseDiscardEnd"],
+		},
+		filter(event, player) {
+			return game.hasPlayer(current => current.isDamaged());
+		},
+		direct: true,
+		content() {
+			'step 0'
+			player.chooseTarget(get.prompt2('dArc_zaihui'), [1, Infinity], function (card, player, target) {
+				return target.isDamaged();
+			}).set('ai', function (target) {
+				var player = _status.event.player;
+				return get.attitude(player, target);
+			});
+			'step 1'
+			if (result.bool) {
+				var targets = result.targets.sortBySeat();
+				event.targets = targets;
+				player.logSkill('dArc_zaihui', targets);
+				game.asyncDraw(targets);
+				player.gainMaxHp();
+			}
+			else event.finish();
+			'step 2'
+			var num = targets.filter(target => target.countCards('h') == target.getHp()).length;
+			if (num) player.draw(num);
+			else game.delayx();
+		},
+		ai: {
+			threaten: 1.5,
+		},
+		"_priority": 0,
+	},
 	"dArc_chaoyue": {
 		derivation: ["dArc_poge", "dArc_guangying"],
 		audio: "ext:魔法纪录/audio/skill:2",
@@ -10021,7 +10012,7 @@ const skills = {
 		animationColor: "gold",
 		content() {
 			'step 0'
-			player.changeSkin("Final_dArc");
+			player.changeSkin("dArc_chaoyue", "final_dArc");
 			player.awakenSkill('dArc_chaoyue');
 			player.loseMaxHp(4);
 			player.draw(player.maxHp);
@@ -10033,82 +10024,57 @@ const skills = {
 		"_priority": 0,
 	},
 	"dArc_poge": {
-		group: ["dArc_shengnv_tieji", "dArc_poge_guangying1", "dArc_poge_guangying2"],
 		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
-			player: "useCard",
+			source: "damageEnd",
 		},
+		usable: 1,
 		filter(event, player) {
-			return event.card && (get.type(event.card) == 'trick' || get.type(event.card) == 'basic' && !['shan', 'tao', 'jiu', 'du'].includes(event.card.name)) && game.hasPlayer(function (current) {
-				return current != player && get.distance(current, player) <= 999;
-			});
+			return event.card != undefined;
 		},
-		forced: true,
-		content() {
-			"step 0";
-			var targets = game.filterPlayer(function (current) {
-				return current != player && get.distance(current, player) <= 999;
-			});
-			for (var target of targets) target.popup('无法响应');
-			trigger.directHit.addArray(targets);
-			"step 1";
-			player.loseMaxHp();
+		async content(event, trigger, player) {
+			var card = trigger.card;
+			var target = trigger.player;
+			var damage = trigger.num * 2;
+			if (target.isAlive()) await player.useCard(card, target);
+
+			var others = game.filterPlayer(current => current != player && current != target);
+			for (var other of others) {
+				if (!other.hasSkill("dArc_poge_disabled", null, null, false)) {
+					other.addTempSkill("dArc_poge_disabled");
+					other.addTempSkill("dArc_poge_cardban", "phaseAfter");
+				}
+			}
+			if (player.maxHp > 1) {
+				await player.loseMaxHp(1);
+			}
 		},
 		subSkill: {
-			tieji: {
-				audio: "ext:魔法纪录/audio/skill:2",
-				trigger: {
-					source: "damageSource",
+			disabled: {
+				init(player, skill) {
+					player.addSkillBlocker(skill);
+					player.addTip(skill, "无法使用手牌 技能失效");
 				},
-				filter(event, player) {
-					return event.player != player && event.player.isIn();
+				onremove(player, skill) {
+					player.removeSkillBlocker(skill);
+					player.removeTip(skill);
 				},
-				forced: true,
-				logTarget: "player",
-				content() {
-					trigger.player.addTempSkill('baiban');
-				},
-				sub: true,
-				sourceSkill: "dArc_poge",
-				"_priority": 0,
+				inherit: "baiban",
 			},
-			guangying1: {
-				audio: "ext:魔法纪录/audio/skill:2",
-				mark: true,
-				intro: {
-					content: "本次造成伤害翻倍",
+			cardban: {
+				mod: {
+					cardEnabled2(card, player) {
+						if (get.position(card) == "h") return false;
+					},
+					cardRespondable2(card, player) {
+						if (get.position(card) == "h") return false;
+					},
+					cardUsable(card, player, num) {
+						return 0;
+					},
 				},
-				forced: true,
-				trigger: {
-					source: "damageBegin1",
-				},
-				content() {
-					trigger.num *= 2;
-					player.removeSkill(event.name);
-				},
-				sub: true,
-				sourceSkill: "dArc_poge",
-				"_priority": 0,
 			},
 		},
-		"_priority": 0,
-	},
-	guangying2: {
-		audio: "ext:魔法纪录/audio/skill:2",
-		trigger: {
-			player: "useCard",
-		},
-		filter(event, player) {
-			if (event.card.name != 'sha' && get.type(event.card) != 'trick') return false;
-			return player.getHistory('useCard', evt => evt.isPhaseUsing() && (evt.card.name == 'sha' || get.type(evt.card) == 'trick')).indexOf(event) <= 999;
-		},
-		"prompt2": "令此牌额外结算一次",
-		async content(event, trigger, player) {
-			trigger.effectCount++;
-			game.log(trigger.card, '额外结算一次');
-		},
-		sub: true,
-		sourceSkill: "dArc_poge",
 		"_priority": 0,
 	},
 
