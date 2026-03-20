@@ -518,6 +518,55 @@ const cards = {
 		subtype: "equip4",
 		distance: { globalFrom: -1 },
 		image: "ext:魔法纪录/card_image/special_week.png",
+	},
+	"ClovisSword": {
+		vanish: true,
+		type: "equip",
+		subtype: "equip1",
+		skills: ["ClovisSword_skill"],
+		distance: {
+			attackFrom: -1,
+		},
+		enable: true,
+		fullskin: true,
+		image: "ext:魔法纪录/image/card/ClovisSword.png",
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"LightLance": {
+		audio: true,
+		fullskin: true,
+		type: "equip",
+		subtype: "equip5",
+		skills: ["LightLance_skill", "LightLance_skill2"],
+		image: "ext:魔法纪录/image/card/LightLance.png",
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
 	}
 }
 

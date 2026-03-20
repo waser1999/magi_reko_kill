@@ -669,7 +669,7 @@ const characters = {
 		group: "Magia_Others",
 		hp: 4,
 		maxHp: 4,
-		skills: ["retieji", "xiaoji", "gongji"],
+		skills: ["dArc_shengnv", "dArc_shengjian", "dArc_susheng"],
 		img: "extension/魔法纪录/image/dArc.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/dArc.mp3"]
 	},
@@ -728,6 +728,7 @@ const character_translates = {
 	"saint_mami_prefix": "圣",
 	"uwasa_tsuruno_prefix": "谣",
 	"devil_homura_prefix": "魔",
+	"dArc_prefix": "神",
 
 	madoka: "鹿目圆",
 	homura: "晓美焰",
@@ -801,7 +802,7 @@ const character_translates = {
 	name: "小名",
 	asumi: "神名浅海",
 	kazumi: "和美",
-	dArc: "贞德",
+	dArc: "神贞德",
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
 	blue: "蓝蓝",

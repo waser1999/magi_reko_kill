@@ -2,12 +2,15 @@ import { lib, game, ui, get, ai, _status } from "../../noname.js";
 import cards from "./card.js";
 import characters, { character_translates, characterTitles, perfectPairs, characterReplaces } from "./character.js";
 import skills from "./skill.js";
+import equipSkills from "./equipSkill.js";
+import originalSkills from "./originalSkill.js";
 import translates from "./translate.js";
 
 export const type = "extension";
 export default function () {
 	return {
-		name: "魔法纪录", arenaReady: function () {
+		name: "魔法纪录",
+		arenaReady: function () {
 
 		}, content: function (config, pack) {
 			lib.translate.madoka1 = "魔法少女小圆";
@@ -49,7 +52,12 @@ export default function () {
 			lib.namePrefix.set("圣", { color: "#FFD700" });
 			lib.namePrefix.set("谣", { color: "#FFD700" });
 			lib.namePrefix.set("神使", { color: "#FFD700" });
-		}, help: {}, config: {}, package: {
+		}, help: {
+
+		}, config: {
+
+		},
+		package: {
 			character: {
 				character: { ...characters },
 				translate: { ...character_translates },
@@ -60,7 +68,7 @@ export default function () {
 			},
 			card: {
 				card: { ...cards },
-				skill: { ...skills },
+				skill: { ...skills, ...equipSkills, ...originalSkills },
 				translate: { ...translates },
 				list: [
 					["heart", 9, "jk_unform", null, ["gifts"]],
@@ -83,6 +91,8 @@ export default function () {
 			diskURL: "https://github.com/waser1999/magi_reko_kill",
 			forumURL: "",
 			version: "1.8.1",
-		}, files: { "character": ["devil_homura.jpg"], "card": [], "skill": [], "audio": [] }, connect: true,
+		}, files: {
+			"character": [], "card": [], "skill": [], "audio": []
+		}, connect: true,
 	}
 };
