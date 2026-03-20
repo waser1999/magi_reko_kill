@@ -2839,10 +2839,15 @@ const skills = {
 					// 使用get函数访问能让ai改判
 					if (get.color(card) == "black") {
 						return 5;
+					} else if (get.suit(card) == "heart") {
+						return 2;
 					}
 					return -5;
 				}).forResult();
 				if (result.bool) player.addMark("nemu_zhiyao", 2);
+				if (result.suit == "heart") {
+					player.recover();
+				}
 			}
 		},
 		ai: {
@@ -9482,6 +9487,7 @@ const skills = {
 			judge: {
 				trigger: { player: ["useCardAfter", "respondAfter"] },
 				filter(event, player) {
+					if (event.getParent().name == "toka_zhisuan") return false;
 					return get.type(event.card) == "basic" && !player.hasSkill("toka_jiquan_blocker");
 				},
 				judgeCheck(card, bool) {
@@ -9996,6 +10002,7 @@ const skills = {
 		}
 	},
 	"dArc_chaoyue": {
+		derivation: ["dArc_poge", "dArc_guangying"],
 		audio: "ext:魔法纪录/audio/skill:2",
 		unique: true,
 		trigger: {
@@ -10105,6 +10112,187 @@ const skills = {
 		"_priority": 0,
 	},
 
+	// 莉兹
+	"Riz_caoying": {
+		group: ["Riz_caoying_attack", "Riz_caoying_defend"],
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: "gainAfter",
+		},
+		forced: true,
+		filter(event, player) {
+			if (event.getg(player).length == 0) {
+				return false;
+			}
+			return event.getParent().name != "Riz_caoying";
+		},
+		async content(event, trigger, player) {
+			await player.gain(lib.card.ying.getYing(), "gain2");
+		},
+		subSkill: {
+			attack: {
+				enable: "chooseToUse",
+				filter(event, player) {
+					return player.countCards("hs", card => card.name == "ying") >= 2;
+				},
+				selectCard: 2,
+				filterCard: { name: "ying" },
+				position: "hs",
+				locked: false,
+				viewAs: {
+					name: "sha",
+					nature: "stab",
+					storage: { Riz_caoying_attack: true },
+				},
+				viewAsFilter(player) {
+					if (!player.countCards("hs", "ying")) {
+						return false;
+					}
+				},
+				prompt: "将两张【影】当无次数限制的刺【杀】使用",
+				check(card) {
+					const val = get.value(card);
+					return 5 - val;
+				},
+				mod: {
+					cardUsable(card) {
+						if (card.storage && card.storage.Riz_caoying) {
+							return Infinity;
+						}
+					},
+				},
+				sub: true,
+				sourceSkill: "Riz_caoying",
+				"_priority": 0,
+			},
+			defend: {
+				audio: false,
+				enable: ['chooseToUse', 'chooseToRespond'],
+				filter(event, player) {
+					if (!event.filterCard({ name: "shan", isCard: true }, player, event)) return false;
+					return player.countCards("hs", card => card.name == "ying") >= 2;
+				},
+				filterCard(card, player, event) {
+					return card.name == "ying";
+				},
+				selectCard: 2,
+				position: "hs",
+				viewAs: {
+					name: "shan",
+				},
+				prompt: "将两张【影】当【闪】使用",
+				// onlyPrompt: true,
+				// onlyJS: true,
+				ai: {
+					respondShan: true,
+					skillTagFilter(player, tag, arg) {
+						if (player.countCards("h", "ying") < 2) return false;
+					},
+					order: 5,
+					result: {
+						player: 1
+					},
+				},
+				content() {
+					player.draw();
+					player.tempBanSkill("Riz_caoying");
+				},
+			},
+			// sub: true,
+			// sourceSkill: "Riz_caoying",
+		},
+		mod: {
+			ignoredHandcard(card, player) {
+				if (get.name(card) == "ying") {
+					return true;
+				}
+			},
+			cardDiscardable(card, player, name) {
+				if (name == "phaseDiscard" && get.name(card) == "ying") {
+					return false;
+				}
+			},
+		},
+		"_priority": 0,
+	},
+	"Riz_yingfu": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			global: "damageBegin1",
+		},
+		filter(event, player) {
+			if (!event.card || event.card.name != "sha") return false;
+			if (event.source == player) return false;
+			var maxLimit = player.maxHp - player.hp;
+			if (maxLimit <= 0) return false;
+			if (!player.countCards("h", "ying")) return false;
+			if (player.storage.Riz_yingfu_roundused >= maxLimit) return false;
+			return true;
+		},
+		init(player) {
+			player.storage.Riz_yingfu_roundused = 0;
+			if (!player.hasSkill("Riz_yingfu_clear", null, null, false)) {
+				player.addSkill("Riz_yingfu_clear");
+			}
+		},
+		check(event, player) {
+			return get.attitude(player, event.player) < 0;
+		},
+		async content(event, trigger, player) {
+			var maxLimit = player.maxHp - player.hp;
+			var go = await player.chooseToDiscard("h", "ying", "无名杀：是否弃置一张【影】视为对" + get.translation(trigger.player) + "使用一张【决斗】？", 1, true).set("ai", function (card) {
+				if (player.hasValueTarget({ name: "juedou" })) {
+					return 5 - get.value(card);
+				}
+				return 0;
+			}).forResult();
+			if (!go.bool) return;
+			player.storage.Riz_yingfu_roundused++;
+			var source = trigger.player;
+			var target = trigger.source;
+			trigger.cancel();
+			var juedou = await player.useCard({ name: "juedou" }, source, target).forResult();
+			if (juedou && juedou.bool && juedou.winner && juedou.winner === player) {
+				await player.draw();
+				if (_status.event && _status.event.parent) {
+					_status.event.parent.finish = true;
+				}
+			}
+		},
+		subSkill: {
+			clear: {
+				trigger: {
+					global: "roundStart",
+				},
+				direct: true,
+				content() {
+					player.storage.Riz_yingfu_roundused = 0;
+				},
+			},
+		},
+		"_priority": 0,
+	},
+	"Riz_duotan": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: "useCardToPlayered",
+		},
+		filter(event, player) {
+			return event.card.name == 'sha' || event.card.name == 'juedou';
+		},
+		init(player) {
+			player.storage.Riz_duotan = 0;
+		},
+		forced: true,
+		async content(event, trigger, player) {
+			await trigger.target.chooseToDiscard('he', 1, true);
+			player.storage.Riz_duotan++;
+			if (player.storage.Riz_duotan % 2 == 0) {
+				player.draw();
+			}
+		},
+		"_priority": 0,
+	},
 
 };
 export default skills;

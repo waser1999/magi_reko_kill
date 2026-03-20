@@ -673,6 +673,16 @@ const characters = {
 		img: "extension/魔法纪录/image/dArc.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/dArc.mp3"]
 	},
+	"Riz": {// 莉兹
+		sex: "female",
+		group: "Magia_Others",
+		hp: 4,
+		maxHp: 4,
+		hujia: 0,
+		skills: ["Riz_caoying", "Riz_yingfu", "Riz_duotan"],
+		img: "extension/魔法纪录/image/Riz.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Riz.mp3"]
+	},
 	"suzune": {//天乃铃音
 		sex: "female",
 		group: "Magia_Others",
@@ -808,6 +818,7 @@ const character_translates = {
 	blue: "蓝蓝",
 	ceobo: "小刻",
 	sakuya: "铃鹿朔夜",
+	Riz: "莉兹·霍克伍德",
 };
 
 const perfectPairs = {
@@ -867,6 +878,7 @@ const perfectPairs = {
 	kirika: ["oriko"],
 	oriko: ["kirika"],
 	yuma: ["kyoko"],
+	Riz: ["dArc"],
 };
 
 const characterTitles = {
@@ -948,6 +960,7 @@ const characterTitles = {
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
 	sakuya: "辉煌之刃",//铃鹿朔夜
+	Riz: "阴影",//莉兹
 };
 
 const characterReplaces = {
