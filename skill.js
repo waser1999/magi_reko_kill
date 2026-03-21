@@ -576,6 +576,7 @@ const skills = {
 	"kyoko_xunshen": {
 		limited: true,
 		enable: "phaseUse",
+		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			return player.getExpansions("kyoko_shengxu").length > 0;
 		},
@@ -625,6 +626,7 @@ const skills = {
 
 	// 美树沙耶香
 	"sayaka_kuangzou": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { global: "damageEnd" },
 		filter(event, player) {
 			return get.distance(player, event.player) <= 1 && event.num > 0;
@@ -697,6 +699,7 @@ const skills = {
 	"sayaka_qiangyin": {
 		enable: "phaseUse",
 		usable: 1,
+		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			return player.countCards("h", card => lib.filter.cardDiscardable(card, player)) >= 2 && game.hasPlayer(function (current) {
 				return current != player;
@@ -819,6 +822,7 @@ const skills = {
 	// 鹿目圆
 	"madoka_pomo": {
 		enable: "phaseUse",
+		audio: "ext:魔法纪录/audio/skill:2",
 		usable: 1,
 		filter: function (event, player) {
 			return player.getAttackRange() > 0;
@@ -1017,6 +1021,7 @@ const skills = {
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
+		audio: "ext:魔法纪录/audio/skill:1",
 		frequent: true,
 		logTarget: "source",
 		filter(event, player, name) {
@@ -1814,6 +1819,7 @@ const skills = {
 			global: "phaseBefore",
 			player: "enterGame",
 		},
+		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			return event.name != "phase" || game.phaseNumber == 0;
 		},
@@ -1865,6 +1871,7 @@ const skills = {
 	},
 	"yachiyo_jueyu": {
 		trigger: { source: "damageBegin1" },
+		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			const target = event.player;
 			return (player.hasMark("yachiyo_zhishui") && !player.getStat("yachiyo_jueyu1")?.includes(target)) || !player.getStat("yachiyo_jueyu2")?.includes(target)
@@ -2093,12 +2100,14 @@ const skills = {
 
 	// 玛吉斯
 	"magius_jiefang": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		zhuSkill: true,
 		forbid: ["guozhan"],
 		global: "magius_jiefang2",
 		"_priority": 0,
 	},
 	"magius_jiefang2": {
+		audio: "magius_jiefang",
 		enable: "phaseUse",
 		discard: false,
 		lose: false,
@@ -3076,6 +3085,7 @@ const skills = {
 	"ui_jinghua": {
 		trigger: { global: "phaseJieshu" },
 		direct: true,
+		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			return event.player != player
 		},
@@ -3274,7 +3284,7 @@ const skills = {
 
 	// 深月菲莉西亚
 	"felicia_chuiji": {
-		audio: 2,
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { global: "useCardToPlayered" },
 		group: "felicia_chuiji_3",
 		direct: true,
@@ -3480,6 +3490,7 @@ const skills = {
 	// 二叶莎奈
 	"sana_dunwei": {
 		trigger: { player: "phaseJieshuBegin" },
+		audio: "ext:魔法纪录/audio/skill:2",
 		check(event, player) {
 			return player.countCards("h") <= 5
 		},
@@ -3916,6 +3927,7 @@ const skills = {
 
 	// 爱生眩
 	"mabayu_jingying": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { player: "phaseUseBefore" },
 		mark: true,
 		zhuanhuanji: true,
@@ -7212,6 +7224,7 @@ const skills = {
 	"momoko_liji": {
 		enable: "phaseUse",
 		usable: 2,
+		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			return (player.hp >= 1 || player.hasCard(card => get.type(card) == "equip" && lib.filter.cardDiscardable(card, player), "he")) && game.hasPlayer(current => player != current && !player.getStat("momoko_liji")?.includes(current));
 		},
@@ -7802,6 +7815,7 @@ const skills = {
 
 	//八云御魂
 	"mitama_yuhun": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: "phaseBegin"
 		},
@@ -8569,6 +8583,7 @@ const skills = {
 	"lena_bianzhuang": {
 		enable: "phaseUse",
 		usable: 1,
+		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			return game.hasPlayer(function (target) {
 				return target.countCards("h") < target.maxHp && player.hasCard(card => lib.filter.cardDiscardable(card, player), "he")
@@ -8792,6 +8807,7 @@ const skills = {
 	},
 	"lena_nizong2": {
 		enable: "chooseToUse",
+		audio: "lena_bianzhuang",
 		filter(event, player) {
 			return event.type == "dying" && player == event.dying;
 		},
@@ -9437,6 +9453,7 @@ const skills = {
 
 	// 里见灯花
 	"toka_jiquan": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { player: "judgeEnd" },
 		group: ["toka_jiquan_judge"],
 		direct: true,
@@ -9593,6 +9610,7 @@ const skills = {
 		},
 	},
 	"toka_zhisuan": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		mod: {
 			aiOrder(player, card, num) {
 				if (num > 0 && get.itemtype(card) == "card" && get.color(card) == "black" && get.type(card) == "equip") {
@@ -9702,7 +9720,7 @@ const skills = {
 
 	//黑江
 	"kuroe_zhuxing": {
-		audio: "ext:魔法纪录/audio/skill:1",
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { player: "gainAfter" },
 		forced: true,
 		filter(event, player) {
@@ -9765,7 +9783,7 @@ const skills = {
 		},
 	},
 	"kuroe_baoshen": {
-		audio: "ext:魔法纪录/audio/skill:1",
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: ["chooseToRespondBefore", "chooseToUseBefore"],
 		},
