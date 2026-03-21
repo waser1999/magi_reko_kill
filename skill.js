@@ -3932,7 +3932,7 @@ const skills = {
 		mark: true,
 		zhuanhuanji: true,
 		marktext: "☯",
-		direct: true,
+		forced: true,
 		intro: {
 			content(storage) {
 				if (storage)
@@ -10278,5 +10278,124 @@ const skills = {
 		"_priority": 0,
 	},
 
+	// 御园花凛
+	"karin_daodan": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		enable: ["chooseToUse"],
+		usable: 1,
+		// 选择视为使用的面板【桃】
+		hiddenCard(player, name) {
+			return name === "tao";
+		},
+		filter(event, player) {
+			if (event.responded) {
+				return false;
+			}
+			return game.hasPlayer(target => player != target) && event.filterCard({ name: "tao", isCard: true }, player, event);
+		},
+		async content(event, trigger, player) {
+			const targets = game.filterPlayer(target => player != target);
+			const target = await player.chooseTarget("捣蛋：选择一名其他角色", true, targets)
+				.set("ai", target => get.attitude(player, target) < 0)
+				.forResult();
+			if (!target || !target.targets.length) return;
+			const targetPlayer = target.targets[0];
+			player.line(targetPlayer, "green");
+			if (targetPlayer.getCards("h").length == 0) {
+				targetPlayer.damage();
+				return;
+			}
+
+			const card = await targetPlayer.chooseCard("捣蛋：请选择一张【桃】交给" + get.translation(player), function (card) {
+				return get.name(card) == "tao" || get.name(card) == "jiu";
+			})
+				.set("ai", card => -get.value(card, targetPlayer))
+				.forResult();
+			if (!card || !card.cards || !card.cards.length) {
+				game.log(get.translation(targetPlayer) + "拒绝了给糖，那就捣蛋！");
+				const suits = ["spade", "heart", "club", "diamond"];
+				const suitNames = ["♠️", "♥️", "♣️", "♦️"];
+				const choice = await player.chooseControl(suitNames)
+					.set("prompt", "选择一种花色，并获得其手牌")
+					.forResult();
+
+				const suitIndex = suitNames.indexOf(choice.control);
+				game.log(get.translation(player) + "选择了" + suitNames[suitIndex] + "的牌");
+				if (suitIndex < 0 || suitIndex >= suits.length) return;
+				const chosenSuit = suits[suitIndex];
+				const randomCard = player.gain(targetPlayer.getCards("h").randomGet(), targetPlayer, "giveAuto", "bySelf")
+				debugger;
+				if (get.suit(randomCard.cards[0]) == chosenSuit) {
+					targetPlayer.damage();
+				}
+				return;
+			};
+
+			const givenCard = card.cards[0];
+			await targetPlayer.give(givenCard, player);
+		},
+		ai: {
+			order: 8,
+			result: {
+				player(player) {
+					return 1;
+				}
+			}
+		}
+	},
+	"karin_youhuo": {
+		trigger: {
+			player: "damageBegin4",
+		},
+		filter(event, player) {
+			if (!event.source || event.source == player) {
+				return false;
+			}
+			if (!player.canCompare(event.source)) {
+				return false;
+			}
+			return (
+				game.getGlobalHistory("everything", evt => {
+					return evt.name == "damage" && evt.player == player;
+				}, event).indexOf(event) == 0
+			);
+		},
+		logTarget: "source",
+		async content(event, trigger, player) {
+			const target = event.targets[0];
+			const next = await player.chooseToCompare(target).set("isDelay", true);
+			// debugger
+			trigger.num--;
+			let bool = get.damageEffect(player, target, target) + get.effect(target, { name: "guohe_copy2" }, player, target) > 0;
+			bool = Math.random() > 0.4 ? bool : false;
+			const result = await target
+				.chooseBool(`幽火：是否令${get.translation(target)}交给${get.translation(player)}一张对应花色的手牌，然后揭示拼点结果？`)
+				.set("choice", bool)
+				.forResult();
+			if (result.bool) {
+				const suits = ["spade", "heart", "club", "diamond"];
+				const suitNames = ["♠️", "♥️", "♣️", "♦️"];
+				const choice = await player.chooseControl(suitNames)
+					.set("prompt", "选择一种花色")
+					.forResult();
+
+				const suitIndex = suitNames.indexOf(choice.control);
+				game.log(get.translation(player) + "选择了" + suitNames[suitIndex] + "的牌");
+
+				const giveResult = await target.chooseToGive(player, "h", card => get.suit(card) == suits[suitIndex]).forResult();
+				if (!giveResult || !giveResult.cards.length) return;
+
+				const result2 = await game.createEvent("chooseToCompare", false).set("player", player).set("parentEvent", next).setContent("chooseToCompareEffect").forResult();
+
+				if (result2?.winner == target) {
+					trigger.num++;
+				} else {
+					trigger.num == 0;
+				}
+			} else {
+				await game.delayx();
+			}
+		},
+	},
 };
 export default skills;

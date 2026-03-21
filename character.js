@@ -439,7 +439,7 @@ const characters = {
 		group: "Magius_Wing",
 		hp: 3,
 		maxHp: 3,
-		skills: ["daoshu", "weicheng"],
+		skills: ["karin_daodan", "karin_youhuo"],
 		img: "extension/魔法纪录/image/karin.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/karin.mp3"],
 	},
