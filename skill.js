@@ -3084,7 +3084,6 @@ const skills = {
 	// 环忧
 	"ui_jinghua": {
 		trigger: { global: "phaseJieshu" },
-		direct: true,
 		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			return event.player != player
@@ -4169,6 +4168,7 @@ const skills = {
 	//百江渚
 	"nagisa_tianlao": {
 		enable: "phaseUse",
+		audio: "ext:魔法纪录/audio/skill:2",
 		usable(skill, player) {
 			return 1 + (player.storage.nagisa_tianlao_use || 0);
 		},
@@ -8981,33 +8981,33 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			const target = trigger.source;
-			const result = await player.chooseToDiscard('he', '调停：弃置一张牌并与' + get.translation(target) + '进行议事').forResult();
-			if (result.bool) {
-				player.chooseToDebate([player, trigger.source]).set("callback", async event => {
-					const result = event.debateResult;
-					if (result?.bool) {
-						if (result.opinion === "black") {
-							await trigger.source.damage(player, 1);
-						} else if (result.opinion === "red") {
-							trigger.num--;
-						}
+			// const result = await player.chooseToDiscard('he', '调停：与' + get.translation(target) + '进行议事').forResult();
+			// if (result.bool) {
+			player.chooseToDebate([player, trigger.source]).set("callback", async event => {
+				const result = event.debateResult;
+				if (result?.bool) {
+					if (result.opinion === "black") {
+						await trigger.source.damage(player, 1);
+					} else if (result.opinion === "red") {
+						trigger.num--;
 					}
-					const targets = result.red.map(i => i[0]);
-					for (let target of targets) {
-						const result = await target.chooseTarget("请选择一名其他角色摸两张牌", function (card, player, current) {
-							return current != player;
-						}).set("ai", function (target) {
-							return get.attitude(_status.event.player, target);
-						}).forResult();
+				}
+				const targets = result.red.map(i => i[0]);
+				for (let target of targets) {
+					const result = await target.chooseTarget("请选择一名其他角色摸两张牌", function (card, player, current) {
+						return current != player;
+					}).set("ai", function (target) {
+						return get.attitude(_status.event.player, target);
+					}).forResult();
 
-						if (result.bool) {
-							const chosenTarget = result.targets[0];
-							target.line(chosenTarget, "green");
-							await chosenTarget.draw(2);
-						}
+					if (result.bool) {
+						const chosenTarget = result.targets[0];
+						target.line(chosenTarget, "green");
+						await chosenTarget.draw(2);
 					}
-				});
-			}
+				}
+			});
+			// }
 		},
 		ai: {
 			expose: 0.2,
@@ -10324,7 +10324,6 @@ const skills = {
 				if (suitIndex < 0 || suitIndex >= suits.length) return;
 				const chosenSuit = suits[suitIndex];
 				const randomCard = player.gain(targetPlayer.getCards("h").randomGet(), targetPlayer, "giveAuto", "bySelf")
-				debugger;
 				if (get.suit(randomCard.cards[0]) == chosenSuit) {
 					targetPlayer.damage();
 				}
@@ -10369,7 +10368,7 @@ const skills = {
 			let bool = get.damageEffect(player, target, target) + get.effect(target, { name: "guohe_copy2" }, player, target) > 0;
 			bool = Math.random() > 0.4 ? bool : false;
 			const result = await target
-				.chooseBool(`幽火：是否令${get.translation(target)}交给${get.translation(player)}一张对应花色的手牌，然后揭示拼点结果？`)
+				.chooseBool(`幽火：是否交给${get.translation(player)}一张对应花色的手牌，然后揭示拼点结果？`)
 				.set("choice", bool)
 				.forResult();
 			if (result.bool) {
@@ -10383,14 +10382,14 @@ const skills = {
 				game.log(get.translation(player) + "选择了" + suitNames[suitIndex] + "的牌");
 
 				const giveResult = await target.chooseToGive(player, "h", card => get.suit(card) == suits[suitIndex]).forResult();
-				if (!giveResult || !giveResult.cards.length) return;
+				if (!giveResult.bool) return;
 
 				const result2 = await game.createEvent("chooseToCompare", false).set("player", player).set("parentEvent", next).setContent("chooseToCompareEffect").forResult();
 
-				if (result2?.winner == target) {
-					trigger.num++;
-				} else {
+				if (result2?.winner == player) {
 					trigger.num == 0;
+				} else {
+					trigger.num++;
 				}
 			} else {
 				await game.delayx();

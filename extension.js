@@ -11,7 +11,97 @@ export default function () {
 	return {
 		name: "魔法纪录",
 		arenaReady: function () {
-
+			// 重写选择器，这样可以在国战支持自定义势力啦
+			game.getCharacterChoice = function (list, num) {
+				const choice = list.splice(0, num).sort(function (a, b) {
+					return (get.is.double(a) ? 1 : -1) - (get.is.double(b) ? 1 : -1);
+				});
+				const map = { wei: [], shu: [], wu: [], qun: [], key: [], jin: [], ye: [], Law_of_Cycles: [], Kamihama_Magia_Union: [], Magius_Wing: [], Magia_Others: [] };
+				for (let i = 0; i < choice.length; ++i) {
+					if (get.is.double(choice[i])) {
+						// @ts-expect-error 祖宗之法就是这么写的
+						var group = get.is.double(choice[i], true);
+						// @ts-expect-error 祖宗之法就是这么写的
+						for (var ii of group) {
+							if (map[ii] && map[ii].length) {
+								map[ii].push(choice[i]);
+								lib.character[choice[i]][1] = ii;
+								group = false;
+								break;
+							}
+						}
+						if (group) {
+							choice.splice(i--, 1);
+						}
+					} else {
+						// @ts-expect-error 祖宗之法就是这么写的
+						var group = lib.character[choice[i]][1];
+						if (map[group]) {
+							map[group].push(choice[i]);
+						}
+					}
+				}
+				if (map.ye.length) {
+					for (const i in map) {
+						if (i != "ye" && map[i].length) {
+							return choice.randomSort();
+						}
+					}
+					choice.remove(map.ye[0]);
+					map.ye.remove(map.ye[0]);
+					for (var i = 0; i < list.length; i++) {
+						if (lib.character[list[i]][1] != "ye") {
+							choice.push(list[i]);
+							list.splice(i--, 1);
+							return choice.randomSort();
+						}
+					}
+				}
+				for (const i in map) {
+					if (map[i].length < 2) {
+						if (map[i].length == 1) {
+							choice.remove(map[i][0]);
+							list.push(map[i][0]);
+						}
+						map[i] = false;
+					}
+				}
+				if (choice.length == num - 1) {
+					for (let i = 0; i < list.length; ++i) {
+						if (map[lib.character[list[i]][1]]) {
+							choice.push(list[i]);
+							list.splice(i--, 1);
+							break;
+						}
+					}
+				} else if (choice.length < num - 1) {
+					let group = null;
+					for (let i = 0; i < list.length; ++i) {
+						if (group) {
+							if (lib.character[list[i]][1] == group || lib.character[list[i]][1] == "ye") {
+								choice.push(list[i]);
+								list.splice(i--, 1);
+								if (choice.length >= num) {
+									break;
+								}
+							}
+						} else {
+							if (!map[lib.character[list[i]][1]] && !get.is.double(list[i])) {
+								group = lib.character[list[i]][1];
+								if (group == "ye") {
+									group = null;
+								}
+								choice.push(list[i]);
+								list.splice(i--, 1);
+								if (choice.length >= num) {
+									break;
+								}
+							}
+						}
+					}
+				}
+				return choice.randomSort();
+			};
 		}, content: function (config, pack) {
 			lib.translate.madoka1 = "魔法少女小圆";
 			lib.translate.madoka2 = "魔法纪录";
@@ -29,6 +119,8 @@ export default function () {
 				"madoka6": ["yamada"],
 				"madoka7": ["blue"],
 			}
+
+
 		}, prepare: function () {
 
 		}, precontent: function () {
