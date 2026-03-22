@@ -188,6 +188,7 @@ const characters = {
 		skills: ["kaede_manmiao", "kaede_qudu", "kaede_zhuisi"],
 		img: "extension/魔法纪录/image/kaede.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/kaede.mp3"],
+		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
 	},
 	"asuka": {//龙城明日香
 		sex: "female",
@@ -206,6 +207,7 @@ const characters = {
 		skills: ["ui_jinghua", "ui_jieyou", "iroha_huanyu"],
 		img: "extension/魔法纪录/image/ui.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ui.mp3"],
+		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
 	},
 	"kanagi": {//和泉十七夜
 		sex: "female",
@@ -414,6 +416,7 @@ const characters = {
 		skills: ["dcwumei", "dczhanmeng"],
 		img: "extension/魔法纪录/image/mifuyu.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mifuyu.mp3"],
+		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
 	},
 	"toka": {//里见灯花
 		sex: "female",
@@ -442,6 +445,7 @@ const characters = {
 		skills: ["karin_daodan", "karin_youhuo"],
 		img: "extension/魔法纪录/image/karin.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/karin.mp3"],
+		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
 	},
 	"nemu": {//柊音梦
 		sex: "female",
@@ -451,6 +455,7 @@ const characters = {
 		skills: ["nemu_zhiyao", "nemu_sanyao", "nemu_tiruo"],
 		img: "extension/魔法纪录/image/nemu.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/nemu.mp3"],
+		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
 	},
 	"yueye": {//天音月夜
 		sex: "female",
@@ -478,6 +483,7 @@ const characters = {
 		skills: ["kuroe_zhuxing", "kuroe_baoshen"],
 		img: "extension/魔法纪录/image/kuroe.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/kuroe.mp3"],
+		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
 	},
 	"sakura": {//柊樱子
 		sex: "female",
@@ -700,6 +706,7 @@ const characters = {
 		skills: ["sakuya_tiaoting", "sakuya_huanzheng"],
 		img: "extension/魔法纪录/image/sakuya.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/sakuya.mp3"],
+		doubleGroup: ["Kamihama_Magia_Union", "Magia_Others"],
 	},
 	"yamada": {//山田正一郎
 		sex: "male",
