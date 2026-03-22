@@ -10396,5 +10396,166 @@ const skills = {
 			}
 		},
 	},
+
+	// 煌里光
+	"hikaru_zhengzheng": {
+		trigger: { player: ["phaseBegin", "phaseEnd"] },
+		filter(event, player) {
+			return game.hasPlayer(current => !current.hasMark("hikaru_zhengzheng_gold_shield") || !current.hasMark("hikaru_zhengzheng_thunder_spear"));
+		},
+		group: ["hikaru_zhengzheng_gold_shield_effect", "hikaru_zhengzheng_thunder_spear_effect"],
+		async cost(event, trigger, player) {
+			const choice = await player.chooseTarget("铮铮：选择一名角色获得标记")
+				.set("filterTarget", (card, player, target) => !target.hasMark("hikaru_zhengzheng_gold_shield") || !target.hasMark("hikaru_zhengzheng_thunder_spear"))
+				.set("ai", target => get.attitude(player, target))
+				.forResult();
+
+			if (!choice.bool || !choice.targets || !choice.targets.length) return;
+
+			const target = choice.targets[0];
+			let choiceList = [];
+			if (!target.hasMark("hikaru_zhengzheng_gold_shield")) choiceList.push("金盾");
+			if (!target.hasMark("hikaru_zhengzheng_thunder_spear")) choiceList.push("雷矛");
+
+			const control = await player.chooseControl()
+				.set("prompt", "铮铮：选择获得哪种标记")
+				.set("choiceList", choiceList)
+				.set("ai", () => Math.random() > 0.5 ? 0 : 1)
+				.forResult();
+			event.result = { bool: true, targets: [target], cost_data: choiceList[control.index] };
+		},
+		async content(event, trigger, player) {
+			const target = event.targets[0];
+			debugger
+			const mark = event.cost_data === "金盾" ? "hikaru_zhengzheng_gold_shield" : "hikaru_zhengzheng_thunder_spear";
+			target.addMark(mark);
+			target.addTempSkill(mark, "roundStart");
+		},
+		subSkill: {
+			gold_shield_effect: {
+				trigger: { global: "damageBegin" },
+				forced: true,
+				filter(event, player) {
+					return event.player.hasMark("hikaru_zhengzheng_gold_shield");
+				},
+				async cost(event, trigger, player) {
+					if (player.countCards("h") > 0) {
+						const next = player.chooseToDiscard("h", true);
+						next.set("prompt", "金盾：是否弃一张牌令受伤角色摸一张牌？");
+						next.set("ai", card => get.value(card, player) - 5);
+						const result = await next.forResult();
+						event.result = { bool: result.bool };
+					} else {
+						event.result = { bool: false };
+					}
+
+				},
+				async content(event, trigger, player) {
+					trigger.player.draw();
+				},
+			},
+			gold_shield: {
+				mark: true,
+				marktext: "金盾",
+				intro: {
+					content: "金盾：当受伤角色受到伤害时，煌里光可以弃一张牌令其摸一张牌。",
+				},
+				onremove(player, skill) {
+					player.removeMark("hikaru_zhengzheng_gold_shield", player.countMark("hikaru_zhengzheng_gold_shield"));
+				}
+			},
+			thunder_spear_effect: {
+				trigger: { global: "damageBegin" },
+				filter(event, player) {
+					return event.source && event.source.hasMark("hikaru_zhengzheng_thunder_spear");
+				},
+				async cost(event, trigger, player) {
+					if (player.countCards("h") > 0) {
+						const next = player.chooseToDiscard("h", true);
+						next.set("prompt", "雷矛：是否弃一张牌令伤害来源摸一张牌？");
+						next.set("ai", card => get.value(card, player) - 5);
+						const result = await next.forResult();
+						event.result = { bool: result.bool };
+					} else {
+						event.result = { bool: false };
+					}
+				},
+				async content(event, trigger, player) {
+					trigger.source.draw();
+				},
+			},
+			thunder_spear: {
+				mark: true,
+				marktext: "雷矛",
+				intro: {
+					content: "雷矛：当伤害来源受到伤害时，煌里光可以弃一张牌令其摸一张牌。",
+				},
+				onremove(player, skill) {
+					player.removeMark("hikaru_zhengzheng_thunder_spear", player.countMark("hikaru_zhengzheng_thunder_spear"));
+				}
+			},
+		},
+	},
+	"hikaru_fenshen": {
+		trigger: { global: ["loseAfter", "loseAsyncAfter"] },
+		filter(event, player) {
+			if (event.type != "discard") return false;
+			const evt = event.getl(player);
+			return evt && evt.cards2 && evt.cards2.length > 0;
+		},
+		async cost(event, trigger, player) {
+			const choice = await player.chooseTarget("奋身：选择一名角色摸一张牌")
+				.set("filterTarget", (card, player, target) => target.isIn())
+				.set("ai", target => get.attitude(player, target) * (target.hasMark("hikaru_gold_shield") && target.hasMark("hikaru_thunder_spear") ? 2 : 1))
+				.forResult();
+
+			event.result = { bool: choice.bool, targets: choice.targets };
+		},
+		async content(event, trigger, player) {
+			if (!event.targets || !event.targets.length) return;
+
+			const target = event.targets[0];
+			const hasBothMarks = target.hasMark("hikaru_zhengzheng_gold_shield") && target.hasMark("hikaru_zhengzheng_thunder_spear");
+			const drawNum = hasBothMarks ? 2 : 1;
+
+			if (player.hasSkill("hikaru_chihun_awakened")) {
+				await target.draw(drawNum);
+			} else {
+				await player.loseHp();
+				await target.draw(drawNum);
+			}
+		},
+	},
+	"hikaru_chihun": {
+		trigger: { player: "dying" },
+		filter(event, player) {
+			debugger
+			return event.getParent(2).name == "hikaru_fenshen";
+		},
+		limited: true,
+		skillAnimation: true,
+		animationColor: "fire",
+		async content(event, trigger, player) {
+			player.awakenSkill("hikaru_chihun");
+
+			await player.recover(2 - player.hp);
+
+			player.addSkill("hikaru_chihun_awakened");
+			player.addMark("hikaru_zhengzheng_gold_shield", 1);
+			player.addMark("hikaru_zhengzheng_thunder_spear", 1);
+			player.addTempSkill("hikaru_zhengzheng_gold_shield_effect", { player: "dieAfter" });
+			player.addTempSkill("hikaru_zhengzheng_thunder_spear_effect", { player: "dieAfter" });
+
+			game.delayx();
+			player.insertPhase();
+		},
+	},
+	"hikaru_chihun_awakened": {
+		marktext: "赤魂",
+		intro: {
+			name: "赤魂",
+			content: "已觉醒，获得“金盾”“雷矛”",
+		},
+	},
 };
 export default skills;

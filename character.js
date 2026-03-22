@@ -455,7 +455,6 @@ const characters = {
 		skills: ["nemu_zhiyao", "nemu_sanyao", "nemu_tiruo"],
 		img: "extension/魔法纪录/image/nemu.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/nemu.mp3"],
-		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
 	},
 	"yueye": {//天音月夜
 		sex: "female",
@@ -708,6 +707,15 @@ const characters = {
 		dieAudios: ["ext:魔法纪录/audio/die/sakuya.mp3"],
 		doubleGroup: ["Kamihama_Magia_Union", "Magia_Others"],
 	},
+	"hikaru": {// 煌里光
+		sex: "female",
+		group: "Magia_Others",
+		hp: 3,
+		maxHp: 3,
+		skills: ["hikaru_zhengzheng", "hikaru_fenshen", "hikaru_chihun"],
+		img: "extension/魔法纪录/image/hikaru.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/hikaru.mp3"],
+	},
 	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
@@ -826,6 +834,7 @@ const character_translates = {
 	ceobo: "小刻",
 	sakuya: "铃鹿朔夜",
 	Riz: "莉兹·霍克伍德",
+	hikaru: "煌里光",
 };
 
 const perfectPairs = {
@@ -877,15 +886,17 @@ const perfectPairs = {
 	himena: ["hagumu", "shigure"],
 	shigure: ["hagumu", "himena"],
 	hagumu: ["shigure", "himena"],
-	yuna: ["juri", "ao"],
-	ao: ["yuna", "juri"],
-	juri: ["yuna", "ao"],
+	yuna: ["juri", "ao", "hikaru"],
+	ao: ["yuna", "juri", "hikaru"],
+	juri: ["yuna", "ao", "hikaru"],
 	nayuta: ["toka", "mikage"],
 	mikage: ["nayuta", "mitama"],
 	kirika: ["oriko"],
 	oriko: ["kirika"],
 	yuma: ["kyoko"],
+	dArc: ["Riz"],
 	Riz: ["dArc"],
+	hikaru: ["yuna", "juri", "ao"],
 };
 
 const characterTitles = {
@@ -968,6 +979,7 @@ const characterTitles = {
 	ceobo: "百种兵器",//小刻
 	sakuya: "辉煌之刃",//铃鹿朔夜
 	Riz: "阴影",//莉兹
+	hikaru: "光之军团",//煌里光
 };
 
 const characterReplaces = {
