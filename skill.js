@@ -10363,7 +10363,6 @@ const skills = {
 		async content(event, trigger, player) {
 			const target = event.targets[0];
 			const next = await player.chooseToCompare(target).set("isDelay", true);
-			// debugger
 			trigger.num--;
 			let bool = get.damageEffect(player, target, target) + get.effect(target, { name: "guohe_copy2" }, player, target) > 0;
 			bool = Math.random() > 0.4 ? bool : false;
@@ -10426,7 +10425,6 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			const target = event.targets[0];
-			debugger
 			const mark = event.cost_data === "金盾" ? "hikaru_zhengzheng_gold_shield" : "hikaru_zhengzheng_thunder_spear";
 			target.addMark(mark);
 			target.addTempSkill(mark, "roundStart");
@@ -10462,6 +10460,7 @@ const skills = {
 				},
 				onremove(player, skill) {
 					player.removeMark("hikaru_zhengzheng_gold_shield", player.countMark("hikaru_zhengzheng_gold_shield"));
+					if (player.hasSkill("hikaru_chihun_awakened")) player.addMark("hikaru_zhengzheng_gold_shield", 1);
 				}
 			},
 			thunder_spear_effect: {
@@ -10492,6 +10491,7 @@ const skills = {
 				},
 				onremove(player, skill) {
 					player.removeMark("hikaru_zhengzheng_thunder_spear", player.countMark("hikaru_zhengzheng_thunder_spear"));
+					if (player.hasSkill("hikaru_chihun_awakened")) player.addMark("hikaru_zhengzheng_thunder_spear", 1);
 				}
 			},
 		},
@@ -10506,7 +10506,7 @@ const skills = {
 		async cost(event, trigger, player) {
 			const choice = await player.chooseTarget("奋身：选择一名角色摸一张牌")
 				.set("filterTarget", (card, player, target) => target.isIn())
-				.set("ai", target => get.attitude(player, target) * (target.hasMark("hikaru_gold_shield") && target.hasMark("hikaru_thunder_spear") ? 2 : 1))
+				.set("ai", target => get.attitude(player, target) * (target.hasMark("hikaru_zhengzheng_gold_shield") && target.hasMark("hikaru_zhengzheng_thunder_spear") ? 2 : 1))
 				.forResult();
 
 			event.result = { bool: choice.bool, targets: choice.targets };
@@ -10529,7 +10529,6 @@ const skills = {
 	"hikaru_chihun": {
 		trigger: { player: "dying" },
 		filter(event, player) {
-			debugger
 			return event.getParent(2).name == "hikaru_fenshen";
 		},
 		limited: true,
