@@ -104,7 +104,7 @@ export default function () {
 			};
 		}, content: function (config, pack) {
 			lib.translate.madoka1 = "魔法少女小圆";
-			lib.translate.madoka2 = "魔法纪录";
+			lib.translate.madoka2 = "神滨魔法联盟";
 			lib.translate.madoka3 = "玛吉斯之翼";
 			lib.translate.madoka4 = "魔法纪录其它势力";
 			lib.translate.madoka5 = "魔圆其它角色";
@@ -112,12 +112,12 @@ export default function () {
 			lib.translate.madoka7 = "作者自设同人";
 			lib.characterSort['mode_extension_魔法纪录'] = {
 				"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "mabayu", "homura_glasses", "homura_ribbon", "ulti_madoka", "devil_homura"],
-				"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "mitama", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "hanna", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
+				"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 				"madoka3": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
-				"madoka4": ["yuna", "ao", "juri", "shizuka", "nayuta", "mikage", "sakuya"],
-				"madoka5": ["kirika", "oriko", "yuma", "name", "asumi", "kazumi", "dArc", "suzune"],
+				"madoka4": ["yuna", "ao", "juri", "shizuka", "nayuta", "mikage", "sakuya", "hikaru", "mitama", "hanna"],
+				"madoka5": ["kirika", "oriko", "yuma", "name", "asumi", "kazumi", "dArc", "suzune", "Riz"],
 				"madoka6": ["yamada"],
-				"madoka7": ["blue"],
+				"madoka7": ["blue", "ceobo"],
 			}
 
 

@@ -700,6 +700,7 @@ const skills = {
 		enable: "phaseUse",
 		usable: 1,
 		audio: "ext:魔法纪录/audio/skill:2",
+		derivation: "sayaka_wuwei",
 		filter(event, player) {
 			return player.countCards("h", card => lib.filter.cardDiscardable(card, player)) >= 2 && game.hasPlayer(function (current) {
 				return current != player;
@@ -6443,16 +6444,15 @@ const skills = {
 	// 巴麻美
 	"mami_duanbian": {
 		trigger: {
-			player: ["phaseZhunbeiBefore", "phaseJudgeBefore", "phaseDrawBefore", "phaseDiscardBefore"],
+			player: ["phaseJudgeBefore", "phaseDrawBefore", "phaseDiscardBefore"],
 		},
 		filter(event, player) {
 			return player.countCards("h") > 0 || player.storage.mami_duanbian_mark;
 		},
 		preHidden: true,
 		async cost(event, trigger, player) {
-			const ZhunbeiCheck = player.storage.mami_duanbian_mark ? true : false;
-			const discardstr = ZhunbeiCheck ? "跳过" : "弃置一张手牌并跳过";
 			let phasenamestr = "弃牌阶段";
+			const discardstr = "弃置一张手牌并跳过";
 			let aicheck = false;
 
 			const lebu_aif1 = player.hasCard(card => {
@@ -6462,10 +6462,6 @@ const skills = {
 				return get.effect(target, { name: "lebu" }, player, player) > 0 && !target.hasJudge("lebu") && !target.hasSkill("tsuruno_qiangyun");
 			})
 			switch (trigger.name) {
-				case "phaseZhunbei":
-					phasenamestr = "准备阶段，你本回合接下来使用【缎变】跳过的两个阶段无需弃牌";
-					aicheck = true;
-					break;
 				case "phaseJudge":
 					phasenamestr = "判定阶段，然后可以移动场上的一张牌";
 					if (!player.canMoveCard(true)) {
@@ -6517,28 +6513,20 @@ const skills = {
 					break;
 			}
 
-			event.result = ZhunbeiCheck ? (await player.chooseBool(discardstr + phasenamestr)
-				.set("choice", aicheck)
+			event.result = await player.chooseToDiscard(get.prompt(event.skill), discardstr + phasenamestr, lib.filter.cardDiscardable)
+				.set("ai", card => {
+					if (!_status.event.check) {
+						return -1;
+					}
+					return skills.duexcept_ai((get.suit(card) == "diamond" && lebu_ai) ? (12 - get.value(card)) : (1 / get.value(card)), card, player);
+				})
+				.set("check", aicheck)
 				.setHiddenSkill(event.skill)
-				.forResult())
-				: (await player.chooseToDiscard(get.prompt(event.skill), discardstr + phasenamestr, lib.filter.cardDiscardable)
-					.set("ai", card => {
-						if (!_status.event.check) {
-							return -1;
-						}
-						return skills.duexcept_ai((get.suit(card) == "diamond" && lebu_ai) ? (12 - get.value(card)) : (1 / get.value(card)), card, player);
-					})
-					.set("check", aicheck)
-					.setHiddenSkill(event.skill)
-					.forResult());
+				.forResult()
 
-			if (event.result.bool && ZhunbeiCheck) {
-				player.storage.mami_duanbian_mark--;
-				//刷新标记
-				player.updateMarks();
-				if (player.storage.mami_duanbian_mark == 0) {
-					player.removeSkill("mami_duanbian_mark");
-				}
+			if (event.result.bool && !player.hasSkill("mami_duanbian_mark")) {
+				player.addTempSkill("mami_duanbian_mark");
+				player.draw(2);
 			};
 		},
 		async content(event, trigger, player) {
@@ -6564,13 +6552,6 @@ const skills = {
 			let triggerstr = "弃牌";
 
 			switch (trigger.name) {
-				case "phaseZhunbei": {
-					triggerstr = "准备";
-					player.storage.mami_duanbian_mark = 2;
-					player.addTempSkill("mami_duanbian_mark");
-					player.markSkill("mami_duanbian_mark");
-					break;
-				}
 				case "phaseJudge": {
 					triggerstr = "判定";
 					if (player.canMoveCard()) {
@@ -6611,22 +6592,12 @@ const skills = {
 		subSkill: {
 			mark: {
 				charlotte: true,
-				mark: true,
-				onremove(player) {
-					delete player.storage.mami_duanbian_mark;
-				},
-				intro: {
-					content(mark) {
-						return "本回合使用【缎变】还有" + mark + "次可以不需要丢弃手牌来跳过阶段";
-					},
-				},
 			},
 		},
 		ai: {
 			threaten: 3,
 		},
 	},
-
 	"mami_zhongmu": {
 		enable: "phaseUse",
 		usable: 1,
