@@ -2122,7 +2122,7 @@ const skills = {
 			var list = game.filterPlayer(function (target) {
 				return target != player && target.hasZhuSkill("magius_jiefang", player);
 			});
-			var str = "将一张【闪】或黑桃手牌交给" + get.translation(list);
+			var str = "将一张基本牌交给" + get.translation(list);
 			if (list.length > 1) str += "中的一人";
 			return str;
 		},
@@ -2139,7 +2139,7 @@ const skills = {
 			}, "h");
 		},
 		filterCard(card, player) {
-			return get.name(card, player) == "shan" || get.suit(card, player) == "spade";
+			return get.type(card, player) == "basic";
 		},
 		log: false,
 		visible: true,
@@ -10136,8 +10136,6 @@ const skills = {
 					name: "shan",
 				},
 				prompt: "将两张【影】当【闪】使用",
-				// onlyPrompt: true,
-				// onlyJS: true,
 				ai: {
 					respondShan: true,
 					skillTagFilter(player, tag, arg) {
@@ -10153,8 +10151,6 @@ const skills = {
 					player.tempBanSkill("Riz_caoying");
 				},
 			},
-			// sub: true,
-			// sourceSkill: "Riz_caoying",
 		},
 		mod: {
 			ignoredHandcard(card, player) {
@@ -10259,6 +10255,9 @@ const skills = {
 			return name === "tao";
 		},
 		filter(event, player) {
+			if (event.getParent().name == 'phaseUse') {
+				return true;
+			}
 			if (event.responded) {
 				return false;
 			}
@@ -10278,7 +10277,7 @@ const skills = {
 			}
 
 			const card = await targetPlayer.chooseCard("捣蛋：请选择一张【桃】交给" + get.translation(player), function (card) {
-				return get.name(card) == "tao" || get.name(card) == "jiu";
+				return get.name(card) == "tao";
 			})
 				.set("ai", card => -get.value(card, targetPlayer))
 				.forResult();
