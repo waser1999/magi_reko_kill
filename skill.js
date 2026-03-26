@@ -10526,5 +10526,206 @@ const skills = {
 			content: "已觉醒，获得“金盾”“雷矛”",
 		},
 	},
+
+	// 千岁由麻
+	"yuma_yuying": {
+		enable: "phaseUse",
+		usable: 1,
+		filterTarget: function (card, player, target) {
+			return target !== player;
+		},
+		content: function () {
+			"step 0"
+			var cards1 = player.getCards('he');
+			if (cards1.length === 0) {
+				event.playerGive = [];
+				event.goto(2);
+			} else {
+				player.chooseCard('he', [0, 2], '愈萤：选择至多两张区域内的牌展示并交给' + get.translation(target))
+					.set('visible', true)
+					.set('ai', function (card) {
+						return 8 - get.value(card, player);
+					});
+			}
+
+			"step 1"
+			event.playerGive = result.bool ? result.cards : [];
+			if (event.playerGive.length > 0) {
+				player.showCards(event.playerGive, '愈萤');
+				player.lose(event.playerGive, 'visible');
+				target.gain(event.playerGive, 'give', player);
+			}
+
+			"step 2"
+			var cards2 = target.getCards('he');
+			if (cards2.length === 0) {
+				event.targetGive = [];
+				event.goto(4);
+			} else {
+				target.chooseCard('he', [0, 2], '愈萤：选择至多两张区域内的牌展示并交给' + get.translation(player))
+					.set('visible', true)
+					.set('ai', function (card) {
+						return 8 - get.value(card, target);
+					});
+			}
+
+			"step 3"
+			event.targetGive = result.bool ? result.cards : [];
+			if (event.targetGive.length > 0) {
+				target.showCards(event.targetGive, '愈萤');
+				target.lose(event.targetGive, 'visible');
+				player.gain(event.targetGive, 'give', target);
+			}
+
+			"step 4"
+			event.rewardList = [];
+			if (event.playerGive.length >= 2) event.rewardList.push(player);
+			if (event.targetGive.length >= 2) event.rewardList.push(target);
+
+			if (event.rewardList.length === 0) {
+				event.finish();
+				return;
+			}
+			event.index = 0;
+
+			"step 5"
+			var current = event.rewardList[event.index];
+			current.chooseControl(['摸两张牌', '回复一点血量'])
+				.set('prompt', '愈萤：你因交换失去至少两张牌，请选择一项')
+				.set('ai', function () {
+
+					var player = _status.event.player;
+					if (player.hp < player.maxHp && player.hp <= 2) {
+						return 'recover';
+					} else {
+						return 'draw';
+					}
+				});
+
+			"step 6"
+			// 【关键修复】在这里重新定义 current，确保变量存在
+			var current = event.rewardList[event.index];
+
+			if (result.index === 0) {
+				current.draw(2);
+				game.log(current, '选择了摸两张牌');
+			} else {
+				current.recover(1);
+				game.log(current, '选择了回复一点血量');
+			}
+
+			"step 7"
+			event.index++;
+			if (event.index < event.rewardList.length) {
+				event.goto(5);
+			}
+		},
+		ai: {
+			order: 8,
+			result: {
+				target: function (player, target) {
+					var num = player.countCards('h') + player.countCards('e');
+					return num > 2 ? 1 : 0;
+				}
+			}
+		}
+	},
+	"yuma_zuofei": {
+		limited: true,
+		forced: false,
+		trigger: { global: 'dying' },
+		filter: function (event, player) {
+			return (
+				player.isAlive() &&
+				event.player !== player &&
+				event.player.isIn() &&
+				event.player.hp <= 0
+			);
+		},
+		content: function () {
+			"step 0"
+			if (trigger.player === player || !trigger.player.isIn()) {
+				event.finish();
+				return;
+			}
+			var cards = player.getCards('hej');
+			event.cards = cards;
+			if (!cards || cards.length === 0) {
+				event.goto(5);
+				return;
+			}
+			player.showCards(cards, '昨非');
+			"step 1"
+			event.hasBasic = false;
+			event.hasTrick = false;
+			event.hasEquip = false;
+			event.target = trigger.player;
+			if (!event.target || event.target === player || !event.target.isAlive()) {
+				event.finish();
+				return;
+			}
+			for (var i = 0; i < event.cards.length; i++) {
+				var type = get.type(event.cards[i], player);
+				if (type === 'basic') event.hasBasic = true;
+				else if (type === 'trick') event.hasTrick = true;
+				else if (type === 'equip') event.hasEquip = true;
+			}
+
+			"step 2"
+			if (event.hasBasic && event.target.isAlive()) {
+				var need = Math.max(0, 2 - event.target.hp);
+				if (need > 0) event.target.recover(need);
+			}
+
+			"step 3"
+			if (event.hasEquip && event.target.isAlive()) {
+				event.target.insertPhase();
+			}
+
+			"step 4"
+			if (event.hasTrick && event.target.isAlive()) {
+				var card = game.createCard('wanjian', 'heart', 4);
+				event.target.gain(card, 'gain2');
+				target.addSkill("yuma_zuofei_buff")
+			}
+
+			"step 5"
+			player.awakenSkill('yuma_zuofei');
+			player.unmarkSkill('yuma_zuofei');
+		},
+		ai: {
+			expose: 0.8,
+			result: { target: function (player, target) { return 10; } }
+		}
+	},
+	"yuma_zuofei_buff": {
+		trigger: { player: "useCard" },
+		forced: true,
+		silent: true,
+		popup: false,
+		charlotte: true,
+		mark: true,
+		intro: {
+			name: "昨非·势",
+			content: "当你使用红桃4的【万箭齐发】时，此牌不可被响应。"
+		},
+		filter: function (event, player) {
+			var card = event.card;
+			return (
+				get.name(card) === 'wanjian' &&
+				get.suit(card) === 'heart' &&
+				get.number(card) === 4
+			);
+		},
+		content: function () {
+			game.players.forEach(function (player) {
+				if (player.isAlive()) {
+					trigger.directHit.add(player);
+				}
+			});
+			player.removeSkill('yuma_zuofei_buff');
+		},
+		"_priority": 0,
+	},
 };
 export default skills;

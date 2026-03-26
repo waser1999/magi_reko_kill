@@ -637,7 +637,7 @@ const characters = {
 		group: "Law_of_Cycles",
 		hp: 3,
 		maxHp: 3,
-		skills: ["zhijian", "guzheng", "wangxi"],
+		skills: ["yuma_yuying", "yuma_zuofei"],
 		img: "extension/魔法纪录/image/yuma.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/yuma.mp3"],
 	},
