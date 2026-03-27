@@ -10836,7 +10836,7 @@ const skills = {
 				audio: "ulti_madoka_shenxin",
 				forced: true,
 				filter(event, player) {
-					if (get.color(event.card) !== "red") return false;
+					if (get.color(event.card) !== "red" || get.type(event.card) === "equip") return false;
 					const history = player.getHistory("useCard", (evt) => {
 						return get.color(evt.card) === "red" && evt.card.name === event.card.name;
 					});
@@ -10847,7 +10847,7 @@ const skills = {
 					const discardPile = get.discarded() || [];
 					let otherCount = 0;
 					for (let card of discardPile) {
-						if (get.color(card) !== "red") otherCount++;
+						if (get.color(card) !== "red" && get.type(card) === get.type(trigger.card)) otherCount++;
 					}
 					if (otherCount > 0) {
 						await player.draw(Math.min(otherCount, 5));
@@ -10869,7 +10869,7 @@ const skills = {
 		}
 	},
 	"ulti_madoka_zhili": {
-		audio: 2,
+		usable: 1,
 		trigger: { player: "damageBegin4" },
 		filter(event, player) {
 			return player.countCards("h", (card) => get.color(card) === "red") > 0 && event.source;
