@@ -92,7 +92,6 @@ const characters = {
 		skills: ["ulti_madoka_lianjie", "ulti_madoka_shenxin", "ulti_madoka_zhili"],
 		img: "extension/魔法纪录/image/ulti_madoka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ulti_madoka.mp3"],
-		isZhugong: true,
 		// isAiForbidden: true,
 	},
 	"devil_homura": {//魔晓美焰
@@ -910,13 +909,13 @@ const characterTitles = {
 	mabayu: "空洞人偶", //爱生眩
 	homura_glasses: "时间停止攻击", //麻花焰
 	ulti_madoka: "已经没必要再绝望了！", //神鹿目圆
-	devil_homura: "棒针的连续穿刺", //魔晓美焰
+	devil_homura: "事象篡改", //魔晓美焰
 	iroha: "未来之路", //环彩羽
 	yachiyo: "绝对之雨", //七海八千代
 	tsuruno: "炎扇斩舞", //由比鹤乃
 	sana: "酷刑牢笼", //二叶莎奈
 	felicia: "超级大大锤", //深月菲莉西亚
-	lena: "无尽海神", //水波玲奈
+	lena: "光与影", //水波玲奈
 	lena2: "无尽海神", //水波玲奈
 	momoko: "宇宙之刃", //十咎桃子
 	kaede: "大地审判", //秋野枫

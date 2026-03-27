@@ -9892,6 +9892,7 @@ const skills = {
 		content() {
 			"step 0";
 			player.awakenSkill('dArc_susheng');
+			player.recover();
 			player.gainMaxHp();
 			"step 1";
 			player.changeHujia(1, null, true);
@@ -9969,6 +9970,7 @@ const skills = {
 				event.targets = targets;
 				player.logSkill('dArc_zaihui', targets);
 				game.asyncDraw(targets);
+				player.recover();
 				player.gainMaxHp();
 			}
 			else event.finish();
