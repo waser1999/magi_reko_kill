@@ -87,13 +87,13 @@ const characters = {
 	"ulti_madoka": {//神鹿目圆
 		sex: "female",
 		group: "Law_of_Cycles",
-		hp: 4,
-		maxHp: 4,
-		skills: ["twshelie", "sbliegong"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["ulti_madoka_lianjie", "ulti_madoka_shenxin", "ulti_madoka_zhili"],
 		img: "extension/魔法纪录/image/ulti_madoka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ulti_madoka.mp3"],
 		isZhugong: true,
-		isAiForbidden: true,
+		// isAiForbidden: true,
 	},
 	"devil_homura": {//魔晓美焰
 		sex: "female",

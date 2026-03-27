@@ -2777,6 +2777,7 @@ const skills = {
 
 	// 缎带焰
 	"homura_lunzhuan": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		forced: true,
 		zhuanhuanji: true,
 		mark: true,
@@ -10529,6 +10530,7 @@ const skills = {
 
 	// 千岁由麻
 	"yuma_yuying": {
+		audio: "ext:魔法纪录/audio/skill:2",
 		enable: "phaseUse",
 		usable: 1,
 		filterTarget: function (card, player, target) {
@@ -10726,6 +10728,182 @@ const skills = {
 			player.removeSkill('yuma_zuofei_buff');
 		},
 		"_priority": 0,
+	},
+
+	// 神·鹿目圆
+	"ulti_madoka_lianjie": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		enable: "phaseUse",
+		usable: 1,
+		filter(event, player) {
+			return player.countCards("h") > 0;
+		},
+		async content(event, trigger, player) {
+			const result = await player.chooseCard("h", true, [1, 4], "连结：请选择展示的手牌（花色需各不相同）", (card, player) => {
+				if (!ui.selected.cards.length) {
+					return true;
+				}
+				return !ui.selected.cards.some(i => get.suit(i, player) == get.suit(card));
+			})
+				.set("complexCard", true)
+				.set("ai", (card) => {
+					const player = _status.event.player;
+					if (get.value(card) < 5) return 10;
+					return 5 - get.value(card);
+				}).forResult();
+
+			if (!result.bool) return;
+
+			const cards = result.cards;
+			const num = cards.length;
+			await player.showCards(cards, get.translation(player) + "发动了【连结】");
+
+			const result2 = await player.chooseTarget("连结：请选择一名其他角色，你与其各重铸" + get.cnNumber(num) + "张牌", true)
+				.set("filterTarget", (card, player, target) => {
+					return target !== player;
+				}).set("ai", (target) => {
+					const player = _status.event.player;
+					const num = _status.event.num;
+					let value = get.attitude(player, target) * num;
+					return value;
+				}).set("num", num).forResult();
+
+			if (!result2.bool) return;
+
+			const target = result2.targets[0];
+			player.line(target, "green");
+
+			await player.recast(cards);
+			if (target.isIn()) {
+				const discardNum = Math.min(num, target.countCards("h"));
+				await target.chooseToDiscard(discardNum, true, "he");
+				await target.draw(discardNum);
+			}
+		},
+		ai: {
+			order: 10,
+			result: {
+				player(player) {
+					if (player.countCards("h", (card) => get.value(card) < 5) >= 2) return 1;
+					return 0;
+				}
+			}
+		}
+	},
+	"ulti_madoka_shenxin": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		locked: true,
+		trigger: {
+			player: "useCardToTargeted"
+		},
+		filter(event, player) {
+			if (!event.card || !event.target) return false;
+			if (!get.tag(event.card, "damage")) return false;
+			if (event.targets && event.targets.length > 1) return false;
+			return true;
+		},
+		async content(event, trigger, player) {
+			const card = trigger.card;
+			const discardPile = get.discarded() || [];
+
+			let damagePlus = false;
+			let directHit = false;
+
+			for (let discarded of discardPile) {
+				if (get.suit(discarded) === get.suit(card)) {
+					damagePlus = true;
+				}
+				if (get.number(discarded) === get.number(card)) {
+					directHit = true;
+				}
+			}
+
+			if (damagePlus) {
+				trigger.getParent().baseDamage++;
+				player.chat("伤害+1");
+			}
+			if (directHit) {
+				trigger.directHit.addArray(game.players);
+				player.chat("不可响应");
+			}
+		},
+		group: ["ulti_madoka_shenxin_draw", "ulti_madoka_shenxin_limit"],
+		subSkill: {
+			draw: {
+				trigger: { player: "useCardAfter" },
+				audio: "ulti_madoka_shenxin",
+				forced: true,
+				filter(event, player) {
+					if (get.color(event.card) !== "red") return false;
+					const history = player.getHistory("useCard", (evt) => {
+						return get.color(evt.card) === "red" && evt.card.name === event.card.name;
+					});
+					if (history.length === 1) return true;
+					return false;
+				},
+				async content(event, trigger, player) {
+					const discardPile = get.discarded() || [];
+					let otherCount = 0;
+					for (let card of discardPile) {
+						if (get.color(card) !== "red") otherCount++;
+					}
+					if (otherCount > 0) {
+						await player.draw(Math.min(otherCount, 5));
+					}
+				}
+			},
+			limit: {
+				mod: {
+					ignoredHandcard(card, player) {
+						if (get.color(card) === "red") return true
+					},
+					cardDiscardable(card, player, name) {
+						if (name == "phaseDiscard" && get.color(card) === "red") {
+							return false;
+						}
+					},
+				}
+			},
+		}
+	},
+	"ulti_madoka_zhili": {
+		audio: 2,
+		trigger: { player: "damageBegin4" },
+		filter(event, player) {
+			return player.countCards("h", (card) => get.color(card) === "red") > 0 && event.source;
+		},
+		async content(event, trigger, player) {
+			const result = await player.chooseCard("h", [1, Infinity], "织理：请选择展示的红色手牌", (card) => {
+				return get.color(card) === "red";
+			}).set("ai", (card) => {
+				return 5;
+			}).forResult();
+
+			if (!result.bool) return;
+
+			const myCards = result.cards;
+			const myCount = myCards.length;
+			await player.showCards(myCards, get.translation(player) + "发动了【织理】");
+
+			const source = trigger.source;
+			if (!source || !source.isIn()) return;
+
+			const sourceHearts = source.getCards("h", (card) => get.color(card) === "red");
+			await source.showCards(sourceHearts, get.translation(source) + "展示了红色手牌");
+
+			if (sourceHearts.length <= myCount) {
+				trigger.num = 0;
+			}
+		},
+		ai: {
+			effect: {
+				target(card, player, target, current) {
+					if (get.tag(card, "damage") && target.countCards("h", (c) => get.color(c) === "red") > 0) {
+						return [1, 0.5];
+					}
+				}
+			}
+		}
 	},
 };
 export default skills;
