@@ -10964,11 +10964,12 @@ const skills = {
 			return player.canMoveCard();
 		},
 		async cost(event, trigger, player) {
-			const result = await player.chooseBool(get.prompt("shigure_ciruan") + "：是否移动场上的一张牌？").set("ai", () => true).forResult();
+			const result = await player.chooseBool(get.prompt("shigure_ciruan") + "：是否移动场上的一张牌？")
+				.forResult();
 			event.result = { bool: result.bool };
 		},
 		async content(event, trigger, player) {
-			const moveResult = await player.moveCard(true).forResult();
+			const moveResult = await player.moveCard().forResult();
 			if (!moveResult || !moveResult.bool) return;
 
 			const movedCard = moveResult.card;
