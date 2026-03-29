@@ -541,9 +541,9 @@ const characters = {
 	"shigure": {//宫尾时雨
 		sex: "female",
 		group: "Magius_Wing",
-		hp: 5,
-		maxHp: 5,
-		skills: ["olkanpo", "ollongdan"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["shigure_cunming", "shigure_ciruan"],
 		img: "extension/魔法纪录/image/shigure.png",
 		dieAudios: ["ext:魔法纪录/audio/die/shigure.mp3"],
 	},

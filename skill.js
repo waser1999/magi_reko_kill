@@ -3161,6 +3161,7 @@ const skills = {
 						evt.excluded = true;
 					} else {
 						evt.finish();
+						trigger.cancel();
 						evt._triggered = null;
 						if (evt.name.startsWith("pre_")) {
 							const evtx = evt.getParent();
@@ -10906,6 +10907,96 @@ const skills = {
 				}
 			}
 		}
+	},
+
+	// 宫尾时雨
+	"shigure_cunming": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: ["phaseUseBegin", "phaseEnd"],
+		},
+		async cost(event, trigger, player) {
+			if (trigger.name === "phaseUse") {
+				const num = game.countPlayer(current => current.hasSkill("shigure_cunming"));
+				const result = await player.chooseTarget(get.prompt("shigure_cunming") + "：是否对一名无此技能的角色造成1点伤害？", function (card, player, target) {
+					return target !== player && !target.hasSkill("shigure_cunming");
+				}).set("ai", function (target) {
+					return get.damageEffect(target, player, player) > 0 ? 1 : 0;
+				}).forResult();
+				event.result = { bool: true, targets: result.bool ? result.targets : [], cost_data: { draw: num * 2 } };
+			} else {
+				const result = await player.chooseTarget(get.prompt("shigure_cunming") + "：是否令一名其他角色获得此技能直到游戏结束？", function (card, player, target) {
+					return target !== player && !target.hasSkill("shigure_cunming");
+				}).set("ai", function (target) {
+					return get.attitude(player, target);
+				}).forResult();
+				event.result = { bool: result.bool, targets: result.bool ? result.targets : [], cost_data: "giveSkill" };
+			}
+		},
+		async content(event, trigger, player) {
+			if (trigger.name === "phaseUse") {
+				const num = event.cost_data.draw;
+				await player.draw(num);
+				if (event.targets.length > 0) {
+					const target = event.targets[0];
+					player.line(target, "green");
+					await target.damage(1, player);
+				}
+			} else {
+				if (event.targets.length > 0) {
+					const target = event.targets[0];
+					player.line(target, "green");
+					await target.addSkill("shigure_cunming");
+					game.log(player, "令", target, "获得了技能【忖命】");
+				}
+			}
+		},
+		ai: {
+			threaten: 1.5,
+		},
+	},
+	"shigure_ciruan": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: "phaseDiscardEnd",
+		},
+		filter(event, player) {
+			return player.canMoveCard();
+		},
+		async cost(event, trigger, player) {
+			const result = await player.chooseBool(get.prompt("shigure_ciruan") + "：是否移动场上的一张牌？").set("ai", () => true).forResult();
+			event.result = { bool: result.bool };
+		},
+		async content(event, trigger, player) {
+			const moveResult = await player.moveCard(true).forResult();
+			if (!moveResult || !moveResult.bool) return;
+
+			const movedCard = moveResult.card;
+			const source = moveResult.targets[0];
+			const target = moveResult.targets[1];
+
+			const hasCunming = (source && source.hasSkill("shigure_cunming")) || (target && target.hasSkill("shigure_cunming"));
+
+			if (hasCunming) {
+				const result = await player.chooseControl(["摸两张牌", "回复一点体力", "取消"])
+					.set("prompt", "刺软：这张牌的来源或对象拥有【忖命】，请选择一项")
+					.set("ai", function () {
+						if (player.hp < player.maxHp && player.hp <= 2) return "回复一点体力";
+						return "摸两张牌";
+					}).forResult();
+
+				if (result.control === "摸两张牌") {
+					await player.draw(2);
+					game.log(player, "摸了两张牌");
+				} else if (result.control === "回复一点体力") {
+					await player.recover(1);
+					game.log(player, "回复了一点体力");
+				}
+			}
+		},
+		ai: {
+			threaten: 1.2,
+		},
 	},
 };
 export default skills;
