@@ -550,9 +550,9 @@ const characters = {
 	"hagumu": {//安积育梦
 		sex: "female",
 		group: "Magius_Wing",
-		hp: 5,
-		maxHp: 5,
-		skills: ["new_rewusheng", "oltiaoxin"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["hagumu_molie", "hagumu_xushi"],
 		img: "extension/魔法纪录/image/hagumu.png",
 		dieAudios: ["ext:魔法纪录/audio/die/hagumu.mp3"],
 	},

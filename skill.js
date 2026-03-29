@@ -10999,5 +10999,133 @@ const skills = {
 			threaten: 1.2,
 		},
 	},
+
+	// 安积育梦
+	"hagumu_molie": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: "phaseBegin",
+		},
+		forced: true,
+		filter(event, player) {
+			return game.hasPlayer(current => current !== player);
+		},
+		async content(event, trigger, player) {
+			player.addMark("hagumu_molie_mark", 1);
+
+			const result = await player.chooseTarget("魔猎：选择一名其他角色获得“魔猎”标记", true, function (card, player, target) {
+				return target !== player;
+			}).set("ai", function (target) {
+				return -get.attitude(player, target);
+			}).forResult();
+
+			if (result.bool && result.targets.length > 0) {
+				const target = result.targets[0];
+				target.addMark("hagumu_molie_mark", 1);
+				player.addTempSkill("hagumu_molie_mark_clear", { player: "phaseBegin" });
+				target.addTempSkill("hagumu_molie_mark_clear", { player: "phaseBegin" });
+				game.log(player, "令", target, "获得了“魔猎”标记");
+			}
+		},
+		group: ["hagumu_molie_damage"],
+		subSkill: {
+			damage: {
+				trigger: { global: "damageEnd" },
+				filter(event, player) {
+					if (event.num <= 0) return false;
+					const hasMark = (event.source && event.source.hasMark("hagumu_molie_mark")) || event.player.hasMark("hagumu_molie_mark");
+					debugger
+					return hasMark;
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					const isDoubleNum = trigger.source.hasMark("hagumu_molie_mark") && trigger.player.hasMark("hagumu_molie_mark");
+					if (isDoubleNum) {
+						await player.draw(trigger.num * 2);
+					} else {
+						await player.draw(trigger.num);
+					}
+				},
+			},
+			mark_clear: {
+				onremove(player) {
+					player.removeMark("hagumu_molie_mark", player.countMark("hagumu_molie_mark"));
+				},
+			},
+		},
+		mark: true,
+		intro: {
+			content: "魔猎标记：拥有此标记的角色造成或受到伤害后，安积育梦摸一张牌。",
+		},
+	},
+	"hagumu_molie_mark": {
+		mark: true,
+		marktext: "猎",
+		intro: {
+			content: "魔猎标记：你造成或受到伤害后，安积育梦摸一张牌。",
+		},
+	},
+	"hagumu_xushi": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		limited: true,
+		enable: "phaseUse",
+		filter(event, player) {
+			return game.hasPlayer(current => current !== player);
+		},
+		async content(event, trigger, player) {
+			player.awakenSkill(event.name);
+
+			const result = await player.chooseTarget("虚势：选择一名目标角色", true, function (card, player, target) {
+				return target !== player;
+			}).set("ai", function (target) {
+				return -get.attitude(player, target);
+			}).forResult();
+
+			if (!result.bool || !result.targets.length) return;
+
+			const target = result.targets[0];
+			player.line(target, "thunder");
+
+			const others = game.filterPlayer(current => current !== player && current !== target);
+
+			for (const other of others) {
+				if (!other.isIn()) continue;
+
+				const canUseSha = other.canUse("sha", target, false);
+				let usedSha = false;
+
+				if (canUseSha) {
+					const useResult = await other.chooseToUse({
+						prompt: "虚势：对" + get.translation(target) + "使用一张【杀】，否则将受到1点雷电伤害",
+						filterCard(card, player) {
+							return card.name === "sha" && player.canUse(card, target, false);
+						},
+						filterTarget(card, player, cur) {
+							return cur === target;
+						},
+						ai1(card) {
+							if (get.attitude(other, target) < 0) return 10;
+							return 0;
+						},
+					}).forResult();
+
+					usedSha = useResult.bool;
+				}
+
+				if (!usedSha) {
+					await other.damage(1, "thunder", player);
+				}
+			}
+		},
+		ai: {
+			order: 1,
+			result: {
+				player(player) {
+					if (game.countPlayer(current => current !== player) >= 3) return 1;
+					return 0;
+				},
+			},
+		},
+	},
 };
 export default skills;
