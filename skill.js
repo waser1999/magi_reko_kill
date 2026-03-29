@@ -10115,7 +10115,7 @@ const skills = {
 				},
 				mod: {
 					cardUsable(card) {
-						if (card.storage && card.storage.Riz_caoying) {
+						if (card.storage && card.storage.Riz_caoying_attack) {
 							return Infinity;
 						}
 					},
