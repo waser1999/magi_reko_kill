@@ -9647,7 +9647,7 @@ const skills = {
 			player.addTip("kuroe_zhuxing", get.translation("kuroe_zhuxing") + player.getStorage("kuroe_zhuxing_suits").reduce((str, suit) => str + get.translation(suit), ""));
 		},
 
-		group: ["kuroe_zhuxing_use"],
+		group: ["kuroe_zhuxing_use", "kuroe_zhuxing_recast"],
 		subSkill: {
 			use: {
 				enable: "phaseUse",
@@ -9687,6 +9687,24 @@ const skills = {
 					threaten: 1.5,
 				},
 			},
+			recast: {
+				trigger: {
+					player: "phaseEnd",
+				},
+				filter(event, player) {
+					return player.countCards("h") > 0;
+				},
+				async cost(event, trigger, player) {
+					const result = await player.chooseCard(get.prompt("kuroe_zhuxing") + "：是否重铸至多2张牌？", "h", [1, 2])
+						.set("ai", (card) => {
+							return 10 - get.value(card);
+						}).forResult();
+					event.result = { bool: result.bool, cards: result.cards };
+				},
+				async content(event, trigger, player) {
+					await player.recast(event.cards);
+				},
+			}
 		},
 	},
 	"kuroe_baoshen": {
@@ -9712,7 +9730,6 @@ const skills = {
 			}).forResult();
 
 			if (player.storage.kuroe_zhuxing_suits && player.storage.kuroe_zhuxing_suits.includes(get.suit(judge.card))) {
-				// 判定花色在逐星记录中，视为使用闪
 				trigger.untrigger();
 				trigger.set("responded", true);
 				trigger.result = { bool: true, card: { name: "shan", isCard: true } };
@@ -9722,10 +9739,8 @@ const skills = {
 				} else {
 					player.addTip("kuroe_zhuxing", get.translation("kuroe_zhuxing") + player.getStorage("kuroe_zhuxing_suits").reduce((str, suit) => str + get.translation(suit), ""));
 				}
-			} else {
-				// 判定花色不在记录中，获得判定牌
-				await player.gain(judge.card, "gain2");
 			}
+			await player.gain(judge.card, "gain2");
 		},
 		ai: {
 			respondShan: true,
