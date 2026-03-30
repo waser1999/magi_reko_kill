@@ -708,11 +708,10 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			const result = await player.chooseCardTarget({
-				prompt: "弃置两张手牌并选择一名角色，你与其各回复一点体力。然后你们和有“协奏”牌的角色获得【无畏】",
+				prompt: "弃置两张手牌并选择一名角色，你与其各回复一点体力，然后若体力值不相同，体力值较低的角色获得【无畏】",
 				filterTarget(card, player, target) {
-					return player != target
+					return player != target;
 				},
-				forced: true,
 				position: "h",
 				selectCard: 2,
 				selectTarget: 1,
@@ -745,7 +744,11 @@ const skills = {
 					player.storage.sayaka_yuehun.push(target)
 				}
 
-				game.filterPlayer(current => current == player || current == target || current.getExpansions("sayaka_xiezou")?.length > 0)
+				if (player.hp == target.hp) return;
+
+				game.filterPlayer(current =>
+					player.hp < target.hp ? current == player : current == target
+				)
 					.forEach(current => {
 						current.addAdditionalSkills("sayaka_qiangyin_" + player.playerid, "sayaka_wuwei", true)
 					});
@@ -1830,7 +1833,6 @@ const skills = {
 		forced: true,
 		async content(event, trigger, player) {
 			player.addMark("yachiyo_zhishui", 1)
-			player.disableJudge()
 		},
 		intro: {
 			content: "拥有#个标记",
@@ -1838,19 +1840,17 @@ const skills = {
 		group: ["yachiyo_zhishui_1", "yachiyo_zhishui_2"],
 		subSkill: {
 			1: {
+				audio: "yachiyo_zhishui",
 				trigger: {
 					player: "phaseBegin",
 				},
 				forced: true,
-				filter(event, player) {
-					return !player.hasMark("yachiyo_zhishui");
-				},
 				async content(event, trigger, player) {
-					player.addMark("yachiyo_zhishui", 1)
-					player.disableJudge()
+					player.addMark("yachiyo_zhishui", 1);
 				},
 			},
 			2: {
+				audio: "yachiyo_zhishui",
 				trigger: {
 					player: "damageEnd"
 				},
@@ -1862,9 +1862,6 @@ const skills = {
 					for (let i = 0; i < trigger.num; i++) {
 						const ck = player.hasMark("yachiyo_zhishui")
 						player.addMark("yachiyo_zhishui", 1)
-						// if (ck) {
-						// 	await player.draw();
-						// }
 					}
 				},
 			}
@@ -1875,7 +1872,7 @@ const skills = {
 		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			const target = event.player;
-			return (player.hasMark("yachiyo_zhishui") && !player.getStat("yachiyo_jueyu1")?.includes(target)) || !player.getStat("yachiyo_jueyu2")?.includes(target)
+			return (player.hasMark("yachiyo_zhishui") && (!player.getStat("yachiyo_jueyu1")?.includes(target)) || !player.getStat("yachiyo_jueyu2")?.includes(target))
 		},
 		forced: true,
 		async content(event, trigger, player) {
@@ -1896,7 +1893,7 @@ const skills = {
 			} else {
 				if (!f01)
 					choice.remove("选项一")
-				str1 = "移去一个【止水】标记，对" + str + "造成伤害+1，并获得其一张牌" + (!f01 ? "（本回合已选择过）" : "")
+				str1 = "对" + str + "造成伤害+1，并获得其一张牌" + (!f01 ? "（本回合已选择过）" : "")
 			}
 
 			if (!f2) {
@@ -1905,7 +1902,7 @@ const skills = {
 			} else {
 				if (!f02)
 					choice.remove("选项二")
-				str2 = "令" + str + "本回合非charlotte技失效" + (!f02 ? "（本回合已选择过）" : "")
+				str2 = "令" + str + "你拥有技能【无双】，本回合非charlotte技失效" + (!f02 ? "（本回合已选择过）" : "")
 			}
 
 			let aichoice
@@ -1932,8 +1929,9 @@ const skills = {
 					.forResultControl();
 
 			player.line(target)
+			player.storage.yachiyo_zhishui -= 1
+
 			if (result == "选项一") {
-				player.storage.yachiyo_zhishui -= 1
 				if (player.storage.yachiyo_zhishui == 0)
 					player.unmarkSkill("yachiyo_zhishui")
 				trigger.num++
@@ -1945,6 +1943,7 @@ const skills = {
 				stat.yachiyo_jueyu1.push(target);
 			} else if (result == "选项二") {
 				target.addTempSkill("yachiyo_jueyu_baiban")
+				player.addTempSkill("wushuang")
 				let stat = player.getStat()
 				if (!stat.yachiyo_jueyu2)
 					stat.yachiyo_jueyu2 = [];
@@ -1975,71 +1974,6 @@ const skills = {
 				},
 				inherit: "baiban",
 				marktext: "绝",
-			},
-			sha: {
-				audio: "yachiyo_jueyu",
-				sourceSkill: "yachiyo_jueyu",
-				trigger: { player: "useCardToPlayered" },
-				forced: true,
-				filter(event, player) {
-					return event.card.name == "sha" && !event.getParent().directHit.includes(event.target) && player.hasMark("yachiyo_zhishui");
-				},
-				logTarget: "target",
-				async content(event, trigger, player) {
-					const id = trigger.target.playerid;
-					const map = trigger.getParent().customArgs;
-					if (!map[id]) {
-						map[id] = {};
-					}
-					if (typeof map[id].shanRequired == "number") {
-						map[id].shanRequired++;
-					} else {
-						map[id].shanRequired = 2;
-					}
-				},
-				ai: {
-					directHit_ai: true,
-					skillTagFilter(player, tag, arg) {
-						if (arg.card.name != "sha" || arg.target.countCards("h", "shan") > 1) {
-							return false;
-						}
-					},
-				},
-			},
-			juedou: {
-				audio: "yachiyo_jueyu",
-				sourceSkill: "yachiyo_jueyu",
-				trigger: { player: "useCardToPlayered", target: "useCardToTargeted" },
-				forced: true,
-				logTarget(trigger, player) {
-					return player == trigger.player ? trigger.target : trigger.player;
-				},
-				filter(event, player) {
-					return event.card.name == "juedou" && player.hasMark("yachiyo_zhishui");
-				},
-				async content(event, trigger, player) {
-					const id = (player == trigger.player ? trigger.target : trigger.player)["playerid"];
-					const idt = trigger.target.playerid;
-					const map = trigger.getParent().customArgs;
-					if (!map[idt]) {
-						map[idt] = {};
-					}
-					if (!map[idt].shaReq) {
-						map[idt].shaReq = {};
-					}
-					if (!map[idt].shaReq[id]) {
-						map[idt].shaReq[id] = 1;
-					}
-					map[idt].shaReq[id]++;
-				},
-				ai: {
-					directHit_ai: true,
-					skillTagFilter(player, tag, arg) {
-						if (arg.card.name != "juedou" || Math.floor(arg.target.countCards("h", "sha") / 2) > player.countCards("h", "sha")) {
-							return false;
-						}
-					},
-				},
 			},
 		},
 	},

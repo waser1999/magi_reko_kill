@@ -33,7 +33,7 @@ const characters = {
 		sex: "female",
 		group: "Law_of_Cycles",
 		hp: 4,
-		maxHp: 5,
+		maxHp: 4,
 		skills: ["sayaka_kuangzou", "sayaka_qiangyin", "sayaka_yuehun"],
 		img: "extension/魔法纪录/image/sayaka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/sayaka.mp3"],
