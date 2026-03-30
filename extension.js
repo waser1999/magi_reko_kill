@@ -179,11 +179,11 @@ export default function () {
 			},
 			skill: { ...skills },
 			translate: { ...translates },
-			intro: "魔法纪录所有角色的三国杀，含军争、国战、用间、应变等拓展锦囊。",
+			intro: "魔法纪录所有角色的三国杀。",
 			author: "Waser",
 			diskURL: "https://github.com/waser1999/magi_reko_kill",
 			forumURL: "",
-			version: "1.9.4",
+			version: "1.9.7",
 		}, files: {
 			"character": [], "card": [], "skill": [], "audio": []
 		}, connect: true,

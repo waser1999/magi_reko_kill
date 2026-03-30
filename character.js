@@ -394,7 +394,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["jiushi", "keji", "refankui"],
+		skills: ["kushu_zhoufu", "kushu_yechu"],
 		img: "extension/魔法纪录/image/kushu.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/kushu.mp3"],
 	},

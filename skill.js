@@ -2789,7 +2789,7 @@ const skills = {
 					}
 					return -5;
 				}).forResult();
-				if (result.bool) player.addMark("nemu_zhiyao", 2);
+				if (result.bool && result.color == "black") player.addMark("nemu_zhiyao", 2);
 				if (result.suit == "heart") {
 					player.recover();
 				}
@@ -2827,7 +2827,7 @@ const skills = {
 					if (markNum >= 2 && ((attitude < 0 && target.countCards("j") == 0)) || (attitude > 0 && target.countCards("j") > 0)) return 1;
 					return -1;
 				})
-				.set("prompt", "请选择标记数")
+				.set("prompt", "当前是" + get.translation(trigger.player) + "的回合，请选择标记数")
 				.forResult();
 
 			let stage = 0;
@@ -6159,22 +6159,14 @@ const skills = {
 					return true;
 				}
 			},
-		},
-		trigger: { player: "useCardToTargeted" },
-		filter(event, player) {
-			return event.card && event.card.name == "sha" && !player.inRange(event.target);
+			cardUsable(card, player, num) {
+				if (card.name == "sha") {
+					return Infinity;
+				}
+			},
 		},
 		forced: true,
 		logTarget: "target",
-		async content(event, trigger, player) {
-			if (trigger.getParent().addCount !== false) {
-				trigger.getParent().addCount = false;
-				var stat = player.getStat();
-				if (stat && stat.card && stat.card.sha) {
-					stat.card.sha--;
-				}
-			}
-		},
 		group: ["asumi_zhuilie_sha", "asumi_zhuilie_damage"],
 		subSkill: {
 			sha: {
@@ -6194,7 +6186,7 @@ const skills = {
 				trigger: { source: "damageBegin" },
 				forced: true,
 				filter(event, player) {
-					return event.card && event.card.name == "sha";
+					return event.card && event.card.name == "sha" && get.distance(player, event.player) > 1;
 				},
 				async content(event, trigger, player) {
 					const result = await player.judge(function (card) {
@@ -6304,8 +6296,40 @@ const skills = {
 
 	// 时女静香
 	"shizuka_xueji": {
-		inherit: "umi_lunhui",
 		round: 1,
+		trigger: { global: "phaseAfter" },
+		filter(event, player) {
+			return event.player != player && player.countCards("h") < player.hp;
+		},
+		line: { color: [251, 193, 217] },
+		logTarget: "player",
+		charlotte: true,
+		content() {
+			"step 0";
+			player.loseHp();
+			"step 1";
+			player.draw(2);
+			player.insertPhase();
+			player.storage.shizuka_xueji = trigger.player;
+			player.addTempSkill("shizuka_xueji_distance");
+		},
+		subSkill: {
+			distance: {
+				mark: "character",
+				intro: {
+					content: "到$的距离视为1",
+				},
+				onremove: true,
+				charlotte: true,
+				mod: {
+					globalFrom(from, to) {
+						if (from.storage.shizuka_xueji == to) {
+							return -Infinity;
+						}
+					},
+				},
+			},
+		}
 	},
 	"tokime_shinv": {
 		clanSkill: true,
@@ -6341,7 +6365,7 @@ const skills = {
 		animationColor: "metal",
 		content() {
 			"step 0";
-			player.addSkill("riki_xueshang");
+			player.addSkill("shizuka_xueshang_dying");
 			var map = {};
 			var list = [];
 			for (var i = 1; i <= player.hp; i++) {
@@ -6374,6 +6398,20 @@ const skills = {
 					event.redo();
 				}
 			}
+		},
+	},
+	"shizuka_xueshang_dying": {
+		trigger: { global: "dying" },
+		forced: true,
+		popup: false,
+		charlotte: true,
+		filter(event, player) {
+			return event.getParent(2).name == "shizuka_xueshang" && event.getParent(2).player == player;
+		},
+		content() {
+			player.removeSkills("shizuka_xueshang");
+			player.gainMaxHp(true);
+			player.recover();
 		},
 	},
 
@@ -9119,7 +9157,6 @@ const skills = {
 
 	// 天乃铃音
 	"suzune_chuancheng": {
-		audio: "tuogu",
 		trigger: { global: "die" },
 		filter(event, player) {
 			return (
@@ -9841,6 +9878,7 @@ const skills = {
 		animationColor: "gold",
 		content() {
 			"step 0";
+			player.changeSkin("dArc_susheng", "final_dArc");
 			player.awakenSkill('dArc_susheng');
 			player.recover();
 			player.gainMaxHp();
@@ -9954,7 +9992,6 @@ const skills = {
 		animationColor: "gold",
 		content() {
 			'step 0'
-			player.changeSkin("dArc_chaoyue", "final_dArc");
 			player.awakenSkill('dArc_chaoyue');
 			player.loseMaxHp(4);
 			player.draw(player.maxHp);
@@ -10872,7 +10909,7 @@ const skills = {
 				}).set("ai", function (target) {
 					return get.damageEffect(target, player, player) > 0 ? 1 : 0;
 				}).forResult();
-				event.result = { bool: true, targets: result.bool ? result.targets : [], cost_data: { draw: num * 2 } };
+				event.result = { bool: result.bool, targets: result.bool ? result.targets : [], cost_data: { draw: num * 2 } };
 			} else {
 				const result = await player.chooseTarget(get.prompt("shigure_cunming") + "：是否令一名其他角色获得此技能直到游戏结束？", function (card, player, target) {
 					return target !== player && !target.hasSkill("shigure_cunming");
@@ -11072,6 +11109,177 @@ const skills = {
 				player(player) {
 					if (game.countPlayer(current => current !== player) >= 3) return 1;
 					return 0;
+				},
+			},
+		},
+	},
+
+	// 入名库什
+	"kushu_zhoufu": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		group: ["kushu_zhoufu_1", "kushu_zhoufu_2"],
+		subSkill: {
+			1: {
+				audio: "kushu_zhoufu",
+				usable: 1,
+				enable: ["chooseToUse"],
+				filter(event, player) {
+					if (!event.filterCard({ name: "jiu" }, player, event)) return false;
+					return true;
+				},
+				async cost(event, trigger, player) {
+					const result = await player.chooseBool(get.prompt("kushu_zhoufu"), "将牌堆顶的一张牌置于判定区，视为使用一张【酒】").set("ai", () => true).forResult();
+					event.result = result;
+				},
+				async content(event, trigger, player) {
+					const card = get.cards(1)[0];
+					await game.cardsGotoOrdering(card);
+					// 蓄谋牌的写法
+					await player.addJudge({ name: "xumou_jsrg" }, card);
+					game.log(player, "将", card, "置于判定区");
+					await player.useCard({ name: "jiu", isCard: true }, player, false);
+				},
+				ai: {
+					save: true,
+					skillTagFilter(player, tag, arg) {
+						return _status.event?.dying == player;
+					},
+					order: 5,
+					result: {
+						player(player) {
+							if (_status.event.parent.name == "phaseUse") {
+								if (player.countCards("h", "jiu") > 0) {
+									return 0;
+								}
+								if (player.getEquip("zhuge") && player.countCards("h", "sha") > 1) {
+									return 0;
+								}
+								if (!player.countCards("h", "sha")) {
+									return 0;
+								}
+								var targets = [];
+								var target;
+								var players = game.filterPlayer();
+								for (var i = 0; i < players.length; i++) {
+									if (get.attitude(player, players[i]) < 0) {
+										if (player.canUse("sha", players[i], true, true)) {
+											targets.push(players[i]);
+										}
+									}
+								}
+								if (targets.length) {
+									target = targets[0];
+								} else {
+									return 0;
+								}
+								var num = get.effect(target, { name: "sha" }, player, player);
+								for (var i = 1; i < targets.length; i++) {
+									var num2 = get.effect(targets[i], { name: "sha" }, player, player);
+									if (num2 > num) {
+										target = targets[i];
+										num = num2;
+									}
+								}
+								if (num <= 0) {
+									return 0;
+								}
+								var e2 = target.getEquip(2);
+								if (e2) {
+									if (e2.name == "tengjia") {
+										if (!player.countCards("h", { name: "sha", nature: "fire" }) && !player.getEquip("zhuque")) {
+											return 0;
+										}
+									}
+									if (e2.name == "renwang") {
+										if (!player.countCards("h", { name: "sha", color: "red" })) {
+											return 0;
+										}
+									}
+									if (e2.name == "baiyin") {
+										return 0;
+									}
+								}
+								if (player.getEquip("guanshi") && player.countCards("he") > 2) {
+									return 1;
+								}
+								return target.countCards("h") > 3 ? 0 : 1;
+							}
+							if (player == _status.event.dying || player.isTurnedOver()) {
+								return 3;
+							}
+						},
+					},
+				},
+			},
+			2: {
+				trigger: {
+					player: "damageEnd",
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					for (let i = 0; i < trigger.num; i++) {
+						const card = get.cards(1)[0];
+						await game.cardsGotoOrdering(card);
+						await player.addJudge({ name: "xumou_jsrg" }, card);
+						game.log(player, "将", card, "置于判定区");
+
+						if (trigger.source && trigger.source.countGainableCards(player, trigger.source != player ? "he" : "e") > 0) {
+							player.gainPlayerCard(true, trigger.source, trigger.source != player ? "he" : "e");
+						}
+					}
+				},
+				ai: {
+					maixie_defend: true,
+					effect: {
+						target(card, player, target) {
+							if (player.countCards("he") > 1 && get.tag(card, "damage")) {
+								if (player.hasSkillTag("jueqing", false, target)) {
+									return [1, -1.5];
+								}
+								if (get.attitude(target, player) < 0) {
+									return [1, 1];
+								}
+							}
+						},
+					},
+				},
+			},
+		},
+		mod: {
+			maxHandcard(player, num) {
+				return num + player.countCards("j");
+			},
+		},
+	},
+	"kushu_yechu": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: "phaseZhunbeiBegin",
+		},
+		forced: true,
+		filter(event, player) {
+			return player.countCards("j") > 0;
+		},
+		async content(event, trigger, player) {
+			const num = player.countCards("j");
+			player.addTempSkill("kushu_yechu_effect", "phaseEnd");
+			player.storage.kushu_yechu_sha = num;
+			const cards = player.getCards("j");
+			await player.gain(cards, "gain2");
+			game.log(player, "获得了判定区的所有牌");
+		},
+		subSkill: {
+			effect: {
+				charlotte: true,
+				onremove(player, skill) {
+					delete player.storage.kushu_yechu_sha;
+				},
+				mod: {
+					cardUsable(card, player, num) {
+						if (card.name === "sha") {
+							return num + (player.storage.kushu_yechu_sha || 0);
+						}
+					},
 				},
 			},
 		},
