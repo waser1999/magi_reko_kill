@@ -125,10 +125,10 @@ export default function () {
 
 		}, precontent: function () {
 			// 这里写势力
-			game.addGroup("Law_of_Cycles", "見泷原", "圆环之理相关", { color: "#C71585" });
-			game.addGroup("Kamihama_Magia_Union", "神盟", "神滨魔法联盟相关", { color: "#FF1493" });
-			game.addGroup("Magius_Wing", "瑪吉斯", "新旧玛吉斯之翼相关", { color: "#000000" });
-			game.addGroup("Magia_Others", "群雄", "其他魔法少女群体/个人", { color: "#8b0000" });
+			game.addGroup("Law_of_Cycles", "見泷原", "圆环之理相关", { color: "#C71585", image: "ext:魔法纪录/image/group/law_of_cycles.png" });
+			game.addGroup("Kamihama_Magia_Union", "神盟", "神滨魔法联盟相关", { color: "#FF1493", image: "ext:魔法纪录/image/group/kamihama_union.png" });
+			game.addGroup("Magius_Wing", "瑪吉斯", "新旧玛吉斯之翼相关", { color: "#000000", image: "ext:魔法纪录/image/group/magius_wing.png" });
+			game.addGroup("Magia_Others", "群雄", "其他魔法少女群体/个人", { color: "#8b0000", image: "ext:魔法纪录/image/group/magia_others.png" });
 			// 特殊标记高亮
 			lib.namePrefix.set("DP", {
 				getSpan: () => {
