@@ -1872,7 +1872,8 @@ const skills = {
 		audio: "ext:魔法纪录/audio/skill:2",
 		filter(event, player) {
 			const target = event.player;
-			return (player.hasMark("yachiyo_zhishui") && (!player.getStat("yachiyo_jueyu1")?.includes(target)) || !player.getStat("yachiyo_jueyu2")?.includes(target))
+			if (player.countMark("yachiyo_zhishui") <= 0) return false;
+			return !player.getStat("yachiyo_jueyu1")?.includes(target) || !player.getStat("yachiyo_jueyu2")?.includes(target);
 		},
 		forced: true,
 		async content(event, trigger, player) {
@@ -1902,7 +1903,7 @@ const skills = {
 			} else {
 				if (!f02)
 					choice.remove("选项二")
-				str2 = "令" + str + "你拥有技能【无双】，本回合非charlotte技失效" + (!f02 ? "（本回合已选择过）" : "")
+				str2 = "令" + str + "本回合非charlotte技失效" + (!f02 ? "（本回合已选择过）" : "")
 			}
 
 			let aichoice
@@ -1974,6 +1975,71 @@ const skills = {
 				},
 				inherit: "baiban",
 				marktext: "绝",
+			},
+			sha: {
+				audio: "yachiyo_jueyu",
+				sourceSkill: "yachiyo_jueyu",
+				trigger: { player: "useCardToPlayered" },
+				forced: true,
+				filter(event, player) {
+					return event.card.name == "sha" && !event.getParent().directHit.includes(event.target) && player.hasMark("yachiyo_zhishui");
+				},
+				logTarget: "target",
+				async content(event, trigger, player) {
+					const id = trigger.target.playerid;
+					const map = trigger.getParent().customArgs;
+					if (!map[id]) {
+						map[id] = {};
+					}
+					if (typeof map[id].shanRequired == "number") {
+						map[id].shanRequired++;
+					} else {
+						map[id].shanRequired = 2;
+					}
+				},
+				ai: {
+					directHit_ai: true,
+					skillTagFilter(player, tag, arg) {
+						if (arg.card.name != "sha" || arg.target.countCards("h", "shan") > 1) {
+							return false;
+						}
+					},
+				},
+			},
+			juedou: {
+				audio: "yachiyo_jueyu",
+				sourceSkill: "yachiyo_jueyu",
+				trigger: { player: "useCardToPlayered", target: "useCardToTargeted" },
+				forced: true,
+				logTarget(trigger, player) {
+					return player == trigger.player ? trigger.target : trigger.player;
+				},
+				filter(event, player) {
+					return event.card.name == "juedou" && player.hasMark("yachiyo_zhishui");
+				},
+				async content(event, trigger, player) {
+					const id = (player == trigger.player ? trigger.target : trigger.player)["playerid"];
+					const idt = trigger.target.playerid;
+					const map = trigger.getParent().customArgs;
+					if (!map[idt]) {
+						map[idt] = {};
+					}
+					if (!map[idt].shaReq) {
+						map[idt].shaReq = {};
+					}
+					if (!map[idt].shaReq[id]) {
+						map[idt].shaReq[id] = 1;
+					}
+					map[idt].shaReq[id]++;
+				},
+				ai: {
+					directHit_ai: true,
+					skillTagFilter(player, tag, arg) {
+						if (arg.card.name != "juedou" || Math.floor(arg.target.countCards("h", "sha") / 2) > player.countCards("h", "sha")) {
+							return false;
+						}
+					},
+				},
 			},
 		},
 	},
