@@ -248,9 +248,9 @@ const characters = {
 	"ashley": {//阿什莉·泰勒
 		sex: "female",
 		group: "Kamihama_Magia_Union",
-		hp: 4,
-		maxHp: 4,
-		skills: ["ashley_yuanyu", "ashley_mengshu"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["ashley_mengshu", "ashley_lingzhen"],
 		img: "extension/魔法纪录/image/ashley.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ashley.mp3"],
 	},

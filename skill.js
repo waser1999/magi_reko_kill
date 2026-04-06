@@ -2981,106 +2981,131 @@ const skills = {
 	},
 
 	// 阿什莉
-	"ashley_yuanyu": {
-		audio: "ext:魔法纪录/audio/skill:2",
-		trigger: {
-			player: "damageBegin4",
-		},
+	"ashley_lingzhen": {
+		zhuanhuanji: true,
 		forced: true,
-		preHidden: true,
-		check(event, player) {
-			return true;
-		},
+		locked: true,
+		mark: true,
+		marktext: "☯",
+		trigger: { player: ["loseAfter", "loseAsyncAfter"] },
 		filter(event, player) {
-			if (event.num <= 0 || !event.source) return false;
-			var n1 = player.getNext();
-			var p1 = player.getPrevious();
-			if (event.source != n1 && event.source != p1) return true;
+			if (event.type != "discard")
+				return false;
+			const evt = event.getl(player);
+			if (!evt || !evt.cards2 || evt.cards2.length == 0)
+				return false;
+			return evt.cards2.some(card => get.suit(card) == "spade");
 		},
-		content() {
-			trigger.cancel();
+		async content(event, trigger, player) {
+			player.logSkill("ashley_lingzhen");
+			if (!player.storage.ashley_lingzhen) {
+				await player.draw(2);
+			} else {
+				const result = await player.chooseTarget("请选择【知己知彼】的目标", true, (card, player, target) => {
+					return target.countCards("h") > 0 && target != player && player.canUse({ name: "zhibi", isCard: true }, target);
+				}).set("ai", target => {
+					return get.effect(target, { name: "zhibi" }, player, player);
+				}).forResult();
+				if (result.bool && result.targets.length) {
+					await player.useCard({ name: "zhibi", isCard: true }, result.targets[0], false);
+				}
+			}
+			player.changeZhuanhuanji("ashley_lingzhen");
 		},
-		ai: {
-			effect: {
-				target(card, player, target) {
-					if (player.hasSkillTag("jueqing", false, target)) return;
-					if (player == target.getNext() || player == target.getPrevious()) return;
-					if (get.tag(card, "damage")) return "zeroplayertarget";
+		intro: {
+			content(storage) {
+				return "转换技，锁定技。当你因弃置而失去牌后，若其中含有黑桃花色，" + (!storage ? "<span style=\"color:red\">阳：你摸两张牌</span>" : "<span style=\"color:blue\">阴：视为使用一张【知己知彼】</span>");
+			},
+		},
+	},
+	"ashley_mengshu": {
+		trigger: { player: "phaseZhunbeiBegin" },
+		audio: "ext:魔法纪录/audio/skill:2",
+		group: "ashley_mengshu_block",
+		async content(event, trigger, player) {
+			await player.chooseToDebate(game.filterPlayer(current => current != player))
+				.set("callback", async event => {
+					const result = event.debateResult;
+					const { bool, opinion, targets, opinions } = result;
+					const redTargets = result.red.map(i => i[0]);
+					const blackTargets = result.black.map(i => i[0]);
+
+					if (opinion == "red") {
+						redTargets.forEach(target => {
+							player.addTempSkill("ashley_mengshu_mark_clear", { player: "phaseZhunbeiBegin" });
+							target.addMark("ashley_mengshu", 1);
+						});
+					} else if (opinion == "black") {
+						blackTargets.forEach(target => {
+							target.damage(1, player);
+						});
+					}
+
+					targets.forEach(target => {
+						if (redTargets.includes(target)) {
+							player.draw();
+							target.draw();
+						}
+						else if (blackTargets.includes(target)) {
+							player.chooseToDiscard("h", true).set("ai", card => {
+								if (get.suit(card) == "spade")
+									return 2;
+								return 0;
+							});
+							target.chooseToDiscard("h", true);
+						}
+					});
+				})
+				.set("ai", () => {
+					return 0;
+				});
+		},
+		subSkill: {
+			block: {
+				audio: "ashley_mengshu",
+				charlotte: true,
+				onremove: true,
+				trigger: { player: "damageBegin4" },
+				forced: true,
+				priority: 10,
+				filter(event, player) {
+					return event.source.countMark("ashley_mengshu") > 0;
+				},
+				content() {
+					trigger.cancel();
+				},
+				ai: {
+					effect: {
+						target(card, player, target) {
+							if (player.hasSkillTag("jueqing", false, target)) {
+								return;
+							}
+							if (!target.hasMark("ashley_mengshu")) {
+								return;
+							}
+							if (get.tag(card, "damage")) {
+								return "zeroplayertarget";
+							}
+						},
+					},
+				},
+			},
+			mark_clear: {
+				onremove(player) {
+					game.filterPlayer(current => current != player).forEach(target => {
+						target.removeMark("ashley_mengshu");
+					});
 				},
 			},
 		},
-		"_priority": 0,
-	},
-	"ashley_mengshu": {
-		enable: "phaseUse",
-		filter(event, player) {
-			return player.countCards("hs", { suit: "spade" }) > 0;
-		},
-		chooseButton: {
-			dialog(event, player) {
-				var list = ["yuanjiao", "zhibi"];
-				for (var i = 0; i < list.length; i++) {
-					list[i] = ["锦囊", "", list[i]];
-				}
-				return ui.create.dialog("萌术", [list, "vcard"]);
-			},
-			filter(button, player) {
-				var name = button.link[2];
-				if (player.storage.gzguishu_used == 1 && name == "yuanjiao") return false;
-				if (player.storage.gzguishu_used == 2 && name == "zhibi") return false;
-				return lib.filter.filterCard({ name: name }, player, _status.event.getParent());
-			},
-			check(button) {
-				var player = _status.event.player;
-				if (button.link == "yuanjiao") {
-					return 3;
-				}
-				if (button.link == "zhibi") {
-					if (player.countCards("hs", { suit: "spade" }) > 2) return 1;
-					return 0;
-				}
-			},
-			backup(links, player) {
-				return {
-					filterCard: { suit: "spade" },
-					position: "hs",
-					popname: true,
-					ai(card) {
-						return 6 - ai.get.value(card);
-					},
-					viewAs: { name: links[0][2] },
-					precontent() {
-						player.addTempSkill("gzguishu_used");
-						player.storage.gzguishu_used = ["yuanjiao", "zhibi"].indexOf(event.result.card.name) + 1;
-					},
-				};
-			},
-			prompt(links, player) {
-				return "###萌术###将一张黑桃手牌当作【" + get.translation(links[0][2]) + "】使用";
-			},
-		},
 		ai: {
-			order: 4,
-			result: {
-				player: 1,
-			},
-			threaten: 2,
+			threaten: 3,
 		},
-		subSkill: {
-			backup: {
-				sub: true,
-				sourceSkill: "ashley_mengshu",
-				"_priority": 0,
-			},
-			used: {
-				charlotte: true,
-				onremove: true,
-				sub: true,
-				sourceSkill: "ashley_mengshu",
-				"_priority": 0,
-			},
-		},
-		"_priority": 0,
+		mark: true,
+		markText: "萌术",
+		intro: {
+			content: "直至阿什莉的下一回合开始时，你不能对其造成伤害"
+		}
 	},
 
 	// 环忧
@@ -10900,7 +10925,7 @@ const skills = {
 					const discardPile = get.discarded() || [];
 					let otherCount = 0;
 					for (let card of discardPile) {
-						if (get.color(card) !== "red" && get.type(card) === get.type(trigger.card)) otherCount++;
+						if (get.type(card) === get.type(trigger.card)) otherCount++;
 					}
 					if (otherCount > 0) {
 						await player.draw(Math.min(otherCount, 5));
@@ -11086,7 +11111,6 @@ const skills = {
 				filter(event, player) {
 					if (event.num <= 0) return false;
 					const hasMark = (event.source && event.source.hasMark("hagumu_molie_mark")) || event.player.hasMark("hagumu_molie_mark");
-					debugger
 					return hasMark;
 				},
 				forced: true,
