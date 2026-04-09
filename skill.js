@@ -11374,5 +11374,203 @@ const skills = {
 			},
 		},
 	},
+
+	// 优木沙沙
+	"sasa_duyan": {
+		trigger: {
+			global: "damageBegin4"
+		},
+		forced: true,
+		audio: true,
+		filter: function (event, player) {
+			if (_status.currentPhase != event.player && event.player.hasMark("sasa_huoyi_mark")) return true;
+			return (
+				_status.currentPhase == player &&
+				(event.player.countCards("h") >= player.countCards("h") || event.player.hp >= player.hp)
+			);
+		},
+		content: function () {
+			trigger.num++;
+		},
+	},
+	"sasa_wanning": {
+		audio: 2,
+		enable: "phaseUse",
+		usable: 1,
+		filter: function (event, player) {
+			return player.countCards("h") > 0;
+		},
+		filterTarget: function (card, player, target) {
+			//					if (player == target) return false;
+			if (!ui.selected.targets.length) return target.countCards("h") > 0;
+			return ui.selected.targets[0].canCompare(target);
+		},
+		selectTarget: 2,
+		multitarget: true,
+		multiline: true,
+		filterCard: true,
+		check: function (card) {
+			return 10 - get.value(card);
+		},
+		discard: false,
+		lose: false,
+		delay: false,
+		content: function () {
+			"step 0";
+			player.showCards(cards, get.translation(player) + "发动了【婉佞】");
+			if (targets[0].canCompare(targets[1])) {
+				targets[0].chooseToCompare(targets[1]);
+			} else {
+				event.finish();
+			}
+			"step 1";
+			if (!result.tie) {
+				if (result.bool) {
+					event.win = targets[0];
+					event.loser = [targets[1]];
+				} else {
+					event.win = targets[1];
+					event.loser = [targets[0]];
+				}
+				event.win.useCard({
+					name: "sha"
+				}, event.loser, false, "noai");
+			}
+			else {
+				event.loser = targets;
+			}
+			"step 2";
+			if (event.loser.length > 0) {
+				var target = event.loser.shift();
+				event.target = target;
+				target
+					.chooseBool("是否失去1点体力并获得" + get.translation(cards) + "？<br><small>或获得一枚“役”标记</small>")
+					.set("ai", function () {
+						if (_status.event.target.hp < 3) return false;
+						return get.attitude(_status.event.target, _status.event.player) > 2;
+					})
+					.set("target", target);
+			} else event.finish();
+			"step 3";
+			var target = event.target;
+			if (result.bool) {
+				target.loseHp();
+				//								target.gain("give", cards, player);
+				target.gain(cards, "gain2");
+			} else {
+				target.addMark("sasa_huoyi", 1)
+			}
+			"step 4";
+			event.goto(2)
+		},
+		ai: {
+			order: 9,
+			result: {
+				target: function (player, target) {
+					return -target.countCards("he") - (player.countCards("h", "du") ? 1 : 0);
+				},
+			},
+			threaten: 2,
+		},
+	},
+	"sasa_huoyi": {
+		trigger: {
+			global: ["chooseToCompareAfter", "compareMultipleAfter"],
+		},
+		direct: true,
+		content() {
+			"step 0"
+			var targets = [];
+			if (trigger.num1 <= trigger.num2) targets.push(trigger.player);
+			if (trigger.num1 >= trigger.num2) targets.push(trigger.target);
+			event.targets = targets.filter(i => i.countCards("hej") > 0);
+			"step 1"
+			if (event.targets?.length > 0) {
+				var target = event.targets.shift();
+				event.target = target;
+				player.gainPlayerCard("【惑役】：你可以选择获得" + get.translation(target) + "区域内的至多两张牌", target, "hej", [1, 2], false);
+			} else event.finish();
+			"step 2"
+			if (result.bool) {
+				player.logSkill("sasa_huoyi", event.target);
+				if (event.target.countCards("h") == 0) event.target.addMark("sasa_huoyi", 1);
+			}
+			"step 3";
+			event.goto(1);
+		},
+		intro: { content: "mark" },
+		marktext: "惑",
+		group: "sasa_huoyi_huoxin",
+		subSkill: {
+			huoxin: {
+				forced: true,
+				trigger: {
+					global: "phaseBeginStart"
+				},
+				filter(event, player) {
+					return (
+						!event.player._trueMe &&
+						event.player.countMark("sasa_huoyi") >= 2
+					);
+				},
+				logTarget: "player",
+				skillAnimation: true,
+				animationColor: "key",
+				content() {
+					"step 0";
+					trigger.player.removeMark("sasa_huoyi", trigger.player.countMark("sasa_huoyi"));
+					if (player == trigger.player) {
+						player
+							.chooseControl("摸牌阶段", "出牌阶段")
+							.set("prompt", "【惑役】：选择要执行的额外阶段");
+					} else event.goto(2);
+					"step 1";
+					if (result.index == 0) {
+						var next = player.phaseDraw();
+						event.next.remove(next);
+						trigger.getParent().next.push(next);
+						player.addTempSkill("fengyin", "phaseDrawAfter");
+					} else if (result.index == 1) {
+						var next = player.phaseUse();
+						event.next.remove(next);
+						trigger.getParent().next.push(next);
+						player.addTempSkill("fengyin", "phaseUseAfter");
+					}
+					event.finish();
+					"step 2";
+					trigger.player._trueMe = player;
+					game.addGlobalSkill("autoswap");
+					if (trigger.player == game.me) {
+						game.notMe = true;
+						if (!_status.auto) ui.click.auto();
+					}
+					trigger.player.addSkill("sasa_huoyi_zbjxingwu");
+				},
+			},
+			zbjxingwu: {
+				trigger: {
+					player: ["phaseAfter", "dieAfter"],
+					global: "phaseBeforeStart",
+				},
+				nopop: true, //技能在面板隐藏
+				lastDo: true,
+				charlotte: true,
+				forceDie: true,
+				forced: true,
+				silent: true,
+				content() {
+					player.removeSkill("sasa_huoyi_zbjxingwu");
+				},
+				onremove(player) {
+					if (player == game.me) {
+						if (!game.notMe) game.swapPlayerAuto(player._trueMe);
+						else delete game.notMe;
+						if (_status.auto) ui.click.auto();
+					}
+					delete player._trueMe;
+				},
+			},
+		}
+	},
 };
 export default skills;

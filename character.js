@@ -715,6 +715,15 @@ const characters = {
 		img: "extension/魔法纪录/image/hikaru.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/hikaru.mp3"],
 	},
+	"sasa": {//优木沙沙
+		sex: "female",
+		group: "Law_of_Cycles",
+		hp: 3,
+		maxHp: 3,
+		skills: ["sasa_duyan", "sasa_wanning", "sasa_huoyi"],
+		img: "extension/魔法纪录/image/sasa.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/sasa.mp3"],
+	},
 	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
@@ -834,6 +843,7 @@ const character_translates = {
 	sakuya: "铃鹿朔夜",
 	Riz: "莉兹·霍克伍德",
 	hikaru: "煌里光",
+	sasa: "优木沙沙",
 };
 
 const perfectPairs = {
@@ -977,12 +987,9 @@ const characterTitles = {
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
 	sakuya: "辉煌之刃",//铃鹿朔夜
-	Riz: "阴影",//莉兹
+	Riz: "L'ombre",//莉兹
 	hikaru: "光之军团",//煌里光
-};
-
-const characterReplaces = {
-
+	sasa: "优我者死",//优木沙沙
 };
 
 // 更改武将原画
@@ -992,5 +999,55 @@ const characterSubstitutes = {
 	],
 }
 
+// 武将分类
+const sortsTranslates = {
+	madoka1: "魔法少女小圆",
+	madoka11: "魔法少女小圆·Scene 0",
+	madoka12: "魔法少女织莉子",
+	madoka13: "魔法少女和美",
+	madoka14: "魔法少女铃音",
+	madoka15: "魔法少女贞德",
+	madoka16: "非·魔法少女",
+
+	madoka2: "神滨魔法联盟",
+	madoka21: "玛吉斯之翼（含Neo-Magius）",
+	madoka22: "誓约之血",
+	madoka23: "时女一族",
+	madoka24: "午夜0时的民间传说",
+	madoka25: "调整屋",
+	madoka26: "其他势力",
+
+	madoka3: "魔法少女小圆Magia Exedra",
+	madoka31: "魔法纪录·弦月记忆",
+
+	madoka5: "魔圆其它角色",
+	madoka6: "魔法少女山田",
+	madoka7: "作者自设同人",
+}
+
+const characterSorts = {
+	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
+	"madoka11": ["mabayu"],
+	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
+	"madoka13": ["kazumi"],
+	"madoka14": ["suzune"],
+	"madoka15": ["dArc", "Riz"],
+
+	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
+	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
+	"madoka22": ["yuna", "ao", "juri", "sakuya", "hikaru"],
+	"madoka23": ["shizuka"],
+	"madoka24": [],
+	"madoka25": ["mitama"],
+	"madoka26": ["nayuta", "mikage", "hanna"],
+
+	"madoka3": ["name"],
+	"madoka31": [],
+
+	"madoka5": ["asumi"],
+	"madoka6": ["yamada"],
+	"madoka7": ["blue", "ceobo"],
+}
+
 export default characters;
-export { character_translates, perfectPairs, characterTitles, characterReplaces, characterSubstitutes };
+export { character_translates, perfectPairs, characterTitles, characterSubstitutes, characterSorts, sortsTranslates };
