@@ -1371,27 +1371,14 @@ const skills = {
 	},
 
 	// 环彩羽
-	"iroha_shukun": {
-		enable: "phaseUse",
-		usable: 4,
-		async content(event, trigger, player) {
-			player.draw(1);
-		},
-		ai: {
-			order: 9,
-			threaten: 2,
-			result: {
-				player(player) {
-					return 1;
-				}
-			}
-		},
-	},
 	"iroha_dimeng": {
+		usable: 1,
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: "gainAfter",
 			global: "loseAsyncAfter"
 		},
+		group: ["iroha_dimeng_draw"],
 		check(event, player) {
 			const n1 = player.countCards("h")
 			return game.hasPlayer(function (target) {
@@ -1415,7 +1402,6 @@ const skills = {
 			return event.getg(player).length != 0 && event.getParent(2).name != "iroha_dimeng" && player.countCards("h") >= player.hp && player.countCards("h") > 0;
 		},
 		async content(event, trigger, player) {
-
 			const n1 = player.countCards("h")
 			const n2 = player.isDamaged()
 
@@ -1474,15 +1460,17 @@ const skills = {
 			const nsub = (n1 - n4) / 2
 			const ncheck = n1 > n4 && (n1 + n4) % 2 == 0 && (nsub <= Math.min((att > 0 ? n01 : n02), player.hp))
 
+			player.line(target1, "green");
+			await player.give(player.getCards("h"), target1);
 
-			const result2 = await player.chooseCard("h", "缔盟：请选择要交给" + get.translation(target1) + "的至多" + get.cnNumber(player.hp) + "张手牌", true, [1, Math.min(player.hp, player.countCards("h"))])
+			const result2 = await target1.chooseCard("h", "缔盟：请选择要交给" + get.translation(player) + "的至少" + get.cnNumber(player.maxHp) + "张手牌", true, [Math.min(player.maxHp, target1.countCards("h")), target1.countCards("h")])
 				.set("ai", function (card) {
 					if ((ncheck && ui.selected.cards.length == nsub) || (!ncheck && att > 0 && ui.selected.cards.length == (n1 - player.hp + 1)))
 						return -1
 					if (att > 0) {
 						if (n3 && n30)
 							return get.value(card, target1)
-						return 1 / get.value(card, target1)
+						return 6 - get.value(card, target1)
 					} else {
 						if (get.value(card, player) > 0)
 							return -1
@@ -1492,27 +1480,27 @@ const skills = {
 				.forResult();
 
 			if (!result2.bool) return;
-
 			player.line(target1, "green");
-			await player.give(result2.cards, target1);
+			await target1.give(result2.cards, player);
 
 			if (player.countCards("h") == target1.countCards("h")) {
 				await player.draw(1);
 				await target1.draw(1);
-				const f1 = player.isDamaged()
-				const f2 = target1.isDamaged()
-				if (f1 || f2) {
-					const result = await player.chooseTarget("缔盟：请选择要回复体力的角色", 1, false, function (card, player, target) {
-						return (target == player || target == target1) && target.isDamaged();
-					}).set("ai", function (target) {
-						const att = get.attitude(player, target);
-						return att + ((att >= 0 && target.hp == 1) ? 3 : 0)
-					}).forResult();
+			}
 
-					if (!result.bool || result.targets.length == 0) return;
+			const f1 = player.isDamaged()
+			const f2 = target1.isDamaged()
+			if (f1 || f2) {
+				const result = await player.chooseTarget("缔盟：请选择要回复体力的角色", 1, false, function (card, player, target) {
+					return (target == player || target == target1) && target.isDamaged();
+				}).set("ai", function (target) {
+					const att = get.attitude(player, target);
+					return att + ((att >= 0 && target.hp == 1) ? 3 : 0)
+				}).forResult();
 
-					await result.targets[0].recover(1);
-				}
+				if (!result.bool || result.targets.length == 0) return;
+
+				await result.targets[0].recover(1);
 			}
 		},
 		subSkill: {
@@ -1524,6 +1512,19 @@ const skills = {
 					player.storage.iroha_dimeng_aicount = 0
 				}
 			},
+			draw: {
+				trigger: { player: "phaseDrawBegin2" },
+				frequent: true,
+				filter(event, player) {
+					return !event.numFixed;
+				},
+				async content(event, trigger, player) {
+					trigger.num += 4;
+				},
+				ai: {
+					threaten: 1.3
+				}
+			}
 		},
 		ai: {
 			threaten: 4.5,
@@ -1532,18 +1533,23 @@ const skills = {
 	"iroha_huanyu": {
 		trigger: { player: "damageBegin4" },
 		filter(event, player) {
-			return event.source
+			return event.source;
 		},
+		clanSkill: true,
 		forced: true,
 		logTarget: "source",
 		async content(event, trigger, player) {
 			const target = trigger.source;
 			player.line(target);
+			let times = player.getHistory("useSkill", evt => evt.skill == "iroha_huanyu").length;
+			let clans = game.countPlayer(current => current.hasClan("宝崎环氏"));
+			times = Math.max(times, clans);
+
 			if (target.countCards("h") > player.countCards("h")) {
 				const {
 					result: { bool },
 				} = await target
-					.chooseToDiscard("环羽：弃置一张牌，或令对" + get.translation(player) + "造成的伤害-1", "he")
+					.chooseToDiscard("环羽：弃置" + times + "张牌，或令对" + get.translation(player) + "造成的伤害-" + times, "he", times)
 					.set("ai", card => {
 						if (get.event("goon")) {
 							return 0;
@@ -1552,10 +1558,10 @@ const skills = {
 					})
 					.set("goon", get.damageEffect(player, target, target) <= 0);
 				if (!bool) {
-					trigger.num--;
+					trigger.num -= times;
 				}
 			} else {
-				await player.draw();
+				await player.draw(times);
 			}
 		},
 		ai: {
@@ -11570,6 +11576,446 @@ const skills = {
 					delete player._trueMe;
 				},
 			},
+		}
+	},
+
+	//双树姐妹
+	"shuangfeng": {
+		audio: 2,
+		enable: "phaseUse",
+		limited: true,
+		filter: function (event, player) {
+			return player.countCards("h") >= 0;
+		},
+		content: function () {
+			"step 0";
+			player.awakenSkill("shuangfeng");
+			player.draw(4);
+			"step 1";
+			if (player.countCards("h") >= 2) {
+				player.chooseToDiscard("h", 2, true, "双峰：请弃置两张牌");
+			} else if (player.countCards("h") > 0) {
+				player.chooseToDiscard("h", true, "双峰：请弃置所有手牌");
+			}
+			"step 2";
+			// 更换原画为双树姐妹
+			player.removeSkill("shuanghun_Luca");
+			player.removeSkill("shuanghun_Ayase");
+			player.addSkill("shuangfeng_Souju");
+			game.log(player, "将武将牌替换为", "#g【双树姐妹】");
+		},
+		ai: {
+			order: 8,
+			result: {
+				player: function (player) {
+					if (player.countCards("h") >= 2) return 1.5;
+					return 0.5;
+				}
+			}
+		}
+	},
+	"shuangfeng_Souju": {
+		audio: 2,
+		enable: "phaseUse",
+		limited: true,
+		filter: function (event, player) {
+			return player.countCards("h") > 0;
+		},
+		selectCard: [1, Infinity],
+		filterCard: true,
+		position: "h",
+		check: function (card) {
+			return 5 - get.value(card);
+		},
+		content: function () {
+			"step 0";
+			player.awakenSkill("shuangfeng_Souju");
+			var num = Math.floor(cards.length / 2);
+			if (num < 1) {
+				event.finish();
+				return;
+			}
+			event.num = num;
+			player.chooseTarget("冰火：选择" + num + "名角色造成火焰伤害", num, true).set("ai", function (target) {
+				return get.damageEffect(target, player, player, "fire");
+			});
+			"step 1";
+			if (result.bool) {
+				event.targets = result.targets;
+				player.line(event.targets, "fire");
+			} else {
+				event.finish();
+			}
+			"step 2";
+			event.index = 0;
+			"step 3";
+			if (event.index < event.targets.length) {
+				event.currentTarget = event.targets[event.index];
+				event.currentTarget.damage("fire");
+			} else {
+				event.finish();
+			}
+			"step 4";
+			if (event.currentTarget && event.currentTarget.isIn()) {
+				if (event.currentTarget.countCards("hej") >= 2) {
+					player.discardPlayerCard(event.currentTarget, "hej", 2, true);
+				} else if (event.currentTarget.countCards("hej") > 0) {
+					player.discardPlayerCard(event.currentTarget, "hej", event.currentTarget.countCards("hej"), true);
+				}
+			}
+			"step 5";
+			if (event.currentTarget && event.currentTarget.isIn()) {
+				event.currentTarget.addTempSkill("fengyin");
+				game.log(event.currentTarget, "的非锁定技失效直到回合结束");
+			}
+			"step 6";
+			event.index++;
+			event.goto(3);
+		},
+		ai: {
+			order: 7,
+			result: {
+				player: function (player) {
+					if (player.countCards("h") >= 2) return 1;
+					return 0;
+				},
+				target: function (player, target) {
+					return get.damageEffect(target, player, player, "fire") - 2;
+				}
+			}
+		}
+	},
+	"shuanghun": {
+		audio: 2,
+		mark: true,
+		zhuanhuanji: true,
+		marktext: "☯",
+		intro: {
+			content: function (storage, player, skill) {
+				if (storage) {
+					return "出牌阶段限一次，你可以摸两张牌，将武将牌替换为〖双树绫濑〗，然后弃置等量的牌。若你以此法弃置了两张红色牌，你获得一张伤害+1的【火攻】。";
+				}
+				return "出牌阶段限一次，你可以弃置两张牌，将武将牌替换为〖双树流香〗，然后摸等量的牌。若你以此法弃置了两张黑色牌，你获得一张不计入次数的冰【杀】。";
+			},
+		},
+		enable: "phaseUse",
+		usable: 1,
+		derivation: ["shuangfeng", "shuanghun_Ayase", "shuanghun_Luca"],
+		filter: function (event, player) {
+			if (!player.storage.shuanghun) {
+				// 阴状态
+				return player.countCards("h") >= 2;
+			} else {
+				return true;
+			}
+		},
+		content: async function (event, trigger, player) {
+			player.changeZhuanhuanji("shuanghun");
+			const isYang = player.storage.shuanghun; // true=阳(绫濑), false=阴(流香)
+			if (!isYang) {
+				// 阴状态：流香
+				const { bool: bool1, cards: discardCards } = await player.chooseToDiscard("h", 2, true, "双魂：请弃置两张牌").forResult();
+				if (!bool1) return;
+				const blackCount = discardCards.filter(card => get.color(card) == "black").length;
+				// 2. 更换原画为双树流香
+				player.removeSkill("shuangfeng_Souju");
+				player.removeSkill("shuanghun_Ayase");
+				player.addSkill("shuanghun_Luca");
+				player.addSkill("shuangfeng");
+				await player.draw(1);
+				if (blackCount >= 2) {
+					const sha = game.createCard("sha", "spade", 2);
+					sha.nature = "ice";
+					sha.storage.shuanghun_icesha = true;
+					if (player.gain(sha, "gain2")) {
+						player.addTempSkill("shuanghun_ice_effect");
+						game.log(player, "获得了一张", "#y不计入次数的冰【杀】");
+					}
+				}
+			} else {
+				// 阳状态：绫濑
+				await player.draw(1);
+				// 2. 更换原画为双树绫濑
+				player.removeSkill("shuangfeng_Souju");
+				player.removeSkill("shuanghun_Luca");
+				player.addSkill("shuanghun_Ayase");
+				const { bool: bool2, cards: discardCards2 } = await player.chooseToDiscard("h", 2, true, "双魂：请弃置两张牌").forResult();
+				if (!bool2) return;
+				const redCount = discardCards2.filter(card => get.color(card) == "red").length;
+				if (redCount >= 2) {
+					const huogong = game.createCard("huogong", "heart", 2);
+					huogong.storage.shuanghun_firehuogong = true;
+					if (player.gain(huogong, "gain2")) {
+						player.addTempSkill("shuanghun_fire_effect");
+						game.log(player, "获得了一张", "#y伤害+1的【火攻】");
+					}
+				}
+			}
+		},
+		ai: {
+			order: 7,
+			result: {
+				player: function (player) {
+					if (!player.storage.shuanghun) {
+						const blackCards = player.getCards("h", { color: "black" });
+						if (blackCards.length >= 2) return 1.5;
+						return player.countCards("h") > 4 ? 1 : 0.5;
+					} else {
+						const redCards = player.getCards("h", { color: "red" });
+						if (redCards.length >= 2) return 1.5;
+						return 1;
+					}
+				}
+			}
+		},
+		subSkill: {
+			ice_effect: {
+				charlotte: true,
+				mark: true,
+				marktext: "冰",
+				intro: { content: "使用此冰【杀】不计入次数限制" },
+				trigger: { player: "useCard1" },
+				filter: function (event, player) {
+					return event.card && event.card.name == "sha" && event.card.nature == "ice"
+						&& event.card.storage && event.card.storage.shuanghun_icesha;
+				},
+				forced: true,
+				content: function () {
+					trigger.addCount = false;
+				},
+				mod: {
+					cardUsable: function (card, player, num) {
+						if (card.name == "sha" && card.nature == "ice" && card.storage && card.storage.shuanghun_icesha) {
+							// 防止不生效
+						}
+					}
+				}
+			},
+			fire_effect: {
+				charlotte: true,
+				mark: true,
+				marktext: "炎",
+				intro: { content: "【火攻】伤害+1" },
+				trigger: { source: "damageBegin1" },
+				filter: function (event, player) {
+					return event.card && event.card.name == "huogong"
+						&& event.card.storage && event.card.storage.shuanghun_firehuogong;
+				},
+				forced: true,
+				content: function () {
+					trigger.num++;
+				}
+			}
+		}
+	},
+	"shuanghun_Ayase": {
+		audio: 2,
+		enable: "phaseUse",
+		usable: 1,
+		filter: function (event, player) {
+			return player.countCards("he", { color: "red" }) > 0;
+		},
+		filterCard: function (card, player) {
+			return get.color(card) == "red" && lib.filter.cardDiscardable(card, player);
+		},
+		position: "he",
+		check: function (card) {
+			return 6 - get.value(card);
+		},
+		content: function () {
+			"step 0";
+			player.chooseTarget("二季：选择一名角色造成火焰伤害", true).set("ai", function (target) {
+				return get.damageEffect(target, player, player, "fire");
+			});
+			"step 1";
+			if (result.bool) {
+				event.target = result.targets[0];
+				player.line(event.target, "fire");
+				player.discard(cards);
+			} else {
+				event.finish();
+			}
+			"step 2";
+			if (event.target) {
+				event.target.damage("fire");
+			}
+			"step 3";
+			player.addTempSkill("shuanghun_Ayase_effect", { player: "phaseEnd" });
+			player.storage.shuanghun_Ayase_target = event.target;
+			player.markSkill("shuanghun_Ayase_effect");
+		},
+		ai: {
+			order: 7,
+			result: {
+				target: function (player, target) {
+					return get.damageEffect(target, player, player, "fire");
+				}
+			}
+		},
+		subSkill: {
+			effect: {
+				charlotte: true,
+				mark: true,
+				marktext: "炎",
+				intro: {
+					content: function (storage, player) {
+						if (player.storage.shuanghun_Ayase_target) {
+							return "对" + get.translation(player.storage.shuanghun_Ayase_target) + "使用牌无距离限制";
+						}
+						return "对目标角色使用牌无距离限制";
+					}
+				},
+				onremove: function (player) {
+					delete player.storage.shuanghun_Ayase_target;
+				},
+				mod: {
+					targetInRange: function (card, player, target) {
+						if (target == player.storage.shuanghun_Ayase_target) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+	},
+	"shuanghun_Luca": {
+		audio: 2,
+		trigger: {
+			player: "useCardToPlayered"
+		},
+		usable: 1,
+		filter: function (event, player) {
+			if (get.color(event.card) != "black") return false;
+			if (event.targets.length != 1) return false;
+			if (event.target == player) return false;
+			if (event.target.countCards("he") == 0) return false;
+			return true;
+		},
+		direct: true,
+		content: function () {
+			"step 0";
+			player.chooseBool(get.prompt("shuanghun_Luca", trigger.target), "令其弃置两张牌，然后你获得其中一张").set("ai", function () {
+				return get.attitude(player, trigger.target) < 0;
+			});
+			"step 1";
+			if (result.bool) {
+				player.logSkill("shuanghun_Luca", trigger.target);
+				player.addExpose(0.2);
+				var num = Math.min(2, trigger.target.countCards("he"));
+				trigger.target.chooseToDiscard("he", true, num);
+			} else {
+				event.finish();
+			}
+			"step 2";
+			if (result.bool && result.cards && result.cards.length > 0) {
+				var cards = result.cards.filterInD("d");
+				if (cards.length == 1) {
+					player.gain(cards, "gain2");
+					event.finish();
+				} else if (cards.length > 1) {
+					player.chooseButton(["冷案：选择获得其中一张牌", cards], true).set("ai", function (button) {
+						return get.value(button.link);
+					});
+				} else {
+					event.finish();
+				}
+			} else {
+				event.finish();
+			}
+			"step 3";
+			if (result.links && result.links.length > 0) {
+				player.gain(result.links, "gain2");
+			}
+		},
+		ai: {
+			threaten: 1.3,
+			expose: 0.2
+		}
+	},
+	"jihun": {
+		audio: 2,
+		locked: true,
+		group: ["jihun_reset", "jihun_kill"],
+		subSkill: {
+			reset: {
+				audio: "jihun",
+				trigger: {
+					source: "dying"
+				},
+				usable: 1,
+				forced: true,
+				filter: function (event, player) {
+					return event.source == player;
+				},
+				content: async function (event, trigger, player) {
+					var stat = player.getStat().skill;
+					for (var skill in stat) {
+						if (skill == "jihun" || skill == "jihun_reset" || skill == "jihun_kill") {
+							continue;
+						}
+						if (stat[skill] > 0) {
+							delete stat[skill];
+						}
+					}
+					var skills = player.getOriginalSkills();
+					for (var skill of skills) {
+						if (skill == "jihun") continue;
+						if (lib.skill[skill] && lib.skill[skill].limited && player.awakenedSkills.includes(skill)) {
+							player.restoreSkill(skill);
+							game.log(player, "重置了限定技", "#g【" + get.translation(skill) + "】");
+						}
+					}
+					game.log(player, "令除【集魂】外所有技能视为未发动过");
+				}
+			},
+			kill: {
+				audio: "jihun",
+				trigger: {
+					source: "dieAfter"
+				},
+				filter: function (event, player) {
+					return event.source == player;
+				},
+				content: function () {
+					"step 0";
+					var targetCards = trigger.player.countCards("he");
+					var hasCards = targetCards > 0;
+					var choices = [];
+					if (hasCards) {
+						choices.push("获得其所有牌");
+					}
+					choices.push("恢复一点体力");
+					if (!hasCards && player.hp >= player.maxHp) {
+						event.finish();
+						return;
+					}
+					player.chooseControl(choices).set("prompt", "集魂：请选择一项").set("ai", function () {
+						var targetCardsCount = trigger.player.countCards("he");
+						var playerHp = player.hp;
+						var playerHand = player.countCards("h");
+						if (playerHp <= 2 && playerHand <= 2) {
+							return "恢复一点体力";
+						}
+						if (targetCardsCount >= 2) {
+							return "获得其所有牌";
+						}
+						if (player.hp < player.maxHp) {
+							return "恢复一点体力";
+						}
+
+						return "获得其所有牌";
+					});
+					"step 1";
+					if (result.control == "获得其所有牌") {
+						var cards = trigger.player.getCards("he");
+						if (cards.length > 0) {
+							player.gain(cards, trigger.player, "giveAuto", "bySelf");
+						}
+					} else if (result.control == "恢复一点体力") {
+						player.recover();
+					}
+				}
+			}
 		}
 	},
 };

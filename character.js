@@ -109,10 +109,11 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["iroha_shukun", "iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
+		skills: ["iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
 		img: "extension/魔法纪录/image/iroha.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
 		isZhugong: true,
+		clans: ["宝崎环氏"],
 	},
 	"yachiyo": {//七海八千代
 		sex: "female",
@@ -207,6 +208,7 @@ const characters = {
 		img: "extension/魔法纪录/image/ui.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ui.mp3"],
 		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
+		clans: ["宝崎环氏"],
 	},
 	"kanagi": {//和泉十七夜
 		sex: "female",
@@ -406,6 +408,7 @@ const characters = {
 		skills: ["iroha2_huzi", "iroha2_chengmo", "iroha_huanyu"],
 		img: "extension/魔法纪录/image/dp_iroha.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/dp_iroha.mp3"],
+		clans: ["宝崎环氏"],
 	},
 	"mifuyu": {//梓美冬
 		sex: "female",
@@ -724,6 +727,16 @@ const characters = {
 		img: "extension/魔法纪录/image/sasa.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/sasa.mp3"],
 	},
+	"Souju": {//双树姐妹
+		sex: "female",
+		group: "Magia_Others",
+		hp: 4,
+		maxHp: 4,
+		hujia: 0,
+		skills: ["shuangfeng_Souju", "shuanghun", "jihun"],
+		img: "extension/魔法纪录/image/Souju.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Souju.mp3"],
+	},
 	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
@@ -844,6 +857,7 @@ const character_translates = {
 	Riz: "莉兹·霍克伍德",
 	hikaru: "煌里光",
 	sasa: "优木沙沙",
+	Souju: "双树绫濑&流香",
 };
 
 const perfectPairs = {
@@ -990,6 +1004,7 @@ const characterTitles = {
 	Riz: "L'ombre",//莉兹
 	hikaru: "光之军团",//煌里光
 	sasa: "优我者死",//优木沙沙
+	Souju: "一体二魂",//双树姐妹
 };
 
 // 更改武将原画
@@ -1029,7 +1044,7 @@ const characterSorts = {
 	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
 	"madoka11": ["mabayu"],
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
-	"madoka13": ["kazumi"],
+	"madoka13": ["kazumi", "Souju"],
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Riz"],
 
