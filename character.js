@@ -109,10 +109,11 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["iroha_shukun", "iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
+		skills: ["iroha_dimeng", "iroha_huanyu", "iroha_yuanjiu"],
 		img: "extension/魔法纪录/image/iroha.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/iroha.mp3"],
 		isZhugong: true,
+		clans: ["宝崎环氏"],
 	},
 	"yachiyo": {//七海八千代
 		sex: "female",
@@ -207,6 +208,7 @@ const characters = {
 		img: "extension/魔法纪录/image/ui.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ui.mp3"],
 		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],
+		clans: ["宝崎环氏"],
 	},
 	"kanagi": {//和泉十七夜
 		sex: "female",
@@ -248,9 +250,9 @@ const characters = {
 	"ashley": {//阿什莉·泰勒
 		sex: "female",
 		group: "Kamihama_Magia_Union",
-		hp: 4,
-		maxHp: 4,
-		skills: ["ashley_yuanyu", "ashley_mengshu"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["ashley_mengshu", "ashley_lingzhen"],
 		img: "extension/魔法纪录/image/ashley.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ashley.mp3"],
 	},
@@ -406,6 +408,7 @@ const characters = {
 		skills: ["iroha2_huzi", "iroha2_chengmo", "iroha_huanyu"],
 		img: "extension/魔法纪录/image/dp_iroha.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/dp_iroha.mp3"],
+		clans: ["宝崎环氏"],
 	},
 	"mifuyu": {//梓美冬
 		sex: "female",
@@ -715,6 +718,25 @@ const characters = {
 		img: "extension/魔法纪录/image/hikaru.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/hikaru.mp3"],
 	},
+	"sasa": {//优木沙沙
+		sex: "female",
+		group: "Law_of_Cycles",
+		hp: 3,
+		maxHp: 3,
+		skills: ["sasa_duyan", "sasa_wanning", "sasa_huoyi"],
+		img: "extension/魔法纪录/image/sasa.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/sasa.mp3"],
+	},
+	"Souju": {//双树姐妹
+		sex: "female",
+		group: "Magia_Others",
+		hp: 4,
+		maxHp: 4,
+		hujia: 0,
+		skills: ["shuangfeng_Souju", "shuanghun", "jihun"],
+		img: "extension/魔法纪录/image/Souju.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Souju.mp3"],
+	},
 	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
@@ -834,6 +856,8 @@ const character_translates = {
 	sakuya: "铃鹿朔夜",
 	Riz: "莉兹·霍克伍德",
 	hikaru: "煌里光",
+	sasa: "优木沙沙",
+	Souju: "双树绫濑&流香",
 };
 
 const perfectPairs = {
@@ -977,12 +1001,10 @@ const characterTitles = {
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
 	sakuya: "辉煌之刃",//铃鹿朔夜
-	Riz: "阴影",//莉兹
+	Riz: "L'ombre",//莉兹
 	hikaru: "光之军团",//煌里光
-};
-
-const characterReplaces = {
-
+	sasa: "优我者死",//优木沙沙
+	Souju: "一体二魂",//双树姐妹
 };
 
 // 更改武将原画
@@ -992,5 +1014,55 @@ const characterSubstitutes = {
 	],
 }
 
+// 武将分类
+const sortsTranslates = {
+	madoka1: "魔法少女小圆",
+	madoka11: "魔法少女小圆·Scene 0",
+	madoka12: "魔法少女织莉子",
+	madoka13: "魔法少女和美",
+	madoka14: "魔法少女铃音",
+	madoka15: "魔法少女贞德",
+	madoka16: "非·魔法少女",
+
+	madoka2: "神滨魔法联盟",
+	madoka21: "玛吉斯之翼（含Neo-Magius）",
+	madoka22: "誓约之血",
+	madoka23: "时女一族",
+	madoka24: "午夜0时的民间传说",
+	madoka25: "调整屋",
+	madoka26: "其他势力",
+
+	madoka3: "魔法少女小圆Magia Exedra",
+	madoka31: "魔法纪录·弦月记忆",
+
+	madoka5: "魔圆其它角色",
+	madoka6: "魔法少女山田",
+	madoka7: "作者自设同人",
+}
+
+const characterSorts = {
+	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
+	"madoka11": ["mabayu"],
+	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
+	"madoka13": ["kazumi", "Souju"],
+	"madoka14": ["suzune"],
+	"madoka15": ["dArc", "Riz"],
+
+	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
+	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
+	"madoka22": ["yuna", "ao", "juri", "sakuya", "hikaru"],
+	"madoka23": ["shizuka"],
+	"madoka24": [],
+	"madoka25": ["mitama"],
+	"madoka26": ["nayuta", "mikage", "hanna"],
+
+	"madoka3": ["name"],
+	"madoka31": [],
+
+	"madoka5": ["asumi"],
+	"madoka6": ["yamada"],
+	"madoka7": ["blue", "ceobo"],
+}
+
 export default characters;
-export { character_translates, perfectPairs, characterTitles, characterReplaces, characterSubstitutes };
+export { character_translates, perfectPairs, characterTitles, characterSubstitutes, characterSorts, sortsTranslates };

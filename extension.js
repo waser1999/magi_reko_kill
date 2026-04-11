@@ -1,6 +1,6 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 import cards from "./card.js";
-import characters, { character_translates, characterTitles, perfectPairs, characterReplaces, characterSubstitutes } from "./character.js";
+import characters, { character_translates, characterTitles, perfectPairs, characterSubstitutes, characterSorts, sortsTranslates } from "./character.js";
 import skills from "./skill.js";
 import equipSkills from "./equipSkill.js";
 import originalSkills from "./originalSkill.js";
@@ -103,31 +103,14 @@ export default function () {
 				return choice.randomSort();
 			};
 		}, content: function (config, pack) {
-			lib.translate.madoka1 = "魔法少女小圆";
-			lib.translate.madoka2 = "神滨魔法联盟";
-			lib.translate.madoka3 = "玛吉斯之翼";
-			lib.translate.madoka4 = "魔法纪录其它势力";
-			lib.translate.madoka5 = "魔圆其它角色";
-			lib.translate.madoka6 = "魔法少女山田";
-			lib.translate.madoka7 = "作者自设同人";
-			lib.characterSort['mode_extension_魔法纪录'] = {
-				"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "mabayu", "homura_glasses", "homura_ribbon", "ulti_madoka", "devil_homura"],
-				"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
-				"madoka3": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
-				"madoka4": ["yuna", "ao", "juri", "shizuka", "nayuta", "mikage", "sakuya", "hikaru", "mitama", "hanna"],
-				"madoka5": ["kirika", "oriko", "yuma", "name", "asumi", "kazumi", "dArc", "suzune", "Riz"],
-				"madoka6": ["yamada"],
-				"madoka7": ["blue", "ceobo"],
-			}
-
 
 		}, prepare: function () {
 
 		}, precontent: function () {
 			// 这里写势力
-			game.addGroup("Law_of_Cycles", "見泷原", "圆环之理相关", { color: "#C71585", image: "ext:魔法纪录/image/group/law_of_cycles.png" });
+			game.addGroup("Law_of_Cycles", "见泷原", "圆环之理相关", { color: "#C71585", image: "ext:魔法纪录/image/group/law_of_cycles.png" });
 			game.addGroup("Kamihama_Magia_Union", "神盟", "神滨魔法联盟相关", { color: "#FF1493", image: "ext:魔法纪录/image/group/kamihama_union.png" });
-			game.addGroup("Magius_Wing", "瑪吉斯", "新旧玛吉斯之翼相关", { color: "#000000", image: "ext:魔法纪录/image/group/magius_wing.png" });
+			game.addGroup("Magius_Wing", "玛吉斯", "新旧玛吉斯之翼相关", { color: "#000000", image: "ext:魔法纪录/image/group/magius_wing.png" });
 			game.addGroup("Magia_Others", "群雄", "其他魔法少女群体/个人", { color: "#8b0000", image: "ext:魔法纪录/image/group/magia_others.png" });
 			// 特殊标记高亮
 			lib.namePrefix.set("DP", {
@@ -152,11 +135,14 @@ export default function () {
 		package: {
 			character: {
 				character: { ...characters },
-				translate: { ...character_translates },
+				translate: { ...character_translates, ...sortsTranslates },
 				perfectPair: { ...perfectPairs },
 				characterTitle: { ...characterTitles },
-				characterReplace: { ...characterReplaces },
+				// characterReplace: { ...characterReplaces },
 				characterSubstitute: { ...characterSubstitutes },
+				characterSort: {
+					"魔法纪录": characterSorts,
+				},
 				connect: true,
 			},
 			card: {
@@ -183,7 +169,7 @@ export default function () {
 			author: "Waser",
 			diskURL: "https://github.com/waser1999/magi_reko_kill",
 			forumURL: "",
-			version: "1.9.7",
+			version: "1.9.8",
 		}, files: {
 			"character": [], "card": [], "skill": [], "audio": []
 		}, connect: true,
