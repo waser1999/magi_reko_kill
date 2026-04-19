@@ -68,13 +68,10 @@ const skills = {
 			return event.name == "recover" ? event.num : event.getl(player).cards.length;
 		},
 		async content(event, trigger, player) {
-			// const num = trigger.name == "recover" ? trigger.num : trigger.getl(player).cards.length;
-			// for (let i = 0; i < num; i++) {
 			const next = player.judge(function (card) {
 				return 1;
 			});
 			next.set("callback", lib.skill.kyoko_shengxu.callback);
-			// }
 		},
 		async callback(event, trigger, player) {
 			const card = event.judgeResult.card || trigger.card;
@@ -290,16 +287,6 @@ const skills = {
 						player(player) {
 							return 1;
 						}
-						// target(player, target){
-						// 	const att = get.attitude(player, target);
-						// 	if (att > 0 && (target.countCards("j") > 0 || target.countCards("e", card => get.value(card, target) < 0) > 0)) {
-						// 		return 10;
-						// 	}
-						// 	if (att < 0 && (target.countCards("he", card => get.value(card, target) < 0) != target.countCards("he"))){
-						// 		return -att;
-						// 	}
-						// 	return 1;
-						// }
 					},
 				},
 			},
@@ -2464,8 +2451,6 @@ const skills = {
 				intro: {
 					content(storage, player) {
 						if (storage && storage.length) {
-							// const suitOrder = ["spade", "heart", "club", "diamond"];
-							// storage.sort((a, b) => suitOrder.indexOf(a) - suitOrder.indexOf(b));
 							return "本回合已拾取颜色：" + storage.map(color => get.translation(color));
 						}
 						return "暂无拾取颜色";
@@ -4647,13 +4632,17 @@ const skills = {
 
 			const typeList = [["basic", "基本牌"], ["trick", "锦囊牌"], ["equip", "装备牌"]];
 			// chooseButton多选格式
-			const result = await player.chooseButton(["华心：选择两种牌的类型", `<div class="text center">牌的类型</div>`, [typeList, "tdnodes"]])
+			const result = await player.chooseButton(["华心：选择一种牌的类型", `<div class="text center">牌的类型</div>`, [typeList, "tdnodes"]])
 				.set("selectButton", 1)
 				.set("ai", button => {
+					const player = _status.event.player;
 					const type = button.link;
-					if (type === "basic") return 3; // 基本牌最常用
-					if (type === "trick") return 2; // 锦囊牌次之
-					return 1; // 装备牌
+					const counts = {
+						basic: player.countCards("h", card => get.type(card) == "basic"),
+						trick: player.countCards("h", card => get.type(card) == "trick"),
+						equip: player.countCards("h", card => get.type(card) == "equip"),
+					};
+					return counts[type];
 				})
 				.forResult();
 
@@ -4669,18 +4658,12 @@ const skills = {
 				filter(event, player) {
 					if (!player.storage.nanaka_huaxin_types) return false;
 
-					// const isPhase = player.isPhaseUsing();
-
 					if (event.name === "useCard") {
-						// 使用：回合内
-						// if (!isPhase) return false;
 						const cardType = get.type(event.card);
 						return player.storage.nanaka_huaxin_types.includes(cardType);
 					}
 
 					if (event.name === "respond") {
-						// 打出：回合外
-						// if (isPhase) return false;
 						const cardType = get.type(event.card);
 						return player.storage.nanaka_huaxin_types.includes(cardType);
 					}
@@ -5676,26 +5659,8 @@ const skills = {
 			player.when("useCardAfter").filter((event, player) => {
 				return event.card == next.card;
 			}).then(() => {
-				// if (!player.hasHistory("sourceDamage", evt => evt.card == trigger.card)) {
-				// 	let control = ["弃对方1张牌", "摸1张牌"]
-				// 	if (player.storage.tsuruno_yanwu.countDiscardableCards(player, "he") > 0)
-				// 		control.remove("弃对方1张牌"); 
-				// 	return player.chooseControl(control)
-				// 	.set("ai", () => {
-				// 		if (!(get.event("controls").includes("弃对方1张牌")) || get.attitude(player, player.storage.tsuruno_yanwu) >= 0 || player.countCards("h") <= player.maxHp)
-				// 			return "摸1张牌";
-				// 		return "弃对方1张牌";
-				// 	}).forResult();
-				// }
 				if (!player.hasHistory("sourceDamage", evt => evt.card == trigger.card))
 					player.draw()
-				// }).then(() => {
-				// 	if (result.control == "摸1张牌") {
-				// 		player.draw();
-				// 	} else if (result.control == "弃对方1张牌") {
-				// 		player.discardPlayerCard("he", player.storage.tsuruno_yanwu, true);
-				// 	}
-				// 	delete player.storage.tsuruno_yanwu;
 			});
 		},
 		ai: {
@@ -7003,7 +6968,6 @@ const skills = {
 						return [1, -1];
 					}
 					return 0.8;
-					// if(get.tag(card,'damage')&&get.damageEffect(target,player,player)>0) return [1,0,0,-1.5];
 				},
 			},
 		},
@@ -9023,8 +8987,6 @@ const skills = {
 		},
 		async content(event, trigger, player) {
 			const target = trigger.source;
-			// const result = await player.chooseToDiscard('he', '调停：与' + get.translation(target) + '进行议事').forResult();
-			// if (result.bool) {
 			player.chooseToDebate([player, trigger.source]).set("callback", async event => {
 				const result = event.debateResult;
 				if (result?.bool) {
@@ -9049,7 +9011,6 @@ const skills = {
 					}
 				}
 			});
-			// }
 		},
 		ai: {
 			expose: 0.2,
@@ -12017,6 +11978,230 @@ const skills = {
 				}
 			}
 		}
+	},
+
+	// 魔晓美焰
+	"devil_homura_weijie": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			global: ["gameStart"],
+		},
+		forced: true,
+		filter(event, player) {
+			return event.name != "phase" || game.phaseNumber == 0;
+		},
+		async content(event, trigger, player) {
+			const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+			let cards = [];
+			for (let num of numbers) {
+				cards.push(game.createCard2("ying", "spade", num));
+			}
+			const next = player.addToExpansion(cards, "gain2");
+			next.gaintag.add("devil_homura_weijie");
+			await next;
+		},
+		marktext: "伪",
+		intro: {
+			content: "expansion",
+			markcount: "expansion",
+		},
+		onremove(player, skill) {
+			const cards = player.getExpansions(skill);
+			if (cards.length) {
+				player.loseToDiscardpile(cards);
+			}
+		},
+		group: ["devil_homura_weijie_gain"],
+		subSkill: {
+			gain: {
+				audio: "devil_homura_weijie",
+				trigger: { global: ["useCardAfter", "respondAfter"] },
+				filter(event, player) {
+					if (event.player == player) return false;
+					const num = get.number(event.card);
+					if (typeof num != "number") return false;
+					return player.getExpansions("devil_homura_weijie").some(card => get.number(card) == num && card.name == "ying");
+				},
+				check(event, player) {
+					if (get.attitude(player, event.player) > 0) {
+						if (get.type(event.card) == "equip") {
+							return false;
+						}
+						if (get.type(event.card) == "trick" && get.subtype(event.card) == "delay") {
+							return false;
+						}
+					}
+					return get.value(event.card) > 0;
+				},
+				prompt2(event, player) {
+					return "获得" + get.translation(event.player) + "使用或打出的" + get.translation(event.card) + "，并弃置对应点数的【影】";
+				},
+				logTarget: "player",
+				async content(event, trigger, player) {
+					await player.gain(trigger.cards[0], "gain2");
+					player.loseToDiscardpile(player.getExpansions("devil_homura_weijie").find(card => get.number(card) == get.number(trigger.card) && card.name == "ying"));
+				},
+			},
+		},
+		ai: {
+			threaten: 2,
+			effect: {
+				target(card, player, target) {
+					if (get.suit(card) == "spade" && player != target) {
+						return [0.5, 1];
+					}
+				},
+			},
+		},
+	},
+	"devil_homura_yinting": {
+		trigger: { player: "phaseZhunbeiBegin" },
+		frequent: true,
+		async content(event, trigger, player) {
+			const shadowCount = player.getExpansions("devil_homura_weijie").length;
+			const viewNum = shadowCount + 1;
+			const num = Math.min(shadowCount, 7);
+
+			if (viewNum > 0) {
+				const viewCards = get.cards(Math.min(viewNum, 7));
+				const viewCards2 = [];
+				game.cardsGotoOrdering(viewCards);
+
+				const result = await player.chooseToMove(true)
+					.set("list", [["牌堆顶", viewCards], ["牌堆底", viewCards2]])
+					.set("prompt", "银庭：将牌以任意顺序置于牌堆顶或牌堆底")
+					.set("processAI", function (list) {
+						const cards = list[0][1].slice(0);
+						const poisonCards = cards.filter(card => card.name == 'du');
+						const nonPoisonCards = cards.filter(card => card.name != 'du');
+						const redCards = nonPoisonCards.filter(card => get.color(card) == 'red');
+						const blackCards = nonPoisonCards.filter(card => get.color(card) == 'black');
+						const redValue = redCards.reduce((sum, card) => sum + get.value(card), 0);
+						const blackValue = blackCards.reduce((sum, card) => sum + get.value(card), 0);
+						const cards1 = redValue >= blackValue ? redCards : blackCards;
+						const cards2 = redValue >= blackValue ? blackCards : redCards;
+						return [cards1, cards2.concat(poisonCards)];
+					})
+					.forResult();
+
+				if (result?.bool) {
+					let top = result.moved[0];
+					let bottom = result.moved[1];
+					top.reverse();
+					game.cardsGotoPile(top.concat(bottom), ["top_cards", top], function (event, card) {
+						if (event.top_cards.includes(card)) return ui.cardPile.firstChild;
+						return null;
+					});
+				}
+
+				await player.discard(player.getExpansions("devil_homura_weijie"));
+
+				const targetResult = await player.chooseTarget([1, num], true, "对" + (num > 1 ? "至多" : "") + get.cnNumber(num) + "名角色造成1点伤害")
+					.set("ai", function (target) {
+						var player = _status.event.player;
+						return get.attitude(target, player) < 0;
+					}).forResult();
+
+				if (targetResult.bool) {
+					var targets = targetResult.targets.sortBySeat();
+					player.line(targets, "green");
+					for (var i of targets) {
+						i.damage();
+					}
+				}
+
+				await player.useSkill("devil_homura_weijie");
+			}
+		},
+		ai: {
+			threaten: 2.5,
+		},
+	},
+	"devil_homura_cuanxiang": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: {
+			player: ["phaseBegin"],
+		},
+		async cost(event, trigger, player) {
+			const basicTypes = ["sha", "ying"];
+			const choices = basicTypes.map(name => get.translation(name));
+			choices.push("cancel2");
+			const result = await player.chooseControl(choices)
+				.set("prompt", "篡象：选择一种基本牌，令场上其他角色的黑桃牌视为该基本牌")
+				.set("ai", function () {
+					return Math.randomInt(0, choices.length - 1);
+				})
+				.forResult();
+			if (result.index == choices.length - 1) {
+				event.result = { bool: false };
+			} else {
+				event.result = {
+					bool: true,
+					cost_data: basicTypes[result.index],
+				};
+			}
+		},
+		async content(event, trigger, player) {
+			const cardName = event.cost_data;
+			game.filterPlayer(current => current != player).forEach(target => {
+				target.addAdditionalSkills("devil_homura_cuanxiang_" + player.playerid, "devil_homura_cuanxiang_viewas", true);
+				target.storage.devil_homura_cuanxiang_viewas = cardName;
+			});
+		},
+		group: ["devil_homura_cuanxiang_block"],
+		subSkill: {
+			viewas: {
+				charlotte: true,
+				onremove: true,
+				mark: true,
+				marktext: "篡象",
+				intro: {
+					content(storage) {
+						return "场上的黑桃牌视为" + get.translation(storage);
+					},
+				},
+				mod: {
+					cardname(card, player) {
+						if (get.position(card) == "h" && get.suit(card) == "spade") {
+							return player.storage.devil_homura_cuanxiang_viewas;
+						}
+					},
+				},
+			},
+			block: {
+				trigger: { player: ["damageBegin4", "loseHpBegin", "recoverBegin"] },
+				forced: true,
+				filter(event, player) {
+					if (event.name == "damage") {
+						return event.card && get.suit(event.card) == "spade";
+					}
+					if (event.name == "loseHp") {
+						if (event.card && get.suit(event.card) == "spade") return true;
+						return event.type == "du";
+					}
+					if (event.name == "recover") {
+						return event.card && get.suit(event.card) == "spade";
+					}
+					return false;
+				},
+				content() {
+					trigger.cancel();
+				},
+				ai: {
+					nodu: true,
+					effect: {
+						target(card, player, target) {
+							if (get.suit(card) == "spade" && get.tag(card, "damage")) {
+								return "zeroplayertarget";
+							}
+						},
+					},
+				},
+			},
+		},
+		ai: {
+			threaten: 2,
+		},
 	},
 };
 export default skills;

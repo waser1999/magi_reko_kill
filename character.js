@@ -97,12 +97,12 @@ const characters = {
 	"devil_homura": {//魔晓美焰
 		sex: "female",
 		group: "Law_of_Cycles",
-		hp: 4,
-		maxHp: 4,
-		skills: ["dcgeyuan", "dcgusuan", "dcjieshu", "bazhen"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["devil_homura_weijie", "devil_homura_yinting", "devil_homura_cuanxiang"],
 		img: "extension/魔法纪录/image/devil_homura.png",
 		dieAudios: ["ext:魔法纪录/audio/die/devil_homura.mp3"],
-		isAiForbidden: true,
+		// isAiForbidden: true,
 	},
 	"iroha": {//环彩羽
 		sex: "female",
