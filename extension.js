@@ -165,11 +165,15 @@ export default function () {
 			},
 			skill: { ...skills },
 			translate: { ...translates },
-			intro: "魔法纪录所有角色的三国杀。",
+			intro: `
+				魔法纪录所有角色的三国杀。玩的开心（<br>
+				<span>QQ群：</span><a href="#" onclick="event.preventDefault();navigator.clipboard.writeText('1030543470');alert('QQ群号已复制到剪贴板');">1030543470</a><span>（点击蓝字复制）</span>
+				<br>
+				<span>版本：v1.9.9。</span><br>
+			`,
 			author: "Waser",
 			diskURL: "https://github.com/waser1999/magi_reko_kill",
 			forumURL: "",
-			version: "1.9.8",
 		}, files: {
 			"character": [], "card": [], "skill": [], "audio": []
 		}, connect: true,
