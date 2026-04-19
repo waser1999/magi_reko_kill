@@ -3306,6 +3306,7 @@ const skills = {
 		trigger: { global: "useCardToPlayered" },
 		group: "felicia_chuiji_3",
 		direct: true,
+		usable: 1,
 		filter(event, player) {
 			return event.card.name == "sha" && (player.inRange(event.target) || event.player == player) && event.target.hp > 0 && event.target.countCards("he") > 0;
 		},
@@ -8203,41 +8204,29 @@ const skills = {
 				audio: false,
 				enable: ['chooseToUse', 'chooseToRespond'],
 				filter(event, player) {
-					var list = ['shan'];
-					return player.countCards("hs", card => card.name == "ying") && list.some(name => event.filterCard({
-						name: name
-					}, player, event))
+					return event.filterCard({ name: "shan" }, player, event);
 				},
-				chooseButton: {
-					dialog(event, player) {
-						var list = ['shan'];
-						return ui.create.dialog("御影", [list, "vcard"]);
-					},
-					filter(button, player) {
-						return _status.event.getParent().filterCard({
-							name: button.link[2]
-						}, player, _status.event.getParent());
-					},
-					backup(links, player) {
-						return {
-							audio: false,
-							filterCard: {
-								name: "ying"
-							},
-							position: "hs",
-							viewAs: {
-								name: links[0][2]
-							},
-							ai1(card) {
-								if (player.countCards("hes", {
-									name: links[0][2]
-								}) > 0) return false
-								return true;
-							},
-						};
-					},
-					prompt(links, player) {
-						return "将一张【影】当做" + get.translation(links[0][2]) + "使用";
+				selectCard: 1,
+				filterCard: { name: "ying" },
+				position: "hs",
+				locked: false,
+				viewAs: {
+					name: "shan",
+				},
+				viewAsFilter(player) {
+					if (!player.countCards("hs", "ying")) {
+						return false;
+					}
+				},
+				check(card) {
+					const val = get.value(card);
+					return 5 - val;
+				},
+				mod: {
+					cardUsable(card) {
+						if (card.storage && card.storage.Riz_caoying_attack) {
+							return Infinity;
+						}
 					},
 				},
 				ai: {
@@ -8250,6 +8239,13 @@ const skills = {
 						player: 1
 					},
 				},
+				ai1(card) {
+					if (player.countCards("hes", {
+						name: "shan"
+					}) > 0) return false
+					return true;
+				},
+				"_priority": 0,
 			}
 		}
 	},
