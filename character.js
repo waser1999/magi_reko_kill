@@ -413,9 +413,9 @@ const characters = {
 	"mifuyu": {//梓美冬
 		sex: "female",
 		group: "Magius_Wing",
-		hp: 3,
-		maxHp: 3,
-		skills: ["dcwumei", "dczhanmeng"],
+		hp: 4,
+		maxHp: 4,
+		skills: ["mifuyu_mengying", "mifuyu_huyu", "mifuyu_huanren"],
 		img: "extension/魔法纪录/image/mifuyu.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mifuyu.mp3"],
 		doubleGroup: ["Kamihama_Magia_Union", "Magius_Wing"],

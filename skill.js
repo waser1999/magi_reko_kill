@@ -3034,10 +3034,10 @@ const skills = {
 
 					targets.forEach(target => {
 						if (redTargets.includes(target)) {
-							player.draw();
-							target.draw();
+							game.asyncDraw([player, target], 1);
 						}
 						else if (blackTargets.includes(target)) {
+							player.line(target);
 							player.chooseToDiscard("h", true).set("ai", card => {
 								if (get.suit(card) == "spade")
 									return 2;
@@ -12194,6 +12194,216 @@ const skills = {
 					},
 				},
 			},
+		},
+		ai: {
+			threaten: 2,
+		},
+	},
+
+	// 梓美冬
+	"mifuyu_mengying": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		limited: true,
+		trigger: {
+			player: "phaseBegin",
+		},
+		filter(event, player) {
+			if (player.awakenedSkills.includes("mifuyu_mengying")) return false;
+			if (!player.storage.mifuyu_mengying_round) return false;
+			return true;
+		},
+		async cost(event, trigger, player) {
+			const result = await player.chooseTarget(get.prompt("mifuyu_mengying"), "将一名角色的体力值与手牌数恢复至本轮开始时", function (card, player, target) {
+				const data = player.storage.mifuyu_mengying_round[target.playerid];
+				if (!data) return false;
+				return true;
+			}).set("ai", function (target) {
+				const data = player.storage.mifuyu_mengying_round[target.playerid];
+				if (!data) return 0;
+				const hpDiff = data.hp - target.hp;
+				const handDiff = data.handCount - target.countCards("h");
+				return (hpDiff + handDiff + 1) * get.attitude(player, target);
+			}).forResult();
+			if (result.bool) {
+				event.result = result;
+			}
+		},
+		async content(event, trigger, player) {
+			player.awakenSkill("mifuyu_mengying");
+			const target = event.targets[0];
+			const data = player.storage.mifuyu_mengying_round[target.playerid];
+			if (!data) return;
+
+			player.line(target, "green");
+
+			if (target.hp < data.hp) {
+				await target.recover(data.hp - target.hp);
+			} else if (target.hp > data.hp) {
+				await target.loseHp(target.hp - data.hp);
+			}
+
+			if (!target.isAlive()) return;
+
+			const currentHand = target.countCards("h");
+			if (currentHand < data.handCount) {
+				await target.draw(data.handCount - currentHand);
+			} else if (currentHand > data.handCount) {
+				await target.chooseToDiscard("h", currentHand - data.handCount, true);
+			}
+			target.storage.mifuyu_mengying_extra = true;
+			target.addSkill("mifuyu_mengying_turn");
+			target.insertPhase();
+			player.addTempSkill("mifuyu_mengying_restore", { player: "dieAfter" });
+		},
+		group: ["mifuyu_mengying_roundSave"],
+		subSkill: {
+			roundSave: {
+				trigger: { global: "roundStart" },
+				silent: true,
+				firstDo: true,
+				forced: true,
+				popup: false,
+				async content(event, trigger, player) {
+					player.storage.mifuyu_mengying_round = {};
+					const players = game.filterPlayer();
+					for (const current of players) {
+						player.storage.mifuyu_mengying_round[current.playerid] = {
+							hp: current.hp,
+							handCount: current.countCards("h"),
+						};
+					}
+				},
+			},
+			restore: {
+				trigger: { player: "damageAfter" },
+				filter(event, player) {
+					return player.awakenedSkills.includes("mifuyu_mengying");
+				},
+				forced: true,
+				async content(event, trigger, player) {
+					player.restoreSkill("mifuyu_mengying");
+					game.log(player, "恢复了限定技", "#g【梦影】");
+
+					const result = await player.chooseTarget("梦影：是否将一名已翻面的角色复原？", function (card, player, target) {
+						return target.isTurnedOver();
+					}).set("ai", function (target) {
+						return get.attitude(player, target);
+					}).forResult();
+
+					if (result.bool && result.targets.length) {
+						const target = result.targets[0];
+						player.line(target, "green");
+						await target.turnOver(false);
+					}
+				},
+			},
+			turn: {
+				charlotte: true,
+				silent: true,
+				onremove: true,
+				trigger: { player: "phaseAfter" },
+				forced: true,
+				popup: false,
+				filter(event, player) {
+					return player.storage.mifuyu_mengying_extra;
+				},
+				async content(event, trigger, player) {
+					delete player.storage.mifuyu_mengying_extra;
+					if (!player.isTurnedOver()) {
+						await player.turnOver();
+					}
+					player.removeSkill("mifuyu_mengying_turn");
+				},
+			},
+		},
+		ai: {
+			threaten: 5,
+		},
+	},
+	"mifuyu_huyu": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: { global: "damageBegin4" },
+		usable: 1,
+		groupSkill: "Magius_Wing",
+		filter(event, player) {
+			if (player.group != "Magius_Wing") return false;
+			if (!event.source || !event.source.isIn()) return false;
+			const totalDamage = event.player.getHistory("damage").reduce(function (sum, evt) {
+				return sum + evt.num;
+			}, 0) + event.num;
+			return totalDamage > 1;
+		},
+		check(event, player) {
+			return get.attitude(player, event.player) > 0 && get.attitude(player, event.source) < 0;
+		},
+		async content(event, trigger, player) {
+			trigger.cancel();
+			const source = trigger.source;
+			if (source && source.isIn()) {
+				let evt = trigger;
+				while (evt) {
+					if (evt.player === source && evt.name !== "phaseLoop" && evt.name !== "phase" && evt.name.startsWith("phase")) {
+						evt.finish();
+						game.log(source, "的", evt.name, "被结束");
+						break;
+					}
+					evt = evt.getParent();
+				}
+			}
+		},
+		ai: {
+			expose: 0.3,
+			threaten: 1.5,
+		},
+	},
+	"mifuyu_huanren": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		trigger: { player: "useCard" },
+		usable: 1,
+		groupSkill: "Kamihama_Magia_Union",
+		filter(event, player) {
+			if (player.group != "Kamihama_Magia_Union") return false;
+			return true;
+		},
+		async cost(event, trigger, player) {
+			const result = await player.chooseTarget(get.prompt("mifuyu_huanren"), "令一名其他角色弃置两张牌", function (card, player, target) {
+				return target.countCards("he") > 0 && target != player;
+			}).set("ai", function (target) {
+				return -get.attitude(player, target);
+			}).forResult();
+			if (result.bool) {
+				event.result = result;
+			}
+		},
+		async content(event, trigger, player) {
+			const target = event.targets[0];
+			player.line(target, "green");
+
+			const discardNum = Math.min(2, target.countCards("he"));
+			const result = await target.chooseToDiscard("he", discardNum, true, "环刃：请弃置" + get.cnNumber(discardNum) + "张牌")
+				.set("ai", function (card) {
+					if (ui.selected.cards.length == 0) {
+						return -get.value(card, target);
+					}
+					const first = ui.selected.cards[0];
+					const sameSuit = get.suit(card) == get.suit(first);
+					const sameType = get.type(card) == get.type(first);
+					if (sameSuit || sameType) {
+						return skills.duexcept_ai(-get.value(card, target) - 5, card, target);
+					}
+					return skills.duexcept_ai(-get.value(card, target), card, target);
+				})
+				.forResult();
+
+			if (result.bool && result.cards && result.cards.length >= 2) {
+				const card1 = result.cards[0];
+				const card2 = result.cards[1];
+				const sameSuit = get.suit(card1) == get.suit(card2);
+				const sameType = get.type(card1) == get.type(card2);
+				if (sameSuit || sameType) {
+					await target.damage(player, "fire");
+				}
+			}
 		},
 		ai: {
 			threaten: 2,
