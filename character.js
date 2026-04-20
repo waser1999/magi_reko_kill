@@ -737,6 +737,16 @@ const characters = {
 		img: "extension/魔法纪录/image/Souju.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Souju.mp3"],
 	},
+	"Yuuri": {//飞鸟悠里
+		sex: "female",
+		group: "Magia_Others",
+		hp: 3,
+		maxHp: 4,
+		hujia: 1,
+		skills: ["Yuuri_weixing", "Yuuri_qiangjiao", "Yuuri_suchou"],
+		img: "extension/魔法纪录/image/Yuuri.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Yuuri.mp3"],
+	},
 	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
@@ -858,6 +868,7 @@ const character_translates = {
 	hikaru: "煌里光",
 	sasa: "优木沙沙",
 	Souju: "双树绫濑&流香",
+	Yuuri: "飞鸟悠里",
 };
 
 const perfectPairs = {
@@ -1005,12 +1016,21 @@ const characterTitles = {
 	hikaru: "光之军团",//煌里光
 	sasa: "优我者死",//优木沙沙
 	Souju: "一体二魂",//双树姐妹
+	Yuuri: "恩仇悖身",//飞鸟悠里
 };
 
 // 更改武将原画
 const characterSubstitutes = {
 	dArc: [
 		["final_dArc", ["ext:魔法纪录/image/final_dArc.jpg"]],
+	],
+	Souju: [
+		["Souju Ayase", ["ext:魔法纪录/image/Souju Ayase.jpg"]],
+		["Souju Luca", ["ext:魔法纪录/image/Souju Luca.jpg"]],
+		["Souju Full", ["ext:魔法纪录/image/Souju.jpg"]],
+	],
+	nagisa: [
+		["nagisa2", ["ext:魔法纪录/image/nagisa2.jpg"]],
 	],
 }
 
@@ -1044,7 +1064,7 @@ const characterSorts = {
 	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
 	"madoka11": ["mabayu"],
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
-	"madoka13": ["kazumi", "Souju"],
+	"madoka13": ["kazumi", "Souju", "Yuuri"],
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Riz"],
 

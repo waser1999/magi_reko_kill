@@ -54,8 +54,8 @@ const equipSkills = {
             source: "damageBegin",
         },
         async content(event, trigger, player) {
-            if (trigger.player.name == "kuroe") {
-                trigger.num++;
+            if (trigger.player.group == player.group) {
+                player.equip(game.createCard("griefseed", "heart", 1));
             }
         },
         "_priority": 0,
@@ -289,6 +289,157 @@ const equipSkills = {
             },
         },
         "_priority": 0,
+    },
+    "griefseed_skill": {
+        equipSkill: true,
+        locked: true,
+        limited: true,
+        mod: {
+            maxHandcard: function (player, num) {
+                return num + 1;
+            }
+        },
+        group: ["griefseed_skill_phase", "griefseed_skill_dying"],
+        subSkill: {
+            phase: {
+                equipSkill: true,
+                enable: "phaseUse",
+                usable: 1,
+                filter: function (event, player) {
+                    return player.getEquip("griefseed");
+                },
+                content: function () {
+                    "step 0";
+                    player.recover();
+                    "step 1";
+                    var maxHand = player.maxHp;
+                    var currentHand = player.countCards("h");
+                    if (currentHand < maxHand) {
+                        player.draw(maxHand - currentHand);
+                    } else if (currentHand > maxHand) {
+                        player.chooseToDiscard("h", true, currentHand - maxHand, "悲叹之种：请将手牌数调整至体力上限");
+                    }
+                    "step 2";
+                    var card = player.getEquip("griefseed");
+                    if (card) {
+                        player.lose(card, "visible", ui.ordering);
+                    }
+                }
+            },
+            dying: {
+                equipSkill: true,
+                trigger: {
+                    player: "dying"
+                },
+                filter: function (event, player) {
+                    return player.getEquip("griefseed");
+                },
+                content: function () {
+                    "step 0";
+                    player.recover();
+                    "step 1";
+                    var maxHand = player.maxHp;
+                    var currentHand = player.countCards("h");
+                    if (currentHand < maxHand) {
+                        player.draw(maxHand - currentHand);
+                    } else if (currentHand > maxHand) {
+                        player.chooseToDiscard("h", true, currentHand - maxHand, "悲叹之种：请将手牌数调整至体力上限");
+                    }
+                    "step 2";
+                    var card = player.getEquip("griefseed");
+                    if (card) {
+                        player.lose(card, "visible", ui.ordering);
+                    }
+                }
+            }
+        }
+    },
+    "evilnut_skill": {
+        equipSkill: true,
+        locked: true,
+        group: ["evilnut_skill_enter", "evilnut_skill_damage"],
+        mod: {
+            maxHandcard: function (player, num) {
+                const isKanna = player.name == "Kanna" || player.name1 == "Kanna" || player.name2 == "Kanna";
+                if (isKanna) return num + 1;
+                return num - 1;
+            }
+        },
+        subSkill: {
+            enter: {
+                equipSkill: true,
+                trigger: {
+                    player: "equipAfter"
+                },
+                forced: true,
+                filter: function (event, player) {
+                    return event.card && event.card.name == "evilnut";
+                },
+                content: async function (event, trigger, player) {
+                    const isKanna = player.name == "Kanna" || player.name1 == "Kanna" || player.name2 == "Kanna";
+                    const isGift = trigger.giver && trigger.giver != player;
+
+                    if (isKanna) {
+                        await player.draw();
+                        return;
+                    }
+                    const canDiscard = (card) => card.name != "evilnut";
+
+                    if (isGift) {
+                        const cards = player.getCards("he", (card) => !trigger.cards.includes(card) && canDiscard(card));
+                        if (cards.length > 0) {
+                            const randomCard = cards.randomGet();
+                            await player.discard(randomCard, "he");
+                            game.log(player, "因「邪念之实」被强制弃置了一张牌");
+                        }
+                    } else {
+                        const count = player.countCards("he", canDiscard);
+                        if (count > 0) {
+                            await player.chooseToDiscard("he", true, "邪念之实：请弃置一张牌（不能弃置悲叹之种）", canDiscard);
+                        }
+                    }
+                }
+            },
+            damage: {
+                equipSkill: true,
+                trigger: {
+                    player: "damageBegin4"
+                },
+                filter: function (event, player) {
+                    return player.getEquip("evilnut");
+                },
+                content: async function (event, trigger, player) {
+                    const isKanna = player.name == "Kanna" || player.name1 == "Kanna" || player.name2 == "Kanna";
+                    const evilnutCard = player.getEquip("evilnut");
+                    if (!evilnutCard) return;
+
+                    if (isKanna) {
+                        await player.discard(evilnutCard);
+                        await player.draw();
+                        return;
+                    }
+
+                    const canDiscard = (card) => card.name != "evilnut";
+                    const choices = ["流失一点体力"];
+                    if (player.countCards("he", canDiscard) > 0) {
+                        choices.push("弃置一张牌");
+                    }
+
+                    const { result } = await player.chooseControl(choices)
+                        .set("prompt", "邪念之实：请选择一项，然后将此牌置入弃牌堆");
+
+                    if (result.control == "流失一点体力") {
+                        await player.loseHp();
+                    } else if (result.control == "弃置一张牌") {
+                        await player.chooseToDiscard("he", true, "邪念之实：请弃置一张牌（不能弃置悲叹之种）", canDiscard);
+                    }
+
+                    if (player.getEquip("evilnut")) {
+                        await player.discard(evilnutCard);
+                    }
+                }
+            }
+        }
     },
 };
 

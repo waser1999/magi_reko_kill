@@ -2,7 +2,7 @@ import { lib, game, ui, get, ai, _status } from "../../noname.js";
 import cards from "./card.js";
 import characters, { character_translates, characterTitles, perfectPairs, characterSubstitutes, characterSorts, sortsTranslates } from "./character.js";
 import skills from "./skill.js";
-import equipSkills from "./equipSkill.js";
+import equipSkills from "./equipskill.js";
 import originalSkills from "./originalSkill.js";
 import translates from "./translate.js";
 
@@ -161,6 +161,10 @@ export default function () {
 					["club", 4, "du"],
 					["spade", 1, "guaguliaodu"],
 					["heart", 5, "special_week"],
+					["spade", 2, "evilnut", null, ["gifts"]],
+					["spade", 3, "evilnut", null, ["gifts"]],
+					["spade", 4, "evilnut", null, ["gifts"]],
+					["heart", 1, "griefseed", null, ["gifts"]],
 				],
 			},
 			skill: { ...skills },

@@ -569,7 +569,165 @@ const cards = {
 			}
 		},
 		toself: true,
-	}
+	},
+	"evilnut": {
+		type: "equip",
+		subtype: "equip5",
+		fullskin: true,
+		skills: ["evilnut_skill"],
+		image: "ext:魔法纪录/card_image/evilnut.png",
+		loseDelay: false,
+		ai: {
+			equipValue: -5,
+			basic: {
+				equipValue: -5,
+				order: function (card2, player) {
+					const equipValue = get.equipValue(card2, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: -2,
+				value: function (card2, player, index, method) {
+					if (!player.getCards("e").includes(card2) && !player.canEquip(card2, true)) {
+						return 0.01;
+					}
+					const info2 = get.info(card2),
+						current = player.getEquip(info2.subtype),
+						value = current && card2 != current && get.value(current, player);
+					let equipValue = info2.ai.equipValue || info2.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card2, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card2, player) - value;
+						}
+						return Math.max(0.1, equipValue(card2, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: function (player, target, card2) {
+					// 圣迦南检测
+					const isKanna = target.name == "Kanna" || target.name1 == "Kanna" || target.name2 == "Kanna";
+					if (get.attitude(player, target) > 0 && isKanna) {
+
+						return 5;
+					}
+					if (get.attitude(player, target) < 0) {
+
+						return 5;
+					}
+
+					return -5;
+				},
+			},
+		},
+		onLose: function () {
+			if (player.getStat().skill.xinge) {
+				delete player.getStat().skill.xinge;
+			}
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: function (card2, player, target) {
+			return player == target && target.canEquip(card2, true);
+		},
+		modTarget: true,
+		allowMultiple: false,
+		content: async function (event) {
+			const {
+				card,
+				target
+			} = event;
+			if (!card?.cards.some((card2) => get.position(card2, true) !== "o")) {
+				await target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"griefseed": {
+		type: "equip",
+		subtype: "equip5",
+		fullskin: true,
+		skills: ["griefseed_skill"],
+		image: "ext:魔法纪录/card_image/griefseed.png",
+		loseDelay: false,
+		ai: {
+			equipValue: 8,
+			basic: {
+				equipValue: 8,
+				order: function (card2, player) {
+					const equipValue = get.equipValue(card2, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 6,
+				value: function (card2, player, index, method) {
+					if (!player.getCards("e").includes(card2) && !player.canEquip(card2, true)) {
+						return 0.01;
+					}
+					const info2 = get.info(card2), current = player.getEquip(info2.subtype), value = current && card2 != current && get.value(current, player);
+					let equipValue = info2.ai.equipValue || info2.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card2, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card2, player) - value;
+						}
+						return Math.max(0.1, equipValue(card2, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: function (player, target, card2) {
+					if (target.hp <= 1) return 20;
+					if (target.hp <= 2) return 12;
+					if (target.countCards("h") < target.maxHp - 1) return 8;
+					if (target.hp < target.maxHp) return 6;
+					return 3;
+				},
+			},
+		},
+		onLose: function () {
+			if (player.getStat().skill.griefseed_skill_phase) {
+				delete player.getStat().skill.griefseed_skill_phase;
+			}
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: function (card2, player, target) {
+			return player == target && target.canEquip(card2, true);
+		},
+		modTarget: true,
+		allowMultiple: false,
+		content: async function (event) {
+			const { card, target } = event;
+			if (!card?.cards.some((card2) => get.position(card2, true) !== "o")) {
+				await target.equip(card);
+			}
+		},
+		toself: true,
+	},
 }
 
 export default cards;
