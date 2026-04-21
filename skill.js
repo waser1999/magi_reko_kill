@@ -10743,7 +10743,6 @@ const skills = {
 		popup: false,
 		charlotte: true,
 		mark: true,
-		marktext: "昨非",
 		intro: {
 			name: "昨非·势",
 			content: "当你使用红桃4的【万箭齐发】时，此牌不可被响应。"
@@ -11913,7 +11912,7 @@ const skills = {
 	},
 	"jihun": {
 		audio: 2,
-		locked: true,
+		charlotte: true,
 		group: ["jihun_reset", "jihun_kill"],
 		subSkill: {
 			reset: {
@@ -11950,48 +11949,67 @@ const skills = {
 			kill: {
 				audio: "jihun",
 				trigger: {
-					source: "dieAfter"
+					source: "die"
 				},
 				filter: function (event, player) {
-					return event.source == player;
+					return event.source == player && (event.player.countCards("he") > 0 || player.isDamaged());
 				},
+				direct: true, // 使用 direct: true，避免在不发动时错误弹出技能提示
 				content: function () {
 					"step 0";
-					var targetCards = trigger.player.countCards("he");
-					var hasCards = targetCards > 0;
-					var choices = [];
-					if (hasCards) {
-						choices.push("获得其所有牌");
+					var target = trigger.player;
+					var choice = [];
+
+					// 动态检测可以执行的选项
+					if (target.countCards("he") > 0) {
+						choice.push("获得其所有牌");
 					}
-					choices.push("恢复一点体力");
-					if (!hasCards && player.hp >= player.maxHp) {
+					if (player.isDamaged()) {
+						choice.push("恢复一点体力");
+					}
+
+					if (choice.length === 0) {
 						event.finish();
 						return;
 					}
-					player.chooseControl(choices).set("prompt", "集魂：请选择一项").set("ai", function () {
+
+					choice.push("cancel2"); // 增加取消选项，防止卡死
+
+					player.chooseControl(choice).set("prompt", "集魂：当你杀死" + get.translation(target) + "后，请选择一项").set("ai", function () {
 						var targetCardsCount = trigger.player.countCards("he");
 						var playerHp = player.hp;
 						var playerHand = player.countCards("h");
-						if (playerHp <= 2 && playerHand <= 2) {
-							return "恢复一点体力";
-						}
-						if (targetCardsCount >= 2) {
-							return "获得其所有牌";
-						}
-						if (player.hp < player.maxHp) {
+
+						if (playerHp <= 2 && playerHand <= 2 && choice.includes("恢复一点体力")) {
 							return "恢复一点体力";
 						}
 
-						return "获得其所有牌";
+						if (targetCardsCount >= 2 && choice.includes("获得其所有牌")) {
+							return "获得其所有牌";
+						}
+
+						if (player.hp < player.maxHp && choice.includes("恢复一点体力")) {
+							return "恢复一点体力";
+						}
+						// 兜底选拿牌
+						if (choice.includes("获得其所有牌")) {
+							return "获得其所有牌";
+						}
+						return "cancel2";
 					});
 					"step 1";
-					if (result.control == "获得其所有牌") {
-						var cards = trigger.player.getCards("he");
-						if (cards.length > 0) {
-							player.gain(cards, trigger.player, "giveAuto", "bySelf");
+					if (result.control && result.control !== "cancel2") {
+						player.logSkill("jihun_kill", trigger.player);
+
+						if (result.control === "获得其所有牌") {
+							var cards = trigger.player.getCards("he");
+							if (cards.length > 0) {
+								// 使用 giveAuto bySelf，完美继承行殇的拿牌逻辑
+								player.gain(cards, trigger.player, "giveAuto", "bySelf");
+							}
+						} else if (result.control === "恢复一点体力") {
+							player.recover();
 						}
-					} else if (result.control == "恢复一点体力") {
-						player.recover();
 					}
 				}
 			}
@@ -12118,10 +12136,20 @@ const skills = {
 			return bool && ext == event;
 		},
 		cost: async function (event, trigger, player) {
-			const result = await player.chooseTarget(get.prompt2(event.skill), false).set("ai", function (target) {
+			const result = await player.chooseTarget(
+				get.prompt2(event.skill),
+				function (card, player, target) {
+					return target != player;
+				}
+			).set("ai", function (target) {
 				const player = get.player();
-				return get.effect(target, { name: "chenhuodajie" }, player, player);
+				let eff = get.damageEffect(target, player, player);
+				if (get.attitude(player, target) < 0) {
+					eff += 1.5;
+				}
+				return eff;
 			}).forResult();
+
 			if (result.bool) {
 				event.result = {
 					bool: true,

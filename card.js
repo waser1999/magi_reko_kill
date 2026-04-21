@@ -1,6 +1,31 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 
 const cards = {
+	"chenhuodajie": {
+		fullskin: true,
+		type: "trick",
+		filterTarget: true,
+		global: "g_chenhuodajie",
+		content() {
+			if (target.countCards("he")) {
+				player.gainPlayerCard("he", target, true);
+			}
+		},
+		ai: {
+			order: 1,
+			useful: 6,
+			value: 6,
+			result: {
+				target: -1,
+			},
+			tag: {
+				loseCard: 1,
+			},
+		},
+		image: "ext:魔法纪录/card_image/chenhuodajie.png",
+		selectTarget: 1,
+	},
+
 	"jk_unform": {
 		type: "equip",
 		subtype: "equip2",
