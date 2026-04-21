@@ -3083,7 +3083,11 @@ const skills = {
 		mark: true,
 		markText: "萌术",
 		intro: {
-			content: "直至阿什莉的下一回合开始时，你不能对其造成伤害"
+			content(storage, player) {
+				const targets = game.filterPlayer(current => current.hasMark("ashley_mengshu"));
+				if (targets.length == 0) return "暂无角色获得萌术标记";
+				return "直至阿什莉的下一回合开始时，" + get.translation(targets) + "不能对其造成伤害";
+			}
 		}
 	},
 
@@ -10739,6 +10743,7 @@ const skills = {
 		popup: false,
 		charlotte: true,
 		mark: true,
+		marktext: "昨非",
 		intro: {
 			name: "昨非·势",
 			content: "当你使用红桃4的【万箭齐发】时，此牌不可被响应。"
@@ -10859,16 +10864,16 @@ const skills = {
 				player.chat("不可响应");
 			}
 		},
-		group: ["ulti_madoka_shenxin_draw", "ulti_madoka_shenxin_limit"],
+		group: ["ulti_madoka_shenxin_draw", "ulti_madoka_shenxin_limit", "ulti_madoka_shenxin_discardDisplay"],
 		subSkill: {
 			draw: {
 				trigger: { player: "useCardAfter" },
 				audio: "ulti_madoka_shenxin",
 				forced: true,
 				filter(event, player) {
-					if (get.color(event.card) !== "red" || get.type(event.card) === "equip") return false;
+					if (get.type(event.card) === "equip") return false;
 					const history = player.getHistory("useCard", (evt) => {
-						return get.color(evt.card) === "red" && evt.card.name === event.card.name;
+						return evt.card.name === event.card.name;
 					});
 					if (history.length === 1) return true;
 					return false;
@@ -10877,7 +10882,7 @@ const skills = {
 					const discardPile = get.discarded() || [];
 					let otherCount = 0;
 					for (let card of discardPile) {
-						if (get.type(card) === get.type(trigger.card)) otherCount++;
+						if (get.type(card) === get.type(trigger.card) && get.color(card) === get.color(trigger.card)) otherCount++;
 					}
 					if (otherCount > 0) {
 						await player.draw(Math.min(otherCount, 5));
@@ -10894,6 +10899,28 @@ const skills = {
 							return false;
 						}
 					},
+				}
+			},
+			discardDisplay: {
+				trigger: {
+					global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter", "loseAfter"],
+					player: "phaseEnd"
+				},
+				forced: true,
+				popup: false,
+				filter(event, player) {
+					return _status.currentPhase == player;
+				},
+				async content(event, trigger, player) {
+					const discardPile = get.discarded() || [];
+					if (trigger.name === "phase" || discardPile.length === 0) {
+						player.removeTip("ulti_madoka_shenxin");
+						return;
+					}
+					const cardInfo = [...new Set(discardPile.map((card) => {
+						return get.translation(get.number(card));
+					}))];
+					player.addTip("ulti_madoka_shenxin", "本回合弃牌堆点数：\n" + cardInfo.join(" "));
 				}
 			},
 		}
@@ -10952,7 +10979,7 @@ const skills = {
 				}).set("ai", function (target) {
 					return get.damageEffect(target, player, player) > 0 ? 1 : 0;
 				}).forResult();
-				event.result = { bool: result.bool, targets: result.bool ? result.targets : [], cost_data: { draw: num * 2 } };
+				event.result = { bool: true, targets: result.bool ? result.targets : [], cost_data: { draw: num * 2 } };
 			} else {
 				const result = await player.chooseTarget(get.prompt("shigure_cunming") + "：是否令一名其他角色获得此技能直到游戏结束？", function (card, player, target) {
 					return target !== player && !target.hasSkill("shigure_cunming");
@@ -11045,7 +11072,7 @@ const skills = {
 			const result = await player.chooseTarget("魔猎：选择一名其他角色获得“魔猎”标记", true, function (card, player, target) {
 				return target !== player;
 			}).set("ai", function (target) {
-				return -get.attitude(player, target);
+				return get.effect(target, { name: "sha" }, player, player);
 			}).forResult();
 
 			if (result.bool && result.targets.length > 0) {
@@ -12416,7 +12443,7 @@ const skills = {
 			const result = await player.chooseControl(choices)
 				.set("prompt", "篡象：选择一种基本牌，令场上其他角色的黑桃牌视为该基本牌")
 				.set("ai", function () {
-					return Math.randomInt(0, choices.length - 1);
+					return [0, 1].randomGet();
 				})
 				.forResult();
 			if (result.index == choices.length - 1) {
