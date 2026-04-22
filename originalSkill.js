@@ -1,5 +1,5 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
-import { skills } from './skill.js';
+import skills from './skill.js';
 
 const originalSkills = {
     // 自创武将
