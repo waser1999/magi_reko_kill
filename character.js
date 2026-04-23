@@ -686,7 +686,7 @@ const characters = {
 		hp: 4,
 		maxHp: 4,
 		hujia: 0,
-		skills: ["Riz_caoying", "Riz_yingfu", "Riz_duotan"],
+		skills: ["Riz_caoying", "Riz_yingfu", "Riz_anwu"],
 		img: "extension/魔法纪录/image/Riz.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Riz.mp3"]
 	},
