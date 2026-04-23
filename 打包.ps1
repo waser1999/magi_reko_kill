@@ -1,0 +1,1 @@
+git archive --format=zip --output=..\Ä§·¨¼ÍÂ¼.zip HEAD

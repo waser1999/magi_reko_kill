@@ -1,6 +1,47 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 
 const equipSkills = {
+    "g_chenhuodajie": {
+        trigger: { global: "damageEnd" },
+        filter(event, player) {
+            if (event.player === player) {
+                return false;
+            }
+            if (!event.player.countCards("he")) {
+                return false;
+            }
+            if (!lib.filter.targetEnabled({ name: "chenhuodajie" }, player, event.player)) {
+                return false;
+            }
+            if (event._notrigger.includes(event.player)) {
+                return false;
+            }
+            return player.hasUsableCard("chenhuodajie");
+        },
+        direct: true,
+        async content(event, trigger, player) {
+            await player
+                .chooseToUse(
+                    get.prompt("chenhuodajie", trigger.player).replace(/发动/, "使用"),
+                    function (card, player) {
+                        if (get.name(card) !== "chenhuodajie") {
+                            return false;
+                        }
+                        return lib.filter.cardEnabled(card, player, "forceEnable");
+                    },
+                    -1
+                )
+                .set("sourcex", trigger.player)
+                .set("filterTarget", function (card, player, target) {
+                    if (target !== _status.event.sourcex) {
+                        return false;
+                    }
+                    return lib.filter.targetEnabled.apply(this, arguments);
+                })
+                .set("targetRequired", true);
+        },
+    },
+
     "jk_unform_skill": {
         audio: "ext:魔法纪录:1",
         trigger: {
