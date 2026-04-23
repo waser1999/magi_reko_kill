@@ -747,6 +747,26 @@ const characters = {
 		img: "extension/魔法纪录/image/Yuuri.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Yuuri.mp3"],
 	},
+	"Kanna": {// 圣迦南
+		sex: "female",
+		group: "Magia_Others",
+		hp: 3,
+		maxHp: 3,
+		hujia: 0,
+		skills: ["Kanna_xinshen", "Kanna_eshi", "Kanna_beidan", "Kanna_bixiu"],
+		img: "extension/魔法纪录/image/Hyades_Kanna.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Kanna.mp3"]
+	},
+	"Hyades": {// 海亚迪斯
+		sex: "female",
+		group: "Magia_Others",
+		hp: 7,
+		maxHp: 7,
+		hujia: 0,
+		skills: ["Hyades_bixiu", "Hyades_huimie", "Hyades_lianjie", "Hyades_xinsui"],
+		img: "extension/魔法纪录/image/Hyades.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Kanna.mp3"]
+	},
 	"yamada": {//山田正一郎
 		sex: "male",
 		group: "Magia_Others",
@@ -782,6 +802,7 @@ const character_translates = {
 	"魔法纪录": "魔法纪录",
 	"dp_iroha_prefix": "DP",
 	"saint_mami_prefix": "圣",
+	"Kanna_prefix": "圣",
 	"uwasa_tsuruno_prefix": "谣",
 	"devil_homura_prefix": "魔",
 	"dArc_prefix": "神",
@@ -869,6 +890,8 @@ const character_translates = {
 	sasa: "优木沙沙",
 	Souju: "双树绫濑&流香",
 	Yuuri: "飞鸟悠里",
+	Kanna: "圣迦南",
+	Hyades: "海亚蒂斯之晓"
 };
 
 const perfectPairs = {
@@ -1017,6 +1040,8 @@ const characterTitles = {
 	sasa: "优我者死",//优木沙沙
 	Souju: "一体二魂",//双树姐妹
 	Yuuri: "恩仇悖身",//飞鸟悠里
+	Kanna: "海亚蒂斯",//圣迦南
+	Hyades: "其性质为毁灭",//海亚蒂斯之晓
 };
 
 // 更改武将原画
@@ -1064,7 +1089,7 @@ const characterSorts = {
 	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
 	"madoka11": ["mabayu"],
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
-	"madoka13": ["kazumi", "Souju", "Yuuri"],
+	"madoka13": ["kazumi", "Souju", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Riz"],
 

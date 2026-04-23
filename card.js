@@ -578,56 +578,32 @@ const cards = {
 		image: "ext:魔法纪录/card_image/evilnut.png",
 		loseDelay: false,
 		ai: {
-			equipValue: -5,
+			equipValue: function (card, player) {
+				const isHyades = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+				if (isHyades) return 6; // 圣迦南/海亚蒂斯
+				return -5;
+			},
 			basic: {
-				equipValue: -5,
-				order: function (card2, player) {
-					const equipValue = get.equipValue(card2, player) / 20;
-					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				equipValue: function (card, player) {
+					const isHyades = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+					if (isHyades) return 6;
+					return -5;
 				},
-				useful: -2,
-				value: function (card2, player, index, method) {
-					if (!player.getCards("e").includes(card2) && !player.canEquip(card2, true)) {
-						return 0.01;
-					}
-					const info2 = get.info(card2),
-						current = player.getEquip(info2.subtype),
-						value = current && card2 != current && get.value(current, player);
-					let equipValue = info2.ai.equipValue || info2.ai.basic.equipValue;
-					if (typeof equipValue == "function") {
-						if (method == "raw") {
-							return equipValue(card2, player);
-						}
-						if (method == "raw2") {
-							return equipValue(card2, player) - value;
-						}
-						return Math.max(0.1, equipValue(card2, player) - value);
-					}
-					if (typeof equipValue != "number") {
-						equipValue = 0;
-					}
-					if (method == "raw") {
-						return equipValue;
-					}
-					if (method == "raw2") {
-						return equipValue - value;
-					}
-					return Math.max(0.1, equipValue - value);
-				},
+				order: 9,
+				useful: 6,
+				value: 6,
 			},
 			result: {
-				target: function (player, target, card2) {
-					// 圣迦南检测
-					const isKanna = target.name == "Kanna" || target.name1 == "Kanna" || target.name2 == "Kanna";
-					if (get.attitude(player, target) > 0 && isKanna) {
+				keepAI: true,
+				target: function (player, target, card) {
+					const isHyades = ["Kanna", "Hyades"].some(n => target.name == n || target.name1 == n || target.name2 == n);
+					const isKazumi = target.name == "kazumi" || target.name1 == "kazumi" || target.name2 == "kazumi";
 
-						return 5;
-					}
-					if (get.attitude(player, target) < 0) {
-
-						return 5;
-					}
-
+					// 海亚蒂斯
+					if (isHyades) return 5;
+					// 和美
+					if (isKazumi) return -8;
+					// 其他
 					return -5;
 				},
 			},
@@ -639,16 +615,13 @@ const cards = {
 		},
 		enable: true,
 		selectTarget: -1,
-		filterTarget: function (card2, player, target) {
-			return player == target && target.canEquip(card2, true);
+		filterTarget: function (card, player, target) {
+			return player == target && target.canEquip(card, true);
 		},
 		modTarget: true,
 		allowMultiple: false,
 		content: async function (event) {
-			const {
-				card,
-				target
-			} = event;
+			const { card, target } = event;
 			if (!card?.cards.some((card2) => get.position(card2, true) !== "o")) {
 				await target.equip(card);
 			}
@@ -699,6 +672,7 @@ const cards = {
 				},
 			},
 			result: {
+				keepAI: true,
 				target: function (player, target, card2) {
 					if (target.hp <= 1) return 20;
 					if (target.hp <= 2) return 12;
