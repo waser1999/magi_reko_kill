@@ -161,6 +161,7 @@ export default function () {
 					["club", 4, "du"],
 					["spade", 1, "guaguliaodu"],
 					["heart", 5, "special_week"],
+					["heart", 2, "qianweihuakai"],
 					["spade", 2, "evilnut", null, ["gifts"]],
 					["spade", 3, "evilnut", null, ["gifts"]],
 					["spade", 4, "evilnut", null, ["gifts"]],

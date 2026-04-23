@@ -10607,7 +10607,7 @@ const skills = {
 
 	// 千岁由麻
 	"yuma_yuying": {
-		audio: 2,
+		audio: "ext:魔法纪录/audio/skill:2",
 		enable: "phaseUse",
 		usable: 1,
 		filterTarget: function (card, player, target) {
