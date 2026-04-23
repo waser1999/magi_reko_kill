@@ -686,7 +686,7 @@ const characters = {
 		hp: 4,
 		maxHp: 4,
 		hujia: 0,
-		skills: ["Riz_caoying", "Riz_yingfu", "Riz_duotan"],
+		skills: ["Riz_caoying", "Riz_yingfu", "Riz_anwu"],
 		img: "extension/魔法纪录/image/Riz.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Riz.mp3"]
 	},
@@ -765,7 +765,8 @@ const characters = {
 		hujia: 0,
 		skills: ["Hyades_bixiu", "Hyades_huimie", "Hyades_lianjie", "Hyades_xinsui"],
 		img: "extension/魔法纪录/image/Hyades.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/Kanna.mp3"]
+		dieAudios: ["ext:魔法纪录/audio/die/Kanna.mp3"],
+		isUnseen: true,
 	},
 	"yamada": {//山田正一郎
 		sex: "male",
