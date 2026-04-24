@@ -11113,13 +11113,13 @@ const skills = {
 			if (trigger.name === "phaseUse") {
 				const num = event.cost_data.draw;
 				await player.draw(num);
-				if (event.targets.length > 0) {
+				if (event.targets && event.targets.length > 0) {
 					const target = event.targets[0];
 					player.line(target, "green");
 					await target.damage(1, player);
 				}
 			} else {
-				if (event.targets.length > 0) {
+				if (event.targets && event.targets.length > 0) {
 					const target = event.targets[0];
 					player.line(target, "green");
 					await target.addSkill("shigure_cunming");
