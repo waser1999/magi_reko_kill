@@ -482,6 +482,74 @@ const equipSkills = {
             }
         }
     },
+    "qianweihuakai_jiushi": {
+        trigger: {
+            source: "damageSource",
+        },
+        direct: true,
+        equipSkill: true,
+        filter(event, player) {
+            return event.card && event.card.name == "sha" && event.getParent().name == "sha" && player.isDamaged() && player.countCards("h") > 0;
+        },
+        content() {
+            "step 0";
+            player.chooseToDiscard("h", get.prompt("救世"), "弃置一张手牌并回复1点体力").set("ai", card => 7 - get.value(card)).logSkill = "qianweihuakai_jiushi";
+            "step 1";
+            if (result.bool) {
+                player.recover();
+            }
+        },
+        "_priority": -25,
+    },
+    "qianweihuakai_aishi": {
+        equipSkill: true,
+        trigger: {
+            player: "useCardToPlayered",
+        },
+        logTarget: "target",
+        filter(event, player) {
+            if (event.card.name != "sha") {
+                return false;
+            }
+            return true;
+        },
+        async cost(event, trigger, player) {
+            let choice = ["选项一"];
+            if (trigger.target.countCards("he")) {
+                choice.push("选项二");
+            }
+            choice.push("cancel2");
+            const result = await player
+                .chooseControl(choice)
+                .set("prompt", get.prompt(event.name.slice(0, -5), trigger.target))
+                .set("choiceList", ["摸一张牌", "令其弃置一张牌"])
+                .set(
+                    "res",
+                    (function () {
+                        if (get.attitude(player, trigger.target) > 0 || trigger.target.hasSkillTag("noh")) {
+                            return "选项一";
+                        }
+                        return choice[choice.length - 2];
+                    })()
+                )
+                .set("ai", () => get.event("res"))
+                .forResult();
+            event.result = {
+                bool: result.control != "cancel2",
+                targets: [trigger.target],
+                cost_data: result.control,
+            };
+        },
+        async content(event, trigger, player) {
+            const result = event.cost_data;
+            if (result == "选项一") {
+                await player.draw();
+            } else {
+                await trigger.target.chooseToDiscard("弃置一张牌", "he", true);
+            }
+        },
+        "_priority": -25,
+    },
 };
 
 export default equipSkills;

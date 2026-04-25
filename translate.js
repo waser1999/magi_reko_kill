@@ -641,6 +641,10 @@ const translates = {
 	"griefseed": "悲叹之种",
 	"griefseed_info": "锁定技，你的手牌上限+1。出牌阶段或当你进入濒死状态时，你可以恢复一点体力并且将手牌数调整至体力上限，然后销毁此牌。",
 	"griefseed_skill": "净魂",
+	"qianweihuakai": "蔷薇花开弓",
+	"qianweihuakai_info": "①你对一名角色使用【杀】时，你可以令其弃置1张牌或者你摸1张牌。②你使用【杀】造成伤害后，你可以弃置1张手牌并回复1点体力。",
+	"qianweihuakai_jiushi": "蔷薇花开弓·救世",
+	"qianweihuakai_aishi": "蔷薇花开弓·爱世",
 };
 
 export default translates;

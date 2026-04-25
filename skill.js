@@ -10607,7 +10607,7 @@ const skills = {
 
 	// 千岁由麻
 	"yuma_yuying": {
-		audio: 2,
+		audio: "ext:魔法纪录/audio/skill:2",
 		enable: "phaseUse",
 		usable: 1,
 		filterTarget: function (card, player, target) {
@@ -11113,13 +11113,13 @@ const skills = {
 			if (trigger.name === "phaseUse") {
 				const num = event.cost_data.draw;
 				await player.draw(num);
-				if (event.targets.length > 0) {
+				if (event.targets && event.targets.length > 0) {
 					const target = event.targets[0];
 					player.line(target, "green");
 					await target.damage(1, player);
 				}
 			} else {
-				if (event.targets.length > 0) {
+				if (event.targets && event.targets.length > 0) {
 					const target = event.targets[0];
 					player.line(target, "green");
 					await target.addSkill("shigure_cunming");
