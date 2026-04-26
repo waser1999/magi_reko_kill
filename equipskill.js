@@ -401,7 +401,7 @@ const equipSkills = {
         group: ["evilnut_skill_enter", "evilnut_skill_damage"],
         mod: {
             maxHandcard: function (player, num) {
-                const isKanna = player.name == "Kanna" || player.name1 == "Kanna" || player.name2 == "Kanna";
+                const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
                 if (isKanna) return num + 1;
                 return num - 1;
             }
@@ -417,7 +417,7 @@ const equipSkills = {
                     return event.card && event.card.name == "evilnut";
                 },
                 content: async function (event, trigger, player) {
-                    const isKanna = player.name == "Kanna" || player.name1 == "Kanna" || player.name2 == "Kanna";
+                    const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
                     const isGift = trigger.giver && trigger.giver != player;
 
                     if (isKanna) {
@@ -431,12 +431,12 @@ const equipSkills = {
                         if (cards.length > 0) {
                             const randomCard = cards.randomGet();
                             await player.discard(randomCard, "he");
-                            game.log(player, "因「邪念之实」被强制弃置了一张牌");
+                            game.log(player, "因", "#y【邪念之实】", "被强制弃置了一张牌");
                         }
                     } else {
                         const count = player.countCards("he", canDiscard);
                         if (count > 0) {
-                            await player.chooseToDiscard("he", true, "邪念之实：请弃置一张牌（不能弃置悲叹之种）", canDiscard);
+                            await player.chooseToDiscard(1, "he", true).set('filterCard', canDiscard).set('prompt', "邪念之实：请弃置一张牌（不能弃置邪念之实）");
                         }
                     }
                 }
@@ -450,7 +450,7 @@ const equipSkills = {
                     return player.getEquip("evilnut");
                 },
                 content: async function (event, trigger, player) {
-                    const isKanna = player.name == "Kanna" || player.name1 == "Kanna" || player.name2 == "Kanna";
+                    const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
                     const evilnutCard = player.getEquip("evilnut");
                     if (!evilnutCard) return;
 
@@ -461,22 +461,37 @@ const equipSkills = {
                     }
 
                     const canDiscard = (card) => card.name != "evilnut";
-                    const choices = ["流失一点体力"];
+                    const choices = ["取消"];
                     if (player.countCards("he", canDiscard) > 0) {
-                        choices.push("弃置一张牌");
+                        choices.unshift("弃置一张牌");
                     }
+                    choices.push("流失一点体力");
 
-                    const { result } = await player.chooseControl(choices)
-                        .set("prompt", "邪念之实：请选择一项，然后将此牌置入弃牌堆");
+                    const next = player.chooseControl(choices).set("prompt", "邪念之实：是否弃置一张牌或流失1点体力，将此牌置入弃牌堆？");
+                    
+                    next.set("ai", function() {
+                        var player = _status.event.player;
+                        if (player.hasSkillTag("loseHp")) {
+                            return "流失一点体力";
+                        }
+                        if (player.hp >= 2 && player.countCards("he") > 3 && _status.event.controls.includes("弃置一张牌")) {
+                            return "弃置一张牌";
+                        }
+                        return "取消";
+                    });
 
-                    if (result.control == "流失一点体力") {
+                    const { result } = await next.forResult();
+
+                    if (result.control === "流失一点体力") {
                         await player.loseHp();
-                    } else if (result.control == "弃置一张牌") {
-                        await player.chooseToDiscard("he", true, "邪念之实：请弃置一张牌（不能弃置悲叹之种）", canDiscard);
-                    }
-
-                    if (player.getEquip("evilnut")) {
-                        await player.discard(evilnutCard);
+                        if (player.getEquip("evilnut")) {
+                            await player.discard(evilnutCard);
+                        }
+                    } else if (result.control === "弃置一张牌") {
+                        var discardNext = await player.chooseToDiscard(1, "he", true).set('filterCard', canDiscard).set('prompt', "邪念之实：请弃置一张牌以移除此牌").forResult();
+                        if (discardNext.bool && player.getEquip("evilnut")) {
+                            await player.discard(evilnutCard);
+                        }
                     }
                 }
             }
