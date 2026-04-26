@@ -595,7 +595,7 @@ const cards = {
 		},
 		toself: true,
 	},
-	"evilnut": {
+		"evilnut": {
 		type: "equip",
 		subtype: "equip5",
 		fullskin: true,
@@ -604,8 +604,8 @@ const cards = {
 		loseDelay: false,
 		ai: {
 			equipValue: function (card, player) {
-				const isHyades = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
-				if (isHyades) return 6; // 圣迦南/海亚蒂斯
+				const isHyades = ["Pleiades_Niko", "Kanna", "Hyades", "Hyades_Minions"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+				if (isHyades) return 6; // 圣迦南/海亚蒂斯之晓
 				return -5;
 			},
 			basic: {
@@ -622,13 +622,9 @@ const cards = {
 				keepAI: true,
 				target: function (player, target, card) {
 					const isHyades = ["Kanna", "Hyades"].some(n => target.name == n || target.name1 == n || target.name2 == n);
-					const isKazumi = target.name == "kazumi" || target.name1 == "kazumi" || target.name2 == "kazumi";
-
-					// 海亚蒂斯
+					// 海亚蒂斯 
 					if (isHyades) return 5;
-					// 和美
-					if (isKazumi) return -8;
-					// 其他
+					// 其他人 
 					return -5;
 				},
 			},
