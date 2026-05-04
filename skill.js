@@ -4524,7 +4524,9 @@ const skills = {
         },
         content: async function(event, trigger, player) {
             var target = event.targets[0];
-            var next = target.chooseCard("h", [1, 3], "幻写：请选择至多三张手牌向 " + get.translation(player) + " 展示");
+            var num = Math.min(3, target.countCards("h"));
+            
+            var next = target.chooseCard("h", num, "幻写：请选择展示 " + num + " 张手牌，" + get.translation(player) + " 将获得其中一张");
             next.set("ai", function(card) {
                 return 8 - get.value(card); 
             });
@@ -4576,10 +4578,10 @@ const skills = {
         }
     },
 
+// ==================== 8. 异塑 (已修改：移除次数限制，无限转化过牌) ====================
     "Pleiades_yisu": {
         audio: 2,
         enable: ["chooseToUse", "chooseToRespond"],
-        usable: 1,
         chooseButton: {
             dialog: function(event, player) {
                 return ui.create.dialog("异塑：请选择要转化的【杀】的属性", [
@@ -4589,9 +4591,8 @@ const skills = {
             },
             filter: function(button, player) { return true; },
             check: function(button) { 
-                var name = button.link[2];
                 var nature = button.link[3];
-                if (nature === "fire") return 2; 
+                if (nature === "cisha") return 2; 
                 return 1; 
             },
             backup: function(links, player) {
@@ -4599,43 +4600,40 @@ const skills = {
                 var nature = links[0][3];
                 return {
                     audio: 2,
-                    filterCard: function(card, player) {
-                        return card.name === "sha";
-                    },
+                    filterCard: function(card, player) { return card.name === "sha"; },
                     selectCard: 1,
                     viewAs: {
-                        name: cardName,
-                        nature: nature,
-                        storage: { Pleiades_yisu_flag: true }
+                        name: cardName, 
+                        nature: nature, 
+                        storage: { Pleiades_yisu_flag: true } 
                     },
                     prompt: "将一张【杀】当做【" + get.translation(nature ? nature + cardName : cardName) + "】使用或打出"
                 };
             }
         },
-        ai: {
-            order: 4,
-            result: { player: 1 }
+        ai: { 
+            order: 4, 
+            result: { player: 1 } 
         },
         group: ["Pleiades_yisu_damage", "Pleiades_yisu_draw"],
         subSkill: {
             damage: {
                 trigger: { source: "damageEnd" },
-                forced: true,
+                forced: true, 
                 silent: true,
                 filter: function(event, player) {
                     return event.card && event.card.storage && event.card.storage.Pleiades_yisu_flag;
                 },
-                content: function(event, trigger, player) {
-                    player.storage.Pleiades_yisu_damaged = true;
+                content: function(event, trigger, player) { 
+                    player.storage.Pleiades_yisu_damaged = true; 
                 }
             },
             draw: {
                 trigger: { player: ["useCardAfter", "respondAfter"] },
-                forced: true,
+                forced: true, 
                 silent: true,
                 filter: function(event, player) {
-                    if (event.skill !== "Pleiades_yisu_backup") return false;
-                    return true;
+                    return event.skill === "Pleiades_yisu_backup";
                 },
                 content: async function(event, trigger, player) {
                     if (!player.storage.Pleiades_yisu_damaged) {
@@ -4919,15 +4917,18 @@ const skills = {
         }
     },
     
+// ==================== 15. 绝响 (已修改：残血绝对防御) ====================
     "Pleiades_juexiang": {
         audio: 2,
         mod: {
             targetEnabled: function(card, player, target) {
-                if (target.hp <= 1 && (card.name === "sha" || card.name === "juedou")) return false;
+                if (player !== target && target.hp <= 1 && (card.name === "sha" || card.name === "juedou")) {
+                    return false;
+                }
             }
         }
     },
-
+	
     "Pleiades_yanru": {
         audio: 2,
         trigger: { 
