@@ -667,9 +667,10 @@ const characters = {
         hp: 3,
         maxHp: 5,
         hujia: 0,
-        skills: ["Kazumi_baoshi", "Kazumi_xiangxi", "Kazumi_chengzhen"],
+        skills: ["Kazumi_xingyun", "Kazumi_baoshi", "Kazumi_xiangxi", "Kazumi_chengzhen"],
         img: "extension/魔法纪录/image/Pleiades_Kazumi.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/Kazumi.mp3"]
+        dieAudios: ["ext:魔法纪录/audio/die/Kazumi.mp3"],
+		isZhugong: true,
     },
     "Subaru_Kazumi": {// 昴和美
         sex: "female",
@@ -677,9 +678,10 @@ const characters = {
         hp: 13,
         maxHp: 13,
         hujia: 0,
-        skills: ["Subaru_Kazumi_baoshi",  "Kazumi_xiangxi", "Subaru_Kazumi_pojie", "Subaru_Kazumi_zhongxing"],
+        skills: ["Kazumi_xingyun", "Subaru_Kazumi_baoshi",  "Kazumi_xiangxi", "Subaru_Kazumi_pojie", "Subaru_Kazumi_zhongxing"],
         img: "extension/魔法纪录/image/Subaru_Kazumi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Subaru_Kazumi.mp3"],
+		isZhugong: true,
 		isUnseen: true,
     },
 	"dArc": {//贞德
