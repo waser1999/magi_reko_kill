@@ -3279,7 +3279,6 @@ const skills = {
 	},
 
 	// 和美
-// ==================== 和美专属主公技：星陨 ====================
     "Kazumi_xingyun": {
         audio: 2,
         zhuSkill: true, 
