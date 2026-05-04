@@ -661,16 +661,27 @@ const characters = {
 		img: "extension/魔法纪录/image/asumi.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/asumi.mp3"],
 	},
-	"kazumi": {//和美
-		sex: "female",
-		group: "Magia_Others",
-		hp: 3,
-		maxHp: 3,
-		skills: ["qixing", "kuangfeng", "dawu", "kazumi_xingyun"],
-		img: "extension/魔法纪录/image/kazumi.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/kazumi.mp3"],
-		isZhugong: true
-	},
+    "Kazumi": {// 和美
+        sex: "female",
+        group: "Magia_Others",
+        hp: 3,
+        maxHp: 5,
+        hujia: 0,
+        skills: ["Kazumi_baoshi", "Kazumi_xiangxi", "Kazumi_chengzhen"],
+        img: "extension/魔法纪录/image/Pleiades_Kazumi.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Kazumi.mp3"]
+    },
+    "Subaru_Kazumi": {// 昴和美
+        sex: "female",
+        group: "Magia_Others",
+        hp: 13,
+        maxHp: 13,
+        hujia: 0,
+        skills: ["Subaru_Kazumi_baoshi",  "Kazumi_xiangxi", "Subaru_Kazumi_pojie", "Subaru_Kazumi_zhongxing"],
+        img: "extension/魔法纪录/image/Subaru_Kazumi.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Subaru_Kazumi.mp3"],
+		isUnseen: true,
+    },
 	"dArc": {//贞德
 		sex: "female",
 		group: "Magia_Others",
