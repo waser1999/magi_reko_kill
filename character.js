@@ -678,7 +678,7 @@ const characters = {
         hp: 13,
         maxHp: 13,
         hujia: 0,
-        skills: ["Kazumi_xingyun", "Subaru_Kazumi_baoshi",  "Kazumi_xiangxi", "Subaru_Kazumi_pojie", "Subaru_Kazumi_zhongxing"],
+        skills: ["Kazumi_xingyun", "Subaru_Kazumi_baoshi",  "Subaru_Kazumi_xiangxi", "Subaru_Kazumi_pojie", "Subaru_Kazumi_zhongxing"],
         img: "extension/魔法纪录/image/Subaru_Kazumi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Subaru_Kazumi.mp3"],
 		isZhugong: true,
@@ -892,7 +892,8 @@ const character_translates = {
 	yuma: "千岁由麻",
 	name: "小名",
 	asumi: "神名浅海",
-	kazumi: "和美",
+	Kazumi: "和美",
+	Subaru_Kazumi: "昴和美",
 	dArc: "神贞德",
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
@@ -1042,7 +1043,8 @@ const characterTitles = {
 	yuma: "山猫冲击", //千岁由麻
 	name: "无名少女", //小名
 	asumi: "绝望交响曲", //神名浅海
-	kazumi: "外缘极限", //和美
+	Kazumi: "Limiti Esterni", //和美
+	Subaru_Kazumi: "Meteora Finale", //和美
 	dArc: "La Lumière", //贞德
 	suzune: "燃椿之焰", //天乃铃音
 	yamada: "超级科学回旋", //山田
@@ -1103,7 +1105,7 @@ const characterSorts = {
 	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
 	"madoka11": ["mabayu"],
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
-	"madoka13": ["kazumi", "Souju", "Yuuri", "Kanna", "Hyades"],
+	"madoka13": ["Kazumi", "Subaru_Kazumi", "Souju", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Riz"],
 
