@@ -3278,6 +3278,8 @@ const skills = {
 		},
 	},
 
+	// 昴宿星团
+
 	// 和美
     "Kazumi_xingyun": {
         audio: 2,
@@ -4245,6 +4247,819 @@ const skills = {
             }
         }
     },
+
+    // 和纱美千留
+	"Michiru_xiangxi": {
+        audio: 2,
+        enable: ["chooseToUse", "chooseToRespond"],
+        _priority: 10,
+        filter: function(event, player) {
+            return player.countCards("he") >= 2;
+        },
+        filterCard: true,
+        selectCard: 2,
+        position: "he",
+        check: function(card) {
+            return 6 - get.value(card);
+        },
+        ai: {
+            order: function(item, player) {
+                player = player || _status.event.player;
+                if (!player) return 0;
+                
+                var h = player.countCards("h");
+                if (h >= 5) return 8; 
+                if (h >= 3) return 6; 
+                return 0; 
+            },
+            respondWuxie: true,
+            skillTagFilter: function(player, tag, arg) {
+                player = player || _status.event.player;
+                if (!player || player.countCards("he") < 2) return false;
+                
+                if (tag === "respondWuxie") {
+                    if (arg && arg.card && (arg.card.name == "lebu" || arg.card.name == "bingliang")) return true;
+                    if (arg && arg.player && get.attitude(player, arg.player) > 0) {
+                        if (arg.player.hp <= 2) return true; 
+                        if (player.countCards("h") >= 4) return true; 
+                    }
+                }
+                return false; 
+            },
+            result: { player: 1 }
+        },
+        chooseButton: {
+            dialog: function(event, player) {
+                return ui.create.dialog("相系：请选择转化的卡牌", [["juedou", "wuxie"], "vcard"]);
+            },
+            backup: function(links, player) {
+                return {
+                    filterCard: true,
+                    selectCard: 2,
+                    position: "he",
+                    viewAs: { name: links[0][2] },
+                    prompt: "将两张牌当做【" + get.translation(links[0][2]) + "】使用",
+                    check: function(card) { return 6 - get.value(card); },
+                    ai: {
+                        basic: {
+                            order: function(card, player) { return get.order({name: links[0][2]}); },
+                            useful: function(card, player) { return get.useful({name: links[0][2]}); },
+                            value: function(card, player) { return get.value({name: links[0][2]}); }
+                        },
+                        result: {
+                            player: function(player, target) {
+                                if (links[0][2] == "juedou") {
+                                    var targetCards = target.countCards("h");
+                                    var playerCards = player.countCards("h") - 2; 
+                                    if (playerCards >= targetCards) return 1; 
+                                    if (targetCards <= 2) return 0.5; 
+                                    if (player.countCards("h") >= 3) return 0.1; 
+                                    return -1; 
+                                }
+                                return 1;
+                            },
+                            target: function(player, target) {
+                                if (links[0][2] == "juedou") return -1.5;
+                                return get.attitude(player, target);
+                            }
+                        }
+                    },
+                    onuse: function(result, player) {
+                        player.addTempSkill("Michiru_xiangxi_debuff", "phaseJieshuEnd");
+                        player.addMark("Michiru_xiangxi_debuff", 1, false);
+                        if (result.targets && result.targets.length > 0) {
+                            var target = result.targets[0];
+                            target.addTempSkill("Michiru_xiangxi_debuff", "phaseJieshuEnd");
+                            target.addMark("Michiru_xiangxi_debuff", 1, false);
+                        }
+                    }
+                }
+            }
+        },
+        subSkill: {
+            debuff: {
+                charlotte: true,
+                onremove: function(player) {
+                    var count = player.countMark("Michiru_xiangxi_debuff");
+                    player.removeMark("Michiru_xiangxi_debuff", count);
+                },
+                mark: true,
+                intro: { content: "手牌上限-#，受到的伤害+#" },
+                mod: {
+                    maxHandcard: function(player, num) {
+                        return num - player.countMark("Michiru_xiangxi_debuff");
+                    }
+                },
+                trigger: { player: "damageBegin3" },
+                forced: true,
+                content: function() {
+                    "step 0"
+                    var count = player.countMark("Michiru_xiangxi_debuff");
+                    trigger.num += count;
+                    game.log(player, "受到", "#g【相系】", "影响，伤害+", count);
+                }
+            }
+        }
+    },
+	//真相
+    "Michiru_zhenxiang": {
+        audio: 2,
+        mark: true,
+        intro: { content: "使命技，死亡销毁时置入【朱贝】并复制手牌。" },
+        filter: function(event, player) { return true; },
+        onremove: function(player) {
+            lib.skill.Michiru_zhenxiang_trigger.content.call(this, null, null, player);
+        }
+    },
+    
+    "Michiru_zhenxiang_trigger": {
+        charlotte: true,
+        trigger: { player: "dieBegin" },
+        forced: true,
+        filter: function(event, player) {
+            if (!player || player.storage.Michiru_zhenxiang_fired) return false;
+            return true;
+        },
+        content: function(event, trigger, player) {
+            "step 0"
+            player.storage.Michiru_zhenxiang_fired = true;
+            player.awakenSkill("Michiru_zhenxiang");
+            player.chooseTarget("请选择置入朱贝的角色", true, function(card, player, target) { return target.isAlive(); })
+                  .set("ai", function(target) { return get.attitude(_status.event.player, target) > 0 ? target.countCards("h") : 0; });
+            "step 1"
+            if (result.bool && result.targets.length) {
+                var target = result.targets[0];
+                target.equip(game.createCard2("Juubey", "diamond", 12));
+                target.chooseCard("h", 1, true, "复制手牌").set("ai", function(card) { return get.value(card); });
+            }
+            "step 2"
+            if (result.bool && result.cards.length) {
+                var cardx = game.createCard2(result.cards[0].name, result.cards[0].suit, result.cards[0].number, result.cards[0].nature);
+                target.gain(cardx, "gain2").gaintag.add("Michiru_copy");
+                target.addSkill("Michiru_copy_effect");
+            }
+        }
+    },
+	// 真相复制牌
+    "Michiru_copy_effect": {
+        charlotte: true,
+        trigger: { player: ["useCardAfter", "respondAfter", "loseAfter"] },
+        forced: true,
+        popup: false,
+        mod: {
+            aiValue: function(player, card, num) {
+                if (num > 0 && get.itemtype(card) == "card" && card.hasGaintag("Michiru_copy")) return num * 2.5; 
+            },
+            aiUseful: function(player, card, num) {
+                if (num > 0 && get.itemtype(card) == "card" && card.hasGaintag("Michiru_copy")) return Math.max(10, num * 5); 
+            }
+        },
+        filter: function(event, player, name) {
+            if (name == "loseAfter") {
+                if (event.type == "use" || event.type == "respond") return false;
+                if (event.gaintag_map) {
+                    for (var i in event.gaintag_map) {
+                        if (event.gaintag_map[i].includes("Michiru_copy")) return true;
+                    }
+                }
+                return false;
+            }
+            return player.hasHistory("lose", function(evt) {
+                if ((evt.relatedEvent || evt.getParent()) != event) return false;
+                for (var i in evt.gaintag_map) {
+                    if (evt.gaintag_map[i].includes("Michiru_copy")) {
+                        if (event.cards && event.cards.some(card => get.position(card, true) == "o" && card.cardid == i)) return true;
+                    }
+                }
+                return false;
+            });
+        },
+        content: function() {
+            "step 0"
+            if (event.triggername == "loseAfter") {
+                var count = 0;
+                for (var i in trigger.gaintag_map) {
+                    if (trigger.gaintag_map[i].includes("Michiru_copy")) {
+                        var c = trigger.cards.find(card => card.cardid == i);
+                        if (c && get.position(c) == "d") count++; 
+                    }
+                }
+                if (count > 0) {
+                    player.loseHp(count);
+                    game.log(player, "弃置了真相的复制牌，流失了", count, "点体力");
+                }
+                event.finish(); return;
+            }
+            "step 1"
+            var cards = [];
+            player.getHistory("lose", function(evt) {
+                if ((evt.relatedEvent || evt.getParent()) != trigger) return false;
+                for (var i in evt.gaintag_map) {
+                    if (evt.gaintag_map[i].includes("Michiru_copy")) {
+                        var cardsx = trigger.cards.filter(card => get.position(card, true) == "o" && card.cardid == i);
+                        if (cardsx.length) cards.addArray(cardsx);
+                    }
+                }
+            });
+            if (cards.length) {
+                player.gain(cards, "gain2").gaintag.addArray(["Michiru_copy", "Michiru_copy_clear"]);
+                player.addTempSkill("Michiru_copy_clear", "phaseJieshuEnd");
+            }
+        }
+    },
+    // 复制牌禁用
+    "Michiru_copy_clear": {
+        charlotte: true,
+        filter: function() { return true; }, 
+        onremove: function(player) { player.removeGaintag("Michiru_copy_clear"); },
+        mod: {
+            cardEnabled2: function(card, player) {
+                var cards = card.cards ? Array.from(card.cards) : [];
+                if (get.itemtype(card) == "card") cards.push(card);
+                for (var cardx of cards) { if (cardx.hasGaintag("Michiru_copy_clear")) return false; }
+            },
+            cardRespondable: function(card, player) {
+                var cards = card.cards ? Array.from(card.cards) : [];
+                if (get.itemtype(card) == "card") cards.push(card);
+                for (var cardx of cards) { if (cardx.hasGaintag("Michiru_copy_clear")) return false; }
+            },
+            cardSavable: function(card, player) {
+                var cards = card.cards ? Array.from(card.cards) : [];
+                if (get.itemtype(card) == "card") cards.push(card);
+                for (var cardx of cards) { if (cardx.hasGaintag("Michiru_copy_clear")) return false; }
+            }
+        }
+    },
+
+    // 御崎海香
+    "Umika_juebi": {
+        audio: 2,
+        group: ["Umika_juebi_count", "Umika_juebi_zhinang"],
+        subSkill: {
+            count: {
+                trigger: { player: ["useCardAfter", "respondAfter"] },
+                forced: true,
+                popup: false,
+                content: async function(event, trigger, player) {
+                    player.storage.Umika_juebi_count = (player.storage.Umika_juebi_count || 0) + 1;
+                    
+                    if (player.storage.Umika_juebi_count >= 3) { 
+                        player.storage.Umika_juebi_count = 0;
+                        player.popup("绝笔");
+                        game.log(player, "累计使用或打出了3张牌，触发了", "#g【绝笔】");
+                        
+                        var targetRes = await player.chooseTarget("绝笔：连接至多2名角色各一张手牌", [1, 2], function(card, player, target) {
+                            return target.countCards("h") > 0;
+                        }).set("ai", function(target) {
+                            var player = _status.event.player;
+                            var att = get.attitude(player, target);
+                            if (att >= 0) return 0; 
+                            
+                            var val = -att; 
+                            var handCount = target.countCards("h");
+                            if (handCount <= 3) {
+                                val += (4 - handCount) * 3; 
+                            }
+                            return val / (1 + target.countConnectedCards());
+                        }).forResult();
+
+                        if (targetRes.bool && targetRes.targets && targetRes.targets.length > 0) {
+                            var connects = new Map();
+                            for (var current of targetRes.targets.sortBySeat()) {
+                                var cards2 = current.getCards("h");
+                                if (!current.isIn() || !cards2.length) continue;
+                                
+                                var cardRes = cards2.length == 1 ? { links: cards2 } : await player.choosePlayerCard(current, "h", true).set("ai", function(button) {
+                                    return Math.random(); 
+                                }).forResult();
+
+                                if (cardRes && cardRes.links && cardRes.links.length) {
+                                    for(var c of cardRes.links) {
+                                        c.addGaintag("Umika_connected");
+                                    }
+                                    connects.set(current, cardRes.links);
+                                }
+                            }
+                            for (var [current, cards2] of connects) {
+                                await current.connectCards(cards2);
+                            }
+                        }
+                    }
+                }
+            },
+            zhinang: {
+                trigger: { global: "loseAfter" },
+                forced: true,
+                filter: function(event, player) {
+                    if (event.type == "use" || event.type == "respond") return false;
+                    if (event.gaintag_map) {
+                        for (var i in event.gaintag_map) {
+                            if (event.gaintag_map[i].includes("Umika_connected")) return true;
+                        }
+                    }
+                    if (event.cards && event.cards.some(c => get.is.connectedCard(c) || c.isConnected)) return true;
+                    return false;
+                },
+                content: async function(event, trigger, player) {
+                    var zhinangs = ["wuzhong", "guohe", "wuxie"];
+                    var zCard = game.createCard2(zhinangs.randomGet(), "spade", 1);
+                    await player.gain(zCard, "gain2");
+                    game.log(player, "因连接牌被非使用失去，获得了智囊牌", zCard);
+                }
+            }
+        }
+    },
+    "Umika_maosu": {
+        audio: 2,
+        trigger: { global: "phaseJieshuBegin" },
+        forced: true, 
+        filter: function(event, player) {
+            var current = player.storage.Pleiades_maosu_current || [];
+            if (!(current.length == 0 || current.includes("Michiru") || current.includes("Kaoru"))) return false;
+            
+            var types = player.storage.Umika_maosu_types || [];
+            return types.length > 0;
+        },
+        content: async function(event, trigger, player) {
+            var types = player.storage.Umika_maosu_types || [];
+            var count = types.length; 
+            
+            game.log(player, "本回合有", "#y" + count, "种类别的牌因其进入弃牌堆");
+            await player.draw(count); 
+        },
+        group: ["Umika_maosu_track", "Umika_maosu_clear"], 
+        subSkill: {
+            track: {
+                trigger: { global: ["discardAfter", "loseAfter"] },
+                forced: true,
+                silent: true,
+                filter: function(event, player) {
+                    if (!event.cards || !event.cards.length) return false;
+                    
+                    var isOtherPlayer = (event.player && event.player !== player);
+                    
+                    var causedByUmika = false;
+                    if (event.source === player) causedByUmika = true;
+                    else if (event.getParent() && event.getParent().player === player) causedByUmika = true;
+                    
+                    var hasConnected = event.cards.some(c => c.hasGaintag("Umika_connected"));
+                    
+                    return (isOtherPlayer && causedByUmika) || hasConnected;
+                },
+                content: function(event, trigger, player) {
+                    var types = player.storage.Umika_maosu_types || [];
+                    var changed = false;
+                    
+                    for (var c of trigger.cards) {
+                        if (get.position(c) === "d") {
+                            var t = get.type(c);
+                            if (!types.includes(t)) {
+                                types.push(t);
+                                changed = true;
+                            }
+                        }
+                    }
+                    
+                    if (changed) {
+                        player.storage.Umika_maosu_types = types;
+                    }
+                }
+            },
+            clear: {
+                trigger: { global: "phaseAfter" },
+                forced: true,
+                silent: true,
+                content: function(event, trigger, player) {
+                    delete player.storage.Umika_maosu_types; 
+                }
+            }
+        }
+    },
+
+	// 牧薰
+
+	// 浅海早纪
+
+	// 宇佐木里美
+
+	// 若叶未来
+	"Mirai_nieai": {
+        audio: 2,
+        trigger: { global: "phaseBegin" },
+        filter: function(event, player) {
+            return !player.hasSkill("Mirai_nieai_round") && event.player != player;
+        },
+        cost: async function(event, trigger, player) {
+            var target = trigger.player; 
+            var res = await player.chooseBool("孽爱：是否与 " + get.translation(target) + " 进行一次【协力】？").set("ai", function() {
+                var player = _status.event.player;
+                var target = _status.event.getTrigger().player;
+                var att = get.attitude(player, target);
+                
+                if (player.hasSkill("Mirai_maosu_disable")) {
+                    if (att > 0 && target.countCards("h") >= 4) return true; 
+                }
+                
+                if (att < 0) {
+                    if (player.hp <= 2 && player.countCards("h") <= 2 && target.hp > 1) {
+                        return false; 
+                    }
+                    return true;
+                }
+                return false;
+            }).forResult();
+            
+            if (res.bool) event.result = { bool: true }; 
+            else event.cancel();
+        },
+        content: async function(event, trigger, player) {
+            player.addTempSkill("Mirai_nieai_round", "roundStart"); 
+            var target = trigger.player;
+            
+            player.storage.Mirai_nieai_active_target = target;
+            
+            await player.chooseCooperationFor(target, "Mirai_nieai").set("ai", function(button) {
+                var player = _status.event.player;
+                var target = player.storage.Mirai_nieai_active_target;
+                var att = get.attitude(player, target);
+                var base = 0;
+                
+                if (att > 0) {
+                    if (button.link === "cooperation_use") base = 10; 
+                    else if (button.link === "cooperation_damage" && game.filterPlayer(p => p.isDamaged()).length >= 3) base = 8;
+                    else base = 1;
+                } else {
+                    if (button.link === "cooperation_use") base = -10; 
+                    else if (button.link === "cooperation_discard") {
+                        if (target.countCards("h") <= 4) base = 10;
+                        else base = 2;
+                    } else if (button.link === "cooperation_draw" || button.link === "cooperation_damage") {
+                        if (target.countCards("h") > 4) base = 8;
+                        else base = 1;
+                    }
+                }
+                return base + Math.random();
+            }).forResult();
+            
+            player.addTempSkill("Mirai_nieai_effect", "phaseJieshuAfter");
+            game.log(player, "与", target, "发起了", "#g【协力】");
+        },
+        subSkill: {
+            round: { charlotte: true },
+            effect: {
+                charlotte: true,
+                trigger: { global: "phaseJieshuBegin" }, 
+                forced: true,
+                filter: function(event, player) { 
+                    return player.storage.Mirai_nieai_active_target === event.player; 
+                },
+                content: async function(event, trigger, player) {
+                    var target = player.storage.Mirai_nieai_active_target;
+                    delete player.storage.Mirai_nieai_active_target;
+                    
+                    if (target && target.isIn()) {
+                        if (player.checkCooperationStatus(target, "Mirai_nieai")) {
+                            player.popup("协力成功", "wood");
+                            game.log(player, "与", target, "的协力", "#g成功");
+                            await player.recover(); await target.recover();
+                            await player.draw(2); await target.draw(2);
+                            player.removeSkill("Mirai_maosu_disable");
+                            game.log(player, "重置了", "#y【昴宿】");
+                        } else {
+                            player.popup("协力失败", "fire");
+                            game.log(player, "与", target, "的协力", "#r未成功");
+                            
+                            await player.damage(1, player);
+                            await target.damage(1, player);
+                            
+                            if (target.countDiscardableCards(player, "he") > 0) {
+                                await player.discardPlayerCard(target, "he", 2, true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "Mirai_maosu": {
+        audio: 2,
+        categories: ["奋武技"],
+        trigger: { player: "damageBegin4", source: "damageBegin1" }, 
+        
+        getNum: function(player) {
+            return player.getRoundHistory('damage').concat(player.getRoundHistory('sourceDamage')).reduce((sum, evt) => sum + evt.num, 0) + 1;
+        },
+        
+        filter: function(event, player) {
+            if (player.storage.Pleiades_maosu_current && !["Michiru", "Saki"].includes(player.storage.Pleiades_maosu_current[0])) return false;
+            return !player.hasSkill("Mirai_maosu_disable");
+        },
+        cost: async function(event, trigger, player) {
+            var isBegin4 = (event.triggername === "damageBegin4");
+            var target = isBegin4 ? player : trigger.player;
+            var isReceivingFromOther = (isBegin4 && trigger.source && trigger.source != player);
+            
+            var promptStr = "昴宿：是否将对 " + get.translation(target) + " 的伤害改为虚拟伤害并摸牌？";
+            if (isReceivingFromOther) promptStr += "（此举将重置【孽爱】并令本技能于本轮失效）";
+
+            var res = await player.chooseBool(promptStr)
+                .set("isBegin4", isBegin4)
+                .set("triggerSource", trigger.source)
+                .set("triggerNum", trigger.num)
+                .set("dmgTarget", target)
+                .set("ai", function() {
+                    var player = _status.event.player;
+                    var target = _status.event.dmgTarget; 
+                    
+                    var limit = player.hp;
+                    if (typeof player.getHandcardLimit === "function") {
+                        try { limit = player.getHandcardLimit(); } catch(e) {}
+                    }
+
+                    if (limit <= 0) return false; 
+
+                    if (_status.event.isBegin4) {
+                        var source = _status.event.triggerSource;
+                        
+                        if (source && source !== player) {
+                            if (player.hp <= 1 || player.countCards("h") <= 2) return true;
+                        }
+                        
+                        if (!source || source === player) return true; 
+
+                        if (!player.hasSkill("Mirai_nieai_round")) {
+                            if (_status.event.triggerNum >= 2) return true; 
+                            return false; 
+                        } else {
+                            return true; 
+                        }
+                    } 
+                    else {
+                        if (player === target) return true; 
+                        if (get.attitude(player, target) >= 0) return true; 
+                        if (target.hp <= 2) return false; 
+                        
+                        if (player.hp <= 2 && player.countCards("h") <= 2) return limit >= 2;
+                        else return limit >= 3;
+                    }
+                }).forResult();
+            
+            if (res.bool) event.result = { bool: true }; 
+            else event.cancel();
+        },
+        content: async function(event, trigger, player) {
+            trigger.cancel(); 
+            var target = trigger.player;
+            var dmgNum = trigger.num;
+            
+            game.log(player, "将对", target, "的", "#r" + dmgNum + "点", "伤害改为了", "#y虚拟伤害");
+            target.damage("unreal", dmgNum, player);
+            
+            var drawNum = player.hp;
+            if (typeof player.getHandcardLimit === "function") {
+                try { drawNum = player.getHandcardLimit(); } catch(e) {}
+            }
+
+            if (drawNum > 0) {
+                await player.draw(drawNum);
+                game.log(player, "摸了", drawNum, "张牌");
+            }
+            
+            var isReceivingFromOther = (event.triggername === "damageBegin4" && trigger.source && trigger.source !== player);
+            var fenwuLimit = Math.min(5, lib.skill.Mirai_maosu.getNum(player));
+            var isOverLimit = (drawNum > fenwuLimit);
+
+            if (isReceivingFromOther || isOverLimit) {
+                player.removeSkill("Mirai_nieai_round"); 
+                player.addTempSkill("Mirai_maosu_disable", "roundStart"); 
+                game.log(player, "触发惩罚机制，重置了", "#y【孽爱】", "并令昴宿本轮失效");
+                
+                if (isOverLimit) {
+                    var res = await player.chooseTarget("昴宿：摸牌数大于当前奋武发动上限，请令一名角色执行额外的弃牌阶段", true).set("ai", function(target) {
+                        var player = _status.event.player;
+                        if (get.attitude(player, target) >= 0) return 0; 
+                        var limit = typeof target.getHandcardLimit === "function" ? target.getHandcardLimit() : target.hp;
+                        return Math.max(0, target.countCards("h") - limit); 
+                    }).forResult();
+                    
+                    if (res.bool && res.targets && res.targets.length > 0) {
+                        res.targets[0].insertPhase().set("phaseList", ["phaseDiscard"]);
+                        game.log(res.targets[0], "将于本回合结束后执行一个", "#y额外的弃牌阶段");
+                    }
+                }
+            }
+        },
+        subSkill: { disable: { charlotte: true } }
+    },
+
+	
+    // 神那妮可
+	"Niko_fushu": {
+        audio: 2,
+        enable: "phaseUse",
+        usable: 1,
+        group: ["Niko_fushu_clear_record"],
+        filter: function(event, player) { 
+            return player.isDamaged() && player.countCards("he") > 0; 
+        },
+        filterCard: true,
+        selectCard: function() {
+            var player = _status.event.player;
+            var targetNum = Math.max(1, player.maxHp - player.hp);
+            return Math.min(targetNum, player.countCards("he")); 
+        },
+        position: "he",
+        prompt: function() {
+            var player = _status.event.player;
+            var targetNum = Math.max(1, player.maxHp - player.hp);
+            var maxNum = Math.min(targetNum, player.countCards("he")); 
+            return "覆赎：你必须重铸" + maxNum + "张牌";
+        },
+        check: function(card) {
+            var player = _status.event.player;
+            var isUnhealthy = player.hp == 1 || (player.hp == 2 && player.countCards("h") <= 2);
+            
+            if (get.type(card) == "equip") return -10;
+            
+            if (isUnhealthy && (card.name == "shan" || card.name == "wuxie")) {
+                return 20; 
+            }
+            
+            if (player.hasUseTarget(card)) {
+                return 10 + get.value(card); 
+            }
+            
+            return 5 - get.value(card);
+        },
+        content: function() {
+            "step 0"
+            var names = [];
+            for(var i=0; i<cards.length; i++){
+                if(get.type(cards[i]) != "equip") names.push(cards[i].name);
+            }
+            if (names.length > 0) {
+                player.markAuto("Niko_fushu_record", names);
+                player.addTempSkill("Niko_fushu_viewAs", "roundStart");
+            }
+            event.loseNum = cards.length;
+            player.loseToDiscardpile(cards);
+            "step 1"
+            if (event.loseNum) player.draw(event.loseNum);
+        },
+        ai: {
+            order: 10,
+            result: { player: 1 }
+        },
+        subSkill: {
+            viewAs: {
+                charlotte: true,
+                enable: ["chooseToUse", "chooseToRespond"],
+                filterCard: true,
+                selectCard: 1,
+                position: "he",
+                filter: function(event, player) { return player.getStorage("Niko_fushu_record").length > 0; },
+                chooseButton: {
+                    dialog: function(event, player) { return ui.create.dialog("覆赎：选择要转化的牌", [player.getStorage("Niko_fushu_record"), "vcard"]); },
+                    backup: function(links, player) {
+                        return {
+                            filterCard: true, selectCard: 1, position: "he",
+                            viewAs: { name: links[0][2] },
+                            ai: {
+                                basic: {
+                                    order: function(card, player) { return get.order({name: links[0][2]}) + 0.1; },
+                                    useful: function(card, player) { return get.useful({name: links[0][2]}) + 0.1; },
+                                    value: function(card, player) { return get.value({name: links[0][2]}) + 0.1; }
+                                },
+                                result: { player: 1 },
+                                check: function(card) {
+                                    var val1 = get.value({name: links[0][2]}); 
+                                    var val2 = get.value(card); 
+                                    return val1 - val2 + 5; 
+                                }
+                            },
+                            onuse: function(result, player) {
+                                player.unmarkAuto("Niko_fushu_record", [result.card.name]);
+                                player.draw(1);
+                                if (!player.getStorage("Niko_fushu_record").length) player.addSkill("Niko_fushu_finish");
+                            }
+                        }
+                    },
+                    prompt: function(links, player) {
+                        return "将一张牌当做【" + get.translation(links[0][2]) + "】使用";
+                    }
+                },
+                ai: {
+                    respondShan: true,
+                    respondSha: true,
+                    respondWuxie: true,
+                    skillTagFilter: function(player, tag, arg) {
+                        var list = player.getStorage("Niko_fushu_record");
+                        if (!list || !list.length) return false;
+                        if (tag == "respondShan") return list.includes("shan");
+                        if (tag == "respondSha") return list.includes("sha");
+                        if (tag == "respondWuxie") return list.includes("wuxie");
+                        return false;
+                    },
+                    order: function() {
+                        var player = _status.event.player;
+                        var list = player.getStorage("Niko_fushu_record");
+                        if (!list || list.length == 0) return 0;
+                        var max = 0;
+                        for (var i = 0; i < list.length; i++) {
+                            var order = get.order({name: list[i]});
+                            if (order > max) max = order;
+                        }
+                        return max + 0.1;
+                    },
+                    result: { player: 1 }
+                }
+            },
+            finish: {
+                trigger: { player: ["useCardAfter", "respondAfter"] },
+                forced: true,
+                charlotte: true,
+                popup: false,
+                content: function() {
+                    "step 0"
+                    player.removeSkill("Niko_fushu_finish");
+                    player.chooseControl("弃牌阶段后摸牌", "回合结束后出牌").set("prompt", "覆赎：牌名已全部使用，请选择一项奖励").set("ai", function() {
+                        var player = _status.event.player;
+                        var hasLowHpEnemy = game.hasPlayer(function(current) {
+                            return current != player && get.attitude(player, current) < 0 && 
+                                   (current.hp == 1 || (current.hp == 2 && current.countCards("h") <= 2));
+                        });
+                        var hasSha = player.hasCard(function(c){ return c.name == 'sha'; }, "hs");
+                        
+                        if (hasLowHpEnemy && hasSha) {
+                            return "回合结束后出牌";
+                        }
+                        return "弃牌阶段后摸牌";
+                    });
+                    "step 1"
+                    if (result.control == "弃牌阶段后摸牌") {
+                        player.addTempSkill("Niko_fushu_opt1", "phaseAfter");
+                        game.log(player, "将于弃牌阶段结束后执行额外摸牌");
+                    } else if (result.control == "回合结束后出牌") {
+                        player.addTempSkill("Niko_fushu_opt2", "phaseAfter");
+                        game.log(player, "将于回合结束后执行额外出牌");
+                    }
+                }
+            },
+            opt1: {
+                charlotte: true,
+                trigger: { player: "phaseDiscardEnd" },
+                forced: true,
+                popup: false,
+                content: function() {
+                    player.removeSkill("Niko_fushu_opt1");
+                    player.insertPhase().set("phaseList", ["phaseDraw"]);
+                }
+            },
+            opt2: {
+                charlotte: true,
+                trigger: { player: "phaseEnd" },
+                forced: true,
+                popup: false,
+                content: function() {
+                    player.removeSkill("Niko_fushu_opt2");
+                    player.insertPhase().set("phaseList", ["phaseUse"]);
+                }
+            },
+            clear_record: { 
+                trigger: { global: "roundStart" }, forced: true, charlotte: true, popup: false,
+                content: function(event, trigger, player) {
+                    var list = player.getStorage("Niko_fushu_record");
+                    if (list && list.length > 0) player.unmarkAuto("Niko_fushu_record", list);
+                    player.removeSkill("Niko_fushu_viewAs");
+                }
+            }
+        }
+    },
+	"Niko_maosu": {
+        audio: 2,
+        mark: true, 
+        intro: { content: "已累计造成或受到 # 点伤害" },
+        trigger: { player: "damageEnd", source: "damageSource" }, 
+        forced: true,
+        filter: function(event, player) {
+            var current = player.storage.Pleiades_maosu_current || [];
+            return current.length == 0 || current.includes("Michiru") || current.includes("Kanna");
+        },
+        content: async function(event, trigger, player) {
+            player.addMark("Niko_maosu", trigger.num, false);
+            
+            while (player.countMark("Niko_maosu") >= 2) {
+                player.removeMark("Niko_maosu", 2); 
+                
+                var evilnut = game.createCard2("evilnut", "spade", 2);
+                evilnut.addCardtag("gifts"); 
+                
+                await player.gain(evilnut, "gain2");
+                game.log(player, "获得了", evilnut);
+            }
+        }
+    },
+
 	
     // 昴宿星团通用技能池
     "Pleiades_shishan": {
