@@ -565,6 +565,107 @@ const equipSkills = {
         },
         "_priority": -25,
     },
+
+    // 朱贝
+    "Juubey_wangxing": {
+        audio: 2,
+        trigger: { player: "phaseDrawBegin2" }, 
+        forced: true,
+        filter: function(event, player) { return !event.numFixed; },
+        content: function(event, trigger, player) {
+            "step 0"; 
+            if (!player.hasSkill("Juubey_wangxing_sha")) {
+                player.addSkill("Juubey_wangxing_sha");
+            }
+            var aiChoice = "1";
+            if (player.countCards("h") >= 2) aiChoice = "2";
+            var hasDyingEnemy = game.hasPlayer(function(current) {
+                return current != player && get.attitude(player, current) < 0 && (current.hp <= 2);
+            });
+            if (player.countCards("h") >= 4 || hasDyingEnemy) aiChoice = "4"; 
+
+            player.chooseControl("1", "2", "3", "4", "取消")
+                  .set("prompt", "妄行：选择多摸1-4张牌。")
+                  .set("ai", function() { return _status.event.aiChoice; })
+                  .set("aiChoice", aiChoice);
+            "step 1";
+            if (result.control && result.control !== "取消") {
+                var num = parseInt(result.control);
+                trigger.num += num; 
+                player.addMark("Juubey_wangxing_sha", num, false); 
+                game.log(player, "发动了", "#g【妄行】", "，多摸了", num, "张牌");
+            }
+        }
+    },
+    "Juubey_wangxing_sha": {
+        charlotte: true,
+        mark: true,
+        intro: { content: "本回合需弃置 # 张牌。" },
+        filter: function() { return true; }, 
+        mod: {
+            cardUsable: function(card, player, num) {
+                if (get.type(card) === "basic" && player.countMark("Juubey_wangxing_sha") > 0) {
+                    return num + player.countMark("Juubey_wangxing_sha"); 
+                }
+            }
+        },
+        trigger: { player: "phaseJieshuBegin" }, 
+        forced: true,
+        popup: false,
+        content: function(event, trigger, player) {
+            "step 0";
+            event.num = player.countMark("Juubey_wangxing_sha");
+            player.removeMark("Juubey_wangxing_sha", event.num);
+            player.removeSkill("Juubey_wangxing_sha"); 
+            event.penalty = event.num + 1; 
+            
+            var discardableCards = player.getCards("he").filter(function(c) {
+                return lib.filter.cardDiscardable(c, player);
+            });
+
+            if (discardableCards.length < event.num) {
+                player.loseMaxHp(event.penalty);
+                game.log(player, "由于可弃置的牌数不足，被强制违悖宇宙法则，失去了", event.penalty, "点体力上限！");
+                event.finish();
+                return;
+            }
+
+            var aiChoice = "弃置牌"; 
+            if (player.hp <= 2 && (player.maxHp - event.penalty > 0)) {
+                aiChoice = "减体力上限";
+            }
+
+            player.chooseControl("弃置牌", "减体力上限")
+                  .set("prompt", "妄行结算：请弃置 " + event.num + " 张牌，或减 " + event.penalty + " 点体力上限")
+                  .set("ai", function() { return _status.event.aiChoice; })
+                  .set("aiChoice", aiChoice);
+            "step 1";
+            if (result.control === "弃置牌") {
+                player.chooseToDiscard(event.num, "he", true).set("prompt", "妄行：请弃置 " + event.num + " 张牌");
+            } else {
+                player.loseMaxHp(event.penalty);
+                game.log(player, "想要违悖宇宙的法则，失去了", event.penalty, "点体力上限！");
+                event.finish(); 
+            }
+        }
+    },
+    "Juubey_zhuangbei": {
+        equipSkill: true,
+        filter: function() { return true; }, 
+        mod: {
+            canBeDiscarded: function(card) { if (card.name === "Juubey") return false; },
+            cardDiscardable: function(card) { if (card.name === "Juubey") return false; }
+        },
+        nopop: true,
+        charlotte: true,
+        "skill_id": "Juubey_zhuangbei",
+        forced: true,
+    },
+    "Juubey_wangxing_2": {
+        charlotte: true,
+        filter: function() { return true; }, 
+        content: function() { }
+    },
 };
 
 export default equipSkills;
