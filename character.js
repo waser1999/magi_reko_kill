@@ -684,6 +684,83 @@ const characters = {
 		isZhugong: true,
 		isUnseen: true,
     },
+    // 和纱美千瑠
+    "Michiru": {
+        sex: "female",
+        group: "Magia_Others",
+        hp: 5,
+        maxHp: 5,
+        hujia: 0,
+        skills: ["Michiru_zhenxiang", "Michiru_xiangxi"],
+        img: "ext:魔法纪录/image/Pleiades_Michiru.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Michiru.mp3"]
+    },
+	// 御崎海香
+	"Umika": {
+        sex: "female",
+        group: "Magia_Others",
+        hp: 3,
+        maxHp: 3,
+        hujia: 0,
+        skills: ["Umika_juebi", "Umika_maosu"],
+        img: "ext:魔法纪录/image/Pleiades_Umika.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Umika.mp3"]
+    },
+	// 牧薰
+	"Kaoru": {
+        sex: "female",
+        group: "Magia_Others",
+        hp: 4,
+        maxHp: 4,
+        hujia: 0,
+        skills: ["Kaoru_rexue", "Kaoru_maosu"],
+        img: "ext:魔法纪录/image/Pleiades_Kaoru.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Kaoru.mp3"]
+    },
+	// 浅海早纪
+	"Saki": {
+        sex: "female",
+        group: "Magia_Others",
+        hp: 3,
+        maxHp: 4,
+        hujia: 1,
+        skills: ["Saki_zhishu", "Saki_maosu"],
+        img: "ext:魔法纪录/image/Pleiades_Saki.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Saki.mp3"]
+    },
+	// 若叶未来
+    "Mirai": {
+        sex: "female",
+        group: "Magia_Others",
+        hp: 3,
+        maxHp: 3,
+        hujia: 0,
+        skills: ["Mirai_nieai", "Mirai_maosu"],
+        img: "ext:魔法纪录/image/Pleiades_Mirai.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Mirai.mp3"]
+    },
+	// 宇佐木里美
+	"Satomi": {
+        sex: "female",
+        group: "Magia_Others",
+        hp: 3,
+        maxHp: 4,
+        hujia: 1,
+        skills: ["Satomi_leinuo", "Satomi_maosu"],
+        img: "ext:魔法纪录/image/Pleiades_Satomi.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Satomi.mp3"]
+    },
+    // 神那妮可
+    "Niko": {
+        sex: "female",
+        group: "Magia_Others",
+        hp: 3,
+        maxHp: 5,
+        hujia: 0,
+        skills: ["Niko_fushu", "Niko_maosu"],
+        img: "ext:魔法纪录/image/Pleiades_Niko.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Niko.mp3"]
+    },
 	"dArc": {//贞德
 		sex: "female",
 		group: "Magia_Others",
@@ -750,7 +827,7 @@ const characters = {
 		img: "extension/魔法纪录/image/Souju.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Souju.mp3"],
 	},
-	"Yuuri": {//飞鸟悠里
+	"Yuuri": {//悠里?
 		sex: "female",
 		group: "Magia_Others",
 		hp: 3,
@@ -770,7 +847,7 @@ const characters = {
 		img: "extension/魔法纪录/image/Hyades_Kanna.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Kanna.mp3"]
 	},
-	"Hyades": {// 海亚迪斯
+	"Hyades": {// 海亚蒂斯
 		sex: "female",
 		group: "Magia_Others",
 		hp: 7,
@@ -894,6 +971,13 @@ const character_translates = {
 	asumi: "神名浅海",
 	Kazumi: "和美",
 	Subaru_Kazumi: "昴和美",
+	Michiru: "和纱美千留",
+    Umika: "御崎海香",
+	Kaoru: "牧薰",
+	Saki: "浅海早纪",
+    Mirai: "若叶未来",
+	Satomi: "宇佐木里美",
+	Niko: "神那妮可",
 	dArc: "神贞德",
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
@@ -904,7 +988,7 @@ const character_translates = {
 	hikaru: "煌里光",
 	sasa: "优木沙沙",
 	Souju: "双树绫濑&流香",
-	Yuuri: "飞鸟悠里",
+	Yuuri: "悠里?",
 	Kanna: "圣迦南",
 	Hyades: "海亚蒂斯之晓"
 };
@@ -1044,7 +1128,14 @@ const characterTitles = {
 	name: "无名少女", //小名
 	asumi: "绝望交响曲", //神名浅海
 	Kazumi: "Limiti Esterni", //和美
-	Subaru_Kazumi: "Meteora Finale", //和美
+	Subaru_Kazumi: "Meteora Finale", //昴和美
+	Michiru: "Risotto alle fragole",//和纱美千留
+    Umika: "Ex Fille",//御崎海香
+	Kaoru: "Palla di Cannone",//牧薰
+	Saki: "Pietra Di Tuono",//浅海早纪
+    Mirai: "La Bestia Refare",//若叶未来
+	Satomi: "Fantasma Bisbiglio",//宇佐木里美
+	Niko: "Rendere O Romperlo",//神那妮可
 	dArc: "La Lumière", //贞德
 	suzune: "燃椿之焰", //天乃铃音
 	yamada: "超级科学回旋", //山田
@@ -1055,7 +1146,7 @@ const characterTitles = {
 	hikaru: "光之军团",//煌里光
 	sasa: "优我者死",//优木沙沙
 	Souju: "一体二魂",//双树姐妹
-	Yuuri: "恩仇悖身",//飞鸟悠里
+	Yuuri: "恩仇悖身",//悠里?
 	Kanna: "海亚蒂斯",//圣迦南
 	Hyades: "其性质为毁灭",//海亚蒂斯之晓
 };
@@ -1105,7 +1196,7 @@ const characterSorts = {
 	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
 	"madoka11": ["mabayu"],
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
-	"madoka13": ["Kazumi", "Subaru_Kazumi", "Souju", "Yuuri", "Kanna", "Hyades"],
+	"madoka13": ["Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Riz"],
 
