@@ -789,6 +789,23 @@ const cards = {
 			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
 		},
 	},
+	// 朱贝
+	"Juubey": {
+        type: "equip",
+        subtype: "equip5",
+        skills: ["Juubey_zhuangbei", "Juubey_wangxing", "Juubey_zhuangbei", "Juubey_wangxing_2"], 
+        ai: {
+            basic: {
+                equipValue: 15,
+                order: function(card, player) { return player && player.hasSkillTag("reverseEquip") ? 8.5 : 8; },
+                useful: 4,
+            }
+        },
+        enable: true,
+        fullskin: true,
+        image: "ext:魔法纪录/card_image/Pleiades_Juubey.png",
+        toself: true,
+    },
 }
 
 export default cards;
