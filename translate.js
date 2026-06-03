@@ -753,6 +753,10 @@ const translates = {
 	"qianweihuakai_info": "①你对一名角色使用【杀】时，你可以令其弃置1张牌或者你摸1张牌。②你使用【杀】造成伤害后，你可以弃置1张手牌并回复1点体力。",
 	"qianweihuakai_jiushi": "蔷薇花开弓·救世",
 	"qianweihuakai_aishi": "蔷薇花开弓·爱世",
+	"Juubey": "朱贝",
+    "Juubey_info": "此牌无法被弃置。<br>【妄行】：摸牌阶段，你可以选择多摸X张牌且本回合前X张基本牌不计入次数；回合结束时，你须弃置X张牌，否则减X点体力上限。",
+    "Juubey_wangxing_info": "摸牌阶段，你可以选择多摸X张牌且本回合前X张基本牌不计入次数；回合结束时，你须弃置X张牌，否则减1点体力上限。",
+    "Juubey_wangxing_2_info": "妄行技是一种特殊的技能。你可以自己选择技能效果描述中X的值(最大为4)。若发动过技能，你的回合结束时需弃置X张牌，否则失去一点体力上限。",
 };
 
 export default translates;
