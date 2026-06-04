@@ -480,7 +480,7 @@ const equipSkills = {
                         return "取消";
                     });
 
-                    const { result } = await next.forResult();
+                    const result = await next.forResult();
 
                     if (result.control === "流失一点体力") {
                         await player.loseHp();
