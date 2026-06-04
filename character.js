@@ -691,9 +691,9 @@ const characters = {
         hp: 7,
         maxHp: 8,
         hujia: 0,
-        skills: ["Pleiades Saints_jinnuan", "Pleiades Saints_maosu", "Pleiades Saints_shengtuan"],
-        img: "ext:魔法纪录/image/Pleiades Saints.jpg",
-        dieAudios: ["ext:魔法纪录/audio/die/Pleiades Saints.mp3"],
+        skills: ["Pleiades_Saints_jinnuan", "Pleiades_Saints_maosu", "Pleiades_Saints_shengtuan"],
+        img: "ext:魔法纪录/image/Pleiades_Saints.jpg",
+        dieAudios: ["ext:魔法纪录/audio/die/Pleiades_Saints.mp3"],
 		isUnseen: true,
     },
     // 和纱美千瑠
