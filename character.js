@@ -691,12 +691,11 @@ const characters = {
         hp: 7,
         maxHp: 8,
         hujia: 0,
-        skills: ["Pleiades_Saints_jinnuan", "Pleiades_Saints_maosu", "Pleiades_Saints_shengtuan"],
+        skills: ["Pleiades_jinnuan", "Pleiades_maosu", "Pleiades_shengtuan"],
         img: "extension/魔法纪录/image/Pleiades_Saints.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Pleiades_Saints.mp3"],
-		isUnseen: true,
     },
-    // 和纱美千瑠
+    // 和纱美千留
     "Michiru": {
         sex: "female",
         group: "Magia_Others",
@@ -715,7 +714,7 @@ const characters = {
         maxHp: 3,
         hujia: 0,
         skills: ["Umika_juebi", "Umika_maosu"],
-        img: "extension/魔法纪录/image/Pleiades_Umika.png",
+        img: "extension/魔法纪录/image/Pleiades_Umika.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Umika.mp3"]
     },
 	// 牧薰
@@ -726,9 +725,8 @@ const characters = {
         maxHp: 4,
         hujia: 0,
         skills: ["Kaoru_rexue", "Kaoru_maosu"],
-        img: "extension/魔法纪录/image/Pleiades_Kaoru.png",
+        img: "extension/魔法纪录/image/Pleiades_Kaoru.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Kaoru.mp3"],
-	    isUnseen: true,
     },
 	// 浅海早纪
 	"Saki": {
@@ -740,7 +738,6 @@ const characters = {
         skills: ["Saki_zhishu", "Saki_maosu"],
         img: "extension/魔法纪录/image/Pleiades_Saki.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Saki.mp3"],
-	    isUnseen: true,
     },
 	// 若叶未来
     "Mirai": {
@@ -758,12 +755,11 @@ const characters = {
         sex: "female",
         group: "Magia_Others",
         hp: 3,
-        maxHp: 4,
-        hujia: 1,
-        skills: ["Satomi_leinuo", "Satomi_maosu"],
+        maxHp: 3,
+        hujia: 0,
+        skills: ["Satomi_leinuo", "Satomi_maosu" ,"Satomi_doumao"],
         img: "extension/魔法纪录/image/Pleiades_Satomi.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Satomi.mp3"],
-		isUnseen: true,
     },
     // 神那妮可
     "Niko": {
@@ -842,13 +838,23 @@ const characters = {
 		img: "extension/魔法纪录/image/Souju.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Souju.mp3"],
 	},
-	"Yuuri": {//悠里?
+	"Airi": {//悠里?
 		sex: "female",
 		group: "Magia_Others",
 		hp: 3,
 		maxHp: 4,
 		hujia: 1,
-		skills: ["Yuuri_weixing", "Yuuri_qiangjiao", "Yuuri_suchou"],
+		skills: ["Airi_weixing", "Airi_qiangjiao", "Airi_suchou"],
+		img: "extension/魔法纪录/image/Airi.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Airi.mp3"],
+	},
+	"Yuuri": {//飞鸟悠里
+		sex: "female",
+		group: "Magia_Others",
+		hp: 3,
+		maxHp: 3,
+		hujia: 1,
+		skills: ["Yuuri_tongze", "Yuuri_huanchi"],
 		img: "extension/魔法纪录/image/Yuuri.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Yuuri.mp3"],
 	},
@@ -1004,7 +1010,8 @@ const character_translates = {
 	hikaru: "煌里光",
 	sasa: "优木沙沙",
 	Souju: "双树绫濑&流香",
-	Yuuri: "悠里?",
+	Airi: "悠里?",
+	Yuuri: "飞鸟悠里",
 	Kanna: "圣迦南",
 	Hyades: "海亚蒂斯之晓"
 };
@@ -1163,7 +1170,8 @@ const characterTitles = {
 	hikaru: "光之军团",//煌里光
 	sasa: "优我者死",//优木沙沙
 	Souju: "一体二魂",//双树姐妹
-	Yuuri: "恩仇悖身",//悠里?
+	Airi: "恩仇悖身",//悠里?
+	Yuuri: "梦色汤匙",//飞鸟悠里
 	Kanna: "海亚蒂斯",//圣迦南
 	Hyades: "其性质为毁灭",//海亚蒂斯之晓
 };
@@ -1213,7 +1221,7 @@ const characterSorts = {
 	"madoka1": ["madoka", "homura", "sayaka", "mami", "kyoko", "nagisa", "homura_glasses", "ulti_madoka", "devil_homura", "homura_ribbon"],
 	"madoka11": ["mabayu"],
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
-	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Yuuri", "Kanna", "Hyades"],
+	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Airi", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Riz"],
 
