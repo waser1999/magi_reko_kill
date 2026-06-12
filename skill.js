@@ -4251,7 +4251,6 @@ const skills = {
         }
     },
 
-	// 昴宿星团
     "Pleiades_maosu": {
         audio: 2,
         persevereSkill: true,
@@ -4298,92 +4297,6 @@ const skills = {
             await next;
         },
         
-        contentInit: async function(event, trigger, player) {
-            const pool = ["Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"];
-            player.storage.Pleiades_hidden = pool.randomSort();
-            const c1 = "Michiru"; 
-            
-            const selectable = player.storage.Pleiades_hidden.randomGets(3);
-            const nextAsk = player.chooseButton([
-                "昴宿：请选择与美千瑠组成双将的伙伴。<br>（首轮必须选择一名伙伴）",
-                [selectable, "character"]
-            ], true).set("ai", function(button) { return Math.random(); });
-            
-            const res = await nextAsk.forResult();
-            
-            let c2 = selectable[0];
-            if (res && res.bool && res.links && res.links.length > 0) {
-                c2 = res.links[0];
-            }
-            player.storage.Pleiades_hidden.remove(c2);
-
-            await lib.skill.Pleiades_maosu.changeGeneral(player, [c1, c2]);
-            
-            player.logSkill("Pleiades_jinnuan");
-            game.log(player, "暗置的“昴宿”牌减少了", "#y2", "张");
-            await player.loseMaxHp(2);
-            await player.draw(2);
-        },
-        
-        group: ["Pleiades_maosu_change", "Pleiades_maosu_clear_lock", "Pleiades_maosu_zhenxiang"],
-        subSkill: {
-            zhenxiang: {
-                trigger: { player: "phaseUseBegin" },
-                forced: true, locked: true,
-                filter: function(event, player) {
-                    return !player.storage.Pleiades_zhenxiang_fired;
-                },
-                content: async function(event, trigger, player) {
-                    player.storage.Pleiades_zhenxiang_count = (player.storage.Pleiades_zhenxiang_count || 0) + 1;
-                    
-                    if (player.storage.Pleiades_zhenxiang_count === 2) {
-                        player.storage.Pleiades_zhenxiang_fired = true;
-                        game.log(player, "成功触发", "#r【真相】", "！");
-                        
-                        var targetRes = await player.chooseTarget("真相：请选择一名存活角色置入【朱贝】并复制其一张手牌", true, function(card, p, target) { return target.isAlive(); }).forResult();
-                        
-                        if (targetRes.bool && targetRes.targets && targetRes.targets.length > 0) {
-                            var target = targetRes.targets[0];
-                            await target.equip(game.createCard2("Juubey", "diamond", 12));
-                            
-                            if (target.countCards("h") > 0) {
-                                var cardRes = await target.chooseCard("h", 1, true, "复制手牌").forResult();
-                                if (cardRes.bool && cardRes.cards.length) {
-                                    var cardx = game.createCard2(cardRes.cards[0].name, cardRes.cards[0].suit, cardRes.cards[0].number, cardRes.cards[0].nature);
-                                    await target.gain(cardx, "gain2");
-                                    target.addGaintag(cardx, "Michiru_copy");
-                                    target.addSkill("Michiru_copy_effect");
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            clear_lock: {
-                trigger: { player: "phaseEnd" },
-                forced: true, silent: true, charlotte: true,
-                filter: function(event, player) { return player.storage.Pleiades_maosu_first_turn; },
-                content: function(event, trigger, player) { delete player.storage.Pleiades_maosu_first_turn; }
-            },
-            change: {
-                audio: 2,
-                trigger: { player: "phaseBegin" },
-                forced: true,
-                filter: function(event, player) {
-                    return player.storage.Pleiades_maosu_init && 
-                           !player.storage.Pleiades_maosu_first_turn && 
-                           player.storage.Pleiades_hidden && 
-                           player.storage.Pleiades_hidden.length > 0;
-                },
-                content: async function(event, trigger, player) {
-                    const next = game.createEvent("Pleiades_maosu_change_event");
-                    next.player = player;
-                    next.setContent(lib.skill.Pleiades_maosu.contentChange);
-                    await next;
-                }
-            }
-        },
-
         contentInit: async function(event, trigger, player) {
             const pool = ["Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"];
             player.storage.Pleiades_hidden = pool.randomSort();
@@ -4486,7 +4399,7 @@ const skills = {
 					"Pleiades_tuiyi", "Pleiades_xunjue", "Pleiades_kehen", "Pleiades_jijing", "Pleiades_zhaojue", 
 					"Pleiades_shizi", "Pleiades_huanyu", "Pleiades_yixi", "Pleiades_zhiya", "Pleiades_jackpot", 
 					"Pleiades_maoxing", "Pleiades_lianzhu", "Pleiades_xingzhui", "Pleiades_yiyuan", "Pleiades_shuijing", 
-					"Pleiades_paoqiu", 
+					"Pleiades_paoqiu"
 				];
                 const genericSkills = pool.randomGets(2);
                 game.log(player, "因双将羁绊断裂，获得了临时技能：", "#y【" + get.translation(genericSkills[0]) + "】", "#y【" + get.translation(genericSkills[1]) + "】");
@@ -6225,8 +6138,9 @@ const skills = {
             
             return 5 - get.value(card);
         },
-        content: function() {
+        content: function(event, trigger, player) {
             "step 0"
+            var cards = event.cards || []; 
             var names = [];
             for(var i=0; i<cards.length; i++){
                 if(get.type(cards[i]) != "equip") names.push(cards[i].name);
