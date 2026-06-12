@@ -3278,394 +3278,6 @@ const skills = {
 		},
 	},
 
-	// 昴宿星团
-    // ==========================================
-    // ✦ 昴宿星团：沙盒核心 (附带第二出牌阶段真相) ✦
-    // ==========================================
-    "Pleiades_maosu": {
-        audio: 2,
-        persevereSkill: true,
-        forced: true, 
-        unique: true,
-        onremove: function(player) {
-            delete player.storage.Pleiades_maosu_init;
-            delete player.storage.Pleiades_hidden;
-            delete player.storage.Pleiades_current;
-            delete player.storage.Pleiades_maosu_current;
-            delete player.storage.Pleiades_maosu_first_turn;
-            delete player.storage.Pleiades_zhenxiang_count;
-            delete player.storage.Pleiades_zhenxiang_fired;
-            if (player.name1) {
-                player.name1 = player.name;
-                player.skin.name = player.name;
-                if(player.smoothAvatar) player.smoothAvatar(false);
-                player.node.avatar.setBackground(player.name, "character");
-                player.node.name.innerHTML = get.slimName(player.name);
-                delete player.name2;
-                delete player.skin.name2;
-                player.classList.remove("fullskin2");
-                if (player.node.avatar2) {
-                    player.node.avatar2.classList.add("hidden");
-                    player.node.name2.innerHTML = "";
-                }
-            }
-        },
-        trigger: {
-            player: "enterGame",
-            global: "phaseBefore"
-        },
-        filter: function(event, player) {
-            if (player.storage.Pleiades_maosu_init) return false;
-            return event.name != "phase" || game.phaseNumber == 0;
-        },
-        content: async function(event, trigger, player) {
-            player.storage.Pleiades_maosu_init = true;
-            player.storage.Pleiades_maosu_first_turn = true; 
-            
-            const next = game.createEvent("Pleiades_maosu_init_event");
-            next.player = player;
-            next.setContent(lib.skill.Pleiades_maosu.contentInit);
-            await next;
-        },
-        
-        contentInit: async function(event, trigger, player) {
-            const pool = ["Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"];
-            player.storage.Pleiades_hidden = pool.randomSort();
-            const c1 = "Michiru"; 
-            
-            const selectable = player.storage.Pleiades_hidden.randomGets(3);
-            const nextAsk = player.chooseButton([
-                "昴宿：请选择与美千瑠组成双将的伙伴。<br>（首轮必须选择一名伙伴）",
-                [selectable, "character"]
-            ], true).set("ai", function(button) { return Math.random(); });
-            
-            const res = await nextAsk.forResult();
-            
-            let c2 = selectable[0];
-            if (res && res.bool && res.links && res.links.length > 0) {
-                c2 = res.links[0];
-            }
-            player.storage.Pleiades_hidden.remove(c2);
-
-            await lib.skill.Pleiades_maosu.changeGeneral(player, [c1, c2]);
-            
-            player.logSkill("Pleiades_jinnuan");
-            game.log(player, "暗置的“昴宿”牌减少了", "#y2", "张");
-            await player.loseMaxHp(2);
-            await player.draw(2);
-        },
-        
-        // 🚀 核心修复：在这里挂载【真相】子技能！
-        group: ["Pleiades_maosu_change", "Pleiades_maosu_clear_lock", "Pleiades_maosu_zhenxiang"],
-        subSkill: {
-            zhenxiang: {
-                // 监听你的出牌阶段开始
-                trigger: { player: "phaseUseBegin" },
-                forced: true, locked: true,
-                filter: function(event, player) {
-                    return !player.storage.Pleiades_zhenxiang_fired;
-                },
-                content: async function(event, trigger, player) {
-                    // 只要来到出牌阶段，计数+1
-                    player.storage.Pleiades_zhenxiang_count = (player.storage.Pleiades_zhenxiang_count || 0) + 1;
-                    
-                    // 如果是第 2 次出牌阶段，立刻无条件处决！
-                    if (player.storage.Pleiades_zhenxiang_count === 2) {
-                        player.storage.Pleiades_zhenxiang_fired = true;
-                        game.log(player, "成功触发", "#r【真相】", "！");
-                        
-                        var targetRes = await player.chooseTarget("真相：请选择一名存活角色置入【朱贝】并复制其一张手牌", true, function(card, p, target) { return target.isAlive(); }).forResult();
-                        
-                        if (targetRes.bool && targetRes.targets && targetRes.targets.length > 0) {
-                            var target = targetRes.targets[0];
-                            await target.equip(game.createCard2("Juubey", "diamond", 12));
-                            
-                            if (target.countCards("h") > 0) {
-                                var cardRes = await target.chooseCard("h", 1, true, "复制手牌").forResult();
-                                if (cardRes.bool && cardRes.cards.length) {
-                                    var cardx = game.createCard2(cardRes.cards[0].name, cardRes.cards[0].suit, cardRes.cards[0].number, cardRes.cards[0].nature);
-                                    await target.gain(cardx, "gain2");
-                                    target.addGaintag(cardx, "Michiru_copy");
-                                    target.addSkill("Michiru_copy_effect");
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            clear_lock: {
-                trigger: { player: "phaseEnd" },
-                forced: true, silent: true, charlotte: true,
-                filter: function(event, player) { return player.storage.Pleiades_maosu_first_turn; },
-                content: function(event, trigger, player) { delete player.storage.Pleiades_maosu_first_turn; }
-            },
-            change: {
-                audio: 2,
-                trigger: { player: "phaseBegin" },
-                forced: true,
-                filter: function(event, player) {
-                    return player.storage.Pleiades_maosu_init && 
-                           !player.storage.Pleiades_maosu_first_turn && 
-                           player.storage.Pleiades_hidden && 
-                           player.storage.Pleiades_hidden.length > 0;
-                },
-                content: async function(event, trigger, player) {
-                    const next = game.createEvent("Pleiades_maosu_change_event");
-                    next.player = player;
-                    next.setContent(lib.skill.Pleiades_maosu.contentChange);
-                    await next;
-                }
-            }
-        },
-        
-        // ... (此处保留你原有的 contentChange, isValidBond, charSkills, changeGeneral) ...
-
-        
-        contentInit: async function(event, trigger, player) {
-            const pool = ["Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"];
-            player.storage.Pleiades_hidden = pool.randomSort();
-            const c1 = "Michiru"; 
-            
-            const selectable = player.storage.Pleiades_hidden.randomGets(3);
-            const nextAsk = player.chooseButton([
-                "昴宿：请选择与美千瑠组成双将的伙伴。<br>（首轮必须选择一名伙伴）",
-                [selectable, "character"]
-            ], true).set("ai", function(button) { return Math.random(); });
-            
-            const res = await nextAsk.forResult();
-            
-            let c2 = selectable[0];
-            if (res && res.bool && res.links && res.links.length > 0) {
-                c2 = res.links[0];
-            }
-            player.storage.Pleiades_hidden.remove(c2);
-
-            await lib.skill.Pleiades_maosu.changeGeneral(player, [c1, c2]);
-            
-            // 为玩家挂载全局监听的真相技能
-            player.addSkill("Pleiades_zhenxiang");
-            
-            player.logSkill("Pleiades_jinnuan");
-            game.log(player, "暗置的“昴宿”牌减少了", "#y2", "张");
-            await player.loseMaxHp(2);
-            await player.draw(2);
-        },
-        
-        group: ["Pleiades_maosu_change", "Pleiades_maosu_clear_lock"],
-        subSkill: {
-            clear_lock: {
-                trigger: { player: "phaseEnd" },
-                forced: true, silent: true, charlotte: true,
-                filter: function(event, player) { return player.storage.Pleiades_maosu_first_turn; },
-                content: function(event, trigger, player) { delete player.storage.Pleiades_maosu_first_turn; }
-            },
-            change: {
-                audio: 2,
-                trigger: { player: "phaseBegin" },
-                forced: true,
-                filter: function(event, player) {
-                    return player.storage.Pleiades_maosu_init && 
-                           !player.storage.Pleiades_maosu_first_turn && 
-                           player.storage.Pleiades_hidden && 
-                           player.storage.Pleiades_hidden.length > 0;
-                },
-                content: async function(event, trigger, player) {
-                    const next = game.createEvent("Pleiades_maosu_change_event");
-                    next.player = player;
-                    next.setContent(lib.skill.Pleiades_maosu.contentChange);
-                    await next;
-                }
-            }
-        },
-        
-        contentChange: async function(event, trigger, player) {
-            if (player.hasSkill("Pleiades_maosu_success")) {
-                const ask = await player.chooseBool("昴宿：你的【烬暖】使命已达成，是否更换亮出的昴宿牌？").forResult();
-                if (!ask.bool) return;
-            }
-            
-            const hidden = player.storage.Pleiades_hidden;
-            const c1 = hidden.shift(); 
-            const selectable = hidden.randomGets(Math.min(3, hidden.length));
-            
-            const nextAsk = player.chooseButton([
-                `昴宿：请选择一名角色作为伙伴（点取消则单将出击）<br><div class="text center">当前已亮出主将：【${get.translation(c1)}】</div>`,
-                [selectable, "character"]
-            ], [0, 1]).set("ai", function(button) { return 1; });
-            
-            const res = await nextAsk.forResult();
-            
-            let c2 = null;
-            if (res && res.bool && res.links && res.links.length > 0) {
-                c2 = res.links[0];
-                hidden.remove(c2);
-            }
-            
-            if (player.storage.Pleiades_current && player.storage.Pleiades_current.length > 0) {
-                player.removeAdditionalSkills("Pleiades_maosu_skills");
-            }
-            player.removeAdditionalSkills("Pleiades_jinnuan_generic");
-            
-            await lib.skill.Pleiades_maosu.changeGeneral(player, c2 ? [c1, c2] : [c1]);
-            
-            player.logSkill("Pleiades_jinnuan");
-            const count = c2 ? 2 : 1;
-            game.log(player, "暗置的“昴宿”牌减少了", "#y" + count, "张");
-            await player.loseMaxHp(count);
-            await player.draw(count);
-
-            // 🚀 核心修复：通过官方标记系统触发真相，彻底绝缘虚拟空事件报错！
-            player.addMark("Pleiades_change_count", 1, false);
-
-            if (c2 && !lib.skill.Pleiades_maosu.isValidBond(c1, c2)) {
-                const pool = [
-					"Pleiades_wanxiang", "Pleiades_rongyu", "Pleiades_qiyuan", "Pleiades_fenli", "Pleiades_lingshi", 
-					"Pleiades_huanxie", "Pleiades_gongli", "Pleiades_yisu", "Pleiades_zongou", "Pleiades_liecu", 
-					"Pleiades_shuheng", "Pleiades_wangxing", "Pleiades_kuixin", "Pleiades_tijie", "Pleiades_juexiang", 
-					"Pleiades_yanru", "Pleiades_xunting", "Pleiades_huifeng", "Pleiades_binyan", "Pleiades_shishan", 
-					"Pleiades_tuiyi", "Pleiades_xunjue", "Pleiades_kehen", "Pleiades_jijing", "Pleiades_zhaojue", 
-					"Pleiades_shizi", "Pleiades_huanyu", "Pleiades_yixi", "Pleiades_zhiya", "Pleiades_jackpot", 
-					"Pleiades_maoxing", "Pleiades_lianzhu", "Pleiades_xingzhui", "Pleiades_yiyuan", "Pleiades_shuijing", 
-					"Pleiades_paoqiu", 
-				];
-                const genericSkills = pool.randomGets(2);
-                game.log(player, "因双将羁绊断裂，获得了临时技能：", "#y【" + get.translation(genericSkills[0]) + "】", "#y【" + get.translation(genericSkills[1]) + "】");
-                
-                player.addAdditionalSkills("Pleiades_jinnuan_generic", genericSkills);
-                player.storage.Pleiades_generic_timer = 2; 
-                player.addSkill("Pleiades_generic_timer_skill");
-            }
-        },
-        
-        isValidBond: function(c1, c2) {
-            if (c1 === "Michiru" || c2 === "Michiru") return true;
-            const pair = [c1, c2].sort().join("_");
-            if (pair === "Kaoru_Umika" || pair === "Mirai_Saki") return true;
-            return false;
-        },
-        
-        charSkills: {
-            Michiru: ["Michiru_xiangxi"],
-            Umika: ["Umika_juebi", "Umika_maosu"],
-            Kaoru: ["Kaoru_rexue", "Kaoru_maosu"],
-            Saki: ["Saki_zhishu", "Saki_maosu"],
-            Mirai: ["Mirai_nieai", "Mirai_maosu"],
-            Satomi: ["Satomi_leinuo", "Satomi_maosu", "Satomi_doumao"],
-            Niko: ["Niko_fushu", "Niko_maosu"]
-        },
-        
-        changeGeneral: async function(player, chars) {
-            player.storage.Pleiades_current = chars;
-            let skills = [];
-            chars.forEach(c => {
-                if (lib.skill.Pleiades_maosu.charSkills[c]) {
-                    skills.addArray(lib.skill.Pleiades_maosu.charSkills[c]);
-                }
-            });
-            player.addAdditionalSkills("Pleiades_maosu_skills", skills);
-
-            if (chars.length === 1) {
-                player.storage.Pleiades_maosu_current = [chars[0], "Michiru"];
-            } else {
-                player.storage.Pleiades_maosu_current = chars;
-            }
-
-            game.broadcastAll(function(player, chars) {
-                const c1 = chars[0], c2 = chars[1];
-                player.name1 = c1; 
-                player.skin.name = c1;
-                if(player.smoothAvatar) player.smoothAvatar(false);
-                player.node.avatar.setBackground(c1, "character");
-                player.node.name.innerHTML = get.slimName(c1);
-                
-                if (c2) {
-                    player.name2 = c2; 
-                    player.skin.name2 = c2;
-                    if(player.smoothAvatar) player.smoothAvatar(true);
-                    player.classList.add("fullskin2");
-                    player.node.avatar2.classList.remove("hidden");
-                    player.node.avatar2.setBackground(c2, "character");
-                    player.node.name2.innerHTML = get.slimName(c2);
-                } else {
-                    delete player.name2; 
-                    delete player.skin.name2;
-                    player.classList.remove("fullskin2");
-                    if(player.node.avatar2) player.node.avatar2.classList.add("hidden");
-                    if(player.node.name2) player.node.name2.innerHTML = "";
-                }
-            }, player, chars);
-            
-            game.log(player, "亮出了昴宿牌", "#y" + chars.map(c => get.translation(c)).join("、"));
-        }
-    },
-    
-    // ==========================================
-    // ✦ 昴宿星团专属：真相 (出牌阶段计数触发版) ✦
-    // ==========================================
-    "Pleiades_zhenxiang": {
-        audio: 2,
-        dutySkill: true,
-        locked: true,
-        trigger: { player: "phaseUseBegin" },
-        forced: true,
-        skillAnimation: true,
-        animationColor: "fire",
-        filter: function(event, player) {
-            return !player.storage.Pleiades_zhenxiang_fired;
-        },
-        content: async function(event, trigger, player) {
-            // 每来到一次出牌阶段，计数器+1
-            player.storage.Pleiades_zhenxiang_count = (player.storage.Pleiades_zhenxiang_count || 0) + 1;
-            
-            // 严格判定：当达到第 2 次出牌阶段时，立刻无条件触发
-            if (player.storage.Pleiades_zhenxiang_count === 2) {
-                player.storage.Pleiades_zhenxiang_fired = true;
-                player.awakenSkill("Pleiades_zhenxiang");
-                game.log(player, "成功触发", "#r【真相】", "！");
-                
-                var targetRes = await player.chooseTarget("真相：请选择一名存活角色置入【朱贝】并复制其一张手牌", true, function(card, p, target) { 
-                    return target.isAlive(); 
-                }).forResult();
-                
-                if (targetRes.bool && targetRes.targets && targetRes.targets.length > 0) {
-                    var target = targetRes.targets[0];
-                    await target.equip(game.createCard2("Juubey", "diamond", 12));
-                    
-                    if (target.countCards("h") > 0) {
-                        var cardRes = await target.chooseCard("h", 1, true, "复制手牌").forResult();
-                        if (cardRes.bool && cardRes.cards && cardRes.cards.length > 0) {
-                            var cardToCopy = cardRes.cards[0];
-                            var cardx = game.createCard2(cardToCopy.name, cardToCopy.suit, cardToCopy.number, cardToCopy.nature);
-                            await target.gain(cardx, "gain2");
-                            target.addGaintag(cardx, "Michiru_copy");
-                            target.addSkill("Michiru_copy_effect");
-                        }
-                    }
-                }
-            }
-        }
-    },
-
-    "Pleiades_generic_timer_skill": {
-        charlotte: true, trigger: { player: "phaseEnd" }, forced: true, silent: true,
-        content: function(event, trigger, player) {
-            if (player.storage.Pleiades_generic_timer > 0) {
-                player.storage.Pleiades_generic_timer--;
-                if (player.storage.Pleiades_generic_timer === 0) {
-                    player.removeAdditionalSkills("Pleiades_jinnuan_generic");
-                    player.removeSkill("Pleiades_generic_timer_skill");
-                    game.log(player, "临时获得的昴宿通用技能已失效");
-                }
-            }
-        }
-    },
-    
-    "Pleiades_maosu_success": { 
-    charlotte: true 
-    },
-
-
-
 	// 和美
     "Kazumi_xingyun": {
         audio: 2,
@@ -4639,12 +4251,378 @@ const skills = {
         }
     },
 
+	// 昴宿星团
+    "Pleiades_maosu": {
+        audio: 2,
+        persevereSkill: true,
+        forced: true, 
+        unique: true,
+        onremove: function(player) {
+            delete player.storage.Pleiades_maosu_init;
+            delete player.storage.Pleiades_hidden;
+            delete player.storage.Pleiades_current;
+            delete player.storage.Pleiades_maosu_current;
+            delete player.storage.Pleiades_maosu_first_turn;
+            delete player.storage.Pleiades_zhenxiang_count;
+            delete player.storage.Pleiades_zhenxiang_fired;
+            if (player.name1) {
+                player.name1 = player.name;
+                player.skin.name = player.name;
+                if(player.smoothAvatar) player.smoothAvatar(false);
+                player.node.avatar.setBackground(player.name, "character");
+                player.node.name.innerHTML = get.slimName(player.name);
+                delete player.name2;
+                delete player.skin.name2;
+                player.classList.remove("fullskin2");
+                if (player.node.avatar2) {
+                    player.node.avatar2.classList.add("hidden");
+                    player.node.name2.innerHTML = "";
+                }
+            }
+        },
+        trigger: {
+            player: "enterGame",
+            global: "phaseBefore"
+        },
+        filter: function(event, player) {
+            if (player.storage.Pleiades_maosu_init) return false;
+            return event.name != "phase" || game.phaseNumber == 0;
+        },
+        content: async function(event, trigger, player) {
+            player.storage.Pleiades_maosu_init = true;
+            player.storage.Pleiades_maosu_first_turn = true; 
+            
+            const next = game.createEvent("Pleiades_maosu_init_event");
+            next.player = player;
+            next.setContent(lib.skill.Pleiades_maosu.contentInit);
+            await next;
+        },
+        
+        contentInit: async function(event, trigger, player) {
+            const pool = ["Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"];
+            player.storage.Pleiades_hidden = pool.randomSort();
+            const c1 = "Michiru"; 
+            
+            const selectable = player.storage.Pleiades_hidden.randomGets(3);
+            const nextAsk = player.chooseButton([
+                "昴宿：请选择与美千瑠组成双将的伙伴。<br>（首轮必须选择一名伙伴）",
+                [selectable, "character"]
+            ], true).set("ai", function(button) { return Math.random(); });
+            
+            const res = await nextAsk.forResult();
+            
+            let c2 = selectable[0];
+            if (res && res.bool && res.links && res.links.length > 0) {
+                c2 = res.links[0];
+            }
+            player.storage.Pleiades_hidden.remove(c2);
+
+            await lib.skill.Pleiades_maosu.changeGeneral(player, [c1, c2]);
+            
+            player.logSkill("Pleiades_jinnuan");
+            game.log(player, "暗置的“昴宿”牌减少了", "#y2", "张");
+            await player.loseMaxHp(2);
+            await player.draw(2);
+        },
+        
+        group: ["Pleiades_maosu_change", "Pleiades_maosu_clear_lock", "Pleiades_maosu_zhenxiang"],
+        subSkill: {
+            zhenxiang: {
+                trigger: { player: "phaseUseBegin" },
+                forced: true, locked: true,
+                filter: function(event, player) {
+                    return !player.storage.Pleiades_zhenxiang_fired;
+                },
+                content: async function(event, trigger, player) {
+                    player.storage.Pleiades_zhenxiang_count = (player.storage.Pleiades_zhenxiang_count || 0) + 1;
+                    
+                    if (player.storage.Pleiades_zhenxiang_count === 2) {
+                        player.storage.Pleiades_zhenxiang_fired = true;
+                        game.log(player, "成功触发", "#r【真相】", "！");
+                        
+                        var targetRes = await player.chooseTarget("真相：请选择一名存活角色置入【朱贝】并复制其一张手牌", true, function(card, p, target) { return target.isAlive(); }).forResult();
+                        
+                        if (targetRes.bool && targetRes.targets && targetRes.targets.length > 0) {
+                            var target = targetRes.targets[0];
+                            await target.equip(game.createCard2("Juubey", "diamond", 12));
+                            
+                            if (target.countCards("h") > 0) {
+                                var cardRes = await target.chooseCard("h", 1, true, "复制手牌").forResult();
+                                if (cardRes.bool && cardRes.cards.length) {
+                                    var cardx = game.createCard2(cardRes.cards[0].name, cardRes.cards[0].suit, cardRes.cards[0].number, cardRes.cards[0].nature);
+                                    await target.gain(cardx, "gain2");
+                                    target.addGaintag(cardx, "Michiru_copy");
+                                    target.addSkill("Michiru_copy_effect");
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            clear_lock: {
+                trigger: { player: "phaseEnd" },
+                forced: true, silent: true, charlotte: true,
+                filter: function(event, player) { return player.storage.Pleiades_maosu_first_turn; },
+                content: function(event, trigger, player) { delete player.storage.Pleiades_maosu_first_turn; }
+            },
+            change: {
+                audio: 2,
+                trigger: { player: "phaseBegin" },
+                forced: true,
+                filter: function(event, player) {
+                    return player.storage.Pleiades_maosu_init && 
+                           !player.storage.Pleiades_maosu_first_turn && 
+                           player.storage.Pleiades_hidden && 
+                           player.storage.Pleiades_hidden.length > 0;
+                },
+                content: async function(event, trigger, player) {
+                    const next = game.createEvent("Pleiades_maosu_change_event");
+                    next.player = player;
+                    next.setContent(lib.skill.Pleiades_maosu.contentChange);
+                    await next;
+                }
+            }
+        },
+
+        contentInit: async function(event, trigger, player) {
+            const pool = ["Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"];
+            player.storage.Pleiades_hidden = pool.randomSort();
+            const c1 = "Michiru"; 
+            
+            const selectable = player.storage.Pleiades_hidden.randomGets(3);
+            const nextAsk = player.chooseButton([
+                "昴宿：请选择与美千瑠组成双将的伙伴。<br>（首轮必须选择一名伙伴）",
+                [selectable, "character"]
+            ], true).set("ai", function(button) { return Math.random(); });
+            
+            const res = await nextAsk.forResult();
+            
+            let c2 = selectable[0];
+            if (res && res.bool && res.links && res.links.length > 0) {
+                c2 = res.links[0];
+            }
+            player.storage.Pleiades_hidden.remove(c2);
+
+            await lib.skill.Pleiades_maosu.changeGeneral(player, [c1, c2]);
+
+            player.addSkill("Pleiades_zhenxiang");
+            
+            player.logSkill("Pleiades_jinnuan");
+            game.log(player, "暗置的“昴宿”牌减少了", "#y2", "张");
+            await player.loseMaxHp(2);
+            await player.draw(2);
+        },
+        
+        group: ["Pleiades_maosu_change", "Pleiades_maosu_clear_lock"],
+        subSkill: {
+            clear_lock: {
+                trigger: { player: "phaseEnd" },
+                forced: true, silent: true, charlotte: true,
+                filter: function(event, player) { return player.storage.Pleiades_maosu_first_turn; },
+                content: function(event, trigger, player) { delete player.storage.Pleiades_maosu_first_turn; }
+            },
+            change: {
+                audio: 2,
+                trigger: { player: "phaseBegin" },
+                forced: true,
+                filter: function(event, player) {
+                    return player.storage.Pleiades_maosu_init && 
+                           !player.storage.Pleiades_maosu_first_turn && 
+                           player.storage.Pleiades_hidden && 
+                           player.storage.Pleiades_hidden.length > 0;
+                },
+                content: async function(event, trigger, player) {
+                    const next = game.createEvent("Pleiades_maosu_change_event");
+                    next.player = player;
+                    next.setContent(lib.skill.Pleiades_maosu.contentChange);
+                    await next;
+                }
+            }
+        },
+        
+        contentChange: async function(event, trigger, player) {
+            if (player.hasSkill("Pleiades_maosu_success")) {
+                const ask = await player.chooseBool("昴宿：你的【烬暖】使命已达成，是否更换亮出的昴宿牌？").forResult();
+                if (!ask.bool) return;
+            }
+            
+            const hidden = player.storage.Pleiades_hidden;
+            const c1 = hidden.shift(); 
+            const selectable = hidden.randomGets(Math.min(3, hidden.length));
+            
+            const nextAsk = player.chooseButton([
+                `昴宿：请选择一名角色作为伙伴（点取消则单将出击）<br><div class="text center">当前已亮出主将：【${get.translation(c1)}】</div>`,
+                [selectable, "character"]
+            ], [0, 1]).set("ai", function(button) { return 1; });
+            
+            const res = await nextAsk.forResult();
+            
+            let c2 = null;
+            if (res && res.bool && res.links && res.links.length > 0) {
+                c2 = res.links[0];
+                hidden.remove(c2);
+            }
+            
+            if (player.storage.Pleiades_current && player.storage.Pleiades_current.length > 0) {
+                player.removeAdditionalSkills("Pleiades_maosu_skills");
+            }
+            player.removeAdditionalSkills("Pleiades_jinnuan_generic");
+            
+            await lib.skill.Pleiades_maosu.changeGeneral(player, c2 ? [c1, c2] : [c1]);
+            
+            player.logSkill("Pleiades_jinnuan");
+            const count = c2 ? 2 : 1;
+            game.log(player, "暗置的“昴宿”牌减少了", "#y" + count, "张");
+            await player.loseMaxHp(count);
+            await player.draw(count);
+            player.addMark("Pleiades_change_count", 1, false);
+
+            if (c2 && !lib.skill.Pleiades_maosu.isValidBond(c1, c2)) {
+                const pool = [
+					"Pleiades_wanxiang", "Pleiades_rongyu", "Pleiades_qiyuan", "Pleiades_fenli", "Pleiades_lingshi", 
+					"Pleiades_huanxie", "Pleiades_gongli", "Pleiades_yisu", "Pleiades_zongou", "Pleiades_liecu", 
+					"Pleiades_shuheng", "Pleiades_wangxing", "Pleiades_kuixin", "Pleiades_tijie", "Pleiades_juexiang", 
+					"Pleiades_yanru", "Pleiades_xunting", "Pleiades_huifeng", "Pleiades_binyan", "Pleiades_shishan", 
+					"Pleiades_tuiyi", "Pleiades_xunjue", "Pleiades_kehen", "Pleiades_jijing", "Pleiades_zhaojue", 
+					"Pleiades_shizi", "Pleiades_huanyu", "Pleiades_yixi", "Pleiades_zhiya", "Pleiades_jackpot", 
+					"Pleiades_maoxing", "Pleiades_lianzhu", "Pleiades_xingzhui", "Pleiades_yiyuan", "Pleiades_shuijing", 
+					"Pleiades_paoqiu", 
+				];
+                const genericSkills = pool.randomGets(2);
+                game.log(player, "因双将羁绊断裂，获得了临时技能：", "#y【" + get.translation(genericSkills[0]) + "】", "#y【" + get.translation(genericSkills[1]) + "】");
+                
+                player.addAdditionalSkills("Pleiades_jinnuan_generic", genericSkills);
+                player.storage.Pleiades_generic_timer = 2; 
+                player.addSkill("Pleiades_generic_timer_skill");
+            }
+        },
+        
+        isValidBond: function(c1, c2) {
+            if (c1 === "Michiru" || c2 === "Michiru") return true;
+            const pair = [c1, c2].sort().join("_");
+            if (pair === "Kaoru_Umika" || pair === "Mirai_Saki") return true;
+            return false;
+        },
+        
+        charSkills: {
+            Michiru: ["Michiru_xiangxi"],
+            Umika: ["Umika_juebi", "Umika_maosu"],
+            Kaoru: ["Kaoru_rexue", "Kaoru_maosu"],
+            Saki: ["Saki_zhishu", "Saki_maosu"],
+            Mirai: ["Mirai_nieai", "Mirai_maosu"],
+            Satomi: ["Satomi_leinuo", "Satomi_maosu", "Satomi_doumao"],
+            Niko: ["Niko_fushu", "Niko_maosu"]
+        },
+        
+        changeGeneral: async function(player, chars) {
+            player.storage.Pleiades_current = chars;
+            let skills = [];
+            chars.forEach(c => {
+                if (lib.skill.Pleiades_maosu.charSkills[c]) {
+                    skills.addArray(lib.skill.Pleiades_maosu.charSkills[c]);
+                }
+            });
+            player.addAdditionalSkills("Pleiades_maosu_skills", skills);
+
+            if (chars.length === 1) {
+                player.storage.Pleiades_maosu_current = [chars[0], "Michiru"];
+            } else {
+                player.storage.Pleiades_maosu_current = chars;
+            }
+
+            game.broadcastAll(function(player, chars) {
+                const c1 = chars[0], c2 = chars[1];
+                player.name1 = c1; 
+                player.skin.name = c1;
+                if(player.smoothAvatar) player.smoothAvatar(false);
+                player.node.avatar.setBackground(c1, "character");
+                player.node.name.innerHTML = get.slimName(c1);
+                
+                if (c2) {
+                    player.name2 = c2; 
+                    player.skin.name2 = c2;
+                    if(player.smoothAvatar) player.smoothAvatar(true);
+                    player.classList.add("fullskin2");
+                    player.node.avatar2.classList.remove("hidden");
+                    player.node.avatar2.setBackground(c2, "character");
+                    player.node.name2.innerHTML = get.slimName(c2);
+                } else {
+                    delete player.name2; 
+                    delete player.skin.name2;
+                    player.classList.remove("fullskin2");
+                    if(player.node.avatar2) player.node.avatar2.classList.add("hidden");
+                    if(player.node.name2) player.node.name2.innerHTML = "";
+                }
+            }, player, chars);
+            
+            game.log(player, "亮出了昴宿牌", "#y" + chars.map(c => get.translation(c)).join("、"));
+        }
+    },
+    "Pleiades_zhenxiang": {
+        audio: 2,
+        dutySkill: true,
+        locked: true,
+        trigger: { player: "phaseUseBegin" },
+        forced: true,
+        skillAnimation: true,
+        animationColor: "fire",
+        filter: function(event, player) {
+            return !player.storage.Pleiades_zhenxiang_fired;
+        },
+        content: async function(event, trigger, player) {
+            player.storage.Pleiades_zhenxiang_count = (player.storage.Pleiades_zhenxiang_count || 0) + 1;
+            
+            if (player.storage.Pleiades_zhenxiang_count === 2) {
+                player.storage.Pleiades_zhenxiang_fired = true;
+                player.awakenSkill("Pleiades_zhenxiang");
+                game.log(player, "成功触发", "#r【真相】", "！");
+                
+                var targetRes = await player.chooseTarget("真相：请选择一名存活角色置入【朱贝】并复制其一张手牌", true, function(card, p, target) { 
+                    return target.isAlive(); 
+                }).forResult();
+                
+                if (targetRes.bool && targetRes.targets && targetRes.targets.length > 0) {
+                    var target = targetRes.targets[0];
+                    await target.equip(game.createCard2("Juubey", "diamond", 12));
+                    
+                    if (target.countCards("h") > 0) {
+                        var cardRes = await target.chooseCard("h", 1, true, "复制手牌").forResult();
+                        if (cardRes.bool && cardRes.cards && cardRes.cards.length > 0) {
+                            var cardToCopy = cardRes.cards[0];
+                            var cardx = game.createCard2(cardToCopy.name, cardToCopy.suit, cardToCopy.number, cardToCopy.nature);
+                            await target.gain(cardx, "gain2");
+                            target.addGaintag(cardx, "Michiru_copy");
+                            target.addSkill("Michiru_copy_effect");
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "Pleiades_generic_timer_skill": {
+        charlotte: true, trigger: { player: "phaseEnd" }, forced: true, silent: true,
+        content: function(event, trigger, player) {
+            if (player.storage.Pleiades_generic_timer > 0) {
+                player.storage.Pleiades_generic_timer--;
+                if (player.storage.Pleiades_generic_timer === 0) {
+                    player.removeAdditionalSkills("Pleiades_jinnuan_generic");
+                    player.removeSkill("Pleiades_generic_timer_skill");
+                    game.log(player, "临时获得的昴宿通用技能已失效");
+                }
+            }
+        }
+    },
+    
+    "Pleiades_maosu_success": { 
+    charlotte: true 
+    },
+	
     // 和纱美千留
     "Michiru_xiangxi": {
         audio: 2,
         group: ["Michiru_xiangxi_wuxie", "Michiru_xiangxi_juedou", "Michiru_xiangxi_tao", "Michiru_xiangxi_effect"],
         getX: function(player) {
-            // 获取本回合内通过这三个子技能打出/使用的次数
             var useCount = player.getHistory("useCard", function(evt) {
                 return ["Michiru_xiangxi_wuxie", "Michiru_xiangxi_juedou", "Michiru_xiangxi_tao"].includes(evt.skill);
             }).length;
@@ -4657,9 +4635,7 @@ const skills = {
             var cards = player.getCards("he");
             var count = 0;
             for (var i = 0; i < cards.length; i++) {
-                // ⚠️ 加上 false 防止引擎深度扫描引发死循环
                 var t = get.type(cards[i], false);
-                // 延时锦囊也算作锦囊牌
                 if (t === type || (type === "trick" && t === "delay")) count++;
             }
             return count >= num;
@@ -4667,10 +4643,7 @@ const skills = {
         subSkill: {
             wuxie: {
                 audio: 2,
-                // 🚀 核心修复2：加入 chooseToUse，完美反击别人的无懈可击！
                 enable: ["chooseToRespond", "chooseToUse"],
-                
-                // 🚀 新增免打扰拦截：没有足够的基本牌时，系统绝对不会弹窗问你是否出无懈！
                 hiddenCard: function(player, name) {
                     if (name === "wuxie") {
                         var x = lib.skill.Michiru_xiangxi.getX(player);
@@ -4680,7 +4653,6 @@ const skills = {
                 },
                 
                 filterCard: function(card, player) {
-                    // 🚀 核心修复1：严格锁定！只能用基本牌！
                     return get.type(card, false) === "basic";
                 },
                 selectCard: function() { return lib.skill.Michiru_xiangxi.getX(_status.event.player) + 1; },
@@ -4692,7 +4664,6 @@ const skills = {
                 },
                 check: function(card) { return 6 - get.value(card); },
                 filter: function(event, player) {
-                    // 🚀 防爆盾：严禁在出牌阶段主动点无懈，彻底断绝 undefined 报错！
                     if (event.name === "phaseUse") return false;
                     if (event.filterCard({name:"wuxie"}, player, event)) {
                         var x = lib.skill.Michiru_xiangxi.getX(player);
@@ -4704,8 +4675,6 @@ const skills = {
             juedou: {
                 audio: 2,
                 enable: "chooseToUse",
-                
-                // 🚀 新增免打扰拦截
                 hiddenCard: function(player, name) {
                     if (name === "juedou") {
                         var x = lib.skill.Michiru_xiangxi.getX(player);
@@ -4715,7 +4684,6 @@ const skills = {
                 },
                 
                 filterCard: function(card, player) {
-                    // 🚀 核心修复1：严格锁定！只能用锦囊牌！
                     var t = get.type(card, false);
                     return t === "trick" || t === "delay";
                 },
@@ -4738,8 +4706,6 @@ const skills = {
             tao: {
                 audio: 2,
                 enable: ["chooseToUse", "chooseToRespond"],
-                
-                // 🚀 新增免打扰拦截
                 hiddenCard: function(player, name) {
                     if (name === "tao") {
                         var x = lib.skill.Michiru_xiangxi.getX(player);
@@ -4749,7 +4715,6 @@ const skills = {
                 },
                 
                 filterCard: function(card, player) {
-                    // 🚀 核心修复1：严格锁定！只能用装备牌！
                     return get.type(card, false) === "equip";
                 },
                 selectCard: function() { return lib.skill.Michiru_xiangxi.getX(_status.event.player) + 1; },
@@ -4761,7 +4726,6 @@ const skills = {
                 },
                 check: function(card) { return 5 - get.value(card); },
                 filter: function(event, player) {
-                    // 防呆设计：满血时在回合内不能吃桃
                     if (event.name === "phaseUse" && player.hp >= player.maxHp) return false;
                     if (event.filterCard({name:"tao"}, player, event)) {
                         var x = lib.skill.Michiru_xiangxi.getX(player);
@@ -4795,13 +4759,11 @@ const skills = {
 
     "Michiru_xiangxi_damage": {
         charlotte: true,
-        // 🚀 新增 UI 显示参数
         marktext: "死或饭",
         intro: {
             name: "死或饭",
             content: "本回合受到的伤害将 +#",
         },
-        // 下面保留原有的逻辑
         trigger: { player: "damageBegin" },
         forced: true,
         filter: function(event, player) { return player.countMark("Michiru_xiangxi_damage") > 0; },
@@ -4814,26 +4776,15 @@ const skills = {
             player.removeMark("Michiru_xiangxi_damage", player.countMark("Michiru_xiangxi_damage"));
         }
     },
-
-
-
-
 	//真相
-    // ==========================================
-    // ✦ 真相：彻底剥离 onremove 的绝对安全版 ✦
-    // ==========================================
     "Michiru_zhenxiang": {
         audio: 2,
         dutySkill: true,
         mark: true,
         intro: { content: "使命技，失败：死亡或销毁时置入【朱贝】并复制手牌。" },
-        // 🚀 删掉了致命的 onremove，完全依靠标准事件触发
         group: ["Michiru_zhenxiang_trigger"]
     },
-    
-    // ==========================================
-    // ✦ 真相：完美接住死亡或换将的触发器 ✦
-    // ==========================================
+   //真相触发器
     "Michiru_zhenxiang_trigger": {
         charlotte: true,
         trigger: { player: ["dieBegin", "Michiru_destroy_event"] },
@@ -5035,15 +4986,11 @@ const skills = {
             }
         }
     },
-    // ==========================================
-    // ✦ 御崎海香：昴宿 ✦
-    // ==========================================
     "Umika_maosu": {
         audio: 2,
         trigger: { global: "phaseJieshuBegin" },
         forced: true, 
         filter: function(event, player) {
-            // 🚀 核心修复：仅在沙盒模式下，且存在同伴时才检验羁绊；单将或普通模式无条件放行！
             if (player.hasSkill("Pleiades_maosu")) {
                 var partner = player.name1 === "Umika" ? player.name2 : player.name1;
                 if (partner && !["Michiru", "Kaoru"].includes(partner)) return false;
@@ -5158,22 +5105,17 @@ const skills = {
             if (res.bool) { event.result = { bool: true }; }
         },
         content: async function(event, trigger, player) {
-            // 1. 冷却标记
             player.addSkill("Kaoru_rexue_banned"); 
             
-            // 🚀 核心修复：必须在清空 Buff 之前，趁着距离还是 -N 的时候，先把全场满足条件的人锁定！
             var targets = game.filterPlayer(current => current != player && get.distance(player, current) <= 1);
             
-            // 2. 清空本回合的减距离效果 (延后执行)
             if (player.hasSkill("Kaoru_rexue_distBuff")) {
                 player.removeMark("Kaoru_rexue_distBuff", player.countMark("Kaoru_rexue_distBuff"));
                 player.removeSkill("Kaoru_rexue_distBuff"); 
             }
             
-            // 3. 开始逐鹿 (拼点)，此时的 targets 已经是包含全场的完整数组了！
             var result = await player.chooseToCompare(targets).setContent("chooseToCompareMeanwhile").forResult();
             
-            // 4. 额外目标添加
             if (result.winner) {
                 var losers = targets.filter(t => t !== result.winner);
                 var extraTargets = losers.filter(t => !trigger.targets.includes(t));
@@ -5272,13 +5214,6 @@ const skills = {
             }
         }
     },
-
-
-
-
-    // ==========================================
-    // ✦ 牧薰：激昂 ✦
-    // ==========================================
     "Kaoru_Jiang": {
         audio: 2,
         group: ["Kaoru_Jiang_init", "Kaoru_Jiang_rangeMonitor"],
@@ -5350,11 +5285,6 @@ const skills = {
             }
         }
     },
-
-
-    // ==========================================
-    // ✦ 牧薰：昴宿 ✦
-    // ==========================================
     "Kaoru_maosu": {
         audio: 2,
         group: ["Kaoru_maosu_monitor"],
@@ -5430,9 +5360,6 @@ const skills = {
     },
 
     // 浅海早纪
-    // ==========================================
-    // ✦ 早纪：执霆 (高智商 AI 团队协作版) ✦
-    // ==========================================
     "Saki_zhishu": {
         audio: 2,
         enable: "phaseUse",
@@ -5464,29 +5391,21 @@ const skills = {
             if (!targets.includes(player)) targets.push(player);
 
             await player.chooseToDebate(targets)
-            .set("debateTargets", targets) // 将参与者名单传给底层 AI
+            .set("debateTargets", targets) 
             .set("aiCard", function(target) {
-                // 🧠 核心 AI：接管每个角色的议事大脑
                 var debateTargets = _status.event.debateTargets || [];
                 
-                // 内部推演函数：猜测某个角色的意图
+                // ai逻辑（疑似不生效）
                 var guessColor = function(p) {
-                    // 规则限制：不足2张手牌绝对无法投红色
                     if (p.countCards("h") < 2) return "black";
-                    // 底气十足：有桃/酒，优先选黑色搏上限
                     if (p.hasCard(function(c) { return c.name === 'tao' || c.name === 'jiu'; }, "h")) return "black";
-                    // 濒危求生：血量为1，优先回血
                     if (p.hp === 1) return "red";
-                    // 局势判断：血量为2且手牌<=2，保守选红
                     if (p.hp === 2 && p.countCards("h") <= 2) return "red";
-                    // 默认选黑
                     return "black";
                 };
 
-                // 1. 确定自己的初衷
                 var myColor = guessColor(target);
 
-                // 2. 团队大局观：察言观色
                 var friends = debateTargets.filter(function(p) { return get.attitude(target, p) > 0; });
                 var blackVotes = 0, redVotes = 0;
                 for (var i = 0; i < friends.length; i++) {
@@ -5494,19 +5413,16 @@ const skills = {
                     else redVotes++;
                 }
 
-                // 3. 少数服从多数，争取全员一致拿护甲
                 if (blackVotes > redVotes) {
                     myColor = "black";
                 } else if (redVotes > blackVotes && target.countCards("h") >= 2) {
                     myColor = "red";
                 }
 
-                // 4. 最终硬性规则兜底
                 if (target.countCards("h") < 2) myColor = "black";
 
-                // 5. 挑出一张符合颜色的、价值最低的牌打出去
                 var cards = target.getCards("h", { color: myColor });
-                if (!cards.length) cards = target.getCards("h"); // 如果实在没这颜色，就随便拿一张
+                if (!cards.length) cards = target.getCards("h"); 
                 cards.sort(function(a, b) { return get.value(a) - get.value(b); });
 
                 return { bool: true, cards: [cards[0]] };
@@ -5525,7 +5441,6 @@ const skills = {
                     const redPlayers = (result.red || []).map(i => i[0]);
                     const blackPlayers = (result.black || []).map(i => i[0]);
 
-                    // 1. 颜色结果结算
                     if (opinion === "black") {
                         game.log("议事结果为", "#b黑色", "！");
                         for (const t of blackPlayers.sortBySeat()) {
@@ -5548,7 +5463,6 @@ const skills = {
                         game.log("议事结果平局，无事发生。");
                     }
 
-                    // 2. 一致性判定
                     if (debateTargets.length > 0) {
                         const allRed = debateTargets.every(tgt => redPlayers.includes(tgt));
                         const allBlack = debateTargets.every(tgt => blackPlayers.includes(tgt));
@@ -5566,7 +5480,6 @@ const skills = {
                 }
             });
         },
-
         subSkill: {
             strike: {
                 audio: 2,
@@ -5600,10 +5513,6 @@ const skills = {
             }
         }
     },
-
-    // ==========================================
-    // ✦ 浅海早纪：昴宿 (平衡调整，进度累计得护甲) ✦
-    // ==========================================
     "Saki_maosu": {
         audio: 2,
         mark: true,
@@ -5650,11 +5559,10 @@ const skills = {
                     await game.delay(); 
                     await player.draw(1);
                     
-                    // 🚀 核心修改：记录进度（交1张+摸1张 = 进度+2）
                     player.storage.Saki_maosu = (player.storage.Saki_maosu || 0) + 2;
                     
                     if (player.storage.Saki_maosu >= 4) {
-                        player.storage.Saki_maosu -= 4; // 扣除4点进度
+                        player.storage.Saki_maosu -= 4; 
                         if ((player.hujia || 0) < 5) {
                             await player.changeHujia(1);
                             game.log(player, "累计交出/获得四张牌，获得了", "#g1点护甲");
@@ -5665,7 +5573,6 @@ const skills = {
                         game.log(player, "当前获得护甲的进度为", "#y" + player.storage.Saki_maosu + " / 4");
                     }
                     
-                    // 更新面板上的标记数字显示
                     player.markSkill("Saki_maosu"); 
                     
                     if (target.getCards("h").includes(card) && get.type(card) === "equip") {
@@ -5709,24 +5616,22 @@ const skills = {
             player.addTempSkill("Satomi_leinuo_round", "roundStart");
             var target = trigger.player;
 
-            // 💡 AI 策略 1：里美选择整肃类型的智能判断
             var res1 = await player.chooseControl("擂进", "变阵", "鸣止", "取消").set("prompt", "幽儡：令 " + get.translation(target) + " 弃置两张牌或执行【整肃】").set("ai", function() {
                 var player = _status.event.player;
                 var target = _status.event.getTrigger().player;
                 var att = get.attitude(player, target);
                 var h = target.countCards("h");
                 
-                if (att < 0) { // 对敌人
+                if (att < 0) { 
                     if (h <= 4) {
-                        if (h < target.hp) return "鸣止"; // 手牌少于体力，逼迫弃牌
-                        if (h <= 3) return ["变阵", "擂进"].randomGet(); // 手牌极少，逼迫出牌
+                        if (h < target.hp) return "鸣止"; 
+                        if (h <= 3) return ["变阵", "擂进"].randomGet(); 
                         return ["擂进", "变阵", "鸣止"].randomGet();
                     }
-                    // 手牌多时概率使用，保留实力
                     return Math.random() < 0.4 ? ["擂进", "变阵", "鸣止"].randomGet() : "取消";
-                } else if (att > 0) { // 对队友
+                } else if (att > 0) { 
                     if (h > 4 && Math.random() < 0.3) {
-                        return ["擂进", "变阵"].randomGet(); // 辅助队友拿整肃奖励
+                        return ["擂进", "变阵"].randomGet(); 
                     }
                     return "取消";
                 }
@@ -5740,12 +5645,11 @@ const skills = {
                 var choices = ["执行整肃"];
                 if (target.countCards("he") >= 2) choices.unshift("弃置两张牌");
 
-                // 目标应对策略
                 var res2 = await target.chooseControl(choices).set("prompt", "幽儡：请选择弃置两张牌，或本回合强制执行【" + secret + "】").set("ai", function() {
                     var player = _status.event.player;
                     if (_status.event.choices.includes("弃置两张牌")) {
-                        if (player.countCards("he") >= 4) return "弃置两张牌"; // 牌多花钱消灾
-                        var att = get.attitude(player, _status.event.source); // 如果是队友给的整肃，欣然接受
+                        if (player.countCards("he") >= 4) return "弃置两张牌"; 
+                        var att = get.attitude(player, _status.event.source); 
                         if (att > 0) return "执行整肃";
                     }
                     return "执行整肃";
@@ -5758,7 +5662,7 @@ const skills = {
                     var zhengsuMap = { "擂进": "zhengsu_leijin", "变阵": "zhengsu_bianzhen", "鸣止": "zhengsu_mingzhi" };
                     target.addTempSkill(zhengsuMap[secret], "phaseAfter");
                     target.addTempSkill("Satomi_leinuo_monitor", "phaseAfter"); 
-                    target.storage.Satomi_leinuo_failed = false; // 初始化失败标记
+                    target.storage.Satomi_leinuo_failed = false; 
                 }
             }
         },
@@ -5780,7 +5684,6 @@ const skills = {
                     var useHistory = player.getHistory("use") || [];
                     var discardHistory = player.getHistory("discard") || [];
 
-                    // 1. 实时出牌监控
                     if (event.triggername === "useCardAfter" && _status.currentPhase === "phaseUse") {
                         if (useHistory.length > 1) {
                             var currentCard = trigger.card;
@@ -5809,7 +5712,6 @@ const skills = {
                             }
                         }
                     } 
-                    // 2. 实时弃牌监控
                     else if (event.triggername === "discardAfter" && _status.currentPhase === "phaseDiscard") {
                         if (zhengsuType === "鸣止") {
                             var allSuits = [];
@@ -5827,7 +5729,6 @@ const skills = {
                             }
                         }
                     } 
-                    // 3. 数量监控
                     else if (event.triggername === "phaseUseEnd") {
                         if (zhengsuType === "擂进" && useHistory.length < 3) { violated = true; isCountCheck = true; }
                         else if (zhengsuType === "变阵" && useHistory.length < 2) { violated = true; isCountCheck = true; }
@@ -5841,19 +5742,17 @@ const skills = {
                         }
                     }
 
-                    // 违规处罚执行
                     if (violated) {
-                        player.storage.Satomi_leinuo_failed = true; // 记录失败
+                        player.storage.Satomi_leinuo_failed = true; 
                         if (!isCountCheck && trigger.Satomi_leinuo_punished) return;
                         if (!isCountCheck) trigger.Satomi_leinuo_punished = true;
 
-                        if (!isCountCheck) { // 数量未达标的惩罚统一在回合末清算
+                        if (!isCountCheck) { 
                             game.log(player, "违反了", "#y【" + zhengsuType + "】", "的指令约束");
                             await player.loseHp(1); 
                         }
                     }
 
-                    // 🚀 核心：回合末终极清算
                     if (event.triggername === "phaseDiscardEnd") {
                         if (player.storage.Satomi_leinuo_failed) {
                             game.log(player, "未能完成整肃约束，回合末额外流失 1 点体力");
@@ -5872,10 +5771,6 @@ const skills = {
             }
         }
     },
-
-    // ==========================================
-    // ✦ 宇佐木里美：昴宿 ✦
-    // ==========================================
     "Satomi_maosu": {
         audio: 2,
         group: ["Satomi_maosu_doumao_reset", "Satomi_maosu_collect", "Satomi_maosu_init"],
@@ -6038,7 +5933,6 @@ const skills = {
             }
         }
     },
-
     "Satomi_doumao": {
         audio: 2,
         trigger: { player: ["phaseBegin", "phaseEnd"] },
@@ -6053,17 +5947,16 @@ const skills = {
                     filterCard: lib.filter.cardDiscardable,
                     position: 'he',
                     ai1: function(card) { return 7 - get.value(card); },
-                    // 💡 AI策略 4：逗猫的恶意与善意传递
                     ai2: function(target) {
                         var player = _status.event.player;
                         var att = get.attitude(player, target);
                         if (att > 0) {
-                            return 10 + att; // 极高权重传给队友，触发摸牌和昴宿
+                            return 10 + att; 
                         } else {
                             if (target.hp <= 2 || target.countCards("h") <= 2) {
-                                return 6; // 把猫丢给残血或没牌的敌人，强制逼迫其弃牌破防
+                                return 6; 
                             }
-                            return -1; // 健康的敌人别给他们摸牌的机会
+                            return -1; 
                         }
                     }
                 }).forResult();
@@ -6085,8 +5978,6 @@ const skills = {
         marktext: "猫",
         intro: { content: "嘿！有只猫在你身边欸！" }
     },
-
-
 
 	// 若叶未来
 	"Mirai_nieai": {
@@ -6187,9 +6078,6 @@ const skills = {
             }
         }
     },
-    // ===================================    // ==========================================
-    // ✦ 若叶未来：昴宿 ✦
-    // ==========================================
     "Mirai_maosu": {
         audio: 2,
         categories: ["奋武技"],
@@ -6481,10 +6369,6 @@ const skills = {
             }
         }
     },
-
-    // ==========================================
-    // ✦ 神那妮可：昴宿 ✦
-    // ==========================================
     "Niko_maosu": {
         audio: 2,
         mark: true, 
@@ -6513,9 +6397,7 @@ const skills = {
     },
 	
     // 昴宿星团通用技能池
-    // ==========================================
-    // 1. 万象 (AI：优先废牌利用)
-    // ==========================================
+    // 1. 万象 
     "Pleiades_wanxiang": {
         audio: 2,
         enable: "phaseUse",
@@ -6531,22 +6413,19 @@ const skills = {
         viewAs: { name: "wuzhong" },
         prompt: "万象：将两张花色与类别均不同的牌当做【无中生有】使用",
         check: function(card) {
-            return 6 - get.value(card); // AI 倾向于丢弃价值低的牌
+            return 6 - get.value(card); 
         },
         ai: {
             order: 9, 
             result: { 
                 player: function(player) {
-                    // 只有在手牌数充足，或极度需要过牌时才2换2
                     return player.countCards("he") >= 2 ? 1 : 0;
                 }
             }
         }
     },
 
-    // ==========================================
-    // 2. 绒御 (AI：只防致命牌与关键锦囊，拒绝亏牌)
-    // ==========================================
+    // 2. 绒御 
     "Pleiades_rongyu": {
         audio: 2,
         trigger: { target: "useCardToBefore" },
@@ -6569,13 +6448,10 @@ const skills = {
         },
         check: function(event, player) {
             var val = get.effect(player, event.card, event.player, player);
-            if (val >= 0) return false; // 增益牌绝不无效化
-            
-            // 如果是杀，且自己有闪且血量健康，不浪费2张牌去防
+            if (val >= 0) return false; 
             if (event.card.name === "sha" && player.hp > 1 && player.hasCard(c => c.name === "shan", "h")) {
                 return false; 
             }
-            // 遇到决斗、火攻、AOE、或者关键顺拆，且自己有危险时，果断防御
             return true;
         },
         content: function(event, trigger, player) {
@@ -6588,7 +6464,7 @@ const skills = {
             });
             next.set("cardColor", cardColor);
             next.set("ai", function(card) {
-                return 8 - get.value(card); // 弃废牌
+                return 8 - get.value(card); 
             });
             "step 1"
             if (result.bool) {
@@ -6598,9 +6474,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 3. 祈愿 (AI：精准寻找觉醒队友与大血牛)
-    // ==========================================
+    // 3. 祈愿 
     "Pleiades_qiyuan": {
         audio: 2,
         enable: "phaseUse",
@@ -6617,17 +6491,15 @@ const skills = {
             result: {
                 target: function(player, target) {
                     var att = get.attitude(player, target);
-                    if (att <= 0) return 0; // 绝对不给敌人用
+                    if (att <= 0) return 0; 
                     
                     var skills = target.getSkills();
                     for (var i = 0; i < skills.length; i++) {
                         var info = get.info(skills[i]);
-                        // 首要目标：帮队友强制觉醒！
                         if (info && (info.juexing || info.derivation === "juexing") && !target.hasAwakenedSkill(skills[i])) {
                             return 10;
                         }
                     }
-                    // 次要目标：给手牌上限高（血厚）但手牌极少的队友大补牌
                     var limit = typeof target.getHandcardLimit === "function" ? target.getHandcardLimit() : target.hp;
                     if (limit >= 3 && target.countCards("h") <= 1) return 5;
                     return 0;
@@ -6668,9 +6540,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 4. 分理 (AI：自动算账，拒绝亏本)
-    // ==========================================
+    // 4. 分理 
     "Pleiades_fenli": {
         audio: 2,
         trigger: { player: "phaseDrawBefore" },
@@ -6678,8 +6548,6 @@ const skills = {
             return !player.hasSkill("Pleiades_fenli_used");
         },
         check: function(event, player) {
-            // AI 算账：展示牌数是存活人数的一半（向上取整）
-            // 如果展示数量 < 2（比如1v1残局），发动会亏牌，坚决不发动！
             var num = Math.ceil(game.countPlayer() / 2);
             return num >= 2; 
         },
@@ -6695,7 +6563,7 @@ const skills = {
             for (var i = 0; i < cards.length; i++) {
                 if (get.color(cards[i]) === "red") redCards.push(cards[i]);
                 else if (get.color(cards[i]) === "black") blackCards.push(cards[i]);
-                else redCards.push(cards[i]); // 无色归入红色获得
+                else redCards.push(cards[i]); 
             }
             
             event.redCards = redCards;
@@ -6710,7 +6578,6 @@ const skills = {
                 var next = player.chooseTarget("分理：请选择一名角色获得这些黑牌", 1, true);
                 next.set("ai", function(target) {
                     var att = get.attitude(_status.event.player, target); 
-                    // 优先给最需要牌的核心队友
                     return att > 0 ? att + 1 / (target.countCards("h") + 1) : 0;
                 });
             } else {
@@ -6728,9 +6595,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 5. 灵使 (AI：无脑过牌)
-    // ==========================================
+    // 5. 灵使 
     "Pleiades_lingshi": {
         audio: 2,
         trigger: { player: ["gainAfter", "loseAfter", "equipAfter", "loseEquipAfter"] },
@@ -6743,11 +6608,11 @@ const skills = {
                 return get.type(c) === "equip";
             });
         },
-        check: function() { return true; }, // 必定发动
+        check: function() { return true; }, 
         ai: {
             effect: {
                 target: function(card, player, target) {
-                    if (get.type(card) === 'equip') return [1, 2]; // 让 AI 知道自己喜欢装装备
+                    if (get.type(card) === 'equip') return [1, 2]; 
                 }
             }
         },
@@ -6757,9 +6622,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 6. 幻写 (AI：敌我区分，博弈拉满)
-    // ==========================================
+    // 6. 幻写 
     "Pleiades_huanxie": {
         audio: 2,
         enable: "phaseUse",
@@ -6771,9 +6634,7 @@ const skills = {
             order: 7,
             result: {
                 target: function(player, target) {
-                    // 对队友：队友可以递好牌过来顺便制衡
                     if (get.attitude(player, target) > 0) return 1;
-                    // 对敌人：只找手牌极少 (<=2张) 的敌人，强行看光扒光！
                     if (get.attitude(player, target) < 0 && target.countCards("h") <= 2) return -1;
                     return 0; 
                 }
@@ -6787,11 +6648,9 @@ const skills = {
             
             var next = target.chooseCard("h", num, "幻写：请选择展示 " + num + " 张手牌，" + get.translation(player) + " 将获得其中一张");
             next.set("ai", function(card) {
-                // 如果是对队友放的，就把最好的牌（比如桃、好装备）送过去
                 if (get.attitude(_status.event.player, _status.currentPhase) > 0) {
                     return get.value(card); 
                 }
-                // 对敌人放的，乖乖交出最烂的废牌
                 return 8 - get.value(card); 
             });
             "step 1"
@@ -6801,7 +6660,7 @@ const skills = {
                 
                 var next2 = player.chooseCardButton("请选择获得其中一张牌", result.cards, 1, true);
                 next2.set("ai", function(button) {
-                    return get.value(button.link); // 玩家自己必定拿价值最高的
+                    return get.value(button.link); 
                 });
             } else {
                 event.finish();
@@ -6816,9 +6675,8 @@ const skills = {
             event.target.draw(1);
         }
     },
-        // ==========================================
-    // 7. 共砺 (AI：智能蹭好牌，仗义担伤害)
-    // ==========================================
+
+    // 7. 共砺 
     "Pleiades_gongli": {
         audio: 2,
         trigger: { global: "useCardToBefore" },
@@ -6834,9 +6692,7 @@ const skills = {
         check: function(event, player) {
             var target = event.targets[0];
             var eff = get.effect(player, event.card, event.player, player);
-            // 1. 如果是好牌（桃、无中），果断去蹭
             if (eff > 0) return true;
-            // 2. 如果是伤害牌，且打的是队友，自己血量>2，仗义分担顺便摸牌
             if (get.attitude(player, target) > 0 && player.hp > 2 && get.damageEffect(player, event.player, player) >= 0) return true;
             return false;
         },
@@ -6851,9 +6707,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 8. 异塑 (原生步骤流，稳定发牌)
-    // ==========================================
+    // 8. 异塑 
     "Pleiades_yisu": {
         audio: 2,
         enable: ["chooseToUse", "chooseToRespond"],
@@ -6922,9 +6776,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 9. 纵偶 (AI：挑拨离间，逼迫敌人自相残杀)
-    // ==========================================
+    // 9. 纵偶 
     "Pleiades_zongou": {
         audio: 2,
         enable: "phaseUse",
@@ -6940,7 +6792,6 @@ const skills = {
             order: 5,
             result: {
                 target: function(player, target) {
-                    // 无论敌我都可能有极高收益
                     if (get.attitude(player, target) > 0) return 1;
                     return -1;
                 }
@@ -6956,9 +6807,7 @@ const skills = {
             }).set("target", event.target).set("ai", function(t) {
                 var p = _status.event.player;
                 var target = _status.event.target;
-                // 如果把牌给了队友，自然是让他去杀敌人
                 if (get.attitude(p, target) > 0) return -get.attitude(p, t);
-                // 🚀 如果把牌给了敌人，强行逼他去杀他的队友！
                 if (get.attitude(p, target) < 0) return get.attitude(target, t); 
                 return -get.attitude(p, t);
             });
@@ -6969,7 +6818,6 @@ const skills = {
                 var hasPhysicalSha = event.target.hasCard(function(c) { return c.name === "sha"; }, "hs");
                 if (hasPhysicalSha) {
                     event.target.chooseControl("对目标使用实体【杀】", "令其获得你区域内的两张牌").set("prompt", "纵偶：你被要求对" + get.translation(event.shaTarget) + "出杀").set("ai", function() {
-                        // 如果被要求杀的人是队友，宁可被抢牌也不杀队友
                         if (get.attitude(_status.event.player, _status.event.shaTarget) > 0) return "令其获得你区域内的两张牌";
                         return "对目标使用实体【杀】";
                     }).set("shaTarget", event.shaTarget);
@@ -6995,7 +6843,7 @@ const skills = {
                     return get.value(button.link);
                 });
             } else if (event.usedSha) {
-                if (!result.bool) { // 如果手滑取消了出杀，依然会进入抢牌流程！
+                if (!result.bool) { 
                     event.needRob = true;
                     event.redo(); 
                 } else {
@@ -7009,9 +6857,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 10. 烈蹴 (原生步骤流拼点)
-    // ==========================================
+    // 10. 烈蹴 
     "Pleiades_liecu": {
         audio: 2,
         enable: "phaseUse",
@@ -7067,9 +6913,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 11. 枢衡 (AI：机智避开自己的关键花色)
-    // ==========================================
+    // 11. 枢衡 
     "Pleiades_shuheng": {
         audio: 2,
         enable: "phaseUse",
@@ -7084,7 +6928,6 @@ const skills = {
                 var cards = _status.event.player.getCards("h");
                 var counts = {spade:0, heart:0, club:0, diamond:0};
                 for(var i=0; i<cards.length; i++) counts[get.suit(cards[i])]++;
-                // 🚀 AI找出手里最少（或没有）的花色来坑对面
                 var min = 100; var minSuit = "spade";
                 for(var s in counts) { if(counts[s] < min) { min = counts[s]; minSuit = s; } }
                 return minSuit;
@@ -7099,7 +6942,7 @@ const skills = {
                     var cards = _status.event.player.getCards("h");
                     var counts = {spade:0, heart:0, club:0, diamond:0};
                     for(var i=0; i<cards.length; i++) counts[get.suit(cards[i])]++;
-                    counts[_status.event.suit1] = 100; // 不能选对面刚选的花色
+                    counts[_status.event.suit1] = 100; 
                     var min = 100; var minSuit = "spade";
                     for(var s in counts) { if(counts[s] < min) { min = counts[s]; minSuit = s; } }
                     return minSuit;
@@ -7139,14 +6982,12 @@ const skills = {
         }
     },
     
-    // ==========================================
-    // 12. 忘形 (AI：机智避开核心牌类别)
-    // ==========================================
+    // 12. 忘形 
     "Pleiades_wangxing": {
         audio: 2,
         trigger: { player: "phaseDrawBegin" },
         check: function(event, player) {
-            return true; // 白嫖2张牌，永远发动
+            return true; 
         },
         content: function(event, trigger, player) {
             trigger.num += 2; 
@@ -7162,10 +7003,9 @@ const skills = {
                     "step 0"
                     player.chooseControl(["basic", "trick", "equip"]).set("prompt", "忘形：请声明一种本回合不能使用的牌类别").set("ai", function() {
                         var p = _status.event.player;
-                        // 🚀 AI机智判断：如果没有装备牌要装，果断禁装备！
                         if (p.countCards("h", {type: "equip"}) === 0) return "equip";
                         if (p.countCards("h", {type: "trick"}) === 0) return "trick";
-                        return "equip"; // 兜底策略，基础牌最重要
+                        return "equip"; 
                     });
                     "step 1"
                     if (result.control) {
@@ -7184,9 +7024,8 @@ const skills = {
             }
         }
     },
-    // ==========================================
-    // 13. 窥心 (AI：田忌赛马，智能拼点数)
-    // ==========================================
+
+    // 13. 窥心 
     "Pleiades_kuixin": {
         audio: 2,
         trigger: { player: "damageEnd" },
@@ -7198,7 +7037,7 @@ const skills = {
             "step 0"
             event.source = trigger.source;
             player.chooseCardButton("窥心：请展示一张手牌", player.getCards("h")).set("ai", function(button) {
-                return get.number(button.link); // AI 发动时尽量选点数大的牌逼迫对方弃置
+                return get.number(button.link); 
             });
             "step 1"
             if (result.bool && result.links && result.links.length > 0) {
@@ -7208,7 +7047,6 @@ const skills = {
                 event.source.chooseCardButton("窥心：请展示一张手牌响应", event.source.getCards("h")).set("ai", function(button) {
                     var num = get.number(button.link);
                     var targetNum = get.number(_status.event.show1);
-                    // AI 响应逻辑：如果有比对方大的牌，优先出比对方大的保命；如果没有，丢点数最小的废牌
                     if (num > targetNum) return 20 + num; 
                     return 14 - num; 
                 }).set("show1", event.show1);
@@ -7249,9 +7087,7 @@ const skills = {
         }
     },
     
-    // ==========================================
-    // 14. 替劫 (AI：智能防伤与碰瓷反击)
-    // ==========================================
+    // 14. 替劫 
     "Pleiades_tijie": {
         audio: 2,
         trigger: { player: "damageBegin" },
@@ -7260,9 +7096,8 @@ const skills = {
             return event.source && player.hasCard(c => get.type(c) !== "basic", "he");
         },
         check: function(event, player) {
-            if (player.hp <= event.num) return true; // 致命伤害必防
-            if (event.num >= 2) return true; // 高额伤害必防
-            // 碰瓷 AI：如果伤害来源只有 1-2 张牌，丢张废锦囊就能让他掉血，果断碰瓷
+            if (player.hp <= event.num) return true; 
+            if (event.num >= 2) return true; 
             if (event.source && event.source.countCards("h") <= player.countCards("he", c => get.type(c) !== "basic")) {
                 return true;
             }
@@ -7277,10 +7112,9 @@ const skills = {
             .set("ai", function(card) {
                 var p = _status.event.player;
                 var sourceHandCount = _status.event.sourceHandCount;
-                if (p.hp <= 1 || _status.event.isFatal) return 8 - get.value(card); // 濒死保命要紧
-                // 试图反噬对方
+                if (p.hp <= 1 || _status.event.isFatal) return 8 - get.value(card); 
                 if (sourceHandCount <= 2) return 6 - get.value(card);
-                return 0; // 丢太多就不划算了
+                return 0; 
             }).set("sourceHandCount", sourceHandCount).set("isFatal", player.hp <= trigger.num);
             "step 1"
             if (result.bool && result.cards && result.cards.length > 0) {
@@ -7294,9 +7128,7 @@ const skills = {
         }
     },
     
-    // ==========================================
-    // 15. 绝响 (AI补充：防卡死与嘲讽减免)
-    // ==========================================
+    // 15. 绝响 
     "Pleiades_juexiang": {
         audio: 2,
         mod: {
@@ -7310,16 +7142,14 @@ const skills = {
             effect: {
                 target: function(card, player, target) {
                     if (target.hp <= 1 && (card.name === "sha" || card.name === "juedou")) {
-                        return "zerotarget"; // 告诉AI，残血的这个目标是打不到的，别犯傻
+                        return "zerotarget"; 
                     }
                 }
             }
         }
     },
 	
-    // ==========================================
-    // 16. 晏如 (AI补充：空手防暴击认知)
-    // ==========================================
+    // 16. 晏如 
     "Pleiades_yanru": {
         audio: 2,
         trigger: { player: "damageBegin4" },
@@ -7334,9 +7164,8 @@ const skills = {
         ai: {
             effect: {
                 target: function(card, player, target) {
-                    // 告诉AI：如果对方没武器，且你打出的是暴击伤害（比如酒杀），不要把大招浪费在她身上
                     if (!target.getEquip(1) && get.tag(card, "damage") > 1) {
-                        return 0.5; // 降低收益预期
+                        return 0.5; 
                     }
                 }
             }
@@ -7359,9 +7188,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 17. 轰雷/奔雷 (高阶俄罗斯轮盘赌步骤流)
-    // ==========================================
+    // 17. 轰雷/奔雷 
     "Pleiades_xunting": {
         audio: 2,
         trigger: { player: "phaseZhunbeiBegin" },
@@ -7384,16 +7211,15 @@ const skills = {
             
             player.chooseControl(choices).set("displayList", choiceNames).set("prompt", "轰雷：是否弃置一种类别的所有牌，令你与一名角色依次执行反转的【闪电】？").set("ai", function() {
                 var p = _status.event.player;
-                if (p.hp <= 3) return "cancel2"; // 血少绝不玩命
+                if (p.hp <= 3) return "cancel2"; 
                 var cards = p.getCards("he");
-                // AI 找垃圾类别：如果全是垃圾装备或者没用的废锦囊
                 var counts = { basic:0, trick:0, equip:0 };
                 for (var i=0; i<cards.length; i++) {
                     var t = get.type(cards[i]);
                     if(t==="delay") t="trick";
                     counts[t]++;
                 }
-                if (counts.equip === 1 && p.countCards("e") > 0) return "equip"; // 只有一件破防具/武器，扔了去电人
+                if (counts.equip === 1 && p.countCards("e") > 0) return "equip"; 
                 return "cancel2";
             });
             "step 1"
@@ -7452,9 +7278,7 @@ const skills = {
         }
     },
     
-    // ==========================================
-    // 18. 回锋 (AI：智能印卡与白嫖摸牌)
-    // ==========================================
+    // 18. 回锋 
     "Pleiades_huifeng": {
         audio: 2,
         trigger: { player: "phaseJieshuBegin" },
@@ -7479,12 +7303,12 @@ const skills = {
                     -1 
                 ).set("viewAs", targetName).set("prompt", "回锋：选择一张手牌当做无限次数使用的【" + get.translation(targetName) + "】使用（取消则摸一张牌）");
             } else {
-                event.goto(2); // 没有历史记录，直接去摸牌
+                event.goto(2); 
             }
             "step 1"
             if (result.bool) {
                 game.log(player, "发动", "#g【回锋】", "将一张手牌转化为了额外的卡牌使用");
-                event.finish(); // 如果用了，技能结束
+                event.finish(); 
             } else {
                 player.removeSkill("Pleiades_huifeng_inf");
             }
@@ -7503,9 +7327,8 @@ const skills = {
             }
         }
     },
-    // ==========================================
-    // 19. 缤宴 (原生步骤流，稳定发卡回血)
-    // ==========================================
+
+    // 19. 缤宴 
     "Pleiades_binyan": {
         audio: 2,
         trigger: { player: "phaseZhunbeiBegin" },
@@ -7523,9 +7346,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 20. 拾姗 (AI：复制神卡，丢弃破烂)
-    // ==========================================
+    // 20. 拾姗 
     "Pleiades_shishan": {
         audio: 2, 
         enable: "phaseUse", 
@@ -7548,7 +7369,7 @@ const skills = {
         content: function(event, trigger, player) {
             "step 0"
             player.chooseCard("h", 1, "拾姗：请选择并展示一张手牌").set("ai", function(card) { 
-                return get.value(card); // AI 找高价值的牌复制
+                return get.value(card); 
             });
             "step 1"
             if (result.bool && result.cards.length > 0) {
@@ -7558,7 +7379,7 @@ const skills = {
                 player.chooseToDiscard("he", 2, "弃置两张花色和类别与该牌均不同的牌，以复制之", function(card) {
                     return get.suit(card) !== get.suit(_status.event.showCard) && get.type(card) !== get.type(_status.event.showCard);
                 }).set("showCard", event.showCard).set("complexCard", true).set("ai", function(card) { 
-                    return 6 - get.value(card); // AI 丢破烂
+                    return 6 - get.value(card); 
                 });
             } else {
                 event.finish();
@@ -7603,9 +7424,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 21. 褪忆 (AI：极具威慑力的绝境强封)
-    // ==========================================
+    // 21. 褪忆 
     "Pleiades_tuiyi": {
         audio: 2,
         limited: true, mark: true, skillAnimation: true, animationColor: "gray", intro: { content: "limited" },
@@ -7638,7 +7457,7 @@ const skills = {
                 var player = _status.event.player;
                 var trigger = _status.event.getTrigger();
                 var att = get.attitude(player, trigger.player);
-                if (att > 0) return "取消"; // 队友的牌不封
+                if (att > 0) return "取消"; 
                 
                 var eff = 0;
                 if (trigger.targets && trigger.targets.length > 0) {
@@ -7646,7 +7465,6 @@ const skills = {
                         eff += get.effect(trigger.targets[i], trigger.card, trigger.player, player);
                     }
                 }
-                // AI评估：如果是致命伤害、无中生有或严重负面牌，果断发动
                 if (eff < -5 || (trigger.card.name === "wuzhong" && att < 0)) {
                     if (_status.event.canDiscard) return "弃置两张同颜色牌";
                     if (player.hp > 2) return "流失1点体力";
@@ -7711,9 +7529,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 22. 殉决 (AI：威慑与手牌互爆)
-    // ==========================================
+    // 22. 殉决 
     "Pleiades_xunjue": {
         audio: 2,
         trigger: { target: "useCardToTargeted" },
@@ -7725,11 +7541,10 @@ const skills = {
             "step 0"
             player.chooseToDiscard("he", [1, Infinity], "殉决：你可以弃置任意张牌，令 " + get.translation(trigger.player) + " 弃置等量的牌（代价：本回合你受到的伤害翻倍）").set("ai", function(card) { 
                 var trigger = _status.event.getTrigger();
-                if (get.attitude(_status.event.player, trigger.player) > 0) return 0; // 队友不用
+                if (get.attitude(_status.event.player, trigger.player) > 0) return 0; 
                 
                 var enemyCards = trigger.player.countCards("he");
                 var myCards = _status.event.player.countCards("he");
-                // 对方牌少，自己牌多，果断全部扒光
                 if (enemyCards <= 2 && myCards > 3) return 6 - get.value(card);
                 return 0; 
             });
@@ -7763,9 +7578,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 23. 刻痕 (AI：空城绝技，攻防一体)
-    // ==========================================
+    // 23. 刻痕 
     "Pleiades_kehen": {
         audio: 2,
         trigger: { player: "loseAfter" },
@@ -7781,7 +7594,6 @@ const skills = {
             });
             player.chooseButton(["刻痕：请声明一种基本牌或普通锦囊牌", [list, "vcard"]]).set("ai", function(button) {
                 var p = _status.event.player;
-                // AI 判断：出牌阶段印无中，回合外防守印闪或桃
                 if (_status.currentPhase === p) return button.link[2] === "wuzhong" ? 1 : 0;
                 return button.link[2] === "shan" ? 1 : 0; 
             });
@@ -7827,9 +7639,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 24. 棘荆 (AI：掩护反击)
-    // ==========================================
+    // 24. 棘荆 
     "Pleiades_jijing": {
         audio: 2,
         trigger: { global: "useCardToTargeted" },
@@ -7855,8 +7665,8 @@ const skills = {
             }, promptText).set("ai", function(card) {
                 var p = _status.event.player;
                 var t = _status.event.target;
-                if (get.attitude(p, t) < 0) return 0; // 绝对不掩护敌人
-                return 6 - get.value(card); // 把最废的装备扔出去
+                if (get.attitude(p, t) < 0) return 0; 
+                return 6 - get.value(card); 
             }).set("target", target);
             "step 1"
             if (result.bool && result.cards && result.cards.length > 0) {
@@ -7904,7 +7714,7 @@ const skills = {
                             return card.name === "sha";
                         }, "棘荆：你可以对 " + get.translation(source) + " 使用一张无视距离的【杀】").set("targetRequired", true).set("filterTarget", function(card, p, t) {
                             return t === _status.event.source;
-                        }).set("source", source).set("ai", function() { return 1; }); // AI 无脑反击
+                        }).set("source", source).set("ai", function() { return 1; }); 
                         player.addTempSkill("Pleiades_jijing_range");
                     } else {
                         event.finish();
@@ -7919,9 +7729,8 @@ const skills = {
             }
         }
     },
-    // ==========================================
-    // 25. 兆觉 (AI：高频词蹲坑，痛打落水狗)
-    // ==========================================
+
+    // 25. 兆觉 
     "Pleiades_zhaojue": {
         audio: 2,
         trigger: { player: "phaseZhunbeiBegin" },
@@ -7931,7 +7740,6 @@ const skills = {
                 return info[0] !== "equip"; 
             });
             player.chooseButton(["兆觉：请记录一个非装备牌的牌名", [list, "vcard"]]).set("ai", function(button) {
-                // 🚀 AI 机智蹲坑：只选全场最高频的牌！
                 var name = button.link[2];
                 if (name === "sha") return 10;
                 if (name === "shan") return 9;
@@ -7983,7 +7791,6 @@ const skills = {
                     player.chooseControl(choices).set("prompt", "兆觉：请选择一项反击效果").set("ai", function() {
                         var p = _status.event.player;
                         var t = _status.event.target;
-                        // 🚀 AI 看人下菜碟：敌人牌少直接拔毛，其他情况自己补牌
                         if (get.attitude(p, t) < 0 && t.countCards("h") <= 2) return "弃置其一张牌";
                         return "摸一张牌";
                     }).set("target", event.target);
@@ -8009,9 +7816,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 26. 十字 (完美解构 while 循环，原生步骤流)
-    // ==========================================
+    // 26. 十字 
     "Pleiades_shizi": {
         audio: 2,
         enable: "phaseUse",
@@ -8038,7 +7843,7 @@ const skills = {
             } else {
                 event.finish();
             }
-            "step 2" // 🔁 闭环重置点
+            "step 2" 
             if (!event.target.isAlive() || event.count >= 3) {
                 event.finish();
                 return;
@@ -8047,7 +7852,7 @@ const skills = {
             event.target.damage(1, player);
             "step 3"
             if (event.hpBefore !== event.target.hp) {
-                event.finish(); // 造成体力变化了，连击终止
+                event.finish(); 
                 return;
             }
             var hasValidCard = player.hasCard(function(c) {
@@ -8068,7 +7873,7 @@ const skills = {
             "step 4"
             if (result.bool && result.cards && result.cards.length > 0) {
                 event.lastNumber = get.number(result.cards[0]);
-                event.goto(2); // 🚀 无名杀底层 goto 原生循环，永不卡死！
+                event.goto(2); 
             }
         },
         subSkill: {
@@ -8080,9 +7885,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 27. 环御 (AI：核心包养，智能减伤)
-    // ==========================================
+    // 27. 环御 
     "Pleiades_huanyu": {
         audio: 2,
         trigger: { player: "phaseDiscardEnd" },
@@ -8114,7 +7917,6 @@ const skills = {
                 return t !== p;
             }).set("ai", function(target) {
                 var att = get.attitude(_status.event.player, target); 
-                // 🚀 AI优先把黑牌包养给最缺手牌的核心队友
                 return att > 0 ? att + 1 / (target.countCards("h") + 1) : 0;
             });
             "step 1"
@@ -8139,7 +7941,6 @@ const skills = {
                     event.num = player.storage.Pleiades_huanyu_buff;
                     player.chooseToDiscard("he", event.num, "环御：是否弃置 " + event.num + " 张牌，令此次伤害 -1？").set("ai", function(c) {
                         var p = _status.event.player;
-                        // 🚀 AI智能算血：只有血量危机或者代价极小时才换防
                         if (p.hp <= 2 || p.countCards("he") > _status.event.num + 1) return 8 - get.value(c);
                         return 0;
                     }).set("num", event.num);
@@ -8155,9 +7956,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 28. 忆夕 (AI：条件满足无脑触发追加回合)
-    // ==========================================
+    // 28. 忆夕 
     "Pleiades_yixi": {
         audio: 2,
         limited: true, mark: true, skillAnimation: true, animationColor: "orange", intro: { content: "limited" },
@@ -8195,9 +7994,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 29. 咫涯 (AI：空间扭曲大师)
-    // ==========================================
+    // 29. 咫涯 
     "Pleiades_zhiya": {
         audio: 2,
         enable: "phaseUse",
@@ -8207,7 +8004,6 @@ const skills = {
             order: 8,
             result: {
                 target: function(player, target) {
-                    // 🚀 AI 逻辑：远距离的残血敌人果断扭曲空间，拉近距离狂揍！
                     if (get.attitude(player, target) < 0 && get.distance(player, target) > player.getAttackRange()) return 1;
                     if (get.attitude(player, target) < 0 && player.hp >= 3) return 0.5;
                     return 0; 
@@ -8245,9 +8041,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 30. 头彩 (完美解构 while 循环，理智赌徒 AI)
-    // ==========================================
+    // 30. 头彩 
     "Pleiades_jackpot": {
         audio: 2,
         trigger: { player: "phaseBegin" },
@@ -8262,10 +8056,9 @@ const skills = {
                 
             player.chooseToDiscard("he", 1, promptText).set("ai", function(card) {
                 var p = _status.event.player;
-                // 🚀 AI极其理智：出过1次黑色绝不再赌，保命要紧！
                 if (_status.event.blackCount >= 1) return 0; 
-                if (p.hp < p.maxHp) return 7 - get.value(card); // 残血疯狂赌
-                return 5 - get.value(card); // 满血略微克制
+                if (p.hp < p.maxHp) return 7 - get.value(card); 
+                return 5 - get.value(card); 
             }).set("blackCount", event.blackCount);
             
             "step 1"
@@ -8280,7 +8073,7 @@ const skills = {
                 if (player.hp < player.maxHp) {
                     player.recover(1); 
                     game.log(player, "赢得了", "#y【头彩】", "！奇迹显现，伤痛愈合。");
-                    event.goto(0); // 赢了继续白嫖
+                    event.goto(0); 
                 } else {
                     var num = get.number(result.card);
                     if (num > 7) {
@@ -8301,7 +8094,7 @@ const skills = {
                     } else {
                         game.log(player, "判定点数恰好为", "#g 7", "，命运的齿轮并未转动，无事发生。");
                     }
-                    event.goto(0); // 赢了继续白嫖
+                    event.goto(0); 
                 }
             } else {
                 event.blackCount++;
@@ -8309,7 +8102,7 @@ const skills = {
                 player.damage(1);
             }
             "step 3"
-            if (event.blackCount > 0) { // 意味着刚才判定为黑
+            if (event.blackCount > 0) { 
                 if (player.countCards("h") > 0) {
                     player.discard(player.getCards("h").randomGet());
                 }
@@ -8323,14 +8116,13 @@ const skills = {
                     game.log(player, "跳过了本回合的其他阶段，直接进入弃牌阶段。");
                     event.finish();
                 } else {
-                    event.goto(0); // 只黑了1次没暴毙，问你还敢不敢继续
+                    event.goto(0); 
                 }
             }
         }
     },
-    // ==========================================
-    // 31. 昴星 (AI：理智赌徒，稳赚不赔)
-    // ==========================================
+
+    // 31. 昴星 
     "Pleiades_maoxing": {
         audio: 2,
         enable: "phaseUse",
@@ -8340,7 +8132,6 @@ const skills = {
             event.cards = [];
             event.sum = 0;
             "step 1"
-            // 翻开牌堆顶的一张牌
             var card = get.cards(1)[0];
             event.cards.push(card);
             event.sum += get.number(card);
@@ -8357,13 +8148,12 @@ const skills = {
                 event.finish();
             } else {
                 player.chooseBool("当前点数和为 " + event.sum + "，是否继续展示牌堆顶的牌？").set("ai", function() {
-                    // 🚀 AI 赌徒逻辑：点数大于等于 10 就收手，见好就收！
                     return _status.event.sum < 9;
                 }).set("sum", event.sum);
             }
             "step 3"
             if (result.bool) {
-                event.goto(1); // 继续翻牌
+                event.goto(1); 
             } else {
                 game.log(player, "主动停止了展示，获得了所有展示的牌");
                 player.gain(event.cards, "gain2");
@@ -8381,9 +8171,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 32. 连诛 (AI：隔山打牛，精准收割)
-    // ==========================================
+    // 32. 连诛 
     "Pleiades_lianzhu": {
         audio: 2,
         trigger: { source: "damageEnd" },
@@ -8391,8 +8179,7 @@ const skills = {
             if (!event.card) return false;
             var color = get.color(event.card);
             if (!color || color === "none") return false;
-            
-            // 必须有受伤目标，且目标身边有其他可以被选中的角色
+
             var target = event.player;
             var hasValidTarget = game.hasPlayer(function(current) {
                 return current !== player && current !== target && get.distance(target, current) <= 1;
@@ -8409,7 +8196,7 @@ const skills = {
             player.chooseToDiscard("he", 1, "连诛：是否弃置一张" + get.translation(color) + "牌，对" + get.translation(event.damageTarget) + "距离1以内的一名角色造成1点伤害？", function(card) {
                 return get.color(card) === _status.event.color;
             }).set("color", color).set("ai", function(card) {
-                return 7 - get.value(card); // AI优先丢废牌
+                return 7 - get.value(card); 
             });
             "step 1"
             if (result.bool && result.cards && result.cards.length > 0) {
@@ -8431,9 +8218,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 33. 星坠 (重火力多段火攻)
-    // ==========================================
+    // 33. 星坠 
     "Pleiades_xingzhui": {
         audio: 2,
         enable: "phaseUse",
@@ -8450,7 +8235,6 @@ const skills = {
             order: 6,
             result: { player: 1 }
         },
-        // 绑定底层的记录和增伤子技能
         group: ["Pleiades_xingzhui_record"]
     },
     "Pleiades_xingzhui_record": {
@@ -8461,23 +8245,23 @@ const skills = {
         },
         content: function(event, trigger, player) {
             var count = trigger.cards ? trigger.cards.length : 2;
-            var x = Math.floor(count / 2); // 🚀 完美落实：向下取整
+            var x = Math.floor(count / 2); 
             player.storage.Pleiades_xingzhui_x = x;
             player.storage.Pleiades_xingzhui_hit = false;
-            player.addTempSkill("Pleiades_xingzhui_buff"); // 发放隐形增伤buff
+            player.addTempSkill("Pleiades_xingzhui_buff"); 
         }
     },
     "Pleiades_xingzhui_buff": {
         charlotte: true,
-        trigger: { source: "damageBegin1" }, // 🚀 拦截火攻的伤害结算前夕
+        trigger: { source: "damageBegin1" }, 
         forced: true, silent: true,
         filter: function(event, player) {
             return event.card && event.card.name === "huogong" && player.storage.Pleiades_xingzhui_x > 0;
         },
         content: function(event, trigger, player) {
             var x = player.storage.Pleiades_xingzhui_x || 0;
-            trigger.num += x; // 强行加伤
-            player.storage.Pleiades_xingzhui_hit = true; // 记录打出了伤害
+            trigger.num += x; 
+            player.storage.Pleiades_xingzhui_hit = true; 
             game.log(player, "的", "#g【星坠】", "附加了", "#r" + x + "点", "伤害！");
         },
         group: "Pleiades_xingzhui_miss"
@@ -8489,7 +8273,6 @@ const skills = {
             return event.skill === "Pleiades_xingzhui";
         },
         content: function(event, trigger, player) {
-            // 火攻彻底结束后，如果发现没造成伤害，立刻摸牌补偿
             if (!player.storage.Pleiades_xingzhui_hit) {
                 var x = player.storage.Pleiades_xingzhui_x || 0;
                 if (x > 0) {
@@ -8497,16 +8280,13 @@ const skills = {
                     game.log(player, "的", "#g【星坠】", "未能造成伤害，摸了", x, "张牌");
                 }
             }
-            // 清理缓存
+
             delete player.storage.Pleiades_xingzhui_x;
             delete player.storage.Pleiades_xingzhui_hit;
             player.removeSkill("Pleiades_xingzhui_buff");
         }
     },
 
-    // ==========================================
-    // 34. 易元 (AI：可连续发动的底层盲盒)
-    // ==========================================
     "Pleiades_yiyuan": {
         audio: 2,
         enable: "phaseUse",
@@ -8548,13 +8328,11 @@ const skills = {
                 player.addMark("Pleiades_yiyuan_sha", 1, false);
                 game.log("展示为", "#y锦囊牌", "，获得之并摸一张牌，本回合出【杀】次数+1");
             } else if (type === "basic") {
-                // 🚀 基本牌不获得，直接置入弃牌堆
                 game.cardsDiscard(event.card);
                 
                 player.addTempSkill("Pleiades_yiyuan_limit", "phaseAfter");
                 player.addMark("Pleiades_yiyuan_limit", 1, false);
                 
-                // 强制清零使用次数，实现连营
                 if (player.getStat().skill.Pleiades_yiyuan !== undefined) {
                     player.getStat().skill.Pleiades_yiyuan--;
                 }
@@ -8575,9 +8353,7 @@ const skills = {
         }
     },
 
-    // ==========================================
-    // 35. 水镜 (反制神技，反弹锦囊与杀)
-    // ==========================================
+    // 35. 水镜 
     "Pleiades_shuijing": {
         audio: 2,
         trigger: { target: "useCardToBefore" },
@@ -8607,7 +8383,7 @@ const skills = {
                     event.success = true;
                 } else {
                     game.log(player, "猜错了，展示的牌被置入弃牌堆。");
-                    game.cardsDiscard(card); // 🚀 猜错直接丢弃，绝不白嫖！
+                    game.cardsDiscard(card); 
                     event.finish();
                 }
             } else {
@@ -8631,7 +8407,7 @@ const skills = {
                 game.log(player, "成功将目标转移给了", newTarget);
             }
             if (event.success) {
-                player.gain(event.card, "gain2"); // 🚀 只有猜对才能获得！
+                player.gain(event.card, "gain2"); 
             }
         },
         subSkill: {
@@ -8645,9 +8421,7 @@ const skills = {
         }
     },
     
-    // ==========================================
-    // 36. 炮球 (阶段性智能控制)
-    // ==========================================
+    // 36. 炮球 
     "Pleiades_paoqiu": {
         audio: 2,
         trigger: { source: "damageBegin" },
@@ -8662,7 +8436,6 @@ const skills = {
             player.chooseControl("摸一张牌", "弃置一名角色一张牌").set("prompt", "炮球：当前阶段首次造成伤害，请选择一项").set("ai", function() {
                 var p = _status.event.player;
                 if (p.countCards("h") <= 2) return "摸一张牌";
-                // 找找有没有敌人有装备或者满手牌
                 var enemies = game.filterPlayer(current => get.attitude(p, current) < 0 && current.countCards("he") > 0);
                 if (enemies.length > 0) return "弃置一名角色一张牌";
                 return "摸一张牌";
@@ -17851,9 +17624,6 @@ const skills = {
 	},
 	
 	// 飞鸟悠里
-    // ==========================================
-    // ✦ 飞鸟悠里：同泽 (高智商AI动态选牌版) ✦
-    // ==========================================
     "Yuuri_tongze": {
         audio: 2,
         init: function(player) {
@@ -17879,7 +17649,7 @@ const skills = {
                     player.chooseCard("h", 1, "同泽：你可以将获得的一张牌置入【仁库】").set("filterCard", function(card) {
                         return _status.event.cards.includes(card);
                     }).set("cards", cards).set("ai", function(card) {
-                        return 6 - get.value(card); // AI 优先把没用的废牌塞进仁库
+                        return 6 - get.value(card); 
                     });
                     "step 1"
                     if (result.bool && result.cards && result.cards.length > 0) {
@@ -17907,16 +17677,14 @@ const skills = {
                         var target = _status.event.getTrigger().player;
                         var att = get.attitude(player, target);
                         
-                        // 1. 对自己或队友无脑使用
                         if (att >= 0) return 1;
                         
-                        // 2. 对敌人的情况：人数<=2，血量=1，手牌<=2，且即将到他的回合（补刀）
                         var enemies = game.filterPlayer(current => get.attitude(player, current) < 0);
                         var isTurnSoon = (_status.currentPhase && (_status.currentPhase.next === target || _status.currentPhase === target));
                         if (enemies.length <= 2 && target.hp === 1 && target.countCards("h") <= 2 && isTurnSoon) {
                             return 1;
                         }
-                        return 0; // 否则不对敌人用
+                        return 0; 
                     });
                     "step 1"
                     if (result.bool && result.links && result.links.length > 0) {
@@ -17933,7 +17701,6 @@ const skills = {
                     ui.cardPile.insertBefore(renkuCard, ui.cardPile.childNodes[0]);
                     game.log(player, "将", renkuCard, "从", "#y【仁库】", "置于了牌堆底");
                     
-                    // 抽取出的公共AI逻辑函数
                     var chooseAI = function() {
                         var p = _status.event.choosingPlayer;
                         var isTurnSoon = (_status.currentPhase && (_status.currentPhase.next === p || _status.currentPhase === p));
@@ -17941,19 +17708,17 @@ const skills = {
                         var isLowHp = p.hp <= 2;
                         var teammateLowHp = game.filterPlayer(current => get.attitude(p, current) > 0 && current.hp <= 2).length > 0;
                         
-                        // 自己血量较低或队友血量较低需要救人时优先选择基本牌
                         if (isLowHp || teammateLowHp) return "basic";
-                        // 本身有保命牌或即将到自己回合时，优先选择锦囊牌/装备牌
                         if (hasSaveCard || isTurnSoon) return Math.random() > 0.5 ? "trick" : "equip";
-                        return "trick"; // 默认
+                        return "trick"; 
                     };
                     
-                    // 悠里本体选牌
                     player.chooseControl("basic", "trick", "equip")
                         .set("prompt", "同泽：请选择从牌堆中获得一种类别的牌")
                         .set("choosingPlayer", player)
                         .set("ai", chooseAI);
-                        
+
+					//ai逻辑
                     "step 1"
                     if (result.control) {
                         var type = result.control;
@@ -17965,7 +17730,6 @@ const skills = {
                     
                     "step 2"
                     var target = trigger.player;
-                    // 受伤角色选牌（自己或队友共用逻辑）
                     var chooseAI = function() {
                         var p = _status.event.choosingPlayer;
                         var isTurnSoon = (_status.currentPhase && (_status.currentPhase.next === p || _status.currentPhase === p));
@@ -18003,10 +17767,6 @@ const skills = {
             }
         }
     },
-
-    // ==========================================
-    // ✦ 飞鸟悠里：幻匙 (智能发牌与自动截断 AI 版) ✦
-    // ==========================================
     "Yuuri_huanchi": {
         audio: 2,
         enable: "phaseUse",
@@ -18016,16 +17776,15 @@ const skills = {
             return player.countCards("he") > 0;
         },
         ai: {
-            order: 7, // 高优先级，能用就用
+            order: 7, 
             result: {
                 player: function(player) {
-                    if (player.hp <= 1) return 0; // 血量见底不卖血
+                    if (player.hp <= 1) return 0; 
                     
                     var allies = game.filterPlayer(current => get.attitude(player, current) > 0 && current !== player);
-                    if (allies.length > 0) return 1; // 优先找队友
+                    if (allies.length > 0) return 1; 
                     
                     var enemies = game.filterPlayer(current => get.attitude(player, current) < 0);
-                    // 没有队友时，如果仁库牌不多，才对敌人用
                     if (enemies.length > 0 && _status.renku && _status.renku.length <= 3) return 1;
                     
                     return 0;
@@ -18042,14 +17801,12 @@ const skills = {
                 position: "he",
                 filterTarget: function(card, player, target) { return target !== player; },
                 ai1: function(card) {
-                    return 6 - get.value(card); // AI 优先给废牌
+                    return 6 - get.value(card); 
                 },
                 ai2: function(target) {
                     var player = _status.event.player;
                     var att = get.attitude(player, target);
-                    if (att > 0) return att; // 优先选队友
-                    
-                    // 队友少牌或无队友，且仁库不多时，给敌人一点点微弱的选择权重
+                    if (att > 0) return att; 
                     var allies = game.filterPlayer(current => get.attitude(player, current) > 0 && current !== player);
                     var alliesLowCards = allies.length === 0 || allies.every(a => a.countCards('h') <= 2);
                     if (att < 0 && alliesLowCards && _status.renku && _status.renku.length <= 3) {
@@ -18062,8 +17819,6 @@ const skills = {
             if (result.bool && result.targets && result.targets.length > 0 && result.cards && result.cards.length > 0) {
                 var target = result.targets[0];
                 var cards = result.cards;
-                
-                // 🚀 AI 核心修正：如果 AI 决定对敌人使用，强制把选中的两张牌切成 1 张！
                 if (player.isUnderControl && !player.isUnderControl() && get.attitude(player, target) < 0 && cards.length > 1) {
                     cards = [cards[0]]; 
                 }
@@ -18097,8 +17852,6 @@ const skills = {
             }
         }
     },
-
-
     "Yuuri_mengwei": {
         charlotte: true,
         mark: true,
@@ -18148,13 +17901,12 @@ const skills = {
                 yuuri.addSkill("Yuuri_huanchi_draw");
                 game.log(yuuri, "获得了", "#g" + event.armorNum + "点护甲");
                 event.index++;
-                event.redo(); // 循环发护甲直到发完
+                event.redo(); 
             } else {
                 player.storage.Yuuri_mengwei_source = [];
             }
         }
     },
-
     "Yuuri_huanchi_draw": {
         charlotte: true,
         marktext: "味",
@@ -18171,7 +17923,7 @@ const skills = {
         content: function(event, trigger, player) {
             var hujia = typeof player.countHujia === "function" ? player.countHujia() : (player.hujia || 0);
             trigger.num += hujia;
-            game.log(player, "因", "#g【幻匙增益】", "多摸了", "#y" + hujia + "张牌");
+            game.log(player, "因", "#g【梦味】", "多摸了", "#y" + hujia + "张牌");
         }
     },
 
