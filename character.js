@@ -714,7 +714,7 @@ const characters = {
         maxHp: 3,
         hujia: 0,
         skills: ["Umika_juebi", "Umika_maosu"],
-        img: "extension/魔法纪录/image/Pleiades_Umika.jpg",
+        img: "extension/魔法纪录/image/Pleiades_Umika.png",
         dieAudios: ["ext:魔法纪录/audio/die/Umika.mp3"]
     },
 	// 牧薰
@@ -725,7 +725,7 @@ const characters = {
         maxHp: 4,
         hujia: 0,
         skills: ["Kaoru_rexue", "Kaoru_maosu"],
-        img: "extension/魔法纪录/image/Pleiades_Kaoru.jpg",
+        img: "extension/魔法纪录/image/Pleiades_Kaoru.png",
         dieAudios: ["ext:魔法纪录/audio/die/Kaoru.mp3"],
     },
 	// 浅海早纪
