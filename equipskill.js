@@ -1,0 +1,625 @@
+import { lib, game, ui, get, ai, _status } from "../../noname.js";
+
+const equipSkills = {
+    "g_chenhuodajie": {
+        trigger: { global: "damageEnd" },
+        filter(event, player) {
+            if (event.player === player) {
+                return false;
+            }
+            if (!event.player.countCards("he")) {
+                return false;
+            }
+            if (!lib.filter.targetEnabled({ name: "chenhuodajie" }, player, event.player)) {
+                return false;
+            }
+            if (event._notrigger.includes(event.player)) {
+                return false;
+            }
+            return player.hasUsableCard("chenhuodajie");
+        },
+        direct: true,
+        async content(event, trigger, player) {
+            await player
+                .chooseToUse(
+                    get.prompt("chenhuodajie", trigger.player).replace(/发动/, "使用"),
+                    function (card, player) {
+                        if (get.name(card) !== "chenhuodajie") {
+                            return false;
+                        }
+                        return lib.filter.cardEnabled(card, player, "forceEnable");
+                    },
+                    -1
+                )
+                .set("sourcex", trigger.player)
+                .set("filterTarget", function (card, player, target) {
+                    if (target !== _status.event.sourcex) {
+                        return false;
+                    }
+                    return lib.filter.targetEnabled.apply(this, arguments);
+                })
+                .set("targetRequired", true);
+        },
+    },
+
+    "jk_unform_skill": {
+        audio: "ext:魔法纪录:1",
+        trigger: {
+            target: "useCardToTargeted",
+        },
+        forced: true,
+        equipSkill: true,
+        filter(event, player) {
+            if (player.hasSkillTag("unequip2")) {
+                return false;
+            }
+            if (
+                event.player.hasSkillTag("unequip", false, {
+                    name: event.card ? event.card.name : null,
+                    target: player,
+                    card: event.card,
+                })
+            ) {
+                return false;
+            }
+            return event.card.name == "sha";
+        },
+        content() {
+            "step 0";
+            player.judge(function (card) {
+                return get.color(card) == "black" ? -2 : 0;
+            }).judge2 = function (result) {
+                return result.bool == false ? true : false;
+            };
+            "step 1";
+            if (result.bool === false) {
+                var map = trigger.customArgs,
+                    id = player.playerid;
+                if (!map[id]) {
+                    map[id] = {};
+                }
+                if (!map[id].extraDamage) {
+                    map[id].extraDamage = 0;
+                }
+                map[id].extraDamage++;
+                game.log(trigger.card, "对", player, "的伤害+1");
+            }
+        },
+        "_priority": -25,
+    },
+    "kuroe_kill_skill": {
+        forced: true,
+        equipSkill: true,
+        audio: "ext:魔法纪录:1",
+        trigger: {
+            source: "damageBegin",
+        },
+        async content(event, trigger, player) {
+            if (trigger.player.group == player.group) {
+                player.equip(game.createCard("griefseed", "heart", 1));
+            }
+        },
+        "_priority": 0,
+    },
+    "yongzhuang_skill": {
+        equipSkill: true,
+        trigger: {
+            target: "useCardToTarget",
+        },
+        forced: true,
+        check(event, player) {
+            return get.effect(event.target, event.card, event.player, player) < 0;
+        },
+        filter(event, player) {
+            if (["shuiyanqijun", "shuiyanqijunx", "shuiyanqijuny"].includes(event.card.name)) {
+                return true;
+            }
+            return false;
+        },
+        content() {
+            trigger.getParent().targets.remove(player);
+        },
+        ai: {
+            effect: {
+                target(card, player, target, current) {
+                    if (["shuiyanqijun", "shuiyanqijunx", "shuiyanqijuny"].includes(card.name)) {
+                        return "zeroplayertarget";
+                    }
+                },
+            },
+        },
+        "_priority": -25,
+    },
+    "shuibojian_skill": {
+        audio: "ext:魔法纪录:1",
+        trigger: {
+            player: "useCard2",
+        },
+        direct: true,
+        equipSkill: true,
+        filter(event, player) {
+            if (event.card.name != "sha" && get.type(event.card) != "trick") {
+                return false;
+            }
+            var info = get.info(event.card);
+            if (info.allowMultiple == false) {
+                return false;
+            }
+            var num = player.getHistory("useSkill", function (evt) {
+                return evt.skill == "shuibojian_skill";
+            }).length;
+            if (num >= 1) {
+                return false;
+            }
+            if (event.targets && !info.multitarget) {
+                if (
+                    game.hasPlayer(function (current) {
+                        return lib.filter.targetEnabled2(event.card, player, current) && !event.targets.includes(current);
+                    })
+                ) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        content() {
+            "step 0";
+            var prompt2 = "为" + get.translation(trigger.card) + "额外指定一个目标";
+            player
+                .chooseTarget([1, player.storage.fumian_red], get.prompt(event.name), function (card, player, target) {
+                    var player = _status.event.player;
+                    if (_status.event.targets.includes(target)) {
+                        return false;
+                    }
+                    return lib.filter.targetEnabled2(_status.event.card, player, target);
+                })
+                .set("prompt2", prompt2)
+                .set("ai", function (target) {
+                    var trigger = _status.event.getTrigger();
+                    var player = _status.event.player;
+                    return get.effect(target, trigger.card, player, player);
+                })
+                .set("targets", trigger.targets)
+                .set("card", trigger.card);
+            "step 1";
+            if (result.bool) {
+                if (!event.isMine() && !event.isOnline()) {
+                    game.delayx();
+                }
+                event.targets = result.targets;
+            }
+            "step 2";
+            if (event.targets) {
+                player.logSkill(event.name, event.targets);
+                trigger.targets.addArray(event.targets);
+            }
+        },
+        ai: {
+            equipValue(card, player) {
+                if (player.getEnemies().length < 2) {
+                    if (player.isDamaged()) {
+                        return 0;
+                    }
+                    return 1;
+                }
+                return 4.5;
+            },
+            basic: {
+                equipValue: 4.5,
+            },
+        },
+        "_priority": -25,
+    },
+    "mengshenjueqiang_skill": {
+        audio: "ext:魔法纪录:1",
+        trigger: {
+            source: "damageSource",
+        },
+        usable: 1,
+        equipSkill: true,
+        filter(event, player) {
+            return event.getParent().name == "sha";
+        },
+        content() {
+            "step 0";
+            player.judge(function (card) {
+                var player = _status.event.getParent("mengshenjueqiang_skill").player;
+                if (player.isHealthy() && get.color(card) == "red") {
+                    return 0;
+                }
+                return 2;
+            });
+            "step 1";
+            switch (result.color) {
+                case "red":
+                    player.recover();
+                    break;
+                case "black":
+                    player.draw(2);
+                    break;
+                default:
+                    break;
+            }
+        },
+        ai: {
+            equipValue(card, player) {
+                if (player.isDamaged()) {
+                    return 4.5;
+                }
+                return 6;
+            },
+            basic: {
+                equipValue: 4.5,
+            },
+        },
+        "_priority": -25,
+    },
+    "test_tube_skill": {
+        audio: "ext:魔法纪录:1",
+        forced: true,
+        equipSkill: true,
+        trigger: {
+            player: "shaDamage",
+        },
+        async content(event, trigger, player) {
+            let card = trigger.card;
+            trigger.target.gain(game.createCard2("du", card.suit, card.number), "gain2");
+        },
+    },
+    "ClovisSword_skill": {
+        mod: {
+            maxHandcard(player, num) {
+                return num + 2;
+            }
+        },
+        inherit: "qinggang_skill",
+        equipSkill: true,
+        audio: true,
+        trigger: {
+            player: "useCardToPlayered",
+        },
+        filter(event) {
+            return event.card.name === "sha";
+        },
+
+        logTarget: "target",
+        content() {
+            trigger.target.chooseToDiscard('he', 1, true);
+            trigger.target.addTempSkill("qinggang2");
+            trigger.target.storage.qinggang2.add(trigger.card);
+            trigger.target.markSkill("qinggang2");
+        },
+        ai: {
+            "unequip_ai": true,
+            skillTagFilter(player, tag, arg) {
+                if (arg && arg.name === "sha") {
+                    return true;
+                }
+                return false;
+            }
+        },
+        "_priority": 0,
+    },
+    "LightLance_skill1": {
+        equipSkill: true,
+        trigger: {
+            source: "damageAfter",
+        },
+        filter: function (event, player) {
+            return event.player != player && event.player.maxHp > 0 && event.player.isAlive();
+        },
+        "prompt2": function (event, player) {
+            return '令其减少等同伤害值的体力上限。';
+        },
+        content: function () {
+            trigger.player.loseMaxHp(trigger.num);
+        },
+        mod: {
+            cardUsable: () => Infinity,
+        },
+        "_priority": 0,
+    },
+    "LightLance_skill2": {
+        mod: {
+            targetInRange(card, player, target, now) {
+                var type = get.type(card);
+                if (type == 'trick' || type == 'delay' | type == 'sha') return Infinity;
+            },
+            canBeDiscarded(card) {
+                if (get.position(card) == 'e' && ['equip1', 'equip2'].includes(get.subtype(card))) return false;
+            },
+        },
+        "_priority": 0,
+    },
+    "griefseed_skill": {
+        equipSkill: true,
+        locked: true,
+        limited: true,
+        mod: {
+            maxHandcard: function (player, num) {
+                return num + 1;
+            }
+        },
+        group: ["griefseed_skill_phase", "griefseed_skill_dying"],
+        subSkill: {
+            phase: {
+                equipSkill: true,
+                enable: "phaseUse",
+                usable: 1,
+                filter: function (event, player) {
+                    return player.getEquip("griefseed");
+                },
+                content: function () {
+                    "step 0";
+                    player.recover();
+                    "step 1";
+                    var maxHand = player.maxHp;
+                    var currentHand = player.countCards("h");
+                    if (currentHand < maxHand) {
+                        player.draw(maxHand - currentHand);
+                    } else if (currentHand > maxHand) {
+                        player.chooseToDiscard("h", true, currentHand - maxHand, "悲叹之种：请将手牌数调整至体力上限");
+                    }
+                    "step 2";
+                    var card = player.getEquip("griefseed");
+                    if (card) {
+                        player.lose(card, "visible", ui.ordering);
+                    }
+                }
+            },
+            dying: {
+                equipSkill: true,
+                trigger: {
+                    player: "dying"
+                },
+                filter: function (event, player) {
+                    return player.getEquip("griefseed");
+                },
+                content: function () {
+                    "step 0";
+                    player.recover();
+                    "step 1";
+                    var maxHand = player.maxHp;
+                    var currentHand = player.countCards("h");
+                    if (currentHand < maxHand) {
+                        player.draw(maxHand - currentHand);
+                    } else if (currentHand > maxHand) {
+                        player.chooseToDiscard("h", true, currentHand - maxHand, "悲叹之种：请将手牌数调整至体力上限");
+                    }
+                    "step 2";
+                    var card = player.getEquip("griefseed");
+                    if (card) {
+                        player.lose(card, "visible", ui.ordering);
+                    }
+                }
+            }
+        }
+    },
+    "evilnut_skill": {
+        equipSkill: true,
+        locked: true,
+        group: ["evilnut_skill_enter", "evilnut_skill_damage"],
+        mod: {
+            maxHandcard: function (player, num) {
+                const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+                if (isKanna) return num + 1;
+                return num - 1;
+            }
+        },
+        subSkill: {
+            enter: {
+                equipSkill: true,
+                trigger: {
+                    player: "equipAfter"
+                },
+                forced: true,
+                filter: function (event, player) {
+                    return event.card && event.card.name == "evilnut";
+                },
+                content: async function (event, trigger, player) {
+                    const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+                    const isGift = trigger.giver && trigger.giver != player;
+
+                    if (isKanna) {
+                        await player.draw();
+                        return;
+                    }
+                    const canDiscard = (card) => card.name != "evilnut";
+
+                    if (isGift) {
+                        const cards = player.getCards("he", (card) => !trigger.cards.includes(card) && canDiscard(card));
+                        if (cards.length > 0) {
+                            const randomCard = cards.randomGet();
+                            await player.discard(randomCard, "he");
+                            game.log(player, "因", "#y【邪念之实】", "被强制弃置了一张牌");
+                        }
+                    } else {
+                        const count = player.countCards("he", canDiscard);
+                        if (count > 0) {
+                            await player.chooseToDiscard(1, "he", true).set('filterCard', canDiscard).set('prompt', "邪念之实：请弃置一张牌（不能弃置邪念之实）");
+                        }
+                    }
+                }
+            },
+            damage: {
+                equipSkill: true,
+                trigger: {
+                    player: "damageBegin4"
+                },
+                filter: function (event, player) {
+                    return player.getEquip("evilnut");
+                },
+                content: async function (event, trigger, player) {
+                    const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+                    const evilnutCard = player.getEquip("evilnut");
+                    if (!evilnutCard) return;
+
+                    if (isKanna) {
+                        await player.discard(evilnutCard);
+                        await player.draw();
+                        return;
+                    }
+
+                    const canDiscard = (card) => card.name != "evilnut";
+                    const choices = ["取消"];
+                    if (player.countCards("he", canDiscard) > 0) {
+                        choices.unshift("弃置一张牌");
+                    }
+                    choices.push("流失一点体力");
+
+                    const next = player.chooseControl(choices).set("prompt", "邪念之实：是否弃置一张牌或流失1点体力，将此牌置入弃牌堆？");
+
+                    next.set("ai", function () {
+                        var player = _status.event.player;
+                        if (player.hasSkillTag("loseHp")) {
+                            return "流失一点体力";
+                        }
+                        if (player.hp >= 2 && player.countCards("he") > 3 && _status.event.controls.includes("弃置一张牌")) {
+                            return "弃置一张牌";
+                        }
+                        return "取消";
+                    });
+
+                    const { result } = await next.forResult();
+
+                    if (result.control === "流失一点体力") {
+                        await player.loseHp();
+                        if (player.getEquip("evilnut")) {
+                            await player.discard(evilnutCard);
+                        }
+                    } else if (result.control === "弃置一张牌") {
+                        var discardNext = await player.chooseToDiscard(1, "he", true).set('filterCard', canDiscard).set('prompt', "邪念之实：请弃置一张牌以移除此牌").forResult();
+                        if (discardNext.bool && player.getEquip("evilnut")) {
+                            await player.discard(evilnutCard);
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "qianweihuakai_jiushi": {
+        trigger: {
+            source: "damageSource",
+        },
+        direct: true,
+        equipSkill: true,
+        filter(event, player) {
+            return event.card && event.card.name == "sha" && event.getParent().name == "sha" && player.isDamaged() && player.countCards("h") > 0;
+        },
+        content() {
+            "step 0";
+            player.chooseToDiscard("h", get.prompt("救世"), "弃置一张手牌并回复1点体力").set("ai", card => 7 - get.value(card)).logSkill = "qianweihuakai_jiushi";
+            "step 1";
+            if (result.bool) {
+                player.recover();
+            }
+        },
+        "_priority": -25,
+    },
+    "qianweihuakai_aishi": {
+        equipSkill: true,
+        trigger: {
+            player: "useCardToPlayered",
+        },
+        logTarget: "target",
+        filter(event, player) {
+            if (event.card.name != "sha") {
+                return false;
+            }
+            return true;
+        },
+        async cost(event, trigger, player) {
+            let choice = ["选项一"];
+            if (trigger.target.countCards("he")) {
+                choice.push("选项二");
+            }
+            choice.push("cancel2");
+            const result = await player
+                .chooseControl(choice)
+                .set("prompt", get.prompt(event.name.slice(0, -5), trigger.target))
+                .set("choiceList", ["摸一张牌", "令其弃置一张牌"])
+                .set(
+                    "res",
+                    (function () {
+                        if (get.attitude(player, trigger.target) > 0 || trigger.target.hasSkillTag("noh")) {
+                            return "选项一";
+                        }
+                        return choice[choice.length - 2];
+                    })()
+                )
+                .set("ai", () => get.event("res"))
+                .forResult();
+            event.result = {
+                bool: result.control != "cancel2",
+                targets: [trigger.target],
+                cost_data: result.control,
+            };
+        },
+        async content(event, trigger, player) {
+            const result = event.cost_data;
+            if (result == "选项一") {
+                await player.draw();
+            } else {
+                await trigger.target.chooseToDiscard("弃置一张牌", "he", true);
+            }
+        },
+        "_priority": -25,
+    },
+    "fengzhichuandaoshi_zhiyao_skill": {
+        equipSkill: true,
+        locked: true,
+        mod: {
+            attackRange(player, distance) {
+                const factions = new Set();
+                game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
+                return Math.max(distance, factions.size);
+            },
+        },
+        trigger: {
+            source: "damageSource",
+        },
+        forced: true,
+        filter(event, player) {
+            if (!event.player || !event.player.isIn()) return false;
+            return event.player.hasSkill("kagome_zhongji");
+        },
+        async content(event, trigger, player) {
+            const factions = new Set();
+            game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
+            const X = factions.size;
+            const zhongjiPlayers = game.filterPlayer(p => p.hasSkill("kagome_zhongji"));
+            const choice1 = "弃置" + get.cnNumber(X) + "张手牌";
+            const choice2 = "令所有拥有【中集】的角色摸" + get.cnNumber(X) + "张牌";
+            const choices = [];
+            if (player.countCards("h") >= X) {
+                choices.push(choice1);
+            }
+            choices.push(choice2);
+            const result = await player.chooseControl(choices, true)
+                .set("prompt", "风之传道师之谣：请选择一项")
+                .set("ai", function () {
+                    const p = _status.event.player;
+                    if (p.countCards("h") >= X && p.countCards("h") > X + 2) {
+                        const zhongjiCount = game.countPlayer(c => c.hasSkill("kagome_zhongji"));
+                        if (zhongjiCount > 0) {
+                            const hasFriend = game.hasPlayer(c => c.hasSkill("kagome_zhongji") && get.attitude(p, c) > 0);
+                            if (hasFriend) return choice2;
+                        }
+                        return choice1;
+                    }
+                    return choice2;
+                })
+                .forResult();
+            if (result.control == choice1) {
+                await player.chooseToDiscard("h", X, true, "风之传道师之谣：弃置" + get.cnNumber(X) + "张手牌");
+            } else {
+                for (const target of zhongjiPlayers) {
+                    await target.draw(X);
+                }
+            }
+        },
+        "_priority": 0,
+    },
+};
+
+export default equipSkills;

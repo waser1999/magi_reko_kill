@@ -1,0 +1,856 @@
+import { lib, game, ui, get, ai, _status } from "../../noname.js";
+
+const cards = {
+	"chenhuodajie": {
+		fullskin: true,
+		type: "trick",
+		filterTarget: true,
+		global: "g_chenhuodajie",
+		content() {
+			if (target.countCards("he")) {
+				player.gainPlayerCard("he", target, true);
+			}
+		},
+		ai: {
+			order: 1,
+			useful: 6,
+			value: 6,
+			result: {
+				target: -1,
+			},
+			tag: {
+				loseCard: 1,
+			},
+		},
+		image: "ext:魔法纪录/card_image/chenhuodajie.png",
+		selectTarget: 1,
+	},
+
+	"jk_unform": {
+		type: "equip",
+		subtype: "equip2",
+		fullskin: true,
+		skills: ["jk_unform_skill"],
+		selectTarget: -1,
+		manualConfirm: true,
+		ai: {
+			order: 9,
+			equipValue(card, player) {
+				if (get.position(card) == "e") {
+					return -7;
+				}
+				return 2;
+			},
+			value(card, player) {
+				if (player.getEquips(2).includes(card)) {
+					return -8;
+				}
+				return 3;
+			},
+			basic: {
+				equipValue: 5,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				keepAI: true,
+				target(player, target) {
+					var val = 2.5;
+					var val2 = 0;
+					var card = target.getEquip(1);
+					if (card) {
+						val2 = get.value(card, target);
+						if (val2 < 0) {
+							return 0;
+						}
+					}
+					return -val - val2;
+				},
+			},
+		},
+		enable: true,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+		},
+		toself: true,
+		image: "ext:魔法纪录/card_image/jk_uniform.png",
+	},
+	"maid_uniform": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip2",
+		filterTarget(card, player, target) {
+			if (player == target) {
+				return false;
+			}
+			return target.canEquip(card, true);
+		},
+		selectTarget: 1,
+		toself: false,
+		loseDelay: false,
+		onEquip() {
+			if (player.hasSkill("kanagi_nvpu")) return;
+			if (
+				player.countCards("he", function (cardx) {
+					return card.cards && !card.cards.includes(cardx);
+				})
+			) {
+				player
+					.chooseToDiscard(
+						true,
+						function (card) {
+							return !_status.event.card?.cards.includes(card);
+						},
+						"he"
+					)
+					.set("card", card);
+			}
+		},
+		onLose() {
+			if (player.hasSkill("kanagi_nvpu")) return;
+			var next = game.createEvent("maid_uniform_lose");
+			event.next.remove(next);
+			var evt = event.getParent();
+			if (evt.getlx === false) {
+				evt = evt.getParent();
+			}
+			evt.after.push(next);
+			next.player = player;
+			next.setContent(function () {
+				if (player.countCards("he")) {
+					player.popup("maid_uniform");
+					player.chooseToDiscard(true, "he");
+				}
+			});
+		},
+		ai: {
+			order: 9.5,
+			equipValue(card, player) {
+				if (player.getEquips(2).includes(card)) {
+					var num = player.countCards("he", function (cardx) {
+						return cardx != card;
+					});
+					if (num == 0) {
+						return 0;
+					}
+					return 4 / num;
+				}
+				return 1;
+			},
+			value() {
+				return lib.card.maid_uniform.ai.equipValue.apply(this, arguments);
+			},
+			basic: {
+				equipValue: 5,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				keepAI: true,
+				target(player, target) {
+					var card = target.getEquip(2);
+					var val = 0;
+					var val2 = 0;
+					if (card) {
+						val2 = get.value(card, target);
+						if (val2 < 0) {
+							return 0;
+						}
+					}
+					var num = target.countCards("he", function (cardx) {
+						return cardx != card;
+					});
+					if (num > 0) {
+						val += 4 / num;
+					}
+					return -val;
+				},
+			},
+		},
+		image: "ext:魔法纪录/card_image/maid_uniform.png",
+		enable: true,
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+		},
+	},
+	"kuroe_kill": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip1",
+		distance: {
+			attackFrom: -1,
+		},
+		ai: {
+			basic: {
+				equipValue: 2,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		skills: ["kuroe_kill_skill"],
+		image: "ext:魔法纪录/card_image/kuroe_kill.png",
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+		},
+		toself: true,
+	},
+	yongzhuang: {
+		audio: "ext:魔法纪录",
+		fullskin: true,
+		type: "equip",
+		subtype: "equip2",
+		skills: ["yongzhuang_skill"],
+		image: "ext:魔法纪录/card_image/yongzhuang.png",
+		ai: {
+			basic: {
+				equipValue: 6,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+		},
+		toself: true,
+	},
+	shuibojian: {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip1",
+		distance: {
+			attackFrom: -1,
+		},
+		skills: ["shuibojian_skill"],
+		ai: {
+			basic: {
+				equipValue: 5,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		loseDelay: false,
+		onLose() {
+			player.recover();
+		},
+		image: "ext:魔法纪录/card_image/shuibojian.png",
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+		},
+		toself: true,
+	},
+	mengshenjueqiang: {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip1",
+		distance: {
+			attackFrom: -2,
+		},
+		skills: ["mengshenjueqiang_skill"],
+		ai: {
+			basic: {
+				equipValue: 4,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		image: "ext:魔法纪录/card_image/mengshenjueqiang.png",
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+		},
+		toself: true,
+	},
+	"test_tube": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip1",
+		distance: { attackFrom: -1 },
+		ai: {
+			basic: {
+				equipValue: 2,
+			},
+		},
+		skills: ["test_tube_skill"],
+		image: "ext:魔法纪录/card_image/test_tube.png",
+	},
+	"special_week": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip4",
+		distance: { globalFrom: -1 },
+		image: "ext:魔法纪录/card_image/special_week.png",
+	},
+	"ClovisSword": {
+		derivation: "dArc",
+		vanish: true,
+		type: "equip",
+		subtype: "equip1",
+		skills: ["ClovisSword_skill"],
+		distance: {
+			attackFrom: -1,
+		},
+		enable: true,
+		fullskin: true,
+		image: "ext:魔法纪录/card_image/ClovisSword.png",
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"LightLance": {
+		derivation: "dArc",
+		audio: true,
+		fullskin: true,
+		type: "equip",
+		subtype: "equip5",
+		skills: ["LightLance_skill1", "LightLance_skill2"],
+		image: "ext:魔法纪录/card_image/LightLance.jpg",
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"evilnut": {
+		type: "equip",
+		subtype: "equip5",
+		fullskin: true,
+		skills: ["evilnut_skill"],
+		image: "ext:魔法纪录/card_image/evilnut.png",
+		loseDelay: false,
+		ai: {
+			equipValue: function (card, player) {
+				const isHyades = ["Pleiades_Niko", "Kanna", "Hyades", "Hyades_Minions"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+				if (isHyades) return 6; // 圣迦南/海亚蒂斯之晓
+				return -5;
+			},
+			basic: {
+				equipValue: function (card, player) {
+					const isHyades = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+					if (isHyades) return 6;
+					return -5;
+				},
+				order: 9,
+				useful: 6,
+				value: 6,
+			},
+			result: {
+				keepAI: true,
+				target: function (player, target, card) {
+					const isHyades = ["Kanna", "Hyades"].some(n => target.name == n || target.name1 == n || target.name2 == n);
+					// 海亚蒂斯 
+					if (isHyades) return 5;
+					// 其他人 
+					return -5;
+				},
+			},
+		},
+		onLose: function () {
+			if (player.getStat().skill.xinge) {
+				delete player.getStat().skill.xinge;
+			}
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: function (card, player, target) {
+			return player == target && target.canEquip(card, true);
+		},
+		modTarget: true,
+		allowMultiple: false,
+		content: async function (event) {
+			const { card, target } = event;
+			if (!card?.cards.some((card2) => get.position(card2, true) !== "o")) {
+				await target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"griefseed": {
+		type: "equip",
+		subtype: "equip5",
+		fullskin: true,
+		skills: ["griefseed_skill"],
+		image: "ext:魔法纪录/card_image/griefseed.png",
+		loseDelay: false,
+		ai: {
+			equipValue: 8,
+			basic: {
+				equipValue: 8,
+				order: function (card2, player) {
+					const equipValue = get.equipValue(card2, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 6,
+				value: function (card2, player, index, method) {
+					if (!player.getCards("e").includes(card2) && !player.canEquip(card2, true)) {
+						return 0.01;
+					}
+					const info2 = get.info(card2), current = player.getEquip(info2.subtype), value = current && card2 != current && get.value(current, player);
+					let equipValue = info2.ai.equipValue || info2.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card2, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card2, player) - value;
+						}
+						return Math.max(0.1, equipValue(card2, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				keepAI: true,
+				target: function (player, target, card2) {
+					if (target.hp <= 1) return 20;
+					if (target.hp <= 2) return 12;
+					if (target.countCards("h") < target.maxHp - 1) return 8;
+					if (target.hp < target.maxHp) return 6;
+					return 3;
+				},
+			},
+		},
+		onLose: function () {
+			if (player.getStat().skill.griefseed_skill_phase) {
+				delete player.getStat().skill.griefseed_skill_phase;
+			}
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: function (card2, player, target) {
+			return player == target && target.canEquip(card2, true);
+		},
+		modTarget: true,
+		allowMultiple: false,
+		content: async function (event) {
+			const { card, target } = event;
+			if (!card?.cards.some((card2) => get.position(card2, true) !== "o")) {
+				await target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"qianweihuakai": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip1",
+		image: "ext:魔法纪录/card_image/qianweihuakai.png",
+		distance: {
+			attackFrom: -2,
+		},
+		ai: {
+			basic: {
+				equipValue: 4,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		skills: ["qianweihuakai_aishi", "qianweihuakai_jiushi"],
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+			//if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+		},
+	},
+	"fengzhichuandaoshi_zhiyao": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip1",
+		skills: ["fengzhichuandaoshi_zhiyao_skill"],
+		ai: {
+			basic: {
+				equipValue: -4,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+	},
+}
+
+export default cards;
