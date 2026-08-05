@@ -234,7 +234,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["hsdianmo", "hszaibi"],
+		skills: ["kagome_zhongji", "kagome_longli"],
 		img: "extension/魔法纪录/image/kagome.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/kagome.mp3"]
 	},

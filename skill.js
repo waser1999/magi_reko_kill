@@ -12952,11 +12952,11 @@ const skills = {
 					game.log(player, "因", "#y【邪念之实】", "进入弃牌堆，本回合手牌上限+", nuts.length);
 
 					var next = player.chooseToDiscard("he", 2, "恶实：是否弃置两张牌，将一张【邪念之实】置于牌堆顶？");
-					
-					next.set("ai", function (card) { 
+
+					next.set("ai", function (card) {
 						var p = _status.event.player;
 						var current = _status.currentPhase;
-						
+
 						if (current == p) {
 							if (p.countCards("h") > 3) return 5 - get.value(card);
 							return 0;
@@ -12964,7 +12964,6 @@ const skills = {
 						if (p.next == current || current.next == p || get.attitude(p, current) < 0) {
 							if (p.countCards("he") > 3) return 5 - get.value(card);
 						}
-						
 						return 0;
 					});
 
@@ -13002,7 +13001,7 @@ const skills = {
 		position: "he",
 		filterCard: function (card, player) { return true; },
 		selectCard: [1, Infinity],
-		check: function (card) { 
+		check: function (card) {
 			var player = _status.event.player || get.owner(card);
 			if (!player) return 0;
 
@@ -13016,7 +13015,7 @@ const skills = {
 				if (card.name === 'shan' || card.name === 'tao') return 0;
 			}
 			if (val >= 7) return 0;
-			return 7 - val; 
+			return 7 - val;
 		},
 		content: async function (event, trigger, player) {
 			"step 0";
@@ -13033,9 +13032,9 @@ const skills = {
 					ui.cardPile.appendChild(copy.fix());
 				}
 				if (!player.hasSkill("Kanna_beidan_reset")) {
-					player.addTempSkill("Kanna_beidan_reset"); 
+					player.addTempSkill("Kanna_beidan_reset");
 					if (player.getStat().skill.Kanna_beidan) {
-						player.getStat().skill.Kanna_beidan--; 
+						player.getStat().skill.Kanna_beidan--;
 					}
 					game.log(player, "因重铸了", "#y【邪念之实】", "，重置了", "#g【悖诞】", "的使用次数");
 				}
@@ -13048,9 +13047,9 @@ const skills = {
 			}
 		},
 		ai: {
-			order: 7, 
+			order: 7,
 			result: {
-				player: 1 
+				player: 1
 			}
 		},
 		subSkill: {
@@ -13109,149 +13108,149 @@ const skills = {
 		}
 	},
 	// 海亚蒂斯之晓
-    "Hyades_bixiu": {
-        persevereSkill: true,
-        group: ["Hyades_bixiu_start", "Hyades_bixiu_handcard"],
-        subSkill: {
-                start: {
-                        trigger: { global: "phaseBefore", player: ["enterGame", "gainSkill:Hyades_bixiu"] },
-                        forced: true,
-                        filter: function (event, player) {
-                                if (player.storage.Hyades_bixiu_inited) return false;
-                                if (event.name == "phase" && game.phaseNumber != 0) return false;
-                                return true;
-                        },
-                        content: async function (event, trigger, player) {
-                                player.storage.Hyades_bixiu_inited = true;
+	"Hyades_bixiu": {
+		persevereSkill: true,
+		group: ["Hyades_bixiu_start", "Hyades_bixiu_handcard"],
+		subSkill: {
+			start: {
+				trigger: { global: "phaseBefore", player: ["enterGame", "gainSkill:Hyades_bixiu"] },
+				forced: true,
+				filter: function (event, player) {
+					if (player.storage.Hyades_bixiu_inited) return false;
+					if (event.name == "phase" && game.phaseNumber != 0) return false;
+					return true;
+				},
+				content: async function (event, trigger, player) {
+					player.storage.Hyades_bixiu_inited = true;
 
-            game.broadcastAll(() => {
-                ui.backgroundMusic.pause();
-                ui.backgroundMusic.src = `${lib.assetURL}extension/魔法纪录/audio/background/Magia.mp3`;
-                ui.backgroundMusic.loop = true;
-            });
-                                const toSortPlayers = game.filterPlayer(function(current) { return true; });
-                                toSortPlayers.sortBySeat(game.findPlayer2(function(current) { return current.getSeatNum() == 1; }, true));
-                                const next = player.chooseToMove("破晓：是否分配所有角色的座次？");
-                                next.set("list", [
-                                        ["（以下排列的顺序即为发动技能后角色的座次顺序）", [toSortPlayers.map(function(i) { return i.getSeatNum() + "|" + i.name; }), lib.skill.Hyades_bixiu.$createButton]],
-                                ]);
-                                next.set("toSortPlayers", toSortPlayers.slice(0));
-                                next.set("processAI", function () {
-                                        const players = get.event().toSortPlayers, p = get.player();
-                                        players.randomSort().sort(function(a, b) { return get.attitude(p, b) - get.attitude(p, a); });
-                                        return [players.map(function(i) { return i.getSeatNum() + "|" + i.name; })];
-                                });
-                                const result = await next.forResult();
-                                if (result && result.moved) {
-                                        const moved = result.moved;
-                                        const resultList = moved[0].map(function(info) { return parseInt(info.split("|")[0]); });
-                                        const toSwapList = [];
-                                        const cmp = function(a, b) { return resultList.indexOf(a) - resultList.indexOf(b); };
-                                        for (let i = 0; i < toSortPlayers.length; i++) {
-                                                for (let j = 0; j < toSortPlayers.length; j++) {
-                                                        if (cmp(toSortPlayers[i].getSeatNum(), toSortPlayers[j].getSeatNum()) < 0) {
-                                                                toSwapList.push([toSortPlayers[i], toSortPlayers[j]]);
-                                                                var tmp = toSortPlayers[i];
-                                                                toSortPlayers[i] = toSortPlayers[j];
-                                                                toSortPlayers[j] = tmp;
-                                                        }
-                                                }
-                                        }
-                                        game.broadcastAll(function (toSwapList) {
-                                                for (let i = 0; i < toSwapList.length; i++) {
-                                                        game.swapSeat(toSwapList[i][0], toSwapList[i][1], false);
-                                                }
-                                        }, toSwapList);
-                                }
+					game.broadcastAll(() => {
+						ui.backgroundMusic.pause();
+						ui.backgroundMusic.src = `${lib.assetURL}extension/魔法纪录/audio/background/Magia.mp3`;
+						ui.backgroundMusic.loop = true;
+					});
+					const toSortPlayers = game.filterPlayer(function (current) { return true; });
+					toSortPlayers.sortBySeat(game.findPlayer2(function (current) { return current.getSeatNum() == 1; }, true));
+					const next = player.chooseToMove("破晓：是否分配所有角色的座次？");
+					next.set("list", [
+						["（以下排列的顺序即为发动技能后角色的座次顺序）", [toSortPlayers.map(function (i) { return i.getSeatNum() + "|" + i.name; }), lib.skill.Hyades_bixiu.$createButton]],
+					]);
+					next.set("toSortPlayers", toSortPlayers.slice(0));
+					next.set("processAI", function () {
+						const players = get.event().toSortPlayers, p = get.player();
+						players.randomSort().sort(function (a, b) { return get.attitude(p, b) - get.attitude(p, a); });
+						return [players.map(function (i) { return i.getSeatNum() + "|" + i.name; })];
+					});
+					const result = await next.forResult();
+					if (result && result.moved) {
+						const moved = result.moved;
+						const resultList = moved[0].map(function (info) { return parseInt(info.split("|")[0]); });
+						const toSwapList = [];
+						const cmp = function (a, b) { return resultList.indexOf(a) - resultList.indexOf(b); };
+						for (let i = 0; i < toSortPlayers.length; i++) {
+							for (let j = 0; j < toSortPlayers.length; j++) {
+								if (cmp(toSortPlayers[i].getSeatNum(), toSortPlayers[j].getSeatNum()) < 0) {
+									toSwapList.push([toSortPlayers[i], toSortPlayers[j]]);
+									var tmp = toSortPlayers[i];
+									toSortPlayers[i] = toSortPlayers[j];
+									toSortPlayers[j] = tmp;
+								}
+							}
+						}
+						game.broadcastAll(function (toSwapList) {
+							for (let i = 0; i < toSwapList.length; i++) {
+								game.swapSeat(toSwapList[i][0], toSwapList[i][1], false);
+							}
+						}, toSwapList);
+					}
 
-                                var nuts = [];
-                                for (var i = 0; i < ui.cardPile.childNodes.length; i++) {
-                                        if (ui.cardPile.childNodes[i].name == "evilnut") nuts.push(ui.cardPile.childNodes[i]);
-                                }
-                                for (var j = 0; j < ui.discardPile.childNodes.length; j++) {
-                                        if (ui.discardPile.childNodes[j].name == "evilnut") nuts.push(ui.discardPile.childNodes[j]);
-                                }
-                                if (nuts.length > 0) {
-                                        await player.gain(nuts, "gain2");
-                                }
-                        }
-                },
-                handcard: {
-                        mod: {
-                                ignoredHandcard: function (card, player) {
-                                        if (card.name == "evilnut") return true;
-                                }
-                        }
-                }
-        },
-        "$createButton": function (item, type, position, noclick, node) {
-                const info = item.split("|");
-                const _item = item;
-                const seat = parseInt(info[0]);
-                item = info[1];
-                if (node) {
-                        node.classList.add("button");
-                        node.classList.add("character");
-                        node.style.display = "";
-                } else {
-                        node = ui.create.div(".button.character", position);
-                }
-                node._link = item;
-                node.link = item;
-                const func = function (node, item) {
-                        const currentPlayer = game.findPlayer(function(current) { return current.getSeatNum() == seat; });
-                        if (currentPlayer.classList.contains("unseen_show")) {
-                                node.setBackground("hidden_image", "character");
-                        } else if (item != "unknown") {
-                                node.setBackground(item, "character");
-                        }
-                        if (node.node) {
-                                if (node.node.name) node.node.name.remove();
-                                if (node.node.hp) node.node.hp.remove();
-                                if (node.node.group) node.node.group.remove();
-                                if (node.node.intro) node.node.intro.remove();
-                                if (node.node.replaceButton) node.node.replaceButton.remove();
-                        }
-                        node.node = {
-                                name: ui.create.div(".name", node),
-                                group: ui.create.div(".identity", node),
-                                intro: ui.create.div(".intro", node),
-                        };
-                        const infoitem = [currentPlayer.sex, currentPlayer.group, currentPlayer.hp + "/" + currentPlayer.maxHp + "/" + currentPlayer.hujia];
-                        node.node.name.innerHTML = get.slimName(item);
-                        if (lib.config.buttoncharacter_style == "default" || lib.config.buttoncharacter_style == "simple") {
-                                if (lib.config.buttoncharacter_style == "simple") {
-                                        node.node.group.style.display = "none";
-                                }
-                                node.classList.add("newstyle");
-                                node.node.name.dataset.nature = get.groupnature(get.bordergroup(infoitem));
-                                node.node.group.dataset.nature = get.groupnature(get.bordergroup(infoitem), "raw");
-                        }
-                        node.node.name.style.top = "8px";
-                        if (node.node.name.querySelectorAll("br").length >= 4) {
-                                node.node.name.classList.add("long");
-                                if (lib.config.buttoncharacter_style == "old") {
-                                        node.addEventListener("mouseenter", ui.click.buttonnameenter);
-                                        node.addEventListener("mouseleave", ui.click.buttonnameleave);
-                                }
-                        }
-                        node.node.intro.innerHTML = lib.config.intro;
-                        if (!noclick) {
-                                lib.setIntro(node);
-                        }
-                        node.node.group.innerHTML = "<div>" + get.cnNumber(seat, true) + "号</div>";
-                        node.node.group.style.backgroundColor = get.translation(get.bordergroup(infoitem) + "Color");
-                };
-                node.refresh = func;
-                node.refresh(node, item);
-                node.link = _item;
-                node.seatNumber = seat;
-                node._customintro = function(uiintro) {
-                        uiintro.add(get.translation(node._link) + "(原" + get.cnNumber(node.seatNumber, true) + "号位)");
-                };
-                return node;
-        }
-    },
+					var nuts = [];
+					for (var i = 0; i < ui.cardPile.childNodes.length; i++) {
+						if (ui.cardPile.childNodes[i].name == "evilnut") nuts.push(ui.cardPile.childNodes[i]);
+					}
+					for (var j = 0; j < ui.discardPile.childNodes.length; j++) {
+						if (ui.discardPile.childNodes[j].name == "evilnut") nuts.push(ui.discardPile.childNodes[j]);
+					}
+					if (nuts.length > 0) {
+						await player.gain(nuts, "gain2");
+					}
+				}
+			},
+			handcard: {
+				mod: {
+					ignoredHandcard: function (card, player) {
+						if (card.name == "evilnut") return true;
+					}
+				}
+			}
+		},
+		"$createButton": function (item, type, position, noclick, node) {
+			const info = item.split("|");
+			const _item = item;
+			const seat = parseInt(info[0]);
+			item = info[1];
+			if (node) {
+				node.classList.add("button");
+				node.classList.add("character");
+				node.style.display = "";
+			} else {
+				node = ui.create.div(".button.character", position);
+			}
+			node._link = item;
+			node.link = item;
+			const func = function (node, item) {
+				const currentPlayer = game.findPlayer(function (current) { return current.getSeatNum() == seat; });
+				if (currentPlayer.classList.contains("unseen_show")) {
+					node.setBackground("hidden_image", "character");
+				} else if (item != "unknown") {
+					node.setBackground(item, "character");
+				}
+				if (node.node) {
+					if (node.node.name) node.node.name.remove();
+					if (node.node.hp) node.node.hp.remove();
+					if (node.node.group) node.node.group.remove();
+					if (node.node.intro) node.node.intro.remove();
+					if (node.node.replaceButton) node.node.replaceButton.remove();
+				}
+				node.node = {
+					name: ui.create.div(".name", node),
+					group: ui.create.div(".identity", node),
+					intro: ui.create.div(".intro", node),
+				};
+				const infoitem = [currentPlayer.sex, currentPlayer.group, currentPlayer.hp + "/" + currentPlayer.maxHp + "/" + currentPlayer.hujia];
+				node.node.name.innerHTML = get.slimName(item);
+				if (lib.config.buttoncharacter_style == "default" || lib.config.buttoncharacter_style == "simple") {
+					if (lib.config.buttoncharacter_style == "simple") {
+						node.node.group.style.display = "none";
+					}
+					node.classList.add("newstyle");
+					node.node.name.dataset.nature = get.groupnature(get.bordergroup(infoitem));
+					node.node.group.dataset.nature = get.groupnature(get.bordergroup(infoitem), "raw");
+				}
+				node.node.name.style.top = "8px";
+				if (node.node.name.querySelectorAll("br").length >= 4) {
+					node.node.name.classList.add("long");
+					if (lib.config.buttoncharacter_style == "old") {
+						node.addEventListener("mouseenter", ui.click.buttonnameenter);
+						node.addEventListener("mouseleave", ui.click.buttonnameleave);
+					}
+				}
+				node.node.intro.innerHTML = lib.config.intro;
+				if (!noclick) {
+					lib.setIntro(node);
+				}
+				node.node.group.innerHTML = "<div>" + get.cnNumber(seat, true) + "号</div>";
+				node.node.group.style.backgroundColor = get.translation(get.bordergroup(infoitem) + "Color");
+			};
+			node.refresh = func;
+			node.refresh(node, item);
+			node.link = _item;
+			node.seatNumber = seat;
+			node._customintro = function (uiintro) {
+				uiintro.add(get.translation(node._link) + "(原" + get.cnNumber(node.seatNumber, true) + "号位)");
+			};
+			return node;
+		}
+	},
 	"Hyades_huimie": {
 		persevereSkill: true,
 		mod: {
@@ -13353,6 +13352,198 @@ const skills = {
 
 			await player.die();
 		}
+	},
+
+	// 佐鸟笼目
+	"kagome_zhongji": {
+		audio: 2,
+		mod: {
+			attackRange(player, distance) {
+				const factions = new Set();
+				game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
+				return Math.max(distance, factions.size);
+			},
+		},
+		trigger: { player: "phaseUseBegin" },
+		filter(event, player) {
+			return game.hasPlayer(current => current != player);
+		},
+		async cost(event, trigger, player) {
+			const result = await player.chooseTarget(
+				get.prompt("kagome_zhongji") + "：将一张【风之传道师之谣】置于一名其他角色的武器栏中",
+				(card, player, target) => target != player
+			).set("ai", target => {
+				if (get.attitude(player, target) < 0) return -get.attitude(player, target);
+				return get.attitude(player, target) + target.getStockSkills().length * 0.1;
+			}).forResult();
+			if (result.bool) {
+				event.result = { bool: true, targets: result.targets };
+			}
+		},
+		async content(event, trigger, player) {
+			const target = event.targets[0];
+			player.line(target, "green");
+			const card = game.createCard2("fengzhichuandaoshi_zhiyao", "spade", 1);
+			await target.equip(card);
+
+			if (player.storage.kagome_zhongji_uid) {
+				player.removeAdditionalSkills(player.storage.kagome_zhongji_uid);
+			}
+			player.storage.kagome_zhongji_uid = "kagome_zhongji_" + get.id();
+
+			const factions = new Set();
+			game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
+			const X = factions.size;
+
+			const equipped = game.filterPlayer(p => p.getEquip("fengzhichuandaoshi_zhiyao"));
+			const skillPool = [];
+			const seen = new Set();
+			for (const p of equipped) {
+				const stockSkills = p.getStockSkills().filter(s => {
+					if (seen.has(s)) return false;
+					const info = get.info(s);
+					if (!info) return false;
+					if (info.juexingji || info.hiddenSkill || info.zhuSkill || info.charlotte || info.limited || info.dutySkill) return false;
+					if (player.hasSkill(s)) return false;
+					if (s == "kagome_zhongji" || s == "kagome_longli") return false;
+					return true;
+				});
+				for (const s of stockSkills) {
+					seen.add(s);
+					skillPool.push(s);
+				}
+			}
+
+			if (skillPool.length > 0) {
+				const maxSelect = Math.min(X, skillPool.length);
+				const result = await player.chooseButton(
+					["中集：选择获得至多" + get.cnNumber(maxSelect) + "个技能",
+					[skillPool.map(s => [s, get.translation(s)]), "tdnodes"]],
+					[0, maxSelect]
+				).set("ai", button => {
+					return get.skillRank(button.link, "inout") || 1;
+				}).forResult();
+
+				if (result.bool && result.links?.length > 0) {
+					await player.addAdditionalSkills(player.storage.kagome_zhongji_uid, result.links, true);
+					game.log(player, "获得了", "#y" + result.links.length + "个技能");
+				}
+			}
+		},
+		onremove(player) {
+			if (player.storage.kagome_zhongji_uid) {
+				player.removeAdditionalSkills(player.storage.kagome_zhongji_uid);
+				delete player.storage.kagome_zhongji_uid;
+			}
+		},
+		ai: {
+			threaten: 1.5,
+		},
+	},
+	"kagome_longli": {
+		audio: 2,
+		enable: "phaseUse",
+		usable: 1,
+		filter(event, player) {
+			return game.hasPlayer(current => current.countCards("h") >= 2);
+		},
+		filterTarget(card, player, target) {
+			return target.countCards("h") >= 2;
+		},
+		async content(event, trigger, player) {
+			if (!player.storage.kagome_longli_executed) {
+				player.storage.kagome_longli_executed = new Set();
+			}
+			const executed = player.storage.kagome_longli_executed;
+			let currentTarget = event.targets[0];
+			let lastCount = 0;
+
+			while (currentTarget) {
+				executed.add(currentTarget.playerid);
+				player.line(currentTarget, "thunder");
+
+				const handCount = currentTarget.countCards("h");
+				const result = await currentTarget.chooseCard("h", [2, handCount], "笼离：选择点数为等差数列的牌进行重铸（至少2张）", function (card, player) {
+					if (ui.selected.cards.length < 2) return true;
+					const selected = ui.selected.cards.map(c => get.number(c)).sort((a, b) => a - b);
+					const num = get.number(card);
+					const allNums = [...selected, num].sort((a, b) => a - b);
+					const diff = allNums[1] - allNums[0];
+					for (let i = 2; i < allNums.length; i++) {
+						if (allNums[i] - allNums[i - 1] != diff) return false;
+					}
+					return true;
+				})
+					.set("complexCard", true)
+					.set("ai", function (card) {
+						if (ui.selected.cards.length >= 2) {
+							const selected = ui.selected.cards.map(c => get.number(c)).sort((a, b) => a - b);
+							const num = get.number(card);
+							const allNums = [...selected, num].sort((a, b) => a - b);
+							const diff = allNums[1] - allNums[0];
+							for (let i = 2; i < allNums.length; i++) {
+								if (allNums[i] - allNums[i - 1] != diff) return -10;
+							}
+						}
+						return 10 - get.value(card);
+					}).forResult();
+
+				let reforgedCount = 0;
+				if (result.bool && result.cards?.length >= 2) {
+					const numbers = result.cards.map(c => get.number(c)).sort((a, b) => a - b);
+					const diff = numbers[1] - numbers[0];
+					const isValid = numbers.every((n, i) => i < 2 || n - numbers[i - 1] == diff);
+					if (isValid) {
+						await currentTarget.recast(result.cards);
+						reforgedCount = result.cards.length;
+					}
+				}
+
+				if (reforgedCount >= lastCount && reforgedCount > 0) {
+					lastCount = reforgedCount;
+					const available = game.filterPlayer(p =>
+						!executed.has(p.playerid) && p.countCards("h") >= 2
+					);
+
+					if (available.length > 0) {
+						const chainResult = await currentTarget.chooseTarget(
+							"笼离：是否令一名本回合未执行过此技能的角色执行此操作？",
+							(card, player, target) =>
+								!executed.has(target.playerid) && target.countCards("h") >= 2
+						).set("ai", (target) => {
+							return get.attitude(_status.event.player, target);
+						}).forResult();
+
+						if (chainResult.bool) {
+							currentTarget = chainResult.targets[0];
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				} else {
+					break;
+				}
+			}
+		},
+		group: ["kagome_longli_clear"],
+		subSkill: {
+			clear: {
+				trigger: { player: "phaseEnd" },
+				silent: true,
+				forced: true,
+				async content(event, trigger, player) {
+					delete player.storage.kagome_longli_executed;
+				},
+			},
+		},
+		ai: {
+			order: 7,
+			result: {
+				player: 1,
+			},
+		},
 	},
 };
 export default skills;

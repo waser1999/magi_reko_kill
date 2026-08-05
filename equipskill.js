@@ -468,8 +468,8 @@ const equipSkills = {
                     choices.push("流失一点体力");
 
                     const next = player.chooseControl(choices).set("prompt", "邪念之实：是否弃置一张牌或流失1点体力，将此牌置入弃牌堆？");
-                    
-                    next.set("ai", function() {
+
+                    next.set("ai", function () {
                         var player = _status.event.player;
                         if (player.hasSkillTag("loseHp")) {
                             return "流失一点体力";
@@ -564,6 +564,61 @@ const equipSkills = {
             }
         },
         "_priority": -25,
+    },
+    "fengzhichuandaoshi_zhiyao_skill": {
+        equipSkill: true,
+        locked: true,
+        mod: {
+            attackRange(player, distance) {
+                const factions = new Set();
+                game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
+                return Math.max(distance, factions.size);
+            },
+        },
+        trigger: {
+            source: "damageSource",
+        },
+        forced: true,
+        filter(event, player) {
+            if (!event.player || !event.player.isIn()) return false;
+            return event.player.hasSkill("kagome_zhongji");
+        },
+        async content(event, trigger, player) {
+            const factions = new Set();
+            game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
+            const X = factions.size;
+            const zhongjiPlayers = game.filterPlayer(p => p.hasSkill("kagome_zhongji"));
+            const choice1 = "弃置" + get.cnNumber(X) + "张手牌";
+            const choice2 = "令所有拥有【中集】的角色摸" + get.cnNumber(X) + "张牌";
+            const choices = [];
+            if (player.countCards("h") >= X) {
+                choices.push(choice1);
+            }
+            choices.push(choice2);
+            const result = await player.chooseControl(choices, true)
+                .set("prompt", "风之传道师之谣：请选择一项")
+                .set("ai", function () {
+                    const p = _status.event.player;
+                    if (p.countCards("h") >= X && p.countCards("h") > X + 2) {
+                        const zhongjiCount = game.countPlayer(c => c.hasSkill("kagome_zhongji"));
+                        if (zhongjiCount > 0) {
+                            const hasFriend = game.hasPlayer(c => c.hasSkill("kagome_zhongji") && get.attitude(p, c) > 0);
+                            if (hasFriend) return choice2;
+                        }
+                        return choice1;
+                    }
+                    return choice2;
+                })
+                .forResult();
+            if (result.control == choice1) {
+                await player.chooseToDiscard("h", X, true, "风之传道师之谣：弃置" + get.cnNumber(X) + "张手牌");
+            } else {
+                for (const target of zhongjiPlayers) {
+                    await target.draw(X);
+                }
+            }
+        },
+        "_priority": 0,
     },
 };
 

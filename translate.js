@@ -645,6 +645,15 @@ const translates = {
 	"qianweihuakai_info": "①你对一名角色使用【杀】时，你可以令其弃置1张牌或者你摸1张牌。②你使用【杀】造成伤害后，你可以弃置1张手牌并回复1点体力。",
 	"qianweihuakai_jiushi": "蔷薇花开弓·救世",
 	"qianweihuakai_aishi": "蔷薇花开弓·爱世",
+
+	// 佐鸟笼目
+	"kagome_zhongji": "中集",
+	"kagome_zhongji_info": "锁定技，你的攻击距离恒为X（X为场上势力数）。你的出牌阶段开始时，你可将一张【风之传道师之谣】置于一名其他角色的武器栏中（可替换原装备），然后你清除之前获得的所有技能，选择装备此装备的所有角色技能的至多X个获得之。",
+	"kagome_longli": "笼离",
+	"kagome_longli_info": "出牌阶段限一次，你可以令一名角色重铸所有点数为等差数列的牌；若因此重铸的牌数不少于上一次，该角色可令一名本回合未执行过此技能的其他角色执行此操作。",
+	"fengzhichuandaoshi_zhiyao": "风之传道师之谣",
+	"fengzhichuandaoshi_zhiyao_info": "攻击距离X（X为场上势力数）。锁定技，装备此牌的角色对拥有【中集】的角色造成伤害后，须选择一项：弃置X张手牌；令所有拥有【中集】的角色摸X张牌。",
+	"fengzhichuandaoshi_zhiyao_skill": "风之传道师之谣",
 };
 
 export default translates;
