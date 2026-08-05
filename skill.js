@@ -13358,10 +13358,10 @@ const skills = {
 	"kagome_zhongji": {
 		audio: 2,
 		mod: {
-			attackRange(player, distance) {
+			maxHandcard(player, num) {
 				const factions = new Set();
 				game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
-				return Math.max(distance, factions.size);
+				return num + factions.size;
 			},
 		},
 		trigger: { player: "phaseUseBegin" },
@@ -13370,7 +13370,7 @@ const skills = {
 		},
 		async cost(event, trigger, player) {
 			const result = await player.chooseTarget(
-				get.prompt("kagome_zhongji") + "：将一张【风之传道师之谣】置于一名其他角色的武器栏中",
+				get.prompt("kagome_zhongji") + "：将一张【风之传道师之谣】置于一名其他角色的宝物栏中",
 				(card, player, target) => target != player
 			).set("ai", target => {
 				if (get.attitude(player, target) < 0) return -get.attitude(player, target);
@@ -13454,6 +13454,9 @@ const skills = {
 			if (!player.storage.kagome_longli_executed) {
 				player.storage.kagome_longli_executed = new Set();
 			}
+			if (!player.storage.kagome_longli_count) {
+				player.storage.kagome_longli_count = 0;
+			}
 			const executed = player.storage.kagome_longli_executed;
 			let currentTarget = event.targets[0];
 			let lastCount = 0;
@@ -13496,6 +13499,7 @@ const skills = {
 					if (isValid) {
 						await currentTarget.recast(result.cards);
 						reforgedCount = result.cards.length;
+						player.storage.kagome_longli_count++;
 					}
 				}
 
@@ -13526,6 +13530,10 @@ const skills = {
 					break;
 				}
 			}
+
+			if (player.storage.kagome_longli_count > 0) {
+				await player.draw(player.storage.kagome_longli_count);
+			}
 		},
 		group: ["kagome_longli_clear"],
 		subSkill: {
@@ -13535,6 +13543,7 @@ const skills = {
 				forced: true,
 				async content(event, trigger, player) {
 					delete player.storage.kagome_longli_executed;
+					delete player.storage.kagome_longli_count;
 				},
 			},
 		},

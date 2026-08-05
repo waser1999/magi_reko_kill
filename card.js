@@ -792,7 +792,7 @@ const cards = {
 	"fengzhichuandaoshi_zhiyao": {
 		fullskin: true,
 		type: "equip",
-		subtype: "equip1",
+		subtype: "equip5",
 		skills: ["fengzhichuandaoshi_zhiyao_skill"],
 		ai: {
 			basic: {

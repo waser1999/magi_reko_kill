@@ -568,13 +568,6 @@ const equipSkills = {
     "fengzhichuandaoshi_zhiyao_skill": {
         equipSkill: true,
         locked: true,
-        mod: {
-            attackRange(player, distance) {
-                const factions = new Set();
-                game.filterPlayer(p => p.isIn()).forEach(p => factions.add(p.group));
-                return Math.max(distance, factions.size);
-            },
-        },
         trigger: {
             source: "damageSource",
         },
