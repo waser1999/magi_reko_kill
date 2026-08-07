@@ -578,7 +578,7 @@ const cards = {
 		type: "equip",
 		subtype: "equip5",
 		skills: ["LightLance_skill1", "LightLance_skill2"],
-		image: "ext:魔法纪录/card_image/LightLance.jpg",
+		image: "ext:魔法纪录/card_image/LightLance.png",
 		enable: true,
 		selectTarget: -1,
 		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
@@ -793,6 +793,7 @@ const cards = {
 		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
+		image: "ext:魔法纪录/card_image/Alu.png",
 		skills: ["fengzhichuandaoshi_zhiyao_skill"],
 		ai: {
 			basic: {
