@@ -266,71 +266,605 @@ const equipSkills = {
             trigger.target.gain(game.createCard2("du", card.suit, card.number), "gain2");
         },
     },
-    "ClovisSword_skill": {
-        mod: {
-            maxHandcard(player, num) {
-                return num + 2;
-            }
-        },
-        inherit: "qinggang_skill",
-        equipSkill: true,
-        audio: true,
-        trigger: {
-            player: "useCardToPlayered",
-        },
-        filter(event) {
-            return event.card.name === "sha";
-        },
+	"AncientSword_skill1": {
+		equipSkill: true,
+		trigger: {
+			player: "useCardToPlayered"
+		},
+		forced: true,
+		logTarget: "target",
+		filter: function (event, player) {
+			return event.target !== player && event.card && event.card.name === "sha";
+		},
+		content: async function (event, trigger, player) {
+			let result = await player.judge(function() {
+				return 0;
+			}).forResult();
+			
+			if (!trigger.target.hasSkill("fengyin")) {
+				trigger.target.addTempSkill("fengyin");
+			}
+			
+			const suit = result.suit;
+			const target = trigger.target;
+			const num = target.countCards("h", "shan");
+			
+			result = await target.chooseToDiscard("请弃置一张" + get.translation(suit) + "牌，否则不能响应此牌", "he", function(card) {
+				return get.suit(card) === _status.event.suit;
+			}).set("ai", function(card) {
+				var num2 = _status.event.num;
+				if (num2 === 0) return 0; 
+				if (card.name === "shan") return num2 > 1 ? 2 : 0; 
+				return 1 - get.value(card); 
+			}).set("num", num).set("suit", suit).forResult();
+			
+			if (!result.bool) {
+				trigger.getParent().directHit.add(trigger.target);
+			}
+		},
+		group: ["AncientSword_skill1_damage"]
+	},
+	"AncientSword_skill1_damage": {
+		equipSkill: true,
+		trigger: {
+			source: "damageBegin1"
+		},
+		forced: true,
+		filter: function (event, player) {
+			return event.card && event.card.name === "sha" && !event.card.nature;
+		},
+		content: function (event, trigger, player) {
+			game.log("因", "#g【古代锈剑】", "的锋芒减退，造成的伤害", "#y-1", "。");
+			
+			trigger.num -= 1;
+			if (trigger.num <= 0) {
+			}
+		}
+	},
+	"AncientSword_skill2": {
+		equipSkill: true,
+		trigger: {
+			player: ["equipAfter", "phaseZhunbeiBegin"]
+		},
+		forced: true,
+		filter: function (event, player) {
+			var isdArc = ["dArc", "Final_dArc"].some(function (n) {
+				return player.name === n || player.name1 === n || player.name2 === n;
+			});
+			if (!isdArc) return false;
+			
+			var weapon = player.getEquip("equip1");
+			return weapon && weapon.name === "AncientSword";
+		},
+		content: async function (event, trigger, player) {
+			var oldSword = player.getEquip("equip1");
+			
+			if (oldSword && oldSword.name === "AncientSword") {
+				await player.lose(oldSword, ui.discardPile, "visible");
+				
+				var newSword = game.createCard({
+					name: "ClovisSword",
+					suit: oldSword.suit || "diamond",
+					number: oldSword.number || 2
+				});
+				
+				await player.equip(newSword);
+				
+				player.$fullscreenpop("圣剑复苏", "gold");
+				game.log(player, "的", oldSword, "洗尽铅华，化为了", newSword);
 
-        logTarget: "target",
-        content() {
-            trigger.target.chooseToDiscard('he', 1, true);
-            trigger.target.addTempSkill("qinggang2");
-            trigger.target.storage.qinggang2.add(trigger.card);
-            trigger.target.markSkill("qinggang2");
-        },
-        ai: {
-            "unequip_ai": true,
-            skillTagFilter(player, tag, arg) {
-                if (arg && arg.name === "sha") {
-                    return true;
-                }
-                return false;
-            }
-        },
-        "_priority": 0,
-    },
-    "LightLance_skill1": {
-        equipSkill: true,
-        trigger: {
-            source: "damageAfter",
-        },
-        filter: function (event, player) {
-            return event.player != player && event.player.maxHp > 0 && event.player.isAlive();
-        },
-        "prompt2": function (event, player) {
-            return '令其减少等同伤害值的体力上限。';
-        },
-        content: function () {
-            trigger.player.loseMaxHp(trigger.num);
-        },
-        mod: {
-            cardUsable: () => Infinity,
-        },
-        "_priority": 0,
-    },
-    "LightLance_skill2": {
-        mod: {
-            targetInRange(card, player, target, now) {
-                var type = get.type(card);
-                if (type == 'trick' || type == 'delay' | type == 'sha') return Infinity;
-            },
-            canBeDiscarded(card) {
-                if (get.position(card) == 'e' && ['equip1', 'equip2'].includes(get.subtype(card))) return false;
-            },
-        },
-        "_priority": 0,
-    },
+
+				// 附加功能：觉醒后印基本牌
+				var chooseAction = await player.chooseControl('sha', 'tao', 'jiu')
+					.set('prompt', '圣剑复苏：你可以视为对攻击范围内一名角色使用一张基本牌')
+					.set('cancelDialog', true)
+					.set('ai', function() {
+						var p = _status.event.player;
+						// AI 优化：有残血队友或者自己不满血，优先桃；有敌人在攻击范围内，就出杀；否则喝酒
+						if (game.hasPlayer(function(current){ return get.attitude(p, current) > 0 && current.hp <= 2; })) return 'tao';
+						if (game.hasPlayer(function(current){ return get.attitude(p, current) < 0 && p.inRange(current); })) return 'sha';
+						if (p.hp < p.maxHp) return 'tao';
+						return 'jiu';
+					}).forResult();
+
+				if (chooseAction.control) {
+					var cardName = chooseAction.control;
+					var chooseTarget = await player.chooseTarget(1, function (card, p, target) { 
+						return p.inRange(target) || target === p; 
+					})
+					.set('cardN', cardName)
+					.set('ai', function(target) {
+						var p = _status.event.player;
+						var cName = _status.event.cardN;
+						if (cName === 'tao') return get.attitude(p, target) > 0 ? (10 - target.hp) : 0;
+						if (cName === 'sha') return get.attitude(p, target) < 0 ? (10 - target.hp) : 0;
+						if (cName === 'jiu') return target === p ? 1 : 0;
+						return 0;
+					}).forResult();
+
+					if (chooseTarget.bool && chooseTarget.targets.length > 0) {
+						var target = chooseTarget.targets[0];
+						player.line(target, "green");
+						var vcard = game.createCard(cardName);
+						await player.useCard(vcard, target, false);
+					}
+				}
+			}
+		}
+	},
+
+	"dArc_exclusive_degrade": {
+		equipSkill: true,
+		trigger: {
+			player: ["equipAfter", "phaseZhunbeiBegin"]
+		},
+		forced: true,
+		filter: function (event, player) {
+			// 1. 判断是不是贞德（塔鲁特）
+			var isdArc = ["dArc", "Final_dArc"].some(function (n) {
+				return player.name === n || player.name1 === n || player.name2 === n;
+			});
+			// 如果是贞德，就不触发退化
+			if (isdArc) return false;
+			
+			// 2. 如果不是贞德，检查身上是不是正穿着这两件神器
+			return player.hasCard(function(c){ return c.name === "ClovisSword" || c.name === "LightLance"; }, "e");
+		},
+		content: async function (event, trigger, player) {
+			var cards = player.getCards("e", function(card) {
+				return card.name === "ClovisSword" || card.name === "LightLance";
+			});
+			
+			for (var i = 0; i < cards.length; i++) {
+				var oldEquip = cards[i];
+				// 退化
+				var newName = oldEquip.name === "ClovisSword" ? "AncientSword" : "QuubeyFlag";
+				
+				await player.lose(oldEquip, ui.discardPile, "visible");
+				
+				var newEquip = game.createCard(newName, oldEquip.suit, oldEquip.number);
+				await player.equip(newEquip);
+				
+				// 提示
+				game.log(player, "无法驾驭圣物，", oldEquip, "黯然失色，化为了", newEquip);
+			}
+		}
+	},
+
+	"QuubeyFlag_skill": {
+		equipSkill: true,
+		mod: {
+			maxHandcard: function (player, num) {
+				return num + 1;
+			}
+		}
+	},
+
+	"QuubeyFlag_skill2": {
+		equipSkill: true,
+		trigger: {
+			player: ["equipAfter", "phaseZhunbeiBegin"]
+		},
+		forced: true,
+		filter: function (event, player) {
+			var isdArc = ["dArc", "Final_dArc"].some(function (n) {
+				return player.name === n || player.name1 === n || player.name2 === n;
+			});
+			if (!isdArc) return false;
+			
+			var flag = player.getEquip("equip4");
+			return flag && flag.name === "QuubeyFlag";
+		},
+		content: async function (event, trigger, player) {
+			var oldFlag = player.getEquip("equip4");
+			
+			if (oldFlag && oldFlag.name === "QuubeyFlag") {
+				await player.lose(oldFlag, ui.discardPile, "visible");
+				
+				var newLance = game.createCard({
+					name: "LightLance",
+					suit: oldFlag.suit || "diamond",
+					number: oldFlag.number || 2
+				});
+				
+				await player.equip(newLance);
+				
+				player.$fullscreenpop("圣枪复苏", "gold");
+				game.log(player, "的", oldFlag, "洗尽铅华，化为了", newLance);
+
+
+				// 武器觉醒后印基本牌
+				var chooseAction = await player.chooseControl('sha', 'tao', 'jiu')
+					.set('prompt', '圣枪复苏：你可以视为对攻击范围内一名角色使用一张基本牌')
+					.set('cancelDialog', true)
+					.set('ai', function() {
+						var p = _status.event.player;
+						if (game.hasPlayer(function(current){ return get.attitude(p, current) > 0 && current.hp <= 2; })) return 'tao';
+						if (game.hasPlayer(function(current){ return get.attitude(p, current) < 0 && p.inRange(current); })) return 'sha';
+						if (p.hp < p.maxHp) return 'tao';
+						return 'jiu';
+					}).forResult();
+
+				if (chooseAction.control) {
+					var cardName = chooseAction.control;
+					var chooseTarget = await player.chooseTarget(1, function (card, p, target) { 
+						return p.inRange(target) || target === p; 
+					})
+					.set('cardN', cardName)
+					.set('ai', function(target) {
+						var p = _status.event.player;
+						var cName = _status.event.cardN;
+						if (cName === 'tao') return get.attitude(p, target) > 0 ? (10 - target.hp) : 0;
+						if (cName === 'sha') return get.attitude(p, target) < 0 ? (10 - target.hp) : 0;
+						if (cName === 'jiu') return target === p ? 1 : 0;
+						return 0;
+					}).forResult();
+
+					if (chooseTarget.bool && chooseTarget.targets.length > 0) {
+						var target = chooseTarget.targets[0];
+						player.line(target, "green");
+						var vcard = game.createCard(cardName);
+						await player.useCard(vcard, target, false);
+					}
+				}
+			}
+		}
+	},
+	"SaintessArmor_skill": {
+		equipSkill: true,
+		trigger: {
+			target: "useCardToTarget" 
+		},
+		usable: 1, 
+		filter: function (event, player) {
+			if (!event.targets || event.targets.length !== 1 || event.targets[0] !== player) {
+				return false;
+			}
+			var count = player.storage.SaintessArmor_round_count || 0;
+			var x = Math.max(1, count);
+			return player.countCards("he") >= x;
+		},
+		check: function (event, player) {
+			return get.effect(player, event.card, event.player, player) < 0;
+		},
+		content: async function (event, trigger, player) {
+			var count = player.storage.SaintessArmor_round_count || 0;
+			var x = Math.max(1, count);
+
+			var isBadCard = get.effect(player, trigger.card, trigger.player, player) < 0;
+			var promptStr = "是否弃置 " + x + " 张牌，发动【圣女胸甲】令【" + get.translation(trigger.card) + "】对你无效？";
+
+			var result = await player.chooseToDiscard("he", x, promptStr).set("ai", function (card) {
+				if (!_status.event.isBadCard) return 0;
+				return 8 - get.value(card);
+			}).set("isBadCard", isBadCard).forResult();
+
+			if (result.bool) {
+				await player.discard(result.cards);
+				player.storage.SaintessArmor_round_count = count + 1;
+				game.log(player, "发动了", "#g【圣女胸甲】", "，令", trigger.card, "对其无效");
+				trigger.excluded.add(player); 
+			}
+		},
+		group: ["SaintessArmor_skill_roundReset"]
+	},
+	"SaintessArmor_skill_roundReset": {
+		equipSkill: true,
+		trigger: { global: "roundStart" },
+		forced: true,
+		silent: true,
+		filter: function (event, player) { 
+			return player.storage.SaintessArmor_round_count !== undefined; 
+		},
+		content: function (event, trigger, player) { 
+			delete player.storage.SaintessArmor_round_count; 
+		}
+	},
+    // 贞德专属
+	"ClovisSword_skill": {
+		trigger: { 
+		    player: "useCardToPlayered" 
+		}, 
+		forced: true,
+		logTarget: "target",
+		equipSkill: true,
+		priority: 11,
+		filter: function (event, player) {
+			return event.target != player;
+		},
+		content: async function (event, trigger, player) {
+			trigger.target.addTempSkill("qinggang2");
+			if (typeof trigger.target.storage.qinggang2 === "undefined") {
+				trigger.target.storage.qinggang2 = [];
+			}
+			trigger.target.storage.qinggang2.add(trigger.card);
+			trigger.target.markSkill("qinggang2");
+
+			if (trigger.card && trigger.card.name == "sha") {
+				let result = await player.judge(function() {
+					return 0;
+				}).forResult();
+				
+				if (!trigger.target.hasSkill("fengyin")) {
+					trigger.target.addTempSkill("fengyin");
+				}
+				
+				const suit = result.suit;
+				const target = trigger.target;
+				const num = target.countCards("h", "shan");
+				
+				result = await target.chooseToDiscard("请弃置一张" + get.translation(suit) + "牌，否则不能响应此牌", "he", function(card) {
+					return get.suit(card) == _status.event.suit;
+				}).set("ai", function(card) {
+					var num2 = _status.event.num;
+					if (num2 == 0) return 0;
+					if (card.name == "shan") return num2 > 1 ? 2 : 0;
+					return 8 - get.value(card);
+				}).set("num", num).set("suit", suit).forResult();
+				
+				if (!result.bool) {
+					trigger.getParent().directHit.add(trigger.target);
+				}
+			}
+		}
+	},
+
+	"LightLance_skill": {
+		equipSkill: true,
+		mod: {
+			globalFrom: function (from, to, distance) {
+				return distance - 2;
+			}
+		},
+		trigger: { source: "damageEnd" },
+		direct: true,
+		filter: function (event, player) {
+			return event.card && get.type(event.card) === "basic";
+		},
+		content: async function (event, trigger, player) {
+			var chooseTarget = await player.chooseTarget(
+				"光之旗枪：是否令一名与你距离为 1 以内的角色摸两张牌或弃置两张牌？",
+				1,
+				function (card, player, target) {
+					return get.distance(player, target) <= 1;
+				}
+			)
+
+			.set("ai", function (target) {
+				var evtPlayer = _status.event.player;
+				var att = get.attitude(evtPlayer, target);
+
+				if (att > 0) {
+					// ai选择
+					// 1. 救命保人
+					if (target.hp <= 1 && target.countCards("h") <= 2) return 15;
+					
+					// 2. 自身爆发
+					if (target === evtPlayer && _status.currentPhase === evtPlayer && evtPlayer.countCards("h") <= 3) return 12;
+					
+					// 3. 正常补给
+					if (target.hp <= 2 || target.countCards("h") < target.hp) return 10;
+					
+					// 4. 锦上添花
+					if (target === evtPlayer) return 9;
+					return 8;
+					
+				} else {
+
+					var heCount = target.countCards("he"); 
+					
+					// 0. 防呆
+					if (heCount === 0) return 0; 
+					
+					// 1. 绝杀
+					if (target.hp === 1) return 14;
+					
+					// 2. 破防
+					if (heCount === 2 || target.getCards("e").length >= 2) return 11;
+					
+					// 3. 常规
+					return 7;
+				}
+			}).forResult();
+
+			if (chooseTarget.bool && chooseTarget.targets && chooseTarget.targets.length > 0) {
+				var target = chooseTarget.targets[0];
+				player.logSkill("LightLance_skill", target);
+				
+				var chooseAction = await player.chooseControl("摸两张牌", "弃置两张牌")
+					.set("prompt", "请为【" + get.translation(target) + "】选择一项：")
+	
+	
+					.set("ai", function () {
+						var evtPlayer = _status.event.player;
+						var evtTarget = _status.event.target;
+
+						return get.attitude(evtPlayer, evtTarget) > 0 ? "摸两张牌" : "弃置两张牌";
+					})
+					.set("target", target)
+					.forResult();
+
+				if (chooseAction.control === "摸两张牌") {
+					await target.draw(2);
+				} else {
+					await target.chooseToDiscard("he", 2, true);
+				}
+			}
+		}
+	},
+	"LightSword_skill": {
+		persevereSkill: true,
+		trigger: { 
+			player: "useCardAfter" 
+		},
+		forced: true,
+		group: [
+			"LightSword_skill_keep" 
+		],
+		content: function (event, trigger, player) {
+			var others = game.filterPlayer(function (current) { return current != player; });
+			for (var i = 0; i < others.length; i++) {
+				// 使其武将牌技能失效直至回合结束
+				others[i].addTempSkill("baiban", "phaseAfter");
+				// 防具失效，并且禁止响应/使用牌
+				others[i].addTempSkill("LightSword_debuff", "phaseAfter");
+			}
+		},
+		subSkill: {
+			keep: {
+				trigger: {
+					player: "loseBefore"
+				},
+				forced: true,
+				filter: function (event, player) {
+					if (event.parent.name === "useCard") {
+						return false;
+					}
+					return event.cards && event.cards.some(function(q) { 
+						return q.name === "LightSword"; 
+					});
+				},
+				content: async function (event, trigger, player) {
+					trigger.cards = trigger.cards.filter(function(q) { 
+						return q.name !== "LightSword"; 
+					});
+				}
+			}
+		}
+	},
+	"LightSword_debuff": {
+		charlotte: true,
+		mark: true,
+		marktext: "封",
+		intro: {
+			content: "防具失效，且不能使用或打出牌",
+		},
+		mod: {
+			cardEnabled2: function (card, player) {
+				return false;
+			},
+			cardRespondable2: function (player, card) {
+				return false;
+			},
+			cardSavable2: function (card, player) {
+				return false;
+			}
+		},
+		ai: {
+			unequip2: true, 
+		}
+	},
+	"LightSword_silence": {
+		charlotte: true, 
+		mark: true,
+		mod: {
+			cardEnabled2: function () { 
+				return false; 
+			},
+			cardRespondable2: function () { 
+				return false; 
+			},
+		}
+	},
+	"ShadowGauntlets_skill1": {
+		persevereSkill: true,
+		trigger: {
+			player: "useCard"
+		},
+		forced: true, 
+		group: [
+			"ShadowGauntlets_skill1_keep" 
+		],
+		filter: function (event, player) {
+			return event.card && event.card.isCard && !event.card.isVirtual && event.targets && event.targets.length > 0;
+		},
+		content: async function (event, trigger, player) {
+			if (trigger.card.name === "tiesuo") {
+				var result = await player.chooseBool("是否令【铁索连环】额外结算一次？").forResult();
+				if (result.bool) {
+					trigger.effectCount++;
+				}
+			} 
+			else {
+				trigger.effectCount++;
+			}
+		},
+		subSkill: {
+			keep: {
+				trigger: {
+					player: "loseBefore"
+				},
+				forced: true,
+				filter: function (event, player) {
+					if (event.parent.name === "useCard") {
+						return false;
+					}
+					return event.cards && event.cards.some(function(q) { 
+						return q.name === "ShadowGauntlets"; 
+					});
+				},
+				content: async function (event, trigger, player) {
+					trigger.cards = trigger.cards.filter(function(q) { 
+						return q.name !== "ShadowGauntlets"; 
+					});
+				}
+			}
+		}
+	},
+	"ShadowGauntlets_skill2": {
+		persevereSkill: true,
+		trigger: { source: "damageBegin1" },
+		forced: true,
+		priority: -10, 
+		content: function (event, trigger, player) { 
+			trigger.num *= 2; 
+		}
+	},
+	//询问触发版手甲
+		//"ShadowGauntlets_skill1": {
+		//persevereSkill: true,
+		//trigger: {
+			//player: "useCard"
+		//},
+		//prompt2: "是否令此牌额外结算一次？", 
+		//filter: function (event, player) {
+			//return event.card && event.card.isCard && !event.card.isVirtual && event.targets && event.targets.length > 0;
+		//},
+		//content: function (event, trigger, player) {
+			//trigger.effectCount++;
+		//}
+	//},
+
+	"DragonsFire_skill": {
+		equipSkill: true,
+		trigger: { player: ["loseAfter", "cardsDiscardAfter"] },
+		filter: function (event, player) {
+			if (event.name === 'lose' && event.type !== 'discard') return false;
+			return event.cards && event.cards.length > 0;
+		},
+		forced: true,
+		content: async function (event, trigger, player) {
+			var count = trigger.cards.length;
+			player.storage.DragonsFire_count = (player.storage.DragonsFire_count || 0) + count;
+			
+			while (player.storage.DragonsFire_count >= 2) {
+				player.storage.DragonsFire_count -= 2;
+				
+				var targets = game.filterPlayer(function(current) { return current.isAlive(); });
+				if (targets.length === 0) break;
+
+				var chooseTarget = await player.chooseTarget("龙之雷火：累计弃牌数达到2！你可以对一名角色造成1点火焰伤害", [0, 1]).set("ai", function(target) {
+					return -get.attitude(_status.event.player, target);
+				}).forResult();
+				
+				if (chooseTarget.bool && chooseTarget.targets && chooseTarget.targets.length > 0) {
+					player.logSkill("DragonsFire_skill", chooseTarget.targets);
+					player.line(chooseTarget.targets[0], "fire");
+					await chooseTarget.targets[0].damage(1, "fire", player);
+				}
+			}
+		}
+	},
     "griefseed_skill": {
         equipSkill: true,
         locked: true,
@@ -401,7 +935,7 @@ const equipSkills = {
         group: ["evilnut_skill_enter", "evilnut_skill_damage"],
         mod: {
             maxHandcard: function (player, num) {
-                const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+                const isKanna = ["Kanna", "Hyades", "Pleiades_Niko"].some(n => player.name == n || player.name1 == n || player.name2 == n);
                 if (isKanna) return num + 1;
                 return num - 1;
             }
@@ -417,7 +951,7 @@ const equipSkills = {
                     return event.card && event.card.name == "evilnut";
                 },
                 content: async function (event, trigger, player) {
-                    const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+                    const isKanna = ["Kanna", "Hyades", "Pleiades_Niko"].some(n => player.name == n || player.name1 == n || player.name2 == n);
                     const isGift = trigger.giver && trigger.giver != player;
 
                     if (isKanna) {
@@ -450,7 +984,7 @@ const equipSkills = {
                     return player.getEquip("evilnut");
                 },
                 content: async function (event, trigger, player) {
-                    const isKanna = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+                    const isKanna = ["Kanna", "Hyades", "Pleiades_Niko"].some(n => player.name == n || player.name1 == n || player.name2 == n);
                     const evilnutCard = player.getEquip("evilnut");
                     if (!evilnutCard) return;
 
