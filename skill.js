@@ -4825,7 +4825,7 @@ const skills = {
 
     // 御崎海香
     "Umika_juebi": {
-        audio: "ext:魔法纪录/audio/skill:2",
+        audio: "ext:魔法纪录/audio/skill:3",
         group: ["Umika_juebi_count", "Umika_juebi_zhinang"],
         subSkill: {
             count: {
@@ -5130,7 +5130,7 @@ const skills = {
         }
     },
     "Kaoru_Jiang": {
-        audio: "ext:魔法纪录/audio/skill:2",
+        audio: "ext:魔法纪录/audio/skill:3",
         group: ["Kaoru_Jiang_init", "Kaoru_Jiang_rangeMonitor"],
         trigger: { player: ["useCardAfter", "respondAfter"] },
         forced: true, locked: true, silent: true,
@@ -15630,7 +15630,7 @@ const skills = {
 		"_priority": 0,
 	},
 	"Riz_yingfu": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		group: ["Riz_yingfu_clear", "Riz_yingfu_damage_track"],
 		trigger: {
 			global: "damageBegin1",
@@ -15739,7 +15739,7 @@ const skills = {
 		}
 	},
 	"Riz_anwu": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		trigger: {
 			player: "useCardToPlayered",
 		},
@@ -16587,7 +16587,7 @@ const skills = {
 		}
 	},
 	"Elisa_longxiao": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		trigger: { player: "phaseJieshuEnd" },
 		direct: true,
 		filter: function (event, player) {
@@ -16710,7 +16710,7 @@ const skills = {
 		}
 	},
 	// 基础（1人1牌）
-	"Elisa_jinao_1": {
+	"Elisa_jinao1": {
 		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { 
 			player: "loseAfter"
@@ -16731,7 +16731,7 @@ const skills = {
 		}
 	},
 	// 龙骑失效（1人2牌）
-	"Elisa_jinao_2": {
+	"Elisa_jinao2": {
 		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: "loseAfter"
@@ -16752,7 +16752,7 @@ const skills = {
 		}
 	},
 	// 状态3：龙哮失效（2人1牌）
-	"Elisa_jinao_3": {
+	"Elisa_jinao3": {
 		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: {
 			player: "loseAfter"
@@ -16775,7 +16775,7 @@ const skills = {
 		}
 	},
 	// 双重失效，背水解禁（2人2牌）
-	"Elisa_jinao_4": {
+	"Elisa_jinao4": {
 		audio: "ext:魔法纪录/audio/skill:3",
 		trigger: {
 			player: "loseAfter"
