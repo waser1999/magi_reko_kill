@@ -127,6 +127,7 @@ export default function () {
 			lib.namePrefix.set("圣", { color: "#FFD700" });
 			lib.namePrefix.set("谣", { color: "#FFD700" });
 			lib.namePrefix.set("神使", { color: "#FFD700" });
+			lib.namePrefix.set("极", { color: "#FAD7A0" });
 		}, help: {
 
 		}, config: {
@@ -162,6 +163,9 @@ export default function () {
 					["spade", 1, "guaguliaodu"],
 					["heart", 5, "special_week"],
 					["heart", 2, "qianweihuakai"],
+					["diamond", 12, "SaintessArmor"],
+					["club", 2, "AncientSword", null, ["gifts"]],
+					["club", 12, "QuubeyFlag", null, ["gifts"]],
 					["spade", 2, "evilnut", null, ["gifts"]],
 					["spade", 3, "evilnut", null, ["gifts"]],
 					["spade", 4, "evilnut", null, ["gifts"]],
