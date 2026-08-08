@@ -772,25 +772,53 @@ const characters = {
         img: "extension/魔法纪录/image/Pleiades_Niko.jpg",
         dieAudios: ["ext:魔法纪录/audio/die/Niko.mp3"],
     },
-	"dArc": {//贞德
+	"dArc": {//塔鲁特（贞德）
 		sex: "female",
 		group: "Magia_Others",
 		hp: 4,
 		maxHp: 4,
-		skills: ["dArc_shengnv", "dArc_shengjian", "dArc_susheng"],
+		skills: ["dArc_shengnv", "dArc_susheng", "dArc_shengjian_lv1"],
 		img: "extension/魔法纪录/image/dArc.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/dArc.mp3"]
+	},
+	"Final_dArc": {//极贞德
+		sex: "female",
+		group: "Magia_Others",
+		hp: 21,
+		maxHp: 21,
+		skills: ["Final_dArc_poge", "Final_dArc_guangying", "Final_dArc_tianmen"],
+		img: "extension/魔法纪录/image/Final_dArc.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Final_dArc.mp3"]
 	},
 	"Riz": {// 莉兹
 		sex: "female",
 		group: "Magia_Others",
-		hp: 4,
+		hp: 3,
 		maxHp: 4,
 		hujia: 0,
 		skills: ["Riz_caoying", "Riz_yingfu", "Riz_anwu"],
 		img: "extension/魔法纪录/image/Riz.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Riz.mp3"]
 	},
+	"Melissa": {// 梅丽莎
+		sex: "female",
+		group: "Magia_Others",
+		hp: 4,
+		maxHp: 4,
+		hujia: 0,
+		skills: ["Melissa_bengmie_lv1", "Melissa_bingjian_lv1", "Melissa_wanyuan"],
+		img: "extension/魔法纪录/image/Melissa.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Melissa.mp3"]
+	},
+	"Elisa": {// 爱丽莎
+		sex: "female",
+		group: "Magia_Others",
+		hp: 3,
+		maxHp: 3,
+		hujia: 0,
+		skills: ["Elisa_longqi", "Elisa_longxiao", "Elisa_jinao"],
+		img: "extension/魔法纪录/image/Elisa.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Elisa.mp3"]
 	"suzune": {//天乃铃音
 		sex: "female",
 		group: "Magia_Others",
@@ -917,7 +945,7 @@ const character_translates = {
 	"Kanna_prefix": "圣",
 	"uwasa_tsuruno_prefix": "谣",
 	"devil_homura_prefix": "魔",
-	"dArc_prefix": "神",
+	"Final_dArc_prefix": "极",
 
 	madoka: "鹿目圆",
 	homura: "晓美焰",
@@ -1000,13 +1028,16 @@ const character_translates = {
     Mirai: "若叶未来",
 	Satomi: "宇佐木里美",
 	Niko: "神那妮可",
-	dArc: "神贞德",
+	dArc: "塔鲁特",
+	Final_dArc: "极贞德",
+	Riz: "莉兹·霍克伍德",
+	Melissa: "梅丽莎·德·维尼奥勒",
+	Elisa: "爱丽莎·采列斯卡",
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
 	blue: "蓝蓝",
 	ceobo: "小刻",
 	sakuya: "铃鹿朔夜",
-	Riz: "莉兹·霍克伍德",
 	hikaru: "煌里光",
 	sasa: "优木沙沙",
 	Souju: "双树绫濑&流香",
@@ -1073,8 +1104,23 @@ const perfectPairs = {
 	kirika: ["oriko"],
 	oriko: ["kirika"],
 	yuma: ["kyoko"],
-	dArc: ["Riz"],
-	Riz: ["dArc"],
+	Kazumi: ["Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"],
+	Subaru_Kazumi: ["Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"],
+	Michiru: ["Kazumi", "Subaru_Kazumi", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"],
+    Umika: ["Kazumi", "Subaru_Kazumi", "Michiru", "Kaoru", "Saki", "Mirai", "Satomi", "Niko"],
+	Kaoru: ["Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Saki", "Mirai", "Satomi", "Niko"],
+	Saki: ["Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Mirai", "Satomi", "Niko"],
+    Mirai: ["Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Satomi", "Niko"],
+	Satomi: ["Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Niko"],
+	Niko: ["Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Kanna"],
+	Kanna: ["Kazumi", "Subaru_Kazumi", "Kanna"],
+	Airi: ["Yuuri"],
+	Yuuri: ["Kazumi", "Subaru_Kazumi", "Airi"],
+	dArc: ["Final_dArc", "Riz", "Melissa", "Elisa"],
+    Final_dArc: ["dArc", "Riz", "Melissa", "Elisa"],
+	Riz: ["dArc", "Final_dArc", "Melissa", "Elisa"],
+	Melissa: ["dArc", "Final_dArc", "Riz", "Elisa"],
+	Elisa: ["dArc", "Final_dArc", "Riz", "Melissa"],
 	hikaru: ["yuna", "juri", "ao"],
 };
 
@@ -1160,13 +1206,16 @@ const characterTitles = {
     Mirai: "La Bestia Refare",//若叶未来
 	Satomi: "Fantasma Bisbiglio",//宇佐木里美
 	Niko: "Rendere O Romperlo",//神那妮可
-	dArc: "La Lumière", //贞德
+	dArc: "La Lumière", //塔鲁特
+	Final_dArc: "La Porte du Paradis",//极贞德
+	Riz: "L'ombre",//莉兹
+	Melissa :"Désintégration",//梅丽莎
+	Elisa :"Der Drache Lindwurm",//爱丽莎
 	suzune: "燃椿之焰", //天乃铃音
 	yamada: "超级科学回旋", //山田
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
 	sakuya: "辉煌之刃",//铃鹿朔夜
-	Riz: "L'ombre",//莉兹
 	hikaru: "光之军团",//煌里光
 	sasa: "优我者死",//优木沙沙
 	Souju: "一体二魂",//双树姐妹
@@ -1223,7 +1272,7 @@ const characterSorts = {
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
 	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Airi", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
-	"madoka15": ["dArc", "Riz"],
+	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa"],
 
 	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
