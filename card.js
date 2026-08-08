@@ -544,12 +544,190 @@ const cards = {
 		distance: { globalFrom: -1 },
 		image: "ext:魔法纪录/card_image/special_week.png",
 	},
+	"SaintessArmor": {
+		audio: "ext:魔法纪录",
+		fullskin: true,
+		type: "equip",
+		subtype: "equip2",
+		skills: ["SaintessArmor_skill"],
+		image: "ext:魔法纪录/card_image/SaintessArmor.png",
+		ai: {
+			basic: {
+				equipValue: 9,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 4,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"AncientSword": {
+		derivation: "dArc",
+		vanish: true,
+		type: "equip",
+		subtype: "equip1",
+		skills: ["AncientSword_skill1", "AncientSword_skill2", "dArc_exclusive_degrade"],
+		distance: {
+			attackFrom: 0,
+		},
+		enable: true,
+		fullskin: true,
+		image: "ext:魔法纪录/card_image/AncientSword.png",
+		ai: {
+			equipValue: function (card, player) {
+				const isdArc = ["dArc"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+				if (isdArc) return 6; // 贞德装备视为高价值
+				return -5; // 其他人视为低价值
+			},
+			basic: {
+				equipValue: function (card, player) {
+					const isdArc = ["dArc"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+					if (isdArc) return 6;
+					return -5;
+				},
+				order: 9,
+				useful: 6,
+				value: 6,
+			},
+			result: {
+				keepAI: true,
+				target: function (player, target, card) {
+					const isdArc = ["dArc"].some(n => target.name == n || target.name1 == n || target.name2 == n);
+					if (isdArc) return 5;
+					return -5;
+				},
+			},
+		},
+		onLose: function () {
+			if (player.getStat().skill.xinge) {
+				delete player.getStat().skill.xinge;
+			}
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: function (card, player, target) {
+			return player == target && target.canEquip(card, true);
+		},
+		modTarget: true,
+		allowMultiple: false,
+		content: async function (event) {
+			const { card, target } = event;
+			if (!card?.cards.some((card2) => get.position(card2, true) !== "o")) {
+				await target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"QuubeyFlag": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip4",
+		skills: ["QuubeyFlag_skill", "QuubeyFlag_skill2" , "dArc_exclusive_degrade"], 
+		distance: {
+			attackFrom: -1,
+		},
+		image: "ext:魔法纪录/card_image/QuubeyFlag.png",
+		ai: {
+			equipValue: function (card, player) {
+				const isdArc = ["dArc", "Final_dArc"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+				if (isdArc) return 6; // 贞德视为高价值
+				return 3; // 其他人视为一般
+			},
+			basic: {
+				equipValue: function (card, player) {
+					const isdArc = ["dArc", "Final_dArc"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+					if (isdArc) return 6;
+					return 3;
+				},
+				order: 9,
+				useful: 4,
+				value: 4,
+			},
+			result: {
+				keepAI: true,
+				target: function (player, target, card) {
+					const isdArc = ["dArc", "Final_dArc"].some(n => target.name == n || target.name1 == n || target.name2 == n);
+					// 如果目标是贞德，送给她觉醒
+					if (isdArc) return 5;
+					// 如果是普通队友，正向支援
+					return 1.5; 
+				},
+			},
+		},
+		onLose: function () {
+			if (player.getStat().skill.xinge) {
+				delete player.getStat().skill.xinge;
+			}
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: function (card, player, target) {
+			return player == target && target.canEquip(card, true);
+		},
+		modTarget: true,
+		allowMultiple: false,
+		content: async function (event) {
+			const { card, target } = event;
+			if (!card?.cards.some((card2) => get.position(card2, true) !== "o")) {
+				await target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	// 贞德专属
 	"ClovisSword": {
 		derivation: "dArc",
 		vanish: true,
 		type: "equip",
 		subtype: "equip1",
-		skills: ["ClovisSword_skill"],
+		skills: ["ClovisSword_skill", "dArc_exclusive_degrade"],
 		distance: {
 			attackFrom: -1,
 		},
@@ -560,6 +738,76 @@ const cards = {
 		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
 		modTarget: true,
 		allowMultiple: false,
+		ai: {
+			equipValue: function (card, player) {
+				var isdArc = ["dArc", "Final_dArc"].some(function (n) { return player.name === n || player.name1 === n || player.name2 === n; });
+				return isdArc ? 15 : 1; // 贞德高价值，其他人低价值
+			},
+			basic: {
+				equipValue: 15,
+				order: 10,
+				useful: 10,
+				value: 10,
+			},
+			result: {
+				keepAI: true,
+				target: function (player, target) {
+					var isdArc = ["dArc", "Final_dArc"].some(function (n) { return target.name === n || target.name1 === n || target.name2 === n; });
+					return isdArc ? 1 : 0.1;
+				}
+			}
+		},
+		content: function () {
+			if (!card?.cards.some(card => { return get.position(card, true) !== "o"; })) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+	},
+	"LightLance": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip4",
+		skills: ["LightLance_skill", "dArc_exclusive_degrade"],
+		distance: { globalFrom: -2 },
+		image: "ext:魔法纪录/card_image/LightLance.png",
+		ai: {
+			equipValue: function (card, player) {
+				var isdArc = ["dArc", "Final_dArc"].some(function (n) { return player.name === n || player.name1 === n || player.name2 === n; });
+				return isdArc ? 15 : 1; // 贞德高价值，其他人低价值
+			},
+			basic: {
+				equipValue: 15,
+				order: 10,
+				useful: 10,
+				value: 10,
+			},
+			result: {
+				keepAI: true,
+				target: function (player, target) {
+					var isdArc = ["dArc", "Final_dArc"].some(function (n) { return target.name === n || target.name1 === n || target.name2 === n; });
+					return isdArc ? 1 : 0.1;
+				}
+			}
+		}
+	},
+
+	"LightSword": {
+		derivation: "Final_dArc",
+		vanish: true,
+		type: "equip",
+		subtype: "equip1",
+		skills: ["LightSword_skill"],
+		distance: {
+			attackFrom: -9,
+		},
+		enable: true,
+		fullskin: true,
+		image: "ext:魔法纪录/card_image/LightSword.png",
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
 		content: function () {
 			if (
 				!card?.cards.some(card => {
@@ -570,15 +818,30 @@ const cards = {
 			}
 		},
 		toself: true,
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					// 销毁
+					var loseCard = event.cards.find(function(q) { return q.name === "LightSword"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) {
+							await npc.lose(loseCard).set('_triggered', null);
+						}
+						loseCard.selfDestroy();
+					}
+				}, 600);
+			}
+		}
 	},
-	"LightLance": {
-		derivation: "dArc",
+	"ShadowGauntlets": {
+		derivation: "Final_dArc",
 		audio: true,
 		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
-		skills: ["LightLance_skill1", "LightLance_skill2"],
-		image: "ext:魔法纪录/card_image/LightLance.jpg",
+		skills: ["ShadowGauntlets_skill1", "ShadowGauntlets_skill2"],
+		image: "ext:魔法纪录/card_image/ShadowGauntlets.png",
 		enable: true,
 		selectTarget: -1,
 		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
@@ -594,8 +857,69 @@ const cards = {
 			}
 		},
 		toself: true,
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					// 销毁
+					var loseCard = event.cards.find(function(q) { return q.name === "ShadowGauntlets"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) {
+							await npc.lose(loseCard).set('_triggered', null);
+						}
+						loseCard.selfDestroy();
+					}
+				}, 600);
+			}
+		}
 	},
-		"evilnut": {
+	"DragonsFire": {
+		derivation: "Elisa",
+		vanish: true,
+		type: "equip",
+		subtype: "equip1",
+		skills: ["DargonsFire_skill"],
+		distance: {
+			attackFrom: -6,
+		},
+		enable: true,
+		fullskin: true,
+		image: "ext:魔法纪录/card_image/DragonsFire.png",
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					// 销毁
+					var loseCard = event.cards.find(function(q) { return q.name === "DargonsFire"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) {
+							await npc.lose(loseCard).set('_triggered', null);
+						}
+						loseCard.selfDestroy();
+					}
+				}, 600);
+			}
+		},
+		ai: {
+			equipValue: 9
+		}
+	},
+
+	"evilnut": {
 		type: "equip",
 		subtype: "equip5",
 		fullskin: true,
@@ -605,12 +929,12 @@ const cards = {
 		ai: {
 			equipValue: function (card, player) {
 				const isHyades = ["Pleiades_Niko", "Kanna", "Hyades", "Hyades_Minions"].some(n => player.name == n || player.name1 == n || player.name2 == n);
-				if (isHyades) return 6; // 圣迦南/海亚蒂斯之晓
+				if (isHyades) return 6; // 圣迦南/海亚蒂斯之晓/妮可
 				return -5;
 			},
 			basic: {
 				equipValue: function (card, player) {
-					const isHyades = ["Kanna", "Hyades"].some(n => player.name == n || player.name1 == n || player.name2 == n);
+					const isHyades = ["Kanna", "Hyades", "Pleiades Niko"].some(n => player.name == n || player.name1 == n || player.name2 == n);
 					if (isHyades) return 6;
 					return -5;
 				},
@@ -621,7 +945,7 @@ const cards = {
 			result: {
 				keepAI: true,
 				target: function (player, target, card) {
-					const isHyades = ["Kanna", "Hyades"].some(n => target.name == n || target.name1 == n || target.name2 == n);
+					const isHyades = ["Kanna", "Hyades", "Pleiades Niko"].some(n => target.name == n || target.name1 == n || target.name2 == n);
 					// 海亚蒂斯 
 					if (isHyades) return 5;
 					// 其他人 
