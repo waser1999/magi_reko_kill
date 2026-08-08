@@ -819,6 +819,7 @@ const characters = {
 		skills: ["Elisa_longqi", "Elisa_longxiao", "Elisa_jinao"],
 		img: "extension/魔法纪录/image/Elisa.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Elisa.mp3"]
+	},
 	"suzune": {//天乃铃音
 		sex: "female",
 		group: "Magia_Others",
