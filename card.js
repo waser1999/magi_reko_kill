@@ -669,7 +669,7 @@ const cards = {
 		fullskin: true,
 		type: "equip",
 		subtype: "equip4",
-		skills: ["QuubeyFlag_skill", "QuubeyFlag_skill2" , "dArc_exclusive_degrade"], 
+		skills: ["QuubeyFlag_skill", "QuubeyFlag_skill2", "dArc_exclusive_degrade"],
 		distance: {
 			attackFrom: -1,
 		},
@@ -697,7 +697,7 @@ const cards = {
 					// 如果目标是贞德，送给她觉醒
 					if (isdArc) return 5;
 					// 如果是普通队友，正向支援
-					return 1.5; 
+					return 1.5;
 				},
 			},
 		},
@@ -822,7 +822,7 @@ const cards = {
 			if (event.cards && event.cards.length > 0) {
 				setTimeout(async function () {
 					// 销毁
-					var loseCard = event.cards.find(function(q) { return q.name === "LightSword"; });
+					var loseCard = event.cards.find(function (q) { return q.name === "LightSword"; });
 					if (loseCard) {
 						var npc = get.owner(loseCard);
 						if (npc) {
@@ -861,7 +861,7 @@ const cards = {
 			if (event.cards && event.cards.length > 0) {
 				setTimeout(async function () {
 					// 销毁
-					var loseCard = event.cards.find(function(q) { return q.name === "ShadowGauntlets"; });
+					var loseCard = event.cards.find(function (q) { return q.name === "ShadowGauntlets"; });
 					if (loseCard) {
 						var npc = get.owner(loseCard);
 						if (npc) {
@@ -903,7 +903,7 @@ const cards = {
 			if (event.cards && event.cards.length > 0) {
 				setTimeout(async function () {
 					// 销毁
-					var loseCard = event.cards.find(function(q) { return q.name === "DargonsFire"; });
+					var loseCard = event.cards.find(function (q) { return q.name === "DargonsFire"; });
 					if (loseCard) {
 						var npc = get.owner(loseCard);
 						if (npc) {
@@ -1115,21 +1115,84 @@ const cards = {
 	},
 	// 朱贝
 	"Juubey": {
-        type: "equip",
-        subtype: "equip5",
-        skills: ["Juubey_zhuangbei", "Juubey_wangxing", "Juubey_zhuangbei", "Juubey_wangxing_2"], 
-        ai: {
-            basic: {
-                equipValue: 15,
-                order: function(card, player) { return player && player.hasSkillTag("reverseEquip") ? 8.5 : 8; },
-                useful: 4,
-            }
-        },
-        enable: true,
-        fullskin: true,
-        image: "ext:魔法纪录/card_image/Pleiades_Juubey.png",
-        toself: true,
-    },
+		type: "equip",
+		subtype: "equip5",
+		skills: ["Juubey_zhuangbei", "Juubey_wangxing", "Juubey_zhuangbei", "Juubey_wangxing_2"],
+		ai: {
+			basic: {
+				equipValue: 15,
+				order: function (card, player) { return player && player.hasSkillTag("reverseEquip") ? 8.5 : 8; },
+				useful: 4,
+			}
+		},
+		enable: true,
+		fullskin: true,
+		image: "ext:魔法纪录/card_image/Pleiades_Juubey.png",
+		toself: true,
+	},
+	"fengzhichuandaoshi_zhiyao": {
+		fullskin: true,
+		type: "equip",
+		subtype: "equip5",
+		image: "ext:魔法纪录/card_image/Alu.png",
+		skills: ["fengzhichuandaoshi_zhiyao_skill"],
+		ai: {
+			basic: {
+				equipValue: -4,
+				order: (card, player) => {
+					const equipValue = get.equipValue(card, player) / 20;
+					return player && player.hasSkillTag("reverseEquip") ? 8.5 - equipValue : 8 + equipValue;
+				},
+				useful: 2,
+				value: (card, player, index, method) => {
+					if (!player.getCards("e").includes(card) && !player.canEquip(card, true)) {
+						return 0.01;
+					}
+					const info = get.info(card),
+						current = player.getEquip(info.subtype),
+						value = current && card != current && get.value(current, player);
+					let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
+					if (typeof equipValue == "function") {
+						if (method == "raw") {
+							return equipValue(card, player);
+						}
+						if (method == "raw2") {
+							return equipValue(card, player) - value;
+						}
+						return Math.max(0.1, equipValue(card, player) - value);
+					}
+					if (typeof equipValue != "number") {
+						equipValue = 0;
+					}
+					if (method == "raw") {
+						return equipValue;
+					}
+					if (method == "raw2") {
+						return equipValue - value;
+					}
+					return Math.max(0.1, equipValue - value);
+				},
+			},
+			result: {
+				target: (player, target, card) => get.equipResult(player, target, card),
+			},
+		},
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
+			}
+		},
+		toself: true,
+	},
 }
 
 export default cards;
