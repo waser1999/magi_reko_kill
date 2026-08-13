@@ -16953,12 +16953,11 @@ const skills = {
 	},
 
 	"Corbeau_eyu": {
-		audio: "ext:魔法纪录/audio/skill:3",
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { player: ["loseBefore", "damageBegin"] },
 		filter: function(event, player) {
 			var inRangePlayers = game.filterPlayer(function(current) { return current !== player && player.inRange(current); });
 			if (inRangePlayers.length === 0) return false;
-
 			if (event.name === 'lose') {
 				if (event.type === 'use' || event.type === 'respond') return false;
 				var hCards = event.cards.filter(function(c){ return get.position(c, true) === 'h'; });
@@ -16975,31 +16974,25 @@ const skills = {
 			var num = isLose ? trigger.cards.filter(function(c){ return get.position(c, true) === 'h'; }).length : trigger.num;
 			var costMark = num + 1;
 			var promptStr = "厄羽：是否移去 " + costMark + " 枚“秽”防止失去手牌/受到伤害？(目标将" + (isLose ? "随机弃置" + num + "张手牌" : "流失" + num + "点体力") + ")";
-
 			var res = await player.chooseTarget(promptStr, function(card, p, target) {
 				return p.inRange(target) && p !== target;
 			}).set("ai", function(target) {
 				var p = _status.event.player;
-				var evt = _status.event.trigger;
+				var evt = _status.event.triggerEvent; 
 				var isLose = _status.event.isLose;
 				var num = _status.event.num;
 				var hui = p.countMark("Corbeau_hui");
-
 				if (get.attitude(p, target) >= 0) return 0; 
-
 				if (isLose) {
-					// 弃牌AI
 					var source = evt.player || evt.source; 
 					var sourceCards = source ? source.countCards("he") : 10;
 					if (num === 1 && hui <= 6 && sourceCards >= 2) return 0; 
 				} else {
-					// 承伤AI
 					var hpArmor = p.hp + (p.hujia || 0);
 					if (num === 1 && hpArmor >= 3 && hui <= 6) return 0; 
 				}
-
 				return -get.attitude(p, target) + (num >= 2 ? 100 : 0); 
-			}).set("isLose", isLose).set("num", num).set("trigger", trigger).forResult();
+			}).set("isLose", isLose).set("num", num).set("triggerEvent", trigger).forResult(); 
 			
 			if (res.bool && res.targets && res.targets.length > 0) {
 				event.result = { bool: true, targets: res.targets, cost_data: { costMark: costMark, num: num, isLose: isLose } };
@@ -17010,10 +17003,8 @@ const skills = {
 			var num = event.cost_data.num;
 			var isLose = event.cost_data.isLose;
 			var target = event.targets[0];
-
 			await lib.skill.Corbeau_shizhan.removeHui(player, costMark);
 			player.line(target, "fire");
-
 			if (isLose) {
 				var hCards = trigger.cards.filter(function(c){ return get.position(c, true) === 'h'; });
 				trigger.cards.removeArray(hCards);
@@ -17029,6 +17020,7 @@ const skills = {
 			}
 		}
 	},
+
 
 	"Corbeau_siwu": {
 		audio: "ext:魔法纪录/audio/skill:3",
