@@ -112,6 +112,8 @@ export default function () {
 			game.addGroup("Kamihama_Magia_Union", "神盟", "神滨魔法联盟相关", { color: "#5311e7", image: "ext:魔法纪录/image/group/kamihama_union.png" });
 			game.addGroup("Magius_Wing", "玛吉斯", "新旧玛吉斯之翼相关", { color: "#000000", image: "ext:魔法纪录/image/group/magius_wing.png" });
 			game.addGroup("Magia_Others", "群雄", "其他魔法少女群体/个人", { color: "#39405d", image: "ext:魔法纪录/image/group/magia_others.png" });
+			game.addGroup("Witch", "魔女", "魔女/类魔女相关", { color: "#000000", image: "ext:魔法纪录/image/group/witch.png" });
+			game.addGroup("Tenkai", "千川", "OC角色相关", { color: "#ffe77d", image: "ext:魔法纪录/image/group/tenkai.png" });
 			// 特殊标记高亮
 			lib.namePrefix.set("DP", {
 				getSpan: () => {
