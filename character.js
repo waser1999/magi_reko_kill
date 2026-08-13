@@ -838,7 +838,7 @@ const characters = {
 		hujia: 7,
 		skills: ["Corbeau_shizhan", "Corbeau_eyu", "Corbeau_kuangyan", "Boss_Corbeau_siwu", "Boss_Corbeau_kamen"],
 		img: "extension/魔法纪录/image/Boss_Corbeau.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/Corbeau.mp3"],
+		dieAudios: ["ext:魔法纪录/audio/die/Boss_Corbeau.mp3"],
 		isUnseen: true,
 		isBoss: true,
 	},
