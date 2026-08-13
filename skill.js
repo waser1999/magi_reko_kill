@@ -18179,7 +18179,7 @@ const skills = {
 	},
 
 	"WeepingHare_hebing": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		enable: "phaseUse",
 		usable: 1,
 		filter: function(event, player) {
