@@ -918,10 +918,10 @@ const cards = {
 			equipValue: 9
 		}
 	},
-	"CrowMask": {
+"CrowMask": {
 		type: "equip",
 		subtype: "equip5",
-		skills: ["CrowMask_skill"， "equipment_equip5"],
+		skills: ["CrowMask_skill", "equipment_equip5"],
 		image: "ext:魔法纪录/card_image/CrowMask.png",
 		ai: { basic: { equipValue: 16 } },
 		onLose: async function (event, trigger, player) {
