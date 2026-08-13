@@ -820,6 +820,58 @@ const characters = {
 		img: "extension/魔法纪录/image/Elisa.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Elisa.mp3"]
 	},
+	"Corbeau": {// 可鲁波
+		sex: "female",
+		group: "Witch",
+		hp: 2,
+		maxHp: 5,
+		hujia: 3,
+		skills: ["Corbeau_shizhan", "Corbeau_eyu", "Corbeau_siwu", "Isabeau_kamen"],
+		img: "extension/魔法纪录/image/Corbeau.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Corbeau.mp3"],
+	},
+	"Boss_Corbeau": {// boss可鲁波
+		sex: "female",
+		group: "Witch",
+		hp: 14,
+		maxHp: 14,
+		hujia: 7,
+		skills: ["Corbeau_shizhan", "Corbeau_eyu", "Corbeau_kuangyan", "Boss_Corbeau_siwu", "Boss_Corbeau_kamen"],
+		img: "extension/魔法纪录/image/Boss_Corbeau.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Corbeau.mp3"],
+		isUnseen: true,
+		isBoss: true,
+	},
+	"Minuo": {// 米诺
+		sex: "female",
+		group: "Witch",
+		hp: 3,
+		maxHp: 4,
+		hujia: 0,
+		skills: ["Minuo_liyin", "Minuo_zongjian", "Isabeau_kamen"],
+		img: "extension/魔法纪录/image/Minuo.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Minuo.mp3"],
+	},
+	"Lapine": {// 拉皮努
+		sex: "female",
+		group: "Witch",
+		hp: 1,
+		maxHp: 2,
+		hujia: 1,
+		skills: ["Lapine_jiegui", "Lapine_xinve", "Isabeau_kamen"],
+		img: "extension/魔法纪录/image/Lapine.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Lapine.mp3"],
+	},
+	"WeepingHare": {// 哭泣兔的魔女
+		sex: "female",
+		group: "Witch",
+		hp: 1,
+		maxHp: 2,
+		hujia: 1,
+		skills: ["WeepingHare_jiegui", "WeepingHare_hebing", "Isabeau_kamen"],
+		img: "extension/魔法纪录/image/WeepingHare.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Lapine.mp3"],
+	},
 	"suzune": {//天乃铃音
 		sex: "female",
 		group: "Magia_Others",
@@ -889,7 +941,7 @@ const characters = {
 	},
 	"Kanna": {// 圣迦南
 		sex: "female",
-		group: "Magia_Others",
+		group: "Witch",
 		hp: 3,
 		maxHp: 3,
 		hujia: 0,
@@ -899,7 +951,7 @@ const characters = {
 	},
 	"Hyades": {// 海亚蒂斯
 		sex: "female",
-		group: "Magia_Others",
+		group: "Witch",
 		hp: 7,
 		maxHp: 7,
 		hujia: 0,
@@ -934,6 +986,35 @@ const characters = {
 		skills: ["ceobo_kuangai", "ceobo_qingmei"],
 		img: "extension/魔法纪录/image/ceobo.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ceobo.mp3"],
+	},
+	"Satou": {//砂糖
+		sex: "female",
+		group: "Witch",
+		hp: 3,
+		maxHp: 5,
+		skills: ["Satou_shuoxing","Satou_xieyue", "Satou_huanri"],
+		img: "extension/魔法纪录/image/Satou.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Satou.mp3"],
+		isZhugong: true,
+		isUnseen: true,
+	},
+	"Ruiqi": {//瑞麒
+		sex: "female",
+		group: "Tenkai",
+		hp: 3,
+		maxHp: 3,
+		skills: ["Ruiqi_zhengzhao","Ruiqi_haipo", "Ruiqi_tingzheng"],
+		img: "extension/魔法纪录/image/Ruiqi.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Ruiqi.mp3"],
+	},
+	"Kyukyu": {//啾啾
+		sex: "female",
+		group: "Tenkai",
+		hp: 3,
+		maxHp: 3,
+		skills: ["Kyukyu_yimeng","Kyukyu_mige"],
+		img: "extension/魔法纪录/image/Kyukyu.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Kyukyu.mp3"],
 	},
 }
 
@@ -1034,10 +1115,18 @@ const character_translates = {
 	Riz: "莉兹·霍克伍德",
 	Melissa: "梅丽莎·德·维尼奥勒",
 	Elisa: "爱丽莎·采列斯卡",
+	Corbeau: "可鲁波·德·巴伐利亚",
+	Boss_Corbeau: "被虐的月夜乌",
+	Minuo: "米诺·德·巴伐利亚",
+	Lapine: "拉皮努·德·巴伐利亚",
+	WeepingHare: "哭泣兔的魔女",
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
 	blue: "蓝蓝",
 	ceobo: "小刻",
+	Satou: "砂糖",
+	Ruiqi: "陈瑞麒",
+	Kyukyu: "辺銀啾啾",
 	sakuya: "铃鹿朔夜",
 	hikaru: "煌里光",
 	sasa: "优木沙沙",
@@ -1122,7 +1211,12 @@ const perfectPairs = {
 	Riz: ["dArc", "Final_dArc", "Melissa", "Elisa"],
 	Melissa: ["dArc", "Final_dArc", "Riz", "Elisa"],
 	Elisa: ["dArc", "Final_dArc", "Riz", "Melissa"],
+	Corbeau: ["Lapine", "Minou"],
+	Minou: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight"],
+	Lapine: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight"],
 	hikaru: ["yuna", "juri", "ao"],
+	Ruiqi: ["Kyukyu"],
+	Kyukyu: ["Ruiqi"],
 };
 
 const characterTitles = {
@@ -1212,10 +1306,18 @@ const characterTitles = {
 	Riz: "L'ombre",//莉兹
 	Melissa :"Désintégration",//梅丽莎
 	Elisa :"Der Drache Lindwurm",//爱丽莎
+	Corbeau :"La Danse Macabre",//可鲁波
+	Boss_Corbeau: "快乐的蹂躏时间到！",//Boss可鲁波
+	Minuo: "Chat à neuf queues",//米诺
+	Lapine: "Lapine aux cent yeux",//拉皮努
+	WeepingHare: "其性质为虐待狂",//哭泣兔的魔女
 	suzune: "燃椿之焰", //天乃铃音
 	yamada: "超级科学回旋", //山田
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
+	Satou: "邪月",//砂糖
+	Ruiqi: "电子幽麟",//瑞麒
+	Kyukyu: "迷梦皉鸠",//啾啾
 	sakuya: "辉煌之刃",//铃鹿朔夜
 	hikaru: "光之军团",//煌里光
 	sasa: "优我者死",//优木沙沙
@@ -1229,7 +1331,7 @@ const characterTitles = {
 // 更改武将原画
 const characterSubstitutes = {
 	dArc: [
-		["final_dArc", ["ext:魔法纪录/image/final_dArc.jpg"]],
+		["dArc_v2", ["ext:魔法纪录/image/dArc_v2.jpg"]],
 	],
 	Souju: [
 		["Souju Ayase", ["ext:魔法纪录/image/Souju Ayase.jpg"]],
@@ -1273,7 +1375,7 @@ const characterSorts = {
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
 	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Airi", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
-	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa"],
+	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Lapine", "Corbeau", "Minou", "Isabeau", "QueensTwilight"],
 
 	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
@@ -1288,7 +1390,7 @@ const characterSorts = {
 
 	"madoka5": ["asumi"],
 	"madoka6": ["yamada"],
-	"madoka7": ["blue", "ceobo"],
+	"madoka7": ["blue", "ceobo", "Satou", "Ruiqi", "Kyukyu"],
 }
 
 export default characters;
