@@ -5,18 +5,19 @@ const equipSkills = {
 	// 不可被弃置
 	"equipment_equip":{
         mod: {
-            canBeDiscarded: canBeDiscarded(card) {
+            canBeDiscarded: function(card) {
               if (get.position(card) == "e" && get.type(card) == "equip") {
                 return false;
               }
             },
-            cardDiscardable: cardDiscardable(card) {
+            cardDiscardable: function(card) {
               if (get.position(card) == "e" && get.type(card) == "equip") {
                 return false;
               }
             },
         },
     },
+
     "equipment_equip1": {
         mod: {
             canBeDiscarded: function(card) {
@@ -853,48 +854,42 @@ const equipSkills = {
 			},
 		}
 	},
-	"ShadowGauntlets_skill1": {
-		persevereSkill: true,
-		trigger: {
-			player: "useCard"
-		},
-		forced: true, 
-		group: [
-			"ShadowGauntlets_skill1_keep" 
-		],
-		filter: function (event, player) {
-			return event.card && event.card.isCard && !event.card.isVirtual && event.targets && event.targets.length > 0;
-		},
-		content: async function (event, trigger, player) {
-			if (trigger.card.name === "tiesuo") {
-				var result = await player.chooseBool("是否令【铁索连环】额外结算一次？").forResult();
-				if (result.bool) {
-					trigger.effectCount++;
-				}
-			} 
-			else {
-				trigger.effectCount++;
+	"ShadowGauntlets": {
+		derivation: "Final_dArc",
+		audio: true,
+		fullskin: true,
+		type: "equip",
+		subtype: "equip5",
+		skills: ["ShadowGauntlets_skill1", "ShadowGauntlets_skill2", "equipment_equip"], 
+		image: "ext:魔法纪录/card_image/ShadowGauntlets.png",
+		enable: true,
+		selectTarget: -1,
+		filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+		modTarget: true,
+		allowMultiple: false,
+		content: function () {
+			if (
+				!card?.cards.some(card => {
+					return get.position(card, true) !== "o";
+				})
+			) {
+				target.equip(card);
 			}
 		},
-		subSkill: {
-			keep: {
-				trigger: {
-					player: "loseBefore"
-				},
-				forced: true,
-				filter: function (event, player) {
-					if (event.parent.name === "useCard") {
-						return false;
+		toself: true,
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					// 销毁
+					var loseCard = event.cards.find(function(q) { return q.name === "ShadowGauntlets"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) {
+							await npc.lose(loseCard).set('_triggered', null);
+						}
+						loseCard.selfDestroy();
 					}
-					return event.cards && event.cards.some(function(q) { 
-						return q.name === "ShadowGauntlets"; 
-					});
-				},
-				content: async function (event, trigger, player) {
-					trigger.cards = trigger.cards.filter(function(q) { 
-						return q.name !== "ShadowGauntlets"; 
-					});
-				}
+				}, 600);
 			}
 		}
 	},
@@ -952,26 +947,23 @@ const equipSkills = {
 			}
 		}
 	},
-	"CrowMask_skill": {
-		equipSkill: true,
-		mod: {
-			maxHandcard: function(player, num) { return num + 2; },
-			canBeDiscarded: function(card) { if (card.name === 'CrowMask') return false; },
-			cardDiscardable: function(card) { if (card.name === 'CrowMask') return false; },
-			targetEnabled: function(card, player, target) {
-				if (player !== target && get.type(card) === 'equip') {
-					var currentEquip = target.getEquip(get.subtype(card));
-					if (currentEquip && ['RabbitMask', 'CrowMask', 'CatMask', 'EnglandCrown'].includes(currentEquip.name)) return false;
-				}
+	"CrowMask": {
+		type: "equip",
+		subtype: "equip5",
+		skills: ["CrowMask_skill", "equipment_equip5"], 
+		image: "ext:魔法纪录/card_image/CrowMask.png",
+		ai: { basic: { equipValue: 16 } },
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					var loseCard = event.cards.find(function(q) { return q.name === "CrowMask"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) await npc.lose(loseCard).set('_triggered', null);
+						loseCard.selfDestroy();
+					}
+				}, 600);
 			}
-		},
-		trigger: { global: "loseHpAfter" },
-		forced: true,
-		filter: function(event, player) {
-			return event.Corbeau_source === player;
-		},
-		content: function(event, trigger, player) {
-			trigger.player.damage('unreal', trigger.num, player);
 		}
 	},
 	"CatMask_skill": {
