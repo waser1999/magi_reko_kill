@@ -797,7 +797,7 @@ const cards = {
 		vanish: true,
 		type: "equip",
 		subtype: "equip1",
-		skills: ["LightSword_skill"],
+		skills: ["LightSword_skill", "equipment_equip"],
 		distance: {
 			attackFrom: -9,
 		},
@@ -840,7 +840,7 @@ const cards = {
 		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
-		skills: ["ShadowGauntlets_skill1", "ShadowGauntlets_skill2"],
+		skills: ["ShadowGauntlets_skill1", "ShadowGauntlets_skill2", "equipment_equip"],
 		image: "ext:魔法纪录/card_image/ShadowGauntlets.png",
 		enable: true,
 		selectTarget: -1,
@@ -916,6 +916,82 @@ const cards = {
 		},
 		ai: {
 			equipValue: 9
+		}
+	},
+	"CrowMask": {
+		type: "equip",
+		subtype: "equip5",
+		skills: ["CrowMask_skill"， "equipment_equip5"],
+		image: "ext:魔法纪录/card_image/CrowMask.png",
+		ai: { basic: { equipValue: 16 } },
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					var loseCard = event.cards.find(function(q) { return q.name === "CrowMask"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) await npc.lose(loseCard).set('_triggered', null);
+						loseCard.selfDestroy();
+					}
+				}, 600);
+			}
+		}
+	},
+	"CatMask": {
+		type: "equip",
+		subtype: "equip5",
+		skills: ["CatMask_skill", "equipment_equip5"],
+		image: "ext:魔法纪录/card_image/CatMask.png",
+		ai: { basic: { equipValue: 16 } },
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					var loseCard = event.cards.find(function(q) { return q.name === "CatMask"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) await npc.lose(loseCard).set('_triggered', null);
+						loseCard.selfDestroy();
+					}
+				}, 600);
+			}
+		}
+	},
+	"RabbitMask": {
+		type: "equip",
+		subtype: "equip5",
+		skills: ["RabbitMask_skill",  "equipment_equip5"],
+		image: "ext:魔法纪录/card_image/RabbitMask.png",
+		ai: { basic: { equipValue: 16 } },
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					var loseCard = event.cards.find(function(q) { return q.name === "RabbitMask"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) await npc.lose(loseCard).set('_triggered', null);
+						loseCard.selfDestroy();
+					}
+				}, 600);
+			}
+		}
+	},
+	"EnglandCrown": {
+		type: "equip",
+		subtype: "equip5",
+		skills: ["EnglandCrown_skill",  "equipment_equip5"],
+		image: "ext:魔法纪录/card_image/EnglandCrown.png",
+		ai: { basic: { equipValue: 20 } },
+		onLose: async function (event, trigger, player) {
+			if (event.cards && event.cards.length > 0) {
+				setTimeout(async function () {
+					var loseCard = event.cards.find(function(q) { return q.name === "EnglandCrown"; });
+					if (loseCard) {
+						var npc = get.owner(loseCard);
+						if (npc) await npc.lose(loseCard).set('_triggered', null);
+						loseCard.selfDestroy();
+					}
+				}, 600);
+			}
 		}
 	},
 
