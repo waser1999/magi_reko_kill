@@ -1,6 +1,93 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 
 const equipSkills = {
+	// 公式化标签技能
+	// 不可被弃置
+	"equipment_equip":{
+        mod: {
+            canBeDiscarded: canBeDiscarded(card) {
+              if (get.position(card) == "e" && get.type(card) == "equip") {
+                return false;
+              }
+            },
+            cardDiscardable: cardDiscardable(card) {
+              if (get.position(card) == "e" && get.type(card) == "equip") {
+                return false;
+              }
+            },
+        },
+    },
+    "equipment_equip1": {
+        mod: {
+            canBeDiscarded: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip1") {
+                    return false;
+                }
+            },
+            cardDiscardable: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip1") {
+                    return false;
+                }
+            },
+        },
+    },
+    "equipment_equip2": {
+        mod: {
+            canBeDiscarded: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip2") {
+                    return false;
+                }
+            },
+            cardDiscardable: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip2") {
+                    return false;
+                }
+            },
+        },
+    },
+    "equipment_equip3": {
+        mod: {
+            canBeDiscarded: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip3") {
+                    return false;
+                }
+            },
+            cardDiscardable: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip3") {
+                    return false;
+                }
+            },
+        },
+    },
+    "equipment_equip4": {
+        mod: {
+            canBeDiscarded: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip4") {
+                    return false;
+                }
+            },
+            cardDiscardable: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip4") {
+                    return false;
+                }
+            },
+        },
+    },
+    "equipment_equip5": {
+        mod: {
+            canBeDiscarded: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip5") {
+                    return false;
+                }
+            },
+            cardDiscardable: function(card) {
+                if (get.position(card) == "e" && get.subtype(card) == "equip5") {
+                    return false;
+                }
+            },
+        },
+    },
+	
     "g_chenhuodajie": {
         trigger: { global: "damageEnd" },
         filter(event, player) {
@@ -865,6 +952,128 @@ const equipSkills = {
 			}
 		}
 	},
+	"CrowMask_skill": {
+		equipSkill: true,
+		mod: {
+			maxHandcard: function(player, num) { return num + 2; },
+			canBeDiscarded: function(card) { if (card.name === 'CrowMask') return false; },
+			cardDiscardable: function(card) { if (card.name === 'CrowMask') return false; },
+			targetEnabled: function(card, player, target) {
+				if (player !== target && get.type(card) === 'equip') {
+					var currentEquip = target.getEquip(get.subtype(card));
+					if (currentEquip && ['RabbitMask', 'CrowMask', 'CatMask', 'EnglandCrown'].includes(currentEquip.name)) return false;
+				}
+			}
+		},
+		trigger: { global: "loseHpAfter" },
+		forced: true,
+		filter: function(event, player) {
+			return event.Corbeau_source === player;
+		},
+		content: function(event, trigger, player) {
+			trigger.player.damage('unreal', trigger.num, player);
+		}
+	},
+	"CatMask_skill": {
+		equipSkill: true,
+		group: ["CatMask_skill_tracker"],
+		mod: {
+			maxHandcard: function(player, num) { return num + 1; },
+			canBeDiscarded: function(card) { if (card.name === 'CatMask') return false; },
+			cardDiscardable: function(card) { if (card.name === 'CatMask') return false; },
+			targetEnabled: function(card, player, target) {
+				if (player !== target && get.type(card) === 'equip') {
+					var currentEquip = target.getEquip(get.subtype(card));
+					if (currentEquip && ['RabbitMask', 'CrowMask', 'CatMask', 'EnglandCrown'].includes(currentEquip.name)) return false;
+				}
+			}
+		},
+		trigger: { global: ["damageEnd", "loseHpEnd", "recoverEnd"] },
+		forced: true,
+		filter: function(event, player) {
+			if (event.player === player) return false;
+			var isSource = (event.source === player) || (event.Minuo_source === player) || (event.Corbeau_source === player);
+			if (!isSource) return false;
+			
+			var useEvt = event.getParent('useCard');
+			if (useEvt && useEvt.player === player && useEvt.CatMask_fromHand) {
+				return false; 
+			}
+			return true;
+		},
+		content: async function(event, trigger, player) {
+			var target = trigger.player;
+			if (target.countCards("he") > 0) {
+				var res = await player.choosePlayerCard(target, "he", 1, true, "猫之假面：获得其区域内一张牌").forResult();
+				if (res.bool && res.links && res.links.length > 0) {
+					await player.gain(res.links, target, "giveAuto");
+					game.log(player, "发动了", "#g【猫之假面】", "，获得了", target, "的一张牌");
+				}
+			}
+		},
+		subSkill: {
+			tracker: {
+				trigger: { player: "useCard1" },
+				forced: true, silent: true, charlotte: true,
+				filter: function(event, player) {
+					return event.cards && event.cards.length > 0;
+				},
+				content: function(event, trigger, player) {
+					if (trigger.cards.some(c => get.position(c, true) === 'h' || c.original === 'h')) {
+						trigger.CatMask_fromHand = true; 
+					}
+				}
+			}
+		}
+	},
+	"RabbitMask_skill": {
+		equipSkill: true,
+		mod: {
+			maxHandcard: function(player, num) { 
+				return num + 3; 
+			},
+			canBeDiscarded: function(card) { 
+				if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; 
+			},
+			cardDiscardable: function(card) { 
+				if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; 
+			},
+			targetEnabled: function(card, player, target) {
+				if (player !== target && get.type(card) === 'equip') {
+					var currentEquip = target.getEquip(get.subtype(card));
+					if (currentEquip && ['RabbitMask', 'CrowMask', 'CatMask', 'EnglandCrown'].includes(currentEquip.name)) return false;
+				}
+			},
+			targetInRange: function(card, player, target) {
+				var isOut = false;
+				if (card.hasGaintag && card.hasGaintag('RabbitMask_outOfTurn')) isOut = true;
+				else if (card.cards && card.cards.some(c => c.hasGaintag && c.hasGaintag('RabbitMask_outOfTurn'))) isOut = true;
+				
+				if (isOut) return true;
+			},
+			cardUsable: function(card, player, num) {
+				var isOut = false;
+				if (card.hasGaintag && card.hasGaintag('RabbitMask_outOfTurn')) isOut = true;
+				else if (card.cards && card.cards.some(c => c.hasGaintag && c.hasGaintag('RabbitMask_outOfTurn'))) isOut = true;
+				
+				if (isOut) return Infinity;
+			}
+		},
+		group: "RabbitMask_tracker",
+		subSkill: {
+			tracker: {
+				trigger: { player: "gainAfter" },
+				forced: true, silent: true, charlotte: true,
+				filter: function(event, player) {
+					return _status.currentPhase !== player && event.cards && event.cards.length > 0;
+				},
+				content: function(event, trigger, player) {
+					player.addGaintag(trigger.cards, 'RabbitMask_outOfTurn');
+				}
+			}
+		}
+	},
+
     "griefseed_skill": {
         equipSkill: true,
         locked: true,
