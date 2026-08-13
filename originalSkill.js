@@ -1466,6 +1466,7 @@ const originalSkills = {
 		audio: "ext:魔法纪录/audio/skill:2",
 		enable: "phaseUse",
 		filter: function(event, player) {
+			if (player.hasSkill("Ruiqi_tingzheng_block")) return false; 
 			var zones = 0;
 			if (player.countCards("h") > 0) zones++;
 			if (player.countCards("e") > 0) zones++;
@@ -1484,16 +1485,20 @@ const originalSkills = {
 				var realName = c.cards && c.cards.length ? c.cards[0].name : c.name;
 				
 				if (pos === 'j') {
-					if (realName === 'sha' || realName === 'tao' || realName === 'jiu' || realName === 'wuxiekeji') return -20; 
+					if (['sha', 'tao', 'jiu', 'wuxiekeji'].includes(realName)) return -20; 
 				}
 				if (pos === 'h' || pos === 'e') {
-					if (realName === 'shan' || realName === 'sha') val += 5; 
+					if (['shan', 'sha'].includes(realName)) val += 5; 
 				}
 				return val;
 			});
 			
 			var res1 = await next.forResult();
-			if(!res1.bool || !res1.links || res1.links.length < 2) return;
+			
+			if(!res1.bool || !res1.links || res1.links.length < 2) {
+				if (player !== game.me || _status.auto) player.addTempSkill("Ruiqi_tingzheng_block", "phaseUseAfter");
+				return;
+			}
 			
 			var selectedCards = res1.links;
 			var c1 = selectedCards[0], c2 = selectedCards[1];
@@ -1521,6 +1526,7 @@ const originalSkills = {
 			
 			if (list.length === 0) {
 				game.log(player, "没有可转化的牌名或本回合已全部转化过");
+				if (player !== game.me || _status.auto) player.addTempSkill("Ruiqi_tingzheng_block", "phaseUseAfter");
 				return;
 			}
 			
@@ -1542,7 +1548,11 @@ const originalSkills = {
 			}).set("selectedCards", selectedCards);
 			
 			var res2 = await next2.forResult();
-			if(!res2.bool || !res2.links || res2.links.length === 0) return;
+			
+			if(!res2.bool || !res2.links || res2.links.length === 0) {
+				if (player !== game.me || _status.auto) player.addTempSkill("Ruiqi_tingzheng_block", "phaseUseAfter");
+				return;
+			}
 			
 			var vName = res2.links[0][2];
 			var vNature = res2.links[0][3];
@@ -1567,12 +1577,15 @@ const originalSkills = {
 				
 				player.addTempSkill("Ruiqi_tingzheng_clear", "phaseAfter");
 				player.markAuto("Ruiqi_tingzheng_used", [vName]);
+			} else {
+				if (player !== game.me || _status.auto) player.addTempSkill("Ruiqi_tingzheng_block", "phaseUseAfter");
 			}
 		},
 		ai: {
 			order: 8,
 			result: { 
 				player: function(player) {
+					if (player.hasSkill("Ruiqi_tingzheng_block")) return 0;
 					var hasLowHpEnemy = game.hasPlayer(function(current){
 						return get.attitude(player, current) < 0 && current.hp <= 2;
 					});
@@ -1584,6 +1597,7 @@ const originalSkills = {
 		},
 		group: "Ruiqi_tingzheng_clear",
 		subSkill: {
+			block: { charlotte: true }, // 防止死循环
 			clear: {
 				charlotte: true,
 				trigger: { global: "phaseAfter" },
@@ -1594,7 +1608,6 @@ const originalSkills = {
 			}
 		}
 	},
-
 
 	// 辺銀啾啾
 	"Kyukyu_tongxin": {
