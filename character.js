@@ -820,6 +820,26 @@ const characters = {
 		img: "extension/魔法纪录/image/Elisa.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Elisa.mp3"]
 	},
+	"Pernelle": {// 佩尔内勒
+		sex: "female",
+		group: "Magia_Others",
+		hp: 3,
+		maxHp: 3,
+		hujia: 0,
+		skills: ["Pernelle_liancheng", "Pernelle_quanyi"],
+		img: "extension/魔法纪录/image/Pernelle.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Pernelle.mp3"]
+	},
+	"Jeanne": {// 珍妮
+		sex: "female",
+		group: "Magia_Others",
+		hp: 3,
+		maxHp: 3,
+		hujia: 0,
+		skills: ["Jeanne_chengyuan", "Jeanne_xinchuan"],
+		img: "extension/魔法纪录/image/Jeanne.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Jeanne.mp3"]
+	},
 	"Corbeau": {// 可鲁波
 		sex: "female",
 		group: "Witch",
@@ -871,6 +891,15 @@ const characters = {
 		skills: ["WeepingHare_jiegui", "WeepingHare_hebing", "Isabeau_kamen"],
 		img: "extension/魔法纪录/image/WeepingHare.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Lapine.mp3"],
+	},
+	"Isabeau": {// 伊莎贝拉
+		sex: "female",
+		group: "Witch", 
+		hp: 4,
+		maxHp: 4,
+		skills: ["Isabeau_lianyin", "Isabeau_duozhuan", "Isabeau_niyuan" ,"Isabeau_kamen"],
+		img: "extension/魔法纪录/image/Isabeau.jpg", 
+		dieAudios: ["ext:魔法纪录/audio/die/Isabeau.mp3"] 
 	},
 	"suzune": {//天乃铃音
 		sex: "female",
@@ -1115,11 +1144,14 @@ const character_translates = {
 	Riz: "莉兹·霍克伍德",
 	Melissa: "梅丽莎·德·维尼奥勒",
 	Elisa: "爱丽莎·采列斯卡",
-	Corbeau: "可鲁波·德·巴伐利亚",
+	Pernelle: "佩尔内勒·弗拉梅尔",
+	Jeanne: "珍妮·弗拉梅尔",
+	Corbeau: "可鲁波",
 	Boss_Corbeau: "被虐的月夜乌",
-	Minuo: "米诺·德·巴伐利亚",
-	Lapine: "拉皮努·德·巴伐利亚",
+	Minuo: "米诺",
+	Lapine: "拉皮努",
 	WeepingHare: "哭泣兔的魔女",
+	Isabeau: "伊莎贝拉·德·巴伐利",
 	suzune: "天乃铃音",
 	yamada: "山田正一郎",
 	blue: "蓝蓝",
@@ -1206,14 +1238,17 @@ const perfectPairs = {
 	Kanna: ["Kazumi", "Subaru_Kazumi", "Kanna"],
 	Airi: ["Yuuri"],
 	Yuuri: ["Kazumi", "Subaru_Kazumi", "Airi"],
-	dArc: ["Final_dArc", "Riz", "Melissa", "Elisa"],
-    Final_dArc: ["dArc", "Riz", "Melissa", "Elisa"],
-	Riz: ["dArc", "Final_dArc", "Melissa", "Elisa"],
+	dArc: ["Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle"],
+    Final_dArc: ["dArc", "Riz", "Melissa", "Elisa", "Pernelle"],
+	Riz: ["dArc", "Final_dArc", "Melissa", "Elisa", "Pernelle"],
 	Melissa: ["dArc", "Final_dArc", "Riz", "Elisa"],
-	Elisa: ["dArc", "Final_dArc", "Riz", "Melissa"],
-	Corbeau: ["Lapine", "Minou"],
-	Minou: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight"],
-	Lapine: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight"],
+	Elisa: ["dArc", "Final_dArc", "Riz", "Melissa", "Pernelle"],
+	Pernelle: ["Jeanne", "dArc", "Final_dArc", "Riz", "Elisa"],
+	Jeanne: ["Pernelle", "kagome"],
+	Corbeau: ["Lapine", "Minou", "WeepingHare"],
+	Minou: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight", "WeepingHare"],
+	Lapine: ["Minou", "Corbeau", "Isabeau", "QueensTwilight"],
+	Isabeau:  ["Lapine", "Corbeau", "Minou", "QueensTwilight", "WeepingHare"],
 	hikaru: ["yuna", "juri", "ao"],
 	Ruiqi: ["Kyukyu"],
 	Kyukyu: ["Ruiqi"],
@@ -1306,11 +1341,14 @@ const characterTitles = {
 	Riz: "L'ombre",//莉兹
 	Melissa :"Désintégration",//梅丽莎
 	Elisa :"Der Drache Lindwurm",//爱丽莎
+	Pernelle: "En to Pan",//佩尔内勒
+	Jeanne: "Donum Dei",//珍妮
 	Corbeau :"La Danse Macabre",//可鲁波
 	Boss_Corbeau: "快乐的蹂躏时间到！",//Boss可鲁波
 	Minuo: "Chat à neuf queues",//米诺
 	Lapine: "Lapine aux cent yeux",//拉皮努
 	WeepingHare: "其性质为虐待狂",//哭泣兔的魔女
+	Isabeau: "L'Exécution de la Reine",//伊莎贝拉
 	suzune: "燃椿之焰", //天乃铃音
 	yamada: "超级科学回旋", //山田
 	blue: "海晶少女",//蓝蓝
@@ -1375,7 +1413,7 @@ const characterSorts = {
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
 	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Airi", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
-	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Lapine", "Corbeau", "Minou", "Isabeau", "QueensTwilight"],
+	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "Corbeau", "Minou", "Isabeau", "QueensTwilight"],
 
 	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
