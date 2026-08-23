@@ -15316,26 +15316,41 @@ const skills = {
 				}
 			}
 		},
-		content: function () {
+content: function (event, trigger, player) {
 			"step 0"
-				player.awakenSkill("dArc_dansheng");
-				player.$fullscreenpop("完美破格者", "gold"); 
-			"step 1" 
-				var diff = player.maxHp - 1;
-				player.removeSkills(["dArc_shengjian_lv1", "dArc_shengjian_lv2", "dArc_zaihui", "dArc_shengnv", "dArc_shengnv_boost"]);
-				
-				player.reinit(player.name, "Final_dArc");
-				
-				player.maxHp = 1;
-				player.hp = 1;
-				player.update();
-				
-				if (diff > 0) { 
-					player.draw(diff); 
+			player.storage.dArc_dansheng = true;
+
+			game.broadcastAll(function() {
+				if (ui.backgroundMusic) {
+					ui.backgroundMusic.pause();
+					ui.backgroundMusic.src = lib.assetURL + "extension/魔法纪录/audio/background/Boss_QueensTwilight_Moth.mp3";
+					ui.backgroundMusic.loop = true;
+					ui.backgroundMusic.play(); 
 				}
+			});
+
 			"step 2"
-				game.addGlobalSkill("MerciVraiment");
-                player.addTempSkill("Final_dArc_invincible");
+			player.awakenSkill("dArc_dansheng");
+			player.$fullscreenpop("完美破格者", "gold"); 
+			
+			"step 3"
+			event.diff = player.maxHp - 1; 
+			player.removeSkills(["dArc_shengjian_lv1", "dArc_shengjian_lv2", "dArc_zaihui", "dArc_shengnv", "dArc_shengnv_boost"]);
+			
+			player.reinit(player.name, "Final_dArc");
+
+			"step 4"
+			player.maxHp = 1;
+			player.hp = 1;
+			player.update();
+			
+			if (event.diff > 0) { 
+				player.draw(event.diff); 
+			}
+			
+			"step 5"
+			game.addGlobalSkill("MerciVraiment");
+			player.addTempSkill("Final_dArc_invincible");
 		}
 	},
 	"Final_dArc_invincible": {
