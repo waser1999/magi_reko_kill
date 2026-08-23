@@ -16852,7 +16852,7 @@ const skills = {
     },
     
     "Pernelle_liancheng": {
-        audio: "ext:魔法纪录/audio/skill:2",
+        audio: "ext:魔法纪录/audio/skill:3",
         enable: ["chooseToRespond", "chooseToUse"],
         
         hiddenCard: function(player, name) {
@@ -17054,7 +17054,11 @@ const skills = {
         }
     },
     "Pernelle_liancheng_sha_buff": {
-        charlotte: true, mark: true, intro: { content: "本回合出【杀】上限+#" },
+        charlotte: true, 
+		mark: true, 
+		intro: { 
+			content: "本回合出【杀】上限+#" 
+		},
         mod: {
             cardUsable: function(card, player, num) {
                 if (card.name === "sha") return num + player.countMark("Pernelle_liancheng_sha_buff");
@@ -17063,7 +17067,7 @@ const skills = {
     },
 
     "Pernelle_quanyi": {
-        audio: "ext:魔法纪录/audio/skill:2",
+        audio: "ext:魔法纪录/audio/skill:3",
         trigger: { global: "useCardToBefore" },
         filter: function(event, player) {
             if ((player.storage.Pernelle_quanyi_count || 0) >= 2) return false;
@@ -19115,7 +19119,7 @@ const skills = {
 
 	// 伊莎贝拉 
 	"Isabeau_lianyin": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:4",
 		trigger: {
 			global: ["loseAfter", "loseAsyncAfter", "cardsDiscardAfter"],
 		},
@@ -19180,7 +19184,7 @@ const skills = {
 	},
 
 	"Isabeau_duozhuan": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:4",
 		enable: ["chooseToUse", "chooseToRespond"],
 		filter: function (event, player) {
 			return player.countCards("h") > 0 && player.countMark("Isabeau_yin") > 0;
@@ -19507,6 +19511,7 @@ const skills = {
 				}
 			},
 			give: {
+				audio: "ext:魔法纪录/audio/skill:4",
 				trigger: { player: "phaseDiscardAfter" },
 				forced: true,
 				filter: function(event, player) { return player.countCards("he") > 0; },
