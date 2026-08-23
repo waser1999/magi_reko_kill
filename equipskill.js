@@ -1090,71 +1090,100 @@ const equipSkills = {
         }
     },
 
-	"EnglandCrown_skill": {
+"EnglandCrown_skill": {
 		equipSkill: true,
 		mod: {
-			maxHandcard: function(player, num) { return num + 3; },
+			maxHandcard: function(player, num) { return num + 4; }, 
 			canBeDiscarded: function(card) { if (card.name === 'EnglandCrown' && get.position(card) === 'e') return false; },
 			cardDiscardable: function(card) { if (card.name === 'EnglandCrown' && get.position(card) === 'e') return false; }
 		},
-		trigger: { player: "gainAfter" },
+		trigger: { player: ["gainAfter", "recoverAfter", "changeHujiaAfter", "insertPhaseAfter"] },
 		forced: true,
 		filter: function(event, player) {
-			if (!event.cards || event.cards.length === 0) return false;
+			var x = 0;
+			if (event.name === 'gain') x = (event.cards || []).length;
+			else if (event.name === 'recover' || event.name === 'changeHujia') x = event.num;
+			else if (event.name === 'insertPhase') x = 1;
 			
-			if (event.source && event.source !== player && event.source.name) return true;
+			if (x <= 0) return false; 
 			
-			var parent = event.getParent();
-			while (parent && parent.name !== 'phase') {
-				if (parent.name === 'gainPlayerCard' && parent.target && parent.target !== player) return true;
-				if (parent.name === 'give' && parent.player && parent.player !== player) return true;
-				parent = parent.parent;
+			var source = event.source;
+			if (!source) {
+				var parent = event.getParent();
+				while (parent && parent.name !== 'phase') {
+					if (parent.player && parent.player !== player && parent.player.name) {
+						source = parent.player;
+						break;
+					}
+					if (parent.source && parent.source !== player && parent.source.name) {
+						source = parent.source;
+						break;
+					}
+					parent = parent.parent;
+				}
 			}
-			
-			return false;
+			return source && source !== player;
 		},
 		content: async function(event, trigger, player) {
-			var cardsToDiscard = trigger.cards.filter(function(card) {
-				return player.getCards("he").includes(card);
-			});
+			var x = 0;
+			var logStr = "";
 			
-			if (cardsToDiscard.length > 0) {
-				game.log(player, "获得了其他角色的牌，触发", "#g【女王皇冠】");
-				await player.discard(cardsToDiscard);
-				
-				var x = cardsToDiscard.length * 2; 
-				
-				if (x > 0) {
-					var cards = get.cards(x);
-					var cards2 = [];
-					await game.cardsGotoOrdering(cards);
-					var res = await player.chooseToMove("女王皇冠：卜算" + x, true)
-						.set("list", [["牌堆顶", cards], ["牌堆底", cards2]])
-						.forResult();
-						
-					if (res && res.bool) {
-						var top = res.moved[0];
-						var bottom = res.moved[1];
-						top.reverse(); 
-						
-						await game.cardsGotoPile(top.concat(bottom), ["top_cards", top], function (evt, card) {
-							if (evt.top_cards.includes(card)) return ui.cardPile.firstChild;
-							return null;
-						});
-						
-						game.log(player, "进行了", "#y【卜算】" + x);
-					}
+			if (trigger.name === 'gain') {
+				x = trigger.cards.length;
+				logStr = "获得了牌";
+			} else if (trigger.name === 'recover') {
+				x = trigger.num;
+				logStr = "回复了体力";
+			} else if (trigger.name === 'changeHujia') {
+				x = trigger.num;
+				logStr = "获得了护甲";
+			} else if (trigger.name === 'insertPhase') {
+				x = 1;
+				logStr = "执行了额外阶段";
+			}
+			
+			var busuanNum = x * 2;
+			game.log(player, "因其他角色" + logStr + "，触发了", "#y【女王皇冠】");
+			
+			if (busuanNum > 0) {
+				var cards = get.cards(busuanNum);
+				var cards2 = [];
+				await game.cardsGotoOrdering(cards);
+				var res = await player.chooseToMove("女王皇冠：卜算" + busuanNum, true)
+					.set("list", [["牌堆顶", cards], ["牌堆底", cards2]])
+					.forResult();
+					
+				if (res && res.bool) {
+					var top = res.moved[0];
+					var bottom = res.moved[1];
+					top.reverse(); 
+					
+					await game.cardsGotoPile(top.concat(bottom), ["top_cards", top], function (evt, card) {
+						if (evt.top_cards.includes(card)) return ui.cardPile.firstChild;
+						return null;
+					});
+					game.log(player, "进行了", "#y【卜算】" + busuanNum);
 				}
+			}
+			
+			if (ui.cardPile.childNodes.length > 0) {
+				var bottomCard = ui.cardPile.lastChild;
+				ui.cardPile.removeChild(bottomCard);
+				bottomCard.fix(); 
 				
-				if (ui.cardPile.childNodes.length > 0) {
-					var bottomCard = ui.cardPile.lastChild;
-					ui.cardPile.removeChild(bottomCard);
-					bottomCard.fix(); 
-					game.log(player, "将牌堆底的", bottomCard, "进行了", "#y【蓄谋】");
+				await player.showCards(bottomCard, get.translation(player) + "展示了牌堆底的 " + get.translation(bottomCard));
+				game.log(player, "对牌堆底的", bottomCard, "进行了判定");
+				
+				var color = get.color(bottomCard);
+				if (color === 'black') {
+					game.log(player, "判定结果为", "#b黑色", "，将其置入了", "#g【蓄谋】");
 					await player.addJudge({ name: "xumou_jsrg" }, [bottomCard]);
 				} else {
-					game.log(player, "牌堆已空，无法进行【蓄谋】");
+					game.log(player, "判定结果为", "#r红色", "，置入弃牌堆");
+					await game.cardsDiscard(bottomCard);
 				}
+			} else {
+				game.log(player, "牌堆已空，无法进行底牌判定");
 			}
 		}
 	},
