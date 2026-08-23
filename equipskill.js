@@ -1027,49 +1027,133 @@ const equipSkills = {
 			}
 		}
 	},
-	"RabbitMask_skill": {
+    "RabbitMask_skill": {
+        equipSkill: true,
+        mod: {
+            maxHandcard: function(player, num) { return num + 3; 
+        },
+            canBeDiscarded: function(card) { if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; },
+            cardDiscardable: function(card) { if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; }
+        },
+        trigger: { target: "useCardToTargeted" },
+        filter: function(event, player) {
+            return event.player !== player && !player.hasSkill("RabbitMask_round");
+        },
+        cost: async function(event, trigger, player) {
+            var res = await player.chooseBool("兔之假面：是否流失1点体力，于此牌结算后从弃牌堆使用一张【桃】？").set("ai", function() {
+                var p = _status.event.player;
+                return p.hp > 1 || p.hp <= 0;
+            }).forResult();
+            if (res.bool) {
+                event.result = { bool: true };
+            }
+        },
+        content: async function(event, trigger, player) {
+            player.addSkill("RabbitMask_round"); 
+            await player.loseHp(1);
+            player.addTempSkill("RabbitMask_peach", "roundStart");
+            player.storage.RabbitMask_peach_evt = trigger.getParent("useCard");
+            game.log(player, "将于", trigger.card, "结算结束后从弃牌堆使用一张【桃】");
+        },
+        subSkill: {
+            round: {
+                charlotte: true,
+                trigger: { global: "roundStart" },
+                forced: true,
+                silent: true,
+                content: function(event, trigger, player) { player.removeSkill("RabbitMask_round"); }
+            },
+            peach: {
+                charlotte: true,
+                trigger: { global: "useCardAfter" },
+                forced: true,
+                popup: false,
+                filter: function(event, player) {
+                    return event === player.storage.RabbitMask_peach_evt;
+                },
+                content: async function(event, trigger, player) {
+                    player.removeSkill("RabbitMask_peach");
+                    delete player.storage.RabbitMask_peach_evt;
+                    
+                    var tao = get.cardPile(function(card) {
+                        return card.name === "tao";
+                    }, "d");
+                    
+                    if (tao) {
+                        game.log(player, "发动", "#g【兔之假面】", "，从弃牌堆使用了", tao);
+                        await player.useCard(tao, player);
+                    } else {
+                        game.log(player, "发动", "#g【兔之假面】", "，但弃牌堆中没有【桃】");
+                    }
+                }
+            }
+        }
+    },
+
+	"EnglandCrown_skill": {
 		equipSkill: true,
 		mod: {
-			maxHandcard: function(player, num) { 
-				return num + 3; 
-			},
-			canBeDiscarded: function(card) { 
-				if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; 
-			},
-			cardDiscardable: function(card) { 
-				if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; 
-			},
-			targetEnabled: function(card, player, target) {
-				if (player !== target && get.type(card) === 'equip') {
-					var currentEquip = target.getEquip(get.subtype(card));
-					if (currentEquip && ['RabbitMask', 'CrowMask', 'CatMask', 'EnglandCrown'].includes(currentEquip.name)) return false;
-				}
-			},
-			targetInRange: function(card, player, target) {
-				var isOut = false;
-				if (card.hasGaintag && card.hasGaintag('RabbitMask_outOfTurn')) isOut = true;
-				else if (card.cards && card.cards.some(c => c.hasGaintag && c.hasGaintag('RabbitMask_outOfTurn'))) isOut = true;
-				
-				if (isOut) return true;
-			},
-			cardUsable: function(card, player, num) {
-				var isOut = false;
-				if (card.hasGaintag && card.hasGaintag('RabbitMask_outOfTurn')) isOut = true;
-				else if (card.cards && card.cards.some(c => c.hasGaintag && c.hasGaintag('RabbitMask_outOfTurn'))) isOut = true;
-				
-				if (isOut) return Infinity;
-			}
+			maxHandcard: function(player, num) { return num + 3; },
+			canBeDiscarded: function(card) { if (card.name === 'EnglandCrown' && get.position(card) === 'e') return false; },
+			cardDiscardable: function(card) { if (card.name === 'EnglandCrown' && get.position(card) === 'e') return false; }
 		},
-		group: "RabbitMask_tracker",
-		subSkill: {
-			tracker: {
-				trigger: { player: "gainAfter" },
-				forced: true, silent: true, charlotte: true,
-				filter: function(event, player) {
-					return _status.currentPhase !== player && event.cards && event.cards.length > 0;
-				},
-				content: function(event, trigger, player) {
-					player.addGaintag(trigger.cards, 'RabbitMask_outOfTurn');
+		trigger: { player: "gainAfter" },
+		forced: true,
+		filter: function(event, player) {
+			if (!event.cards || event.cards.length === 0) return false;
+			
+			if (event.source && event.source !== player && event.source.name) return true;
+			
+			var parent = event.getParent();
+			while (parent && parent.name !== 'phase') {
+				if (parent.name === 'gainPlayerCard' && parent.target && parent.target !== player) return true;
+				if (parent.name === 'give' && parent.player && parent.player !== player) return true;
+				parent = parent.parent;
+			}
+			
+			return false;
+		},
+		content: async function(event, trigger, player) {
+			var cardsToDiscard = trigger.cards.filter(function(card) {
+				return player.getCards("he").includes(card);
+			});
+			
+			if (cardsToDiscard.length > 0) {
+				game.log(player, "获得了其他角色的牌，触发", "#g【女王皇冠】");
+				await player.discard(cardsToDiscard);
+				
+				var x = cardsToDiscard.length * 2; 
+				
+				if (x > 0) {
+					var cards = get.cards(x);
+					var cards2 = [];
+					await game.cardsGotoOrdering(cards);
+					var res = await player.chooseToMove("女王皇冠：卜算" + x, true)
+						.set("list", [["牌堆顶", cards], ["牌堆底", cards2]])
+						.forResult();
+						
+					if (res && res.bool) {
+						var top = res.moved[0];
+						var bottom = res.moved[1];
+						top.reverse(); 
+						
+						await game.cardsGotoPile(top.concat(bottom), ["top_cards", top], function (evt, card) {
+							if (evt.top_cards.includes(card)) return ui.cardPile.firstChild;
+							return null;
+						});
+						
+						game.log(player, "进行了", "#y【卜算】" + x);
+					}
+				}
+				
+				if (ui.cardPile.childNodes.length > 0) {
+					var bottomCard = ui.cardPile.lastChild;
+					ui.cardPile.removeChild(bottomCard);
+					bottomCard.fix(); 
+					game.log(player, "将牌堆底的", bottomCard, "进行了", "#y【蓄谋】");
+					await player.addJudge({ name: "xumou_jsrg" }, [bottomCard]);
+				} else {
+					game.log(player, "牌堆已空，无法进行【蓄谋】");
 				}
 			}
 		}
