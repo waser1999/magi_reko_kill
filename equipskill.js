@@ -925,31 +925,44 @@ const equipSkills = {
 
 	"DragonsFire_skill": {
 		equipSkill: true,
-		trigger: { player: ["loseAfter", "cardsDiscardAfter"] },
+		trigger: { source: "damageEnd" },
+		direct: true,
 		filter: function (event, player) {
-			if (event.name === 'lose' && event.type !== 'discard') return false;
-			return event.cards && event.cards.length > 0;
+			return event.nature === "fire" && player.countCards("he") > 0;
 		},
-		forced: true,
 		content: async function (event, trigger, player) {
-			var count = trigger.cards.length;
-			player.storage.DragonsFire_count = (player.storage.DragonsFire_count || 0) + count;
-			
-			while (player.storage.DragonsFire_count >= 2) {
-				player.storage.DragonsFire_count -= 2;
-				
-				var targets = game.filterPlayer(function(current) { return current.isAlive(); });
-				if (targets.length === 0) break;
+			var next = player.chooseTarget("龙之雷火：是否弃置1张牌，对另一名角色造成 1 点雷电伤害？", [0, 1], function(card, p, target) {
 
-				var chooseTarget = await player.chooseTarget("龙之雷火：累计弃牌数达到2！你可以对一名角色造成1点火焰伤害", [0, 1]).set("ai", function(target) {
-					return -get.attitude(_status.event.player, target);
-				}).forResult();
+				return target !== trigger.player; 
+			}).set("ai", function(target) {
+				return get.damageEffect(target, _status.event.player, _status.event.player, "thunder");
+			});
+
+			var res = await next.forResult();
+			if (res.bool && res.targets && res.targets.length > 0) {
+				var target = res.targets[0];
 				
-				if (chooseTarget.bool && chooseTarget.targets && chooseTarget.targets.length > 0) {
-					player.logSkill("DragonsFire_skill", chooseTarget.targets);
-					player.line(chooseTarget.targets[0], "fire");
-					await chooseTarget.targets[0].damage(1, "fire", player);
+				var discardRes = await player.chooseToDiscard("he", 1, true).set("prompt", "请弃置1张牌引发雷电连锁");
+				if (discardRes.bool) {
+					player.logSkill("DragonsFire_skill", target);
+					player.line(target, "thunder");
+					await target.damage(1, "thunder", player);
 				}
+			}
+		}
+	},
+	"DragonsFire_destroy_global": {
+		trigger: { global: ["loseAfter", "equipAfter"] },
+		forced: true, silent: true, charlotte: true,
+		filter: function (event, player) {
+			if (!event.cards) return false;
+			return event.cards.some(function(c) { return c.name === "DragonsFire" && get.position(c, true) !== "e"; });
+		},
+		content: async function (event, trigger, player) {
+			var cards = trigger.cards.filter(function(c) { return c.name === "DragonsFire" && get.position(c, true) !== "e"; });
+			if (cards.length > 0) {
+				await game.cardsGotoSpecial(cards);
+				game.log(cards, "化作了灰烬，被彻底销毁了！");
 			}
 		}
 	},
@@ -1030,14 +1043,13 @@ const equipSkills = {
     "RabbitMask_skill": {
         equipSkill: true,
         mod: {
-            maxHandcard: function(player, num) { return num + 3; 
-        },
+            maxHandcard: function(player, num) { return num + 3; },
             canBeDiscarded: function(card) { if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; },
             cardDiscardable: function(card) { if (card.name === 'RabbitMask' && get.position(card) === 'e') return false; }
         },
         trigger: { target: "useCardToTargeted" },
         filter: function(event, player) {
-            return event.player !== player && !player.hasSkill("RabbitMask_round");
+            return event.player !== player && !player.hasSkill("RabbitMask_skill_round"); // 【修复命名】
         },
         cost: async function(event, trigger, player) {
             var res = await player.chooseBool("兔之假面：是否流失1点体力，于此牌结算后从弃牌堆使用一张【桃】？").set("ai", function() {
@@ -1049,10 +1061,11 @@ const equipSkills = {
             }
         },
         content: async function(event, trigger, player) {
-            player.addSkill("RabbitMask_round"); 
+            player.addSkill("RabbitMask_skill_round"); 
             await player.loseHp(1);
-            player.addTempSkill("RabbitMask_peach", "roundStart");
-            player.storage.RabbitMask_peach_evt = trigger.getParent("useCard");
+            player.addTempSkill("RabbitMask_skill_peach", "roundStart"); 
+            
+            player.storage.RabbitMask_peach_card = trigger.card; 
             game.log(player, "将于", trigger.card, "结算结束后从弃牌堆使用一张【桃】");
         },
         subSkill: {
@@ -1061,7 +1074,7 @@ const equipSkills = {
                 trigger: { global: "roundStart" },
                 forced: true,
                 silent: true,
-                content: function(event, trigger, player) { player.removeSkill("RabbitMask_round"); }
+                content: function(event, trigger, player) { player.removeSkill("RabbitMask_skill_round"); }
             },
             peach: {
                 charlotte: true,
@@ -1069,15 +1082,13 @@ const equipSkills = {
                 forced: true,
                 popup: false,
                 filter: function(event, player) {
-                    return event === player.storage.RabbitMask_peach_evt;
+                    return event.card === player.storage.RabbitMask_peach_card;
                 },
                 content: async function(event, trigger, player) {
-                    player.removeSkill("RabbitMask_peach");
-                    delete player.storage.RabbitMask_peach_evt;
+                    player.removeSkill("RabbitMask_skill_peach");
+                    delete player.storage.RabbitMask_peach_card;
                     
-                    var tao = get.cardPile(function(card) {
-                        return card.name === "tao";
-                    }, "d");
+                    var tao = Array.from(ui.discardPile.childNodes).find(card => card.name === "tao");
                     
                     if (tao) {
                         game.log(player, "发动", "#g【兔之假面】", "，从弃牌堆使用了", tao);
