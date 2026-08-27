@@ -140,6 +140,7 @@ export default function () {
 		
 		            // 【新增】：给第一波的精英士兵挂载隐秘（无视距离）
 		            game.boss.addSkill("pve_jvli");
+					game.boss.addSkill("pve_mozhu1");
 		
 		            // 4, 5, 7, 8号位为英格兰士兵
 		            game.addBossFellow(4, "england_soldier");
