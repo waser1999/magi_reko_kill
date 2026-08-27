@@ -24727,5 +24727,3 @@ lib.boss.Boss_Corbeau = {
 
 
 export default skills;
-};
-export default skills;
