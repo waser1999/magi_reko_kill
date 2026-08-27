@@ -15880,6 +15880,9 @@ const skills = {
 			    player.awakenSkill("dArc_susheng");
 			    player.$fullscreenpop("圣女复活", "gold"); 
 			"step 1" 
+			player.changeSkin("dArc_susheng", "dArc_v2");
+			game.log(player, "将武将牌替换为", "#g【塔鲁特v2】");
+			"step 2" 
 			    player.recover(1);
 			    player.gainMaxHp(1);
 			    player.removeSkill("dArc_shengjian_lv1");
