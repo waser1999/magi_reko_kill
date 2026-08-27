@@ -102,9 +102,65 @@ export default function () {
 				}
 				return choice.randomSort();
 			};
-		}, content: function (config, pack) {
+		}, 
+		content: function (config, pack) {
+			// 防止 lib.boss 未定义报错
+			if (!lib.boss) lib.boss = {};
 
-		}, prepare: function () {
+			// 注册被虐的月夜乌的专属 Boss 战
+			lib.boss.Boss_Corbeau = {
+				chongzheng: 1, // 无重整机制
+				loopType: 1,   // 1为正常座次轮流行动
+				checkResult: function (player) {
+					// 接管胜利条件：只有在第三阶段，且击杀了Boss时，才能判定玩家胜利
+					if (player.side != game.me.side) {
+						if (!_status.corbeau_level || _status.corbeau_level < 3) {
+							return false; 
+						}
+						if (_status.corbeau_level == 1) {
+							// 第一阶段必须全灭才算胜利（返回 false 阻止游戏提前结束）
+							if (game.filterPlayer(current => current.side == player.side && current.isAlive()).length > 0) {
+								return false;
+							}
+						}
+					}
+				},
+				
+	            init: function () {
+		            _status.corbeau_level = 1;
+		
+		            game.addGlobalSkill("boss_corbeau_wave_control");
+		            game.addGlobalSkill("boss_corbeau_retreat");
+		            game.addGlobalSkill("boss_corbeau_grant_zhanxun");
+		            game.addGlobalSkill("boss_corbeau_fix_draw");
+
+		            // 强制初始化第一波站位：将原本的 Boss 替换为精英士兵
+		            game.boss.init("elite_soldier");
+		            game.boss.dataset.position = 6; 
+		
+		            // 【新增】：给第一波的精英士兵挂载隐秘（无视距离）
+		            game.boss.addSkill("pve_jvli");
+		
+		            // 4, 5, 7, 8号位为英格兰士兵
+		            game.addBossFellow(4, "england_soldier");
+		            game.addBossFellow(5, "england_soldier");
+		            game.addBossFellow(7, "england_soldier");
+		            game.addBossFellow(8, "england_soldier");
+		            game.arrangePlayers();
+
+		            game.countPlayer(function(current) {
+			            if (current.side == game.me.side) {
+				            current.addSkill("pve_zhanxun");
+				            current.addSkill("pve_skill_overview");
+				            current.markSkill("pve_zhanxun");
+				            current.markSkill("pve_skill_overview");
+				            current.updateMarks();
+			            }
+		            });
+	            }
+			};
+		}, 
+		prepare: function () {
 
 		}, precontent: function () {
 			// 这里写势力
@@ -130,6 +186,7 @@ export default function () {
 			lib.namePrefix.set("谣", { color: "#FFD700" });
 			lib.namePrefix.set("神使", { color: "#FFD700" });
 			lib.namePrefix.set("极", { color: "#FAD7A0" });
+			lib.namePrefix.set("昴", { color: "#FFFFFF" });
 		}, help: {
 
 		}, config: {
