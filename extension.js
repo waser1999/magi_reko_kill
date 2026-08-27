@@ -109,7 +109,7 @@ export default function () {
 
 			// 注册被虐的月夜乌的专属 Boss 战
 			lib.boss.Boss_Corbeau = {
-				chongzheng: 1, // 无重整机制
+				chongzheng: 0, // 无重整机制
 				loopType: 1,   // 1为正常座次轮流行动
 				checkResult: function (player) {
 					// 接管胜利条件：只有在第三阶段，且击杀了Boss时，才能判定玩家胜利
