@@ -878,7 +878,7 @@ const cards = {
 		vanish: true,
 		type: "equip",
 		subtype: "equip1",
-		skills: ["DargonsFire_skill"],
+		skills: ["DargonsFire_skill", "DragonsFire_destroy_global"],
 		distance: {
 			attackFrom: -6,
 		},
@@ -898,26 +898,24 @@ const cards = {
 				target.equip(card);
 			}
 		},
+		ai: {
+			equipValue: 9
+		},
 		toself: true,
 		onLose: async function (event, trigger, player) {
 			if (event.cards && event.cards.length > 0) {
 				setTimeout(async function () {
-					// 销毁
-					var loseCard = event.cards.find(function (q) { return q.name === "DargonsFire"; });
+					var loseCard = event.cards.find(function(q) { return q.name === "DragonsFire"; });
 					if (loseCard) {
 						var npc = get.owner(loseCard);
-						if (npc) {
-							await npc.lose(loseCard).set('_triggered', null);
-						}
+						if (npc) await npc.lose(loseCard).set('_triggered', null);
 						loseCard.selfDestroy();
 					}
 				}, 600);
 			}
-		},
-		ai: {
-			equipValue: 9
 		}
 	},
+
 "CrowMask": {
 		type: "equip",
 		subtype: "equip5",
