@@ -243,7 +243,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 4,
 		maxHp: 4,
-		skills: ["kaikang", "mashu"],
+		skills: ["kanae_wuxiang", "kanae_huien"],
 		img: "extension/魔法纪录/image/kanae.png",
 		dieAudios: ["ext:魔法纪录/audio/die/kanae.mp3"]
 	},
@@ -387,7 +387,7 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["zhiming", "twxingbu"],
+		skills: ["meru_zhanxing", "meru_zhenbu"],
 		img: "extension/魔法纪录/image/meru.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/meru.mp3"]
 	},
@@ -788,7 +788,8 @@ const characters = {
 		maxHp: 21,
 		skills: ["Final_dArc_poge", "Final_dArc_guangying", "Final_dArc_tianmen"],
 		img: "extension/魔法纪录/image/Final_dArc.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/Final_dArc.mp3"]
+		dieAudios: ["ext:魔法纪录/audio/die/Final_dArc.mp3"],
+		isUnseen: true,
 	},
 	"Riz": {// 莉兹
 		sex: "female",
@@ -849,18 +850,6 @@ const characters = {
 		skills: ["Corbeau_shizhan", "Corbeau_eyu", "Corbeau_siwu", "Isabeau_kamen"],
 		img: "extension/魔法纪录/image/Corbeau.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Corbeau.mp3"],
-	},
-	"Boss_Corbeau": {// boss可鲁波
-		sex: "female",
-		group: "Witch",
-		hp: 14,
-		maxHp: 14,
-		hujia: 7,
-		skills: ["Corbeau_shizhan", "Corbeau_eyu", "Corbeau_kuangyan", "Boss_Corbeau_siwu", "Boss_Corbeau_kamen"],
-		img: "extension/魔法纪录/image/Boss_Corbeau.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/Boss_Corbeau.mp3"],
-		isUnseen: true,
-		isBoss: true,
 	},
 	"Minuo": {// 米诺
 		sex: "female",
@@ -998,6 +987,8 @@ const characters = {
 		img: "extension/魔法纪录/image/yamada.png",
 		dieAudios: ["ext:魔法纪录/audio/die/yamada.mp3"]
 	},
+
+	// OC角色
 	"blue": {//蓝蓝
 		sex: "female",
 		group: "Law_of_Cycles",
@@ -1045,6 +1036,46 @@ const characters = {
 		img: "extension/魔法纪录/image/Kyukyu.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/Kyukyu.mp3"],
 	},
+	
+	// pve专属
+	"england_soldier": {//英格兰士兵
+		sex: "male",
+		group: "Witch",
+		hp: 4,
+		maxHp: 4,
+		skills: ["eng_huifeng", "eng_dianwei"],
+		img: "extension/魔法纪录/image/england_soldier.jpg", 
+		isUnseen: true,
+	},
+	"elite_soldier": {//精英士兵
+		sex: "male",
+		group: "Witch",
+		hp: 5,
+		maxHp: 5,
+		skills: ["elite_yuanzhan", "elite_weijiao", "eng_dianwei"],
+		img: "extension/魔法纪录/image/elite_soldier.jpg", 
+		isUnseen: true,
+	},
+	"FlècheLame": {//弗蕾修&兰姆
+		sex: "female",
+		group: "Witch",
+		hp: 4,
+		maxHp: 4,
+		skills: ["flame_lishi", "flame_weiren", "flame_jiou"],
+		img: "extension/魔法纪录/image/Flèche&Lame.jpg", 
+	},
+	"Boss_Corbeau": {// boss可鲁波
+		sex: "female",
+		group: "Witch",
+		hp: 14,
+		maxHp: 14,
+		hujia: 7,
+		skills: ["Corbeau_shizhan", "Corbeau_eyu", "Corbeau_kuangyan", "Boss_Corbeau_siwu", "Boss_Corbeau_kamen"],
+		img: "extension/魔法纪录/image/Boss_Corbeau.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/Boss_Corbeau.mp3"],
+		isUnseen: true,
+		isBoss: true,
+	},
 }
 
 const character_translates = {
@@ -1057,6 +1088,7 @@ const character_translates = {
 	"uwasa_tsuruno_prefix": "谣",
 	"devil_homura_prefix": "魔",
 	"Final_dArc_prefix": "极",
+	"Subaru_Kazumi_prefix": "昴",
 
 	madoka: "鹿目圆",
 	homura: "晓美焰",
@@ -1140,14 +1172,13 @@ const character_translates = {
 	Satomi: "宇佐木里美",
 	Niko: "神那妮可",
 	dArc: "塔鲁特",
-	Final_dArc: "极贞德",
+	Final_dArc: "极塔鲁特",
 	Riz: "莉兹·霍克伍德",
 	Melissa: "梅丽莎·德·维尼奥勒",
 	Elisa: "爱丽莎·采列斯卡",
 	Pernelle: "佩尔内勒·弗拉梅尔",
 	Jeanne: "珍妮·弗拉梅尔",
 	Corbeau: "可鲁波",
-	Boss_Corbeau: "被虐的月夜乌",
 	Minuo: "米诺",
 	Lapine: "拉皮努",
 	WeepingHare: "哭泣兔的魔女",
@@ -1166,7 +1197,12 @@ const character_translates = {
 	Airi: "悠里?",
 	Yuuri: "飞鸟悠里",
 	Kanna: "圣迦南",
-	Hyades: "海亚蒂斯之晓"
+	Hyades: "海亚蒂斯之晓",
+	// pve专属
+	england_soldier: "英格兰士兵",
+	elite_soldier: "精英士兵",
+	FlècheLame: "弗蕾修&兰姆",
+	Boss_Corbeau: "被虐的月夜乌",
 };
 
 const perfectPairs = {
@@ -1245,7 +1281,7 @@ const perfectPairs = {
 	Elisa: ["dArc", "Final_dArc", "Riz", "Melissa", "Pernelle"],
 	Pernelle: ["Jeanne", "dArc", "Final_dArc", "Riz", "Elisa"],
 	Jeanne: ["Pernelle", "kagome"],
-	Corbeau: ["Lapine", "Minou", "WeepingHare"],
+	Corbeau: ["Lapine", "Minou", "WeepingHare", "FlècheLame"],
 	Minou: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight", "WeepingHare"],
 	Lapine: ["Minou", "Corbeau", "Isabeau", "QueensTwilight"],
 	Isabeau:  ["Lapine", "Corbeau", "Minou", "QueensTwilight", "WeepingHare"],
@@ -1345,6 +1381,7 @@ const characterTitles = {
 	Jeanne: "Donum Dei",//珍妮
 	Corbeau :"La Danse Macabre",//可鲁波
 	Boss_Corbeau: "快乐的蹂躏时间到！",//Boss可鲁波
+	FlècheLame: "箭与刃",//弗蕾修＆兰姆
 	Minuo: "Chat à neuf queues",//米诺
 	Lapine: "Lapine aux cent yeux",//拉皮努
 	WeepingHare: "其性质为虐待狂",//哭泣兔的魔女
@@ -1413,7 +1450,7 @@ const characterSorts = {
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
 	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Airi", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
-	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "Corbeau", "Minou", "Isabeau", "QueensTwilight"],
+	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "WeepingHare", "Corbeau", "Minuo", "Isabeau", "QueensTwilight", "boss_Corbeau", "FlècheLame"],
 
 	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
