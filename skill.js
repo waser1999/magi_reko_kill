@@ -23660,9 +23660,9 @@ content: function (event, trigger, player) {
 		},
 	},
 
-	// pve挑战专属
+// pve挑战专属
 	// 波次推进全局控制器
-	boss_corbeau_wave_control: {
+	"boss_corbeau_wave_control": {
 		trigger: { player: "dieBegin" }, 
 		persevereSkill: true,
 		forced: true,
@@ -23677,7 +23677,8 @@ content: function (event, trigger, player) {
 			// 只有当前正在阵亡的是 Boss 本人，才触发波次推进
 			return player == game.boss && _status.corbeau_level < 3;
 		},
-		content: function () {
+		// 添加了 (event, trigger, player)，防止 trigger.getParent() 报错
+		content: function (event, trigger, player) {
 			var next = game.createEvent("corbeau_wave_advance", false, trigger.getParent());
 			next.player = player;
 			next.forceDie = true; // 拦截底层原本的死亡结算
@@ -23724,7 +23725,6 @@ content: function (event, trigger, player) {
 			
 			// 根据当前波次，给特定的小怪和 Boss 挂载强化技能
 			game.countPlayer(function(current) {
-				
 				if (current.side === game.boss.side) {
 					if (_status.corbeau_level === 2) {
 						// 第二波：给 可鲁波 和 弗蕾修&兰姆 挂载
@@ -23770,12 +23770,15 @@ content: function (event, trigger, player) {
 					game.dead.remove(dead[i]);
 				}
 			}
-			game.countPlayer(function(current){
-				if(current.side == game.boss.side && current != game.boss){
+			// 先 slice(0) 复制一份数组再遍历，防止循环中途因数组长度缩减导致跳怪
+			var currentPlayers = game.players.slice(0);
+			for (var i = 0; i < currentPlayers.length; i++) {
+				var current = currentPlayers[i];
+				if (current.side == game.boss.side && current != game.boss) {
 					current.delete();
 					game.players.remove(current);
 				}
-			});
+			}
 		},
 		resetPlayers: function() {
 			var dnum = 0;
@@ -23803,7 +23806,7 @@ content: function (event, trigger, player) {
 	},
 
 	// 第三轮米诺、拉皮努撤退，可鲁波发动【死亡之舞】
-	boss_corbeau_retreat: {
+	"boss_corbeau_retreat": {
 		trigger: { global: "roundStart" },
 		persevereSkill: true,
 		forced: true,
@@ -23887,8 +23890,8 @@ content: function (event, trigger, player) {
 		}
 	},
 
-    // pve专属技能
-    // 战勋
+	// pve专属技能
+	// 战勋
 	"pve_zhanxun": {
 		audio: 6,
 		persevereSkill: true,
@@ -24057,77 +24060,77 @@ content: function (event, trigger, player) {
 			player.removeSkill("boss_corbeau_grant_zhanxun");
 		}
 	},
-    
-    // 距离
-    "pve_jvli": {
-        forced: true,
-        mod: {
-            targetInRange: function(card, player, target) {
-                if (card) {
-                    return true;
-                }
-            }
-        }
-    },
+	
+	// 距离
+	"pve_jvli": {
+		forced: true,
+		mod: {
+			targetInRange: function(card, player, target) {
+				if (card) {
+					return true;
+				}
+			}
+		}
+	},
 
-    // 魔主 (Side 阵营版)
-    "pve_mozhu": {
-        audio: "ext:魔法纪录/audio/skill:2", 
-        forced: true,
-        trigger: { player: "phaseDrawBegin2" },
-        filter: function(event, player) {
-            return !event.numFixed; 
-        },
-        content: function(event, trigger, player) {
-            // 计算与自己 side 相同（同阵营）的存活角色数量
-            var count = game.countPlayer(function(current) {
-                return current.side === player.side;
-            });
-            
-            if (count > 0) {
-                trigger.num += count;
-                game.log(player, "由于", "#g【魔主】", "的加成，多摸了", count, "张牌");
-            }
-        },
-        mod: {
-            maxHandcard: function(player, num) {
-                var count = game.countPlayer(function(current) {
-                    return current.side === player.side;
-                });
-                return num + count;
-            }
-        }
-    },
-    // 魔主1 (魔女势力版)
-    "pve_mozhu1": {
-        audio: "ext:魔法纪录/audio/skill:2",
-        forced: true,
-        trigger: { player: "phaseDrawBegin2" },
-        filter: function(event, player) {
-            return !event.numFixed;
-        },
-        content: function(event, trigger, player) {
-            var count = game.countPlayer(function(current) {
-                return current.group === "Witch"; 
-            });
-            var extra = Math.ceil(count / 2); // 计算阵营人数的一半，向上取整
-            
-            if (extra > 0) {
-                trigger.num += extra;
-                game.log(player, "由于", "#g【魔主】", "的加成，多摸了", extra, "张牌");
-            }
-        },
-        mod: {
-            maxHandcard: function(player, num) {
-                var count = game.countPlayer(function(current) {
-                    return current.group === player.group;
-                });
-                return num + Math.ceil(count / 2); 
-            }
-        }
-    },
+	// 魔主 (Side 阵营版)
+	"pve_mozhu": {
+		audio: "ext:魔法纪录/audio/skill:2", 
+		forced: true,
+		trigger: { player: "phaseDrawBegin2" },
+		filter: function(event, player) {
+			return !event.numFixed; 
+		},
+		content: function(event, trigger, player) {
+			// 计算与自己 side 相同（同阵营）的存活角色数量
+			var count = game.countPlayer(function(current) {
+				return current.side === player.side;
+			});
+			
+			if (count > 0) {
+				trigger.num += count;
+				game.log(player, "由于", "#g【魔主】", "的加成，多摸了", count, "张牌");
+			}
+		},
+		mod: {
+			maxHandcard: function(player, num) {
+				var count = game.countPlayer(function(current) {
+					return current.side === player.side;
+				});
+				return num + count;
+			}
+		}
+	},
+	// 魔主1 (魔女势力版)
+	"pve_mozhu1": {
+		audio: "ext:魔法纪录/audio/skill:2",
+		forced: true,
+		trigger: { player: "phaseDrawBegin2" },
+		filter: function(event, player) {
+			return !event.numFixed;
+		},
+		content: function(event, trigger, player) {
+			var count = game.countPlayer(function(current) {
+				return current.group === "Witch"; 
+			});
+			var extra = Math.ceil(count / 2); // 计算阵营人数的一半，向上取整
+			
+			if (extra > 0) {
+				trigger.num += extra;
+				game.log(player, "由于", "#g【魔主】", "的加成，多摸了", extra, "张牌");
+			}
+		},
+		mod: {
+			maxHandcard: function(player, num) {
+				var count = game.countPlayer(function(current) {
+					return current.group === player.group;
+				});
+				return num + Math.ceil(count / 2); 
+			}
+		}
+	},
 
-    // pve敌人(怪物)
+	// pve敌人(怪物)
 	// 英格兰士兵
 	"eng_huifeng": {
 		audio: "ext:魔法纪录/audio/skill:2",
@@ -24373,7 +24376,7 @@ content: function (event, trigger, player) {
 		}
 	},
 
-    // 弗蕾修&兰姆
+	// 弗蕾修&兰姆
 	"flame_lishi": {
 		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { player: "useCardToPlayered" },
@@ -24668,10 +24671,12 @@ content: function (event, trigger, player) {
 			},
 			used: { charlotte: true }
 		}
-	},
-};
+	}
+}; // 这里之前遗失了 `};` 和后续代码，在此闭合所有的 skills
 
-// 挑战模式 可鲁波boss战 开局
+// ----------------------------------------
+// 以下是 Boss战 专属配置与机制控制器
+// ----------------------------------------
 if (!lib.boss) lib.boss = {};
 
 lib.boss.Boss_Corbeau = {
@@ -24696,16 +24701,20 @@ lib.boss.Boss_Corbeau = {
 		game.addGlobalSkill("boss_corbeau_retreat");
 		game.addGlobalSkill("boss_corbeau_grant_zhanxun");
 		
-		// 摸牌修复
+		// 摸牌修复控制器
 		game.addGlobalSkill("boss_corbeau_fix_draw");
 
-		// 我方加强技能
+		// 我方加强技能翻译覆写
 		lib.translate.pve_zhanxun = "战勋";
 		lib.translate.pve_zhanxun_info = "持恒技。游戏开始时，你获得5点战功（你至多拥有60点“战功”值）。<br>如下情况时，你对应获得一定数量的“战功”值：1. 你获得牌时——2点；2.你受到伤害后——3点；3. 你造成伤害后——5点；4. 你击杀角色后——12点。<br>你根据“战功”值视为拥有如下加成：<br>不小于10点——手牌上限+1；<br>不小于20点——攻击距离+1；<br>不小于30点——摸牌阶段多摸一张牌；<br>不小于40点——体力上限+1；<br>不小于50点——出杀上限+1 ；<br>不小于60点——结束阶段摸一张牌。";
 
 		game.boss.init("elite_soldier");
 		game.boss.dataset.position = 6; 
 		
+		// 【修复3：第一波 Boss 丢失专属强化】将旧版的技能赋予加回 init 方法内
+		game.boss.addSkill("pve_jvli");
+		game.boss.addSkill("pve_mozhu1");
+
 		game.addBossFellow(4, "england_soldier");
 		game.addBossFellow(5, "england_soldier");
 		game.addBossFellow(7, "england_soldier");
@@ -24724,6 +24733,5 @@ lib.boss.Boss_Corbeau = {
 		});
 	},
 };
-
 
 export default skills;
