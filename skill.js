@@ -23725,7 +23725,7 @@ content: function (event, trigger, player) {
 				if (current.side === game.boss.side) {
 					if (_status.corbeau_level === 2) {
 						// 第二波：给 可鲁波 和 弗蕾修&兰姆 挂载
-						if (current.name === "Corbeau" || current.name === "FlècheLame") {
+						if (current.name === "Corbeau" || current.name === "FlècheLame" || current.name === "elite_soldier") {
 							current.addSkill("pve_jvli");
 							current.addSkill("pve_mozhu1");
 						}
