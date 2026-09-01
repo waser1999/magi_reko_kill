@@ -925,30 +925,31 @@ const equipSkills = {
 
 	"DragonsFire_skill": {
 		equipSkill: true,
-		trigger: { source: "damageEnd" },
-		direct: true,
+		trigger: { source: "damageSource" },
 		filter: function (event, player) {
-			return event.nature === "fire" && player.countCards("he") > 0;
+			return event.nature === "fire" && player.countCards("he") > 0 && event.player.isAlive();
 		},
-		content: async function (event, trigger, player) {
-			var next = player.chooseTarget("龙之雷火：是否弃置1张牌，对另一名角色造成 1 点雷电伤害？", [0, 1], function(card, p, target) {
-
-				return target !== trigger.player; 
-			}).set("ai", function(target) {
-				return get.damageEffect(target, _status.event.player, _status.event.player, "thunder");
-			});
-
-			var res = await next.forResult();
-			if (res.bool && res.targets && res.targets.length > 0) {
-				var target = res.targets[0];
-				
-				var discardRes = await player.chooseToDiscard("he", 1, true).set("prompt", "请弃置1张牌引发雷电连锁");
-				if (discardRes.bool) {
-					player.logSkill("DragonsFire_skill", target);
-					player.line(target, "thunder");
-					await target.damage(1, "thunder", player);
-				}
-			}
+		async cost(event, trigger, player) {
+			var target = trigger.player;
+			
+			event.result = await player.chooseCard(
+				"he", 1,
+				"龙之雷火：是否弃置1张牌，对 " + get.translation(target) + " 造成1点雷电伤害？"
+			).set("ai", function(card) {
+				var p = _status.event.player;
+				var t = _status.event.getTrigger().player; 
+				var eff = get.damageEffect(t, p, p, "thunder");
+				if (eff > 0) return 8 - get.value(card);
+				return 0;
+			}).forResult();
+		},
+		async content(event, trigger, player) {
+			var target = trigger.player;
+			
+			await player.discard(event.cards);
+			
+			player.line(target, "thunder");
+			await target.damage(1, "thunder", player);
 		}
 	},
 	"DragonsFire_destroy_global": {
