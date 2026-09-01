@@ -230,6 +230,7 @@ export default function () {
 					["spade", 3, "evilnut", null, ["gifts"]],
 					["spade", 4, "evilnut", null, ["gifts"]],
 					["heart", 1, "griefseed", null, ["gifts"]],
+					["diamond", 3, "dujuanhuakai"],
 				],
 			},
 			skill: { ...skills },
