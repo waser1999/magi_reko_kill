@@ -1463,7 +1463,7 @@ const characterSorts = {
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "WeepingHare", "Corbeau", "Minuo", "Isabeau", "QueensTwilight", "boss_Corbeau", "FlècheLame", "eng_soldier", "elite_soldier"],
 
-	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren","honoha", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
+	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren","konoha", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
 	"madoka22": ["yuna", "ao", "juri", "sakuya", "hikaru"],
 	"madoka23": ["shizuka"],
