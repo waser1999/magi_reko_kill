@@ -14115,7 +14115,7 @@ const skills = {
 	},
 
 	// 天音姐妹共用计数器
-"Amane_twins_counter": {
+	"Amane_twins_counter": {
 		trigger: { player: ["useCardAfter", "respondAfter"] },
 		forced: true,
 		silent: true,
@@ -14127,7 +14127,7 @@ const skills = {
 			if (game.Amane_shared_count >= 4) {
 				game.Amane_shared_count = 0;
 				trigger.Amane_twins_ready = true;
-				game.log(player, "天音姐妹累计打出了", "#y第4张牌");
+				game.log(player, "与天音姐妹累计打出了", "#y第4张牌");
 				
 				var felicias = [];
 				game.countPlayer(function(current){
@@ -14165,7 +14165,7 @@ const skills = {
 					var hasYuexiao = game.hasPlayer(function(current) { return current.name === 'yuexiao'; });
 					var hasYueye = game.hasPlayer(function(current) { return current.name === 'yueye'; });
 					if (!hasYuexiao || !hasYueye) return false;
-					
+
 					return game.hasPlayer(function(current) {
 						return current.name === 'felicia' && !current.hasSkill("Amane_twins_counter");
 					});
