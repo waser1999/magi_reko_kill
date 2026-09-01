@@ -1,6 +1,123 @@
 import { lib, game, ui, get, ai, _status } from "../../noname.js";
 
 const cards = {
+	"dujuanhuakai": {
+		type: "trick",
+		image: "ext:魔法纪录/card_image/dujuanhuakai.png",
+		enable: true,
+		filterTarget: function(card, player, target) {
+			return target === player;
+		},
+		selectTarget: -1,
+		content: async function(event, trigger, player) {
+			var cards = get.cards(3);
+			await game.cardsGotoOrdering(cards);
+			if (_status.connectMode) {
+				game.broadcastAll(function() { _status.noclearcountdown = true; });
+			}
+			event.given_map = {};
+			
+			while (cards.length > 0) {
+				var chooseRes = await player.chooseCardButton({
+					prompt: "杜鹃花开：请选择要分配的牌",
+					cards: cards,
+					select: [1, cards.length],
+					forced: true,
+					ai: function() { return ui.selected.buttons.length === 0 ? 1 : 0; }
+				}).forResult();
+				
+				if (!chooseRes.bool || !chooseRes.links || !chooseRes.links.length) break;
+				var toGive = chooseRes.links.slice(0);
+				
+				var targetRes = await player.chooseTarget({
+					prompt: "选择一名角色获得这些牌（含自己）",
+					filterTarget: function(card, p, target) { return true; }, 
+					forced: true,
+					ai: function(target) { 
+						var player = _status.event.player;
+						var toGiveCards = _status.event.toGiveCards;
+						var givenMap = _status.event.givenMap || {}; 
+						var myGivenCards = givenMap[player.playerid] || [];
+						var currentHandCount = player.countCards('h') + myGivenCards.length;
+						var att = get.attitude(player, target);
+						
+						
+						var hasPoison = toGiveCards.some(c => c.name === 'du');
+						if (hasPoison) {
+							if (att < 0) return 100 - att; 
+							return 0; 
+						}
+						
+						if (att <= 0) return 0; 
+
+						
+						if (target === player && player.hp <= 1) return 100;
+						if (target !== player && target.hp <= 1) {
+							var isDefensive = toGiveCards.some(c => ['tao', 'shan', 'jiu'].includes(c.name));
+							if (isDefensive) return 95 + att; 
+						}
+						
+						
+						if (target === player && player.hasSkill("Ayame_feihuo")) {
+							var isOffensive = toGiveCards.some(c => get.type(c) === "equip" || get.tag(c, "damage") || get.color(c) === "red");
+							if (isOffensive) return 80;
+						}
+						
+						
+						if (currentHandCount < 2) {
+							
+							if (target === player) return 85;
+						} else {
+							
+							if (target !== player && att > 0) return att + 10; 
+							if (target === player) return att; 
+						}
+						
+						return target === player ? att + 5 : att;
+					}
+				}).set("toGiveCards", toGive).set("givenMap", event.given_map).forResult(); 
+				
+				if (targetRes.bool && targetRes.targets && targetRes.targets.length) {
+					cards.removeArray(toGive);
+					var id = targetRes.targets[0].playerid;
+					if (!event.given_map[id]) event.given_map[id] = [];
+					event.given_map[id].addArray(toGive);
+				}
+			}
+			
+			if (_status.connectMode) {
+				game.broadcastAll(function() { delete _status.noclearcountdown; game.stopCountChoose(); });
+			}
+			
+			var list = [];
+			var allCards = [];
+			var recoverTargets = [];
+			for (var id in event.given_map) {
+				var source = (_status.connectMode ? lib.playerOL : game.playerMap)[id];
+				player.line(source, "green");
+				list.push([source, event.given_map[id]]);
+				allCards.addArray(event.given_map[id]);
+				if (event.given_map[id].length >= 2) recoverTargets.push(source); 
+			}
+			
+			if (list.length > 0) {
+				await game.loseAsync({ gain_list: list, giver: player, cards: allCards, animate: "giveAuto" }).setContent("gaincardMultiple");
+			}
+			
+			for (var t of recoverTargets) {
+				if (t.isAlive()) {
+					game.log(t, "因获得了至少两张牌，触发回复！");
+					await t.recover(1);
+				}
+			}
+		},
+		ai: {
+			order: 7,
+			value: 8,
+			result: { player: 1 }
+		}
+	},
+	
 	"chenhuodajie": {
 		fullskin: true,
 		type: "trick",
