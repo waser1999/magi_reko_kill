@@ -315,7 +315,7 @@ const characters = {
 		group: "Magia_Others",
 		hp: 3,
 		maxHp: 3,
-		skills: ["xinjuece", "dcmieji", "dcfencheng", "reluanwu"],
+		skills: ["hanna_fuwang", "hanna_cuanshi", "hanna_qiuji"],
 		img: "extension/魔法纪录/image/hanna.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/hanna.mp3"],
 	},
@@ -337,21 +337,30 @@ const characters = {
 		img: "extension/魔法纪录/image/ren.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ren.mp3"],
 	},
-	"hazuki": {//游佐叶月
+	"konoha": {//静海木叶
 		sex: "female",
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["huituo", "hazuki_mingjian"],
-		img: "extension/魔法纪录/image/hazuki.jpg",
-		dieAudios: ["ext:魔法纪录/audio/die/hazuki.mp3"],
+		skills: ["Konoha_feihua", "Konoha_diewu", "Konoha_jiahu"],
+		img: "extension/魔法纪录/image/konoha.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/konoha.mp3"],
 	},
-	"ayame": {//三栗菖蒲
+	"hazuki": {//游佐叶月
 		sex: "female",
 		group: "Kamihama_Magia_Union",
 		hp: 4,
 		maxHp: 4,
-		skills: ["tianyi", "hanzhan"],
+		skills: ["Hazuki_feiyun", "Hazuki_chedian"],
+		img: "extension/魔法纪录/image/hazuki.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/hazuki.mp3"],
+	},
+	"ayame": {//三粟菖蒲
+		sex: "female",
+		group: "Kamihama_Magia_Union",
+		hp: 4,
+		maxHp: 4,
+		skills: ["Ayame_feihuo", "Ayame_liuxing"], 
 		img: "extension/魔法纪录/image/ayame.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/ayame.mp3"],
 	},
@@ -461,18 +470,18 @@ const characters = {
 	"yueye": {//天音月夜
 		sex: "female",
 		group: "Magius_Wing",
-		hp: 5,
-		maxHp: 5,
-		skills: ["yueye_yingyin"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["Tsukuyo_muse", "Tsukuyo_yingyin"],
 		img: "extension/魔法纪录/image/yueye.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/yueye.mp3"],
 	},
 	"yuexiao": {//天音月咲
 		sex: "female",
 		group: "Magius_Wing",
-		hp: 5,
-		maxHp: 5,
-		skills: ["yuexiao_yingyu"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["Tsukasa_yeguang", "Tsukasa_yingyu"],
 		img: "extension/魔法纪录/image/yuexiao.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/yuexiao.mp3"],
 	},
@@ -1126,6 +1135,7 @@ const character_translates = {
 	hanna: "更纱帆奈",
 	himika: "真尾日美香",
 	ren: "五十铃怜",
+	konoha: "静海木叶",
 	hazuki: "游佐叶月",
 	ayame: "三栗菖蒲",
 	masara: "加贺见真良",
@@ -1327,6 +1337,7 @@ const characterTitles = {
 	hanna: "噩梦毒针", //更纱帆奈
 	himika: "陨石拳", //真尾日美香
 	ren: "灵魂救赎", //五十铃怜
+	konoha: "蝴蝶风暴",//静海木叶
 	hazuki: "雷霆激流", //游佐叶月
 	ayame: "未确认飞行火焰", //三栗菖蒲
 	masara: "隐形暗杀", //加贺见真良
@@ -1450,9 +1461,9 @@ const characterSorts = {
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
 	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Airi", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
-	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "WeepingHare", "Corbeau", "Minuo", "Isabeau", "QueensTwilight", "boss_Corbeau", "FlècheLame"],
+	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "WeepingHare", "Corbeau", "Minuo", "Isabeau", "QueensTwilight", "boss_Corbeau", "FlècheLame", "eng_soldier", "elite_soldier"],
 
-	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
+	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren","honoha", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
 	"madoka22": ["yuna", "ao", "juri", "sakuya", "hikaru"],
 	"madoka23": ["shizuka"],
