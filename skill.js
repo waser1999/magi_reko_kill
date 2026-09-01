@@ -14114,38 +14114,74 @@ const skills = {
 		}
 	},
 
-	// 天音月夜 (Tsukuyo)
-    "Amane_twins_counter": {
-        trigger: { player: ["useCardAfter", "respondAfter"] },
-        forced: true,
-        silent: true,
-        _priority: 10, 
-        content: function(event, trigger, player) {
-            game.Amane_shared_count = (game.Amane_shared_count || 0) + 1;
-            
-            if (game.Amane_shared_count >= 4) {
-                game.Amane_shared_count = 0;
-                trigger.Amane_twins_ready = true;
-                game.log(player, "与天音姐妹累计打出了", "#y第4张牌");
-                
-                game.countPlayer(function(current){
-                    if (current.hasSkill("Amane_twins_counter")) {
-                        current.storage.Amane_twins_counter = 0;
-                        current.unmarkSkill("Amane_twins_counter");
-                    }
-                });
-            } else {
-                game.countPlayer(function(current){
-                    if (current.hasSkill("Amane_twins_counter")) {
-                        current.storage.Amane_twins_counter = game.Amane_shared_count;
-                        current.markSkill("Amane_twins_counter");
-                    }
-                });
-            }
-        },
-        marktext: "律",
-        intro: { content: "天音姐妹累计使用或打出牌数：#" }
-    },
+	// 天音姐妹共用计数器
+"Amane_twins_counter": {
+		trigger: { player: ["useCardAfter", "respondAfter"] },
+		forced: true,
+		silent: true,
+		_priority: 10, 
+		group: ["Amane_twins_counter_caidan"], 
+		content: async function(event, trigger, player) {
+			game.Amane_shared_count = (game.Amane_shared_count || 0) + 1;
+			
+			if (game.Amane_shared_count >= 4) {
+				game.Amane_shared_count = 0;
+				trigger.Amane_twins_ready = true;
+				game.log(player, "天音姐妹累计打出了", "#y第4张牌");
+				
+				var felicias = [];
+				game.countPlayer(function(current){
+					if (current.hasSkill("Amane_twins_counter")) {
+						current.storage.Amane_twins_counter = 0;
+						current.unmarkSkill("Amane_twins_counter");
+						if (current.name === 'felicia') {
+							felicias.push(current);
+						}
+					}
+				});
+				
+				for (var i = 0; i < felicias.length; i++) {
+					game.log(felicias[i], "触发彩蛋，蹭到了天音姐妹的摸牌效果！");
+					await felicias[i].draw(1);
+				}
+				
+			} else {
+				game.countPlayer(function(current){
+					if (current.hasSkill("Amane_twins_counter")) {
+						current.storage.Amane_twins_counter = game.Amane_shared_count;
+						current.markSkill("Amane_twins_counter");
+					}
+				});
+			}
+		},
+		marktext: "律",
+		intro: { content: "天音姐妹累计使用或打出牌数：#" },
+		subSkill: {
+			caidan: { 
+				trigger: { global: ["gameStart", "phaseBefore"] },
+				forced: true,
+				silent: true,
+				filter: function(event, player) {
+					var hasYuexiao = game.hasPlayer(function(current) { return current.name === 'yuexiao'; });
+					var hasYueye = game.hasPlayer(function(current) { return current.name === 'yueye'; });
+					if (!hasYuexiao || !hasYueye) return false;
+					
+					return game.hasPlayer(function(current) {
+						return current.name === 'felicia' && !current.hasSkill("Amane_twins_counter");
+					});
+				},
+				content: function(event, trigger, player) {
+					game.countPlayer(function(current) {
+						if (current.name === 'felicia' && !current.hasSkill("Amane_twins_counter")) {
+							current.setNickname("天音月练");
+							current.addSkill("Amane_twins_counter");
+							game.log(current, "化身为三妹", "#y【天音月练】", "，加入了天音姐妹的连携！");
+						}
+					});
+				}
+			}
+		}
+	},
 
     // 天音月夜
     "Tsukuyo_muse": {
