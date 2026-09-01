@@ -878,7 +878,7 @@ const cards = {
 		vanish: true,
 		type: "equip",
 		subtype: "equip1",
-		skills: ["DargonsFire_skill", "DragonsFire_destroy_global"],
+		skills: ["DragonsFire_skill", "DragonsFire_destroy_global"],
 		distance: {
 			attackFrom: -6,
 		},
