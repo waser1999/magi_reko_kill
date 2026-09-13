@@ -188,6 +188,7 @@ export default function () {
 			lib.namePrefix.set("神使", { color: "#FFD700" });
 			lib.namePrefix.set("极", { color: "#FAD7A0" });
 			lib.namePrefix.set("昴", { color: "#FFFFFF" });
+			lib.namePrefix.set("魔", { color: "#800080" });
 		}, help: {
 
 		}, config: {
@@ -230,7 +231,8 @@ export default function () {
 					["spade", 3, "evilnut", null, ["gifts"]],
 					["spade", 4, "evilnut", null, ["gifts"]],
 					["heart", 1, "griefseed", null, ["gifts"]],
-					["diamond", 3, "dujuanhuakai"],
+					["diamond", 6, "lve"],
+					["diamond", 7, "lve"],
 				],
 			},
 			skill: { ...skills },
