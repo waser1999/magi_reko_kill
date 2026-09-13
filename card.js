@@ -117,6 +117,131 @@ const cards = {
 			result: { player: 1 }
 		}
 	},
+
+	"lve": {
+		audio: true,
+		fullskin: true,
+		type: "basic",
+	    image: "ext:魔法纪录/card_image/lve.png",
+		notarget: true,
+		nodelay: true,
+		async content(event, trigger, player) {
+			// 能当闪用抵消杀（必须返回 shaned 才能让底层的杀识别）
+			event.result = "shaned";
+			event.getParent().delayx = false;
+			await game.delay(0.5);
+
+			var source = null;
+			var evt = event.parent;
+			while (evt) {
+				if (evt.name === "useCard" && evt.card && evt.card.name === "sha") {
+					source = evt.player;
+					break;
+				}
+				evt = evt.parent;
+			}
+			
+			if (source && source.isIn() && source.countCards("e") > 0) {
+				await player.gainPlayerCard(
+					"掠：抵消成功！你可以获得 " + get.translation(source) + " 装备区的一张牌", 
+					source, 
+					"e", 
+					true
+				).set("ai", function(button) {
+					return get.value(button.link);
+				}).forResult(); 
+			}
+		},
+		ai: {
+			order: 3,
+			basic: {
+				useful: (card, i) => {
+					let player = _status.event.player, basic = [7, 5.1, 2], num = basic[Math.min(2, i)];
+					if (player.hp > 2 && player.hasSkillTag("maixie")) num *= 0.57;
+					if (player.hasSkillTag("freeShan", false, null, true) || player.getEquip("rewrite_renwang")) num *= 0.8;
+					return num;
+				},
+				value: [7, 5.1, 2],
+			},
+			result: { player: 1 },
+		}
+	},
+	"_lve_rule": {
+		trigger: { player: ["chooseToUseBegin", "chooseToRespondBegin"] },
+		filter: function(event, player) {
+			if (event.type === 'respondShan') return true;
+			if (event.filterCard && event.filterCard({name: 'shan'}, player, event)) return true;
+			return false;
+		},
+		forced: true,
+		silent: true,
+		content: function(event, trigger, player) {
+			var oldFilter = trigger.filterCard;
+			trigger.filterCard = function(card, p, target) {
+				if (card.name === 'lve') return true;
+				if (oldFilter) return oldFilter(card, p, target);
+				return false;
+			};
+			if (trigger.ai1) {
+				var oldAi = trigger.ai1;
+				trigger.ai1 = function(card) {
+					if (card.name === 'lve') return 11; 
+					if (oldAi) return oldAi(card);
+					return 0;
+				};
+			}
+		}
+	},
+
+    "yihuajiemu": {
+        type: "trick",
+        fullskin: true,
+        enable: true,
+        filterTarget: function (card, player, target) {
+            return target != player && target.countCards("he");
+        },
+        content: function () {
+            "step 0";
+            if (target.hasSha()) {
+                target.chooseToUse(
+                    function (card, player, event) {
+                        return get.name(card) == "sha" && lib.filter.filterCard.apply(this, arguments);
+                    },
+                    "使用一张杀，或交给" + get.translation(player) + "两张牌"
+                );
+            } else {
+                event.directfalse = true;
+            }
+            ("step 1");
+            var nh = target.countCards("he");
+            if ((event.directfalse || !result.bool) && nh) {
+                if (nh <= 2) {
+                    event.directcards = true;
+                } else {
+                    target.chooseCard("he", 2, true, "将两张牌交给" + get.translation(player));
+                }
+            } else {
+                event.finish();
+            }
+            ("step 2");
+            if (event.directcards) {
+                target.give(target.getCards("he"), player);
+            } else if (result.bool && result.cards && result.cards.length) {
+                target.give(result.cards, player);
+            }
+        },
+        ai: {
+            order: 7,
+            result: {
+                target: function (player, target) {
+                    if (target.hasSha() && _status.event.getRand() < 0.5) return 1;
+                    return -2;
+                },
+            },
+        },
+        image: "ext:魔法纪录/card_image/yihuajiemu.png",
+        selectTarget: 1,
+    },
 	
 	"chenhuodajie": {
 		fullskin: true,
