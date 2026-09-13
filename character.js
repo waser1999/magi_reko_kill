@@ -1054,6 +1054,18 @@ const characters = {
 		isZhugong: true,
 		isUnseen: true,
 	},
+	"DeviantMoon_Satou": {//邪月
+		sex: "female",
+		group: "Witch",
+		hp: 2,
+		maxHp: 5,
+		Hujia: 3,
+		skills: ["DeviantMoon_Satou_wuyue", "DeviantMoon_Satou_jvmie"],
+		img: "extension/魔法纪录/image/DeviantMoon_Satou.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/DeviantMoon_Satou.mp3"],
+		isZhugong: true,
+		isUnseen: true,
+	},
 	"Ruiqi": {//瑞麒
 		sex: "female",
 		group: "Tenkai",
@@ -1100,7 +1112,7 @@ const characters = {
 		skills: ["flame_lishi", "flame_weiren", "flame_jiou"],
 		img: "extension/魔法纪录/image/Flèche&Lame.jpg", 
 	},
-	"Boss_Corbeau": {// boss可鲁波
+	"Boss_Corbeau": {// Boss可鲁波
 		sex: "female",
 		group: "Witch",
 		hp: 14,
@@ -1229,6 +1241,7 @@ const character_translates = {
 	blue: "蓝蓝",
 	ceobo: "小刻",
 	Satou: "砂糖",
+	DeviantMoon_Satou: "邪月",
 	Ruiqi: "陈瑞麒",
 	Kyukyu: "辺銀啾啾",
 	sakuya: "铃鹿朔夜",
@@ -1327,10 +1340,10 @@ const perfectPairs = {
 	Elisa: ["dArc", "Final_dArc", "Riz", "Melissa", "Pernelle"],
 	Pernelle: ["Jeanne", "dArc", "Final_dArc", "Riz", "Elisa"],
 	Jeanne: ["Pernelle", "kagome"],
-	Corbeau: ["Lapine", "Minou", "WeepingHare", "FlècheLame"],
-	Minou: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight", "WeepingHare"],
-	Lapine: ["Minou", "Corbeau", "Isabeau", "QueensTwilight"],
-	Isabeau:  ["Lapine", "Corbeau", "Minou", "QueensTwilight", "WeepingHare"],
+	Corbeau: ["Lapine", "Minuo", "WeepingHare", "FlècheLame"],
+	Minuo: ["Lapine", "Corbeau", "Isabeau", "QueensTwilight", "WeepingHare"],
+	Lapine: ["Minuo", "Corbeau", "Isabeau", "QueensTwilight"],
+	Isabeau:  ["Lapine", "Corbeau", "Minuo", "QueensTwilight", "WeepingHare"],
 	hikaru: ["yuna", "juri", "ao"],
 	Ruiqi: ["Kyukyu"],
 	Kyukyu: ["Ruiqi"],
@@ -1441,7 +1454,7 @@ const characterTitles = {
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
 	Satou: "弦月残阳",//砂糖
-	DeviantMoon: "其性质为迷乱",//邪月
+	DeviantMoon_Satou: "其性质为迷乱",//邪月
 	Ruiqi: "电子幽麟",//瑞麒
 	Kyukyu: "迷梦皉鸠",//啾啾
 	sakuya: "辉煌之刃",//铃鹿朔夜
@@ -1501,7 +1514,7 @@ const characterSorts = {
 	"madoka12": ["kirika", "oriko", "yuma", "sasa"],
 	"madoka13": ["Pleiades_Saints", "Kazumi", "Subaru_Kazumi", "Michiru", "Umika", "Kaoru", "Saki", "Mirai", "Satomi", "Niko", "Souju", "Airi", "Yuuri", "Kanna", "Hyades"],
 	"madoka14": ["suzune"],
-	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "WeepingHare", "Corbeau", "Minuo", "Isabeau", "QueensTwilight", "boss_Corbeau", "FlècheLame", "eng_soldier", "elite_soldier"],
+	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "WeepingHare", "Corbeau", "Minuo", "Isabeau", "QueensTwilight", "Boss_Corbeau", "FlècheLame", "eng_soldier", "elite_soldier"],
 
 	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "meiyui", "akira", "kako", "rera", "seika", "mito", "kokoro", "himika", "ren","konoha", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
