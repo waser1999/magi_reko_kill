@@ -270,34 +270,61 @@ const characters = {
 		group: "Kamihama_Magia_Union",
 		hp: 3,
 		maxHp: 3,
-		skills: ["nanaka_huaxin"],
+		skills: ["nanaka_huaxin", "nanaka_guanhuo"],
 		img: "extension/魔法纪录/image/nanaka.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/nanaka.mp3"],
 	},
-	"rera": {//伊吹丽良
+	"meiyui": {//纯美雨
+		sex: "female",
+		group: "Kamihama_Magia_Union",
+		hp: 3,
+		maxHp: 3,
+		skills: ["meiyui_canghai", "meiyui_xuanhuo"],
+		img: "extension/魔法纪录/image/meiyui.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/meiyui.mp3"],
+	},
+	"akira": {//志伸晶
 		sex: "female",
 		group: "Kamihama_Magia_Union",
 		hp: 4,
 		maxHp: 4,
-		skills: ["xinfu_jijie", "rera_nuanxin"],
+		skills: ["akira_canjie", "akira_gandan"],
+		img: "extension/魔法纪录/image/akira.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/akira.mp3"],
+	},
+	"kako": {//夏目佳子
+		sex: "female",
+		group: "Kamihama_Magia_Union",
+		hp: 3,
+		maxHp: 3,
+		skills: ["kako_xiamu", "kako_shuqian", "kako_moshi"],
+		img: "extension/魔法纪录/image/kako.jpg",
+		dieAudios: ["ext:魔法纪录/audio/die/kako.mp3"],
+	},
+	"rera": {//伊吹丽良
+		sex: "female",
+		group: "Kamihama_Magia_Union",
+		hp: 3,
+		maxHp: 3,
+		skills: ["rera_ziru", "rera_xiuhao"],
 		img: "extension/魔法纪录/image/rera.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/rera.mp3"],
 	},
 	"seika": {//桑水清佳
 		sex: "female",
 		group: "Kamihama_Magia_Union",
-		hp: 4,
-		maxHp: 4,
-		skills: ["seika_huzhu"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["seika_huanzhu", "seika_heying", "seika_manyi"],
 		img: "extension/魔法纪录/image/seika.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/seika.mp3"],
 	},
 	"mito": {//相野未都
 		sex: "female",
 		group: "Kamihama_Magia_Union",
-		hp: 5,
-		maxHp: 5,
-		skills: ["dcsbkuangzhan", "hanzhan"],
+		hp: 3,
+		maxHp: 3,
+		skills: ["mito_liangyi", "mito_jiexin", "mito_suixing"],
 		img: "extension/魔法纪录/image/mito.jpg",
 		dieAudios: ["ext:魔法纪录/audio/die/mito.mp3"],
 	},
@@ -1098,6 +1125,7 @@ const character_translates = {
 	"devil_homura_prefix": "魔",
 	"Final_dArc_prefix": "极",
 	"Subaru_Kazumi_prefix": "昴",
+	"Boss_Corbeau_prefix": "魔",
 
 	madoka: "鹿目圆",
 	homura: "晓美焰",
@@ -1128,6 +1156,9 @@ const character_translates = {
 	ashley: "阿什莉·泰勒",
 	hinano: "都雏乃",
 	nanaka: "常盘七香",
+	meiyui: "纯美雨",
+	akira: "志伸晶",
+	kako: "夏目佳子",
 	rera: "伊吹丽良",
 	seika: "桑水清佳",
 	mito: "相野未都",
@@ -1231,7 +1262,7 @@ const perfectPairs = {
 	yachiyo: ["iroha", "tsuruno", "momoko", "mifuyu", "meru", "kanae"],
 	tsuruno: ["felicia", "yachiyo"],
 	sana: ["iroha"],
-	felicia: ["iroha", "tsuruno"],
+	felicia: ["iroha", "tsuruno", "kako", "ayame"],
 	lena: ["momoko", "kaede"],
 	momoko: ["yachiyo", "kaede", "lena", "mitama"],
 	kaede: ["momoko", "lena"],
@@ -1239,17 +1270,22 @@ const perfectPairs = {
 	mitama: ["momoko", "mikage"],
 	kanae: ["yachiyo"],
 	ashley: ["riko"],
-	nanaka: ["hazuki"],
+	nanaka: ["hazuki", "meiyui", "akira", "kako"],
+	meiyui: ["nanaka", "akira", "kako"],
+	akira: ["meiyui", "nanaka", "kako"],
+	kako: ["nanaka", "meiyui", "akira", "felicia"],
 	rera: ["seika", "mito"],
 	seika: ["mito", "rera"],
 	mito: ["seika", "rera"],
 	kokoro: ["masara"],
 	ren: ["rika"],
-	hazuki: ["nanaka"],
+	konoha: ["hazuki", "ayame"],
+	hazuki: ["nanaka", "konoha", "ayame"],
+	ayame: ["konoha", "hazuki", "kako", "felicia"],
 	masara: ["kokoro"],
 	rika: ["ren"],
 	riko: ["ashley"],
-	meru: ["yachiyo"],
+	meru: ["yachiyo", "tsuruno"],
 	dp_iroha: ["iroha"],
 	mifuyu: ["yachiyo", "toka", "yueye"],
 	toka: ["alina", "nemu", "ui", "nayuta", "sakura"],
@@ -1330,6 +1366,9 @@ const characterTitles = {
 	ashley: "Ocean Tick Hurricane", //阿什莉·泰勒
 	hinano: "狂怒原子", //都雏乃
 	nanaka: "白椿", //常盘七香
+	meiyui: "鹰影爪风斩",//纯美雨
+	akira: "巨拳连弹",//志伸晶
+	kako: "光明达道之页",//夏目佳子
 	rera: "火焰之轮", //伊吹丽良
 	seika: "钻石飞溅", //桑水清佳
 	mito: "绿叶如注", //相野未都
@@ -1401,7 +1440,8 @@ const characterTitles = {
 	yamada: "超级科学回旋", //山田
 	blue: "海晶少女",//蓝蓝
 	ceobo: "百种兵器",//小刻
-	Satou: "邪月",//砂糖
+	Satou: "弦月残阳",//砂糖
+	DeviantMoon: "其性质为迷乱",//邪月
 	Ruiqi: "电子幽麟",//瑞麒
 	Kyukyu: "迷梦皉鸠",//啾啾
 	sakuya: "辉煌之刃",//铃鹿朔夜
@@ -1463,7 +1503,7 @@ const characterSorts = {
 	"madoka14": ["suzune"],
 	"madoka15": ["dArc", "Final_dArc", "Riz", "Melissa", "Elisa", "Pernelle", "Jeanne", "Lapine", "WeepingHare", "Corbeau", "Minuo", "Isabeau", "QueensTwilight", "boss_Corbeau", "FlècheLame", "eng_soldier", "elite_soldier"],
 
-	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "rera", "seika", "mito", "kokoro", "himika", "ren","konoha", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
+	"madoka2": ["iroha", "yachiyo", "tsuruno", "sana", "felicia", "lena", "momoko", "kaede", "asuka", "ui", "kanagi", "kagome", "kanae", "ashley", "hinano", "nanaka", "meiyui", "akira", "kako", "rera", "seika", "mito", "kokoro", "himika", "ren","konoha", "hazuki", "ayame", "masara", "rika", "riko", "meru", "kushu", "dp_iroha"],
 	"madoka21": ["mifuyu", "toka", "alina", "karin", "nemu", "yueye", "yuexiao", "kuroe", "sakura", "ryo", "saint_mami", "uwasa_tsuruno", "ai", "himena", "shigure", "hagumu"],
 	"madoka22": ["yuna", "ao", "juri", "sakuya", "hikaru"],
 	"madoka23": ["shizuka"],
