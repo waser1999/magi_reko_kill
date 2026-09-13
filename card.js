@@ -2,6 +2,7 @@ import { lib, game, ui, get, ai, _status } from "../../noname.js";
 
 const cards = {
 	"dujuanhuakai": {
+		fullskin: true,
 		type: "trick",
 		image: "ext:魔法纪录/card_image/dujuanhuakai.png",
 		enable: true,
@@ -1159,6 +1160,7 @@ const cards = {
 	},
 
 "CrowMask": {
+		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
 		skills: ["CrowMask_skill", "equipment_equip5"],
@@ -1178,6 +1180,7 @@ const cards = {
 		}
 	},
 	"CatMask": {
+		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
 		skills: ["CatMask_skill", "equipment_equip5"],
@@ -1197,6 +1200,7 @@ const cards = {
 		}
 	},
 	"RabbitMask": {
+		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
 		skills: ["RabbitMask_skill",  "equipment_equip5"],
@@ -1216,6 +1220,7 @@ const cards = {
 		}
 	},
 	"EnglandCrown": {
+		fullskin: true,
 		type: "equip",
 		subtype: "equip5",
 		skills: ["EnglandCrown_skill",  "equipment_equip5"],
