@@ -9746,7 +9746,7 @@ const skills = {
 
     // 常盘七香 
 	"nanaka_huaxin": {
-		audio: "ext:魔法纪录/audio/skill:1",
+		audio: "ext:魔法纪录/audio/skill:2",
 		trigger: { player: "phaseZhunbeiBegin" },
 		group: ["nanaka_huaxin_tracker", "nanaka_huaxin_clear"],
 		ai: {
@@ -9883,6 +9883,7 @@ const skills = {
 				}
 			},
 			clear: {
+				audio: "ext:魔法纪录/audio/skill:3",
 				trigger: { player: "phaseBefore" },
 				forced: true,
 				silent: true,
@@ -10131,6 +10132,7 @@ const skills = {
 		group: ["meiyui_canghai_red", "meiyui_canghai_black", "meiyui_canghai_strike", "meiyui_canghai_turn_clear"],
 		subSkill: {
 			red: {
+				audio: "ext:魔法纪录/audio/skill:2",
 				enable: "chooseToUse",
 				position: "he",
 				filterCard: function(card, player) {
@@ -10177,6 +10179,7 @@ const skills = {
 				}
 			},
 			black: {
+				audio: "ext:魔法纪录/audio/skill:2",
 				enable: ["chooseToRespond", "chooseToUse"],
 				position: "he",
 				filter: function(event, player) {
@@ -10239,6 +10242,7 @@ const skills = {
 			},
 
 			strike: {
+				audio: "ext:魔法纪录/audio/skill:2",
 				trigger: { 
 					player: ["useCardAfter", "respondAfter"] 
 				},
@@ -10288,7 +10292,7 @@ const skills = {
 	},
 
 	"meiyui_xuanhuo": {
-		audio: "ext:魔法纪录/audio/skill:2", 
+		audio: "ext:魔法纪录/audio/skill:3", 
 		trigger: { global: "phaseDiscardBegin" },
 		group: ["meiyui_xuanhuo_round_clear"],
 		mod: {
@@ -10410,7 +10414,7 @@ const skills = {
 
 	// 志伸晶 
 	"akira_canjie": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		usable: 1,
 		group: ["akira_canjie_duel_phase", "akira_canjie_banned_clear"],
 		trigger: { global: "useCardToTargeted" },
@@ -10496,6 +10500,7 @@ const skills = {
 		},
 		subSkill: {
 			duel_phase: {
+				audio: "ext:魔法纪录/audio/skill:3",
 				trigger: { global: "useCardAfter" },
 				forced: true,
 				silent: true,
@@ -10592,7 +10597,7 @@ const skills = {
 	},
 
 	"akira_gandan": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		trigger: { global: "phaseEnd" },
 		filter: function(event, player) {
 			var histories = game.getGlobalHistory("useCard", function(evt) {
@@ -10676,7 +10681,7 @@ const skills = {
 	
 	// 夏目佳子 
 	"kako_xiamu": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		trigger: { global: "useCard" },
 		filter: function(event, player) {
 			if (player.storage.kako_xiamu_phase === game.phaseNumber) return false;
@@ -11363,7 +11368,7 @@ const skills = {
 	},
 
 	"Konoha_jiahu": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:4",
 		trigger: { global: "useCard" },
 		filter: function(event, player) {
 			if (event.player === player || !event.card) return false;
@@ -11378,7 +11383,7 @@ const skills = {
 			});
 		},
 		cost: async function(event, trigger, player) {
-			var prompt = "家护：是否交给 " + get.translation(trigger.player) + " 一张牌，印制【" + get.translation(trigger.card.name) + "】置于武将牌上？";
+			var prompt = "家护：是否交给 " + get.translation(trigger.player) + " 一张牌，复制【" + get.translation(trigger.card.name) + "】置于武将牌上？";
 			var res = await player.chooseCard("he", 1, prompt).set("ai", function(card) {
 				var p = _status.event.player;
 				var val = get.value(card);
@@ -11405,7 +11410,7 @@ const skills = {
 			evt.gaintag.add("Konoha_jiahu");
 			await evt;
 			
-			game.log(player, "将印制的", vcard, "置为了“花”");
+			game.log(player, "将复制的", vcard, "置为了“花”");
 		},
 		group: ["Konoha_jiahu_judge"],
 		marktext: "花",
@@ -11469,7 +11474,7 @@ const skills = {
 
 	// 游佐叶月 
 	"Hazuki_feiyun": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		usable(skill, player) {
 			return 1 + player.countMark("Hazuki_chedian_add");
 		},
@@ -11520,7 +11525,7 @@ const skills = {
 	},
 
 	"Hazuki_chedian": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		usable: 1,
 		group: ["Hazuki_chedian_tracker"],
 		trigger: { player: ["useCardAfter", "respondAfter"] },
@@ -11650,7 +11655,7 @@ const skills = {
 
 	// 三粟菖蒲 
 	"Ayame_feihuo": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:4",
 		mod: {
 			cardnature: function(card, player) {
 				if (get.color(card) === "red") return "fire";
@@ -11731,7 +11736,7 @@ const skills = {
 	},
 
 	"Ayame_liuxing": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		enable: "phaseUse",
 		limited: true,
 		skillAnimation: true,
@@ -11879,7 +11884,7 @@ const skills = {
 	},
 	
     "hanna_fuwang": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:4",
 		usable: 1,
 		trigger: { source: "damageEnd" },
 		filter: function(event, player) {
@@ -13320,6 +13325,7 @@ const skills = {
 		],
 		subSkill: {
 			yushi: {
+				audio: "ext:魔法纪录/audio/skill:2",
 				enable: ["phaseUse", "chooseToUse", "chooseToRespond"],
 				viewAs: { name: "yushijiesui" },
 				position: 'he',
@@ -13350,6 +13356,7 @@ const skills = {
 				check: function(card) { return 6 - get.value(card); }
 			},
 			tao: {
+				audio: "ext:魔法纪录/audio/skill:2",
 				enable: "chooseToUse",
 				viewAs: { name: "tao" },
 				position: "h",
@@ -13717,6 +13724,7 @@ const skills = {
 				}
 			},
 			recover: {
+				audio: "ext:魔法纪录/audio/skill:3",
 				trigger: { global: "phaseJieshuBegin" },
 				forced: true, charlotte: true, silent: true,
 				onremove: function(player) {
@@ -13924,7 +13932,7 @@ const skills = {
 	},
 
 	"rera_xiuhao": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		enable: "phaseUse",
 		usable: 1,
 		filter: function(event, player) {
@@ -14090,7 +14098,7 @@ const skills = {
 	},
 
 	"rera_nuanxin": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		trigger: { player: "phaseDiscardAfter" },
 		filter: function(event, player) {
 			var x = _status.renku ? _status.renku.length : 0;
@@ -14451,7 +14459,7 @@ const skills = {
 	},
 
 	"seika_manyi": {
-		audio: "ext:魔法纪录/audio/skill:2",
+		audio: "ext:魔法纪录/audio/skill:3",
 		trigger: { global: "phaseUseAfter" },
 		filter: function(event, player) {
 			if (_status.renku_decreased_this_turn) return true;
@@ -16683,7 +16691,7 @@ const skills = {
 
     // 天音月夜
     "Tsukuyo_muse": {
-        audio: "ext:魔法纪录/audio/skill:2",
+        audio: "ext:魔法纪录/audio/skill:4",
         group: ["Tsukuyo_muse_draw", "Tsukuyo_muse_exchange", "Amane_twins_counter"],
         subSkill: {
             draw: {
@@ -16846,7 +16854,7 @@ const skills = {
 
 	// 天音月咲
     "Tsukasa_yeguang": {
-        audio: "ext:魔法纪录/audio/skill:2",
+        audio: "ext:魔法纪录/audio/skill:4",
         group: ["Tsukasa_yeguang_exchange", "Amane_twins_counter"],
         subSkill: {
             exchange: {
@@ -23421,10 +23429,8 @@ content: function (event, trigger, player) {
 		filter: function (event, player) {
 			if (player.countMark("Isabeau_yin") >= 7) return false;
 
-			// 兼容普通的弃牌、装备顶替或夺转产生的进入弃牌堆判定
 			if (event.name.startsWith('lose')) {
 				if ((event.type != 'discard' && event.type != 'equip') || event.getlx === false) {
-					// 兜底检测：如果卡牌由于夺转等主动行为被直接弃置进入弃牌堆的，同样予以识别
 					if (event.getParent().name === "Isabeau_duozhuan_backup") {
 						return event.cards && event.cards.some(card => get.position(card, true) == 'd');
 					}
@@ -23484,7 +23490,6 @@ content: function (event, trigger, player) {
 		}
 	},
 
-	// 伊莎贝拉：敛因 
 	"Isabeau_lianyin": {
 		audio: "ext:魔法纪录/audio/skill:4",
 		trigger: {
@@ -23550,7 +23555,6 @@ content: function (event, trigger, player) {
 		}
 	},
 
-	// 伊莎贝拉：夺转 
 	"Isabeau_duozhuan": {
 		audio: "ext:魔法纪录/audio/skill:4",
 		enable: ["chooseToUse", "chooseToRespond"],
@@ -23627,19 +23631,18 @@ content: function (event, trigger, player) {
 					filterCard: function (card, player) { return true; }, 
 					selectCard: 1,
 					position: "h",
-					// 纯虚拟牌，不绑定实体卡牌为成分
+
 					viewAs: { name: vName, nature: vNature, isCard: true },
 					
 					popname: true,
 					async precontent(event, trigger, player) {
-						// 1. 消耗“因”标记（自动触发敛因失去摸牌）
+
 						player.removeMark("Isabeau_yin", nLen);
 						game.log(player, "发动了", "#g【夺转】", "，消耗了", nLen, "枚【因】");
 
-						// 2. 将选中的手牌正规弃置进弃牌堆（100% 触发弃置结算，敛因稳定 +1 枚【因】）
 						if (event.result && event.result.cards && event.result.cards.length > 0) {
 							var toDiscard = event.result.cards.slice(0);
-							// 清空当前虚拟卡牌的关联原料，使该牌被彻底判定为独立弃置
+
 							event.result.cards.length = 0;
 							await player.discard(toDiscard);
 						}
